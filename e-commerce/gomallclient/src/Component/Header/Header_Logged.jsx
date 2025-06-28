@@ -1,6 +1,6 @@
 
 
-function Header() {
+function Header_Logged() {
   return (
     <header className="header">
       <a className="header-brand" href="#">
@@ -62,4 +62,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default Header_Logged;
