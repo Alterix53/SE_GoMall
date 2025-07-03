@@ -11,7 +11,6 @@ import Breadcrumbs from './Component/Admin/Breadcrumbs';
 import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
-// ItemsPage có thể cần tạo lại nếu đã xóa
 import ItemsPage from './Component/Admin/pages/ItemsPage';
 
 function AdminLayout() {
