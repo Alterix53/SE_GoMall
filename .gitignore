@@ -1,7 +1,6 @@
 bootstrap-5.3.7-dist
 node_modules
-package.json
+
 .git
 .vs
 Debug
-package-lock.json
