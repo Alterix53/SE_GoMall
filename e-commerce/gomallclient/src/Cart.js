@@ -97,29 +97,29 @@ export default function CartPage() {
                           <h3 className="text-lg font-semibold text-gray-900 truncate">{item.name}</h3>
                           <p className="text-xl font-bold text-blue-600">${item.price.toFixed(2)}</p>
                         </div>
+                            
+                        <div className="flex items-center space-x-2">   
+                            <Button
+                              varitant="outline"
+                              size ="icon"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="h-8 w-8"
+                            >
+                                <Minus className="h-4 w-4" />
+                            </Button>
 
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="h-8 w-8"
-                          >
-                            <Minus className="h-4 w-4" />
-                          </Button>
+                            <span className="w-12 text-center font-semibold">{item.quantity}</span>
 
-                          <span className="w-12 text-center font-semibold">{item.quantity}</span>
-
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="h-8 w-8"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        </div>
-
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                className="h-8 w-8"
+                            >
+                                  <Plus className="h-4 w-4"/>
+                            </Button>
+                        </div>   
+                            
                         <Button
                           variant="ghost"
                           size="icon"
