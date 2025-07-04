@@ -25,22 +25,6 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Mock cart data
-  const cartItems: CartItem[] = [
-    {
-      id: "1",
-      name: "Tai nghe Bluetooth không dây",
-      price: 1500000,
-      quantity: 1,
-      image: "/placeholder.svg?height=60&width=60",
-    },
-    {
-      id: "2",
-      name: "Đồng hồ thông minh thế hệ 5",
-      price: 5000000,
-      quantity: 2,
-      image: "/placeholder.svg?height=60&width=60",
-    },
-  ]
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = 9.99
