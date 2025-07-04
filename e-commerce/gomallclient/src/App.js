@@ -1,18 +1,20 @@
-// import logo from './logo.svg';
-import './App.css';
-// import Header from './Component/Header/Header_Logged';
-import Header_Unlogged from './Component/Header/Header_nav_unlogin';
-import Footer from './Component/Footer';
-import CategoryList from './Component/Category/CategoryList';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginPage from './Component/Login/login';
+import SignUpPage from './Component/Signup/signup'; 
+import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
+import Navbar from './Component/Navbar/Navbar';
+import Footer from './Component/Footer/Footer';
 
 function App() {
   return (
-    <div className="App">
-
-            <Header_Unlogged />
-            <CategoryList />
-            <Footer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/seller" element={<SellerDashboard />} />
+        {/* Có thể thêm Home nếu muốn */}
+      </Routes>
+    </Router>
   );
 }
 

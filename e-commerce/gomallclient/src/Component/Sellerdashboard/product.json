@@ -1,0 +1,4 @@
+[
+  { "id": 1, "name": "Áo thun", "price": 120000, "category": "Thời trang" },
+  { "id": 2, "name": "Giày thể thao", "price": 350000, "category": "Giày dép" }
+]
