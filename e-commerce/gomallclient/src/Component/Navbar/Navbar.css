@@ -160,6 +160,12 @@
   transition: all 0.3s;
 }
 
+.dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
 .dropdown:hover .dropdown-menu {
   opacity: 1;
   visibility: visible;
