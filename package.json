@@ -1,0 +1,25 @@
+{
+  "name": "bootstrap-npm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alterix53/SE_GoMall.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alterix53/SE_GoMall/issues"
+  },
+  "homepage": "https://github.com/Alterix53/SE_GoMall#readme",
+  "description": "",
+  "dependencies": {
+    "@coreui/coreui": "^5.4.0",
+    "bootstrap": "^5.3.7",
+    "react-router-dom": "^7.6.2",
+    "sass": "^1.89.2"
+  }
+}
