@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from 
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -28,15 +28,15 @@ export default function CheckoutPage() {
   const cartItems: CartItem[] = [
     {
       id: "1",
-      name: "Wireless Bluetooth Headphones",
-      price: 79.99,
+      name: "Tai nghe Bluetooth không dây",
+      price: 1500000,
       quantity: 1,
       image: "/placeholder.svg?height=60&width=60",
     },
     {
       id: "2",
-      name: "Smart Watch Series 5",
-      price: 299.99,
+      name: "Đồng hồ thông minh thế hệ 5",
+      price: 5000000,
       quantity: 2,
       image: "/placeholder.svg?height=60&width=60",
     },
