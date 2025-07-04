@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import './App.css';
 // import Header from './Component/Header/Header_Logged';
-import Header_Unlogged from './Component/Header/Header_nav_unlogin';
+import HeaderNav from './Component/Header/HeaderNav';
 import Footer from './Component/Footer';
 import CategoryList from './Component/Category/CategoryList';
 
@@ -11,7 +11,6 @@ import Breadcrumbs from './Component/Admin/Breadcrumbs';
 import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
-// ItemsPage có thể cần tạo lại nếu đã xóa
 import ItemsPage from './Component/Admin/pages/ItemsPage';
 
 function AdminLayout() {
@@ -34,7 +33,7 @@ function AdminLayout() {
 function App() {
   return (
     <Router>
-      <Header_Unlogged />
+      <HeaderNav />
       <Routes>
         <Route path="/Admin/*" element={<AdminLayout />} />
         {/* Các route khác giữ nguyên layout cũ */}
