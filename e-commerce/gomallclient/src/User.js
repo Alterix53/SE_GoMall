@@ -156,6 +156,14 @@ export default function UserPage() {
                       <p className="font-medium whitespace-pre-line">{user.address}</p>
                     </div>
                   </div>
+
+                  <div className="flex items-start gap-3">
+                    <Phone className="h-5 w-5 text-gray-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-500">Note</p>
+                      <p className="font-medium">{user.phone}</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
