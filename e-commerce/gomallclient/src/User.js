@@ -29,33 +29,34 @@ export default function UserPage() {
     {
       id: "ORD-001",
       date: "2024-01-15",
-      total: 299.99,
+      total: 1500000,
       status: "delivered",
       items: 2,
     },
     {
       id: "ORD-002",
       date: "2024-01-10",
-      total: 79.99,
+      total: 5000000,
       status: "processing",
       items: 1,
     },
     {
       id: "ORD-003",
       date: "2024-01-05",
-      total: 149.99,
+      total: 2500000,
       status: "shipped",
       items: 3,
     },
     {
       id: "ORD-004",
       date: "2023-12-28",
-      total: 199.99,
+      total: 1500000,
       status: "delivered",
       items: 1,
     },
   ])
 
+    /*Cap nhat trang thai cho gio hang*/
   const getStatusColor = (status: Order["status"]) => {
     switch (status) {
       case "delivered":
@@ -71,18 +72,20 @@ export default function UserPage() {
     }
   }
 
+  /* Cac chuc nang chinh */
+  // vi du 
   const handleLogout = () => {
-    // Handle logout logic
+    //logout 
     console.log("Logging out...")
   }
 
   const handleEditProfile = () => {
-    // Handle edit profile logic
+    // edit profile 
     console.log("Editing profile...")
   }
 
   const handleViewOrderDetails = (orderId: string) => {
-    // Handle view order details
+    // view details
     console.log("Viewing order:", orderId)
   }
 
