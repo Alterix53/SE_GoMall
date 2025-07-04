@@ -24,18 +24,50 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod")
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // Mock cart data
+  // Ví dụ các sản phẩm
+  const cartItems: CartItem[] = [
+    {
+      id: "1",
+      name: "Tai nghe Bluetooth không dây",
+      price: 1500000,
+      quantity: 1,
+      image: "/placeholder.svg?height=60&width=60",
+    },
+    {
+      id: "2",
+      name: "Đồng hồ thông minh thế hệ 5",
+      price: 5000000,
+      quantity: 2,
+      image: "/placeholder.svg?height=60&width=60",
+    },
+    {
+      id: "3",
+      name: "Tai nghe chụp tai IOS",
+      price: 900000,
+      quantity: 1,
+      image: "/placeholder.svg?height=60&width=60",
+    },
+    {
+      id: "1",
+      name: "Mủ bảo hiểm cá nhân",
+      price: 2500000,
+      quantity: 1,
+      image: "/placeholder.svg?height=60&width=60",
+    },
+  ]
 
+
+  
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = 9.99
   const total = subtotal + shipping
 
   const handlePlaceOrder = async () => {
     setIsProcessing(true)
-    // Simulate order processing
+    // Tiến hành thanh toán
     await new Promise((resolve) => setTimeout(resolve, 2000))
     setIsProcessing(false)
-    // Redirect to user page
+    // CChuyển về trang ng dùng
     window.location.href = "/user"
   }
 
@@ -73,7 +105,8 @@ export default function CheckoutPage() {
 
                 <div>
                   <Label htmlFor="address">Address</Label>
-                  <Textarea id="address" placeholder="123 Main St, Apt 4B, City, State 12345" rows={3} />
+                  /*Địa chỉ mặc định*/
+                  <Textarea id="address" placeholder="123 NguyenVanCu street, District 5, HoChiMinh City" rows={3} />
                 </div>
               </CardContent>
             </Card>
