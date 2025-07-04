@@ -20,22 +20,22 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: "1",
-      name: "Wireless Bluetooth Headphones",
-      price: 79.99,
+      name: "Tai nghe bluwtooth",
+      price: 1500000,
       quantity: 1,
       image: "/placeholder.svg?height=80&width=80",
     },
     {
       id: "2",
-      name: "Smart Watch Series 5",
-      price: 299.99,
+      name: "Đồng hồ thông minh thế hệ 5",
+      price: 5000000,
       quantity: 2,
       image: "/placeholder.svg?height=80&width=80",
     },
     {
       id: "3",
-      name: "USB-C Fast Charger",
-      price: 24.99,
+      name: "Sạc điện thoại Iphone",
+      price: 90000,
       quantity: 1,
       image: "/placeholder.svg?height=80&width=80",
     },
@@ -56,16 +56,16 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+          <h1 className="text-3xl font-bold mb-8">Shopping Cart </h1>
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <ShoppingBag className="h-16 w-16 text-gray-400 mb-4" />
+              <ShoppingBag className="h-16 w-16 text-gray-400 mb-4">
               <h2 className="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h2>
               <p className="text-gray-500 mb-6">Add some products to get started</p>
-              <Link href="/products">
+              <Link href ="/products">
                 <Button>Continue Shopping</Button>
               </Link>
-            </CardContent>
+            </CartContent>
           </Card>
         </div>
       </div>
