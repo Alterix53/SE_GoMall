@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import './App.css';
 // import Header from './Component/Header/Header_Logged';
-import Header_Unlogged from './Component/Header/Header_nav_unlogin';
+import HeaderNav from './Component/Header/Header_nav_unlogin';
 import Footer from './Component/Footer';
 import CategoryList from './Component/Category/CategoryList';
 
@@ -33,7 +33,7 @@ function AdminLayout() {
 function App() {
   return (
     <Router>
-      <Header_Unlogged />
+      <HeaderNav />
       <Routes>
         <Route path="/Admin/*" element={<AdminLayout />} />
         {/* Các route khác giữ nguyên layout cũ */}
