@@ -14,6 +14,7 @@ interface CartItem {
   price: number
   quantity: number
   image: string
+  num: string
 }
 
 export default function CartPage() {
