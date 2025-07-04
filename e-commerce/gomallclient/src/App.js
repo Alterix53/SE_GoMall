@@ -12,6 +12,11 @@ import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginPage from './Component/Login/login';
+import SignUpPage from './Component/Signup/signup'; 
+import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
+import Footer from './Component/Footer/Footer';
 
 function AdminLayout() {
   return (
@@ -27,7 +32,7 @@ function AdminLayout() {
         </Routes>
       </div>
     </div>
-  );
+  )
 }
 
 function App() {
@@ -38,6 +43,9 @@ function App() {
         <Route path="/Admin/*" element={<AdminLayout />} />
         {/* Các route khác giữ nguyên layout cũ */}
         <Route path="/*" element={<CategoryList />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/seller" element={<SellerDashboard />} />
       </Routes>
       <Footer />
     </Router>
