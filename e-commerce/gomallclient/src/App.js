@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import './App.css';
 // import Header from './Component/Header/Header_Logged';
-import HeaderNav from './Component/Header/Header_nav_unlogin';
+import HeaderNav from './Component/Header/HeaderNav';
 import Footer from './Component/Footer';
 import CategoryList from './Component/Category/CategoryList';
 
