@@ -204,6 +204,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
+  animation: none !important;
+  transition: none !important;
 }
 
 /* Responsive */
@@ -309,4 +311,15 @@
   .category-name {
     font-size: 11px;
   }
+}
+
+.category-products-section {
+  margin: 40px 0;
+}
+
+.category-products-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
