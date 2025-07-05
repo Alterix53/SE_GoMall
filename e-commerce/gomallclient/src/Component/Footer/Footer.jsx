@@ -1,4 +1,5 @@
 import React from 'react';
+import './Footer.css'; // Import the CSS file for styling
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
           {/* Cột 1: Logo / Tên */}
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold">Gomall</h5>
-            <p className="text-muted">Enhance your shopping experience.</p>
+            <p className="text-muted">Nơi trải nghiệm mua hàng dành cho bạn.</p>
           </div>
 
           {/* Cột 2: Các liên kết */}
