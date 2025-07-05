@@ -1,43 +1,209 @@
+"use client";
 
-function Navbar() {
-    return (
-        <nav className="navbar navbar-expand-lg bg-body-tertiary sticky-top">
-        <div className="container-fluid">
-            <a className="navbar-brand" href="#">GoMall</a>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">Home</a>
-                </li>
-                <li className="nav-item">
-                <a className="nav-link" href="#">Link</a>
-                </li>
-                <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown
-                </a>
-                <ul className="dropdown-menu">
-                    <li><a className="dropdown-item" href="#">Action</a></li>
-                    <li><a className="dropdown-item" href="#">Another action</a></li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><a className="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-                </li>
-                <li className="nav-item">
-                <a className="nav-link disabled" aria-disabled="true">Disabled</a>
-                </li>
-            </ul>
-            <form className="d-flex" role="search">
-                <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                <button className="btn btn-outline-success" type="submit">Search</button>
-            </form>
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import "./Navbar.css";
+
+const Navbar = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log("Current pathname:", location.pathname); // Debug đường dẫn
+  }, [location]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      console.log("Searching for:", searchTerm);
+    }
+  };
+
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
+
+  return (
+      <header className="navbar">
+        {/* Top Bar */}
+        <div className="navbar-top">
+          <div className="container">
+            <div className="top-left">
+              <span>Miễn phí vận chuyển đơn từ 150k</span>
+              <span>•</span>
+              <span>Hỗ trợ 24/7</span>
             </div>
+            <div className="top-right">
+              <span>Tải ứng dụng</span>
+              <span>•</span>
+              <span>Kết nối</span>
+            </div>
+          </div>
         </div>
-        </nav>
-    )
-}
+
+        {/* Main Navbar */}
+        <div className="navbar-main">
+          <div className="container">
+            <div className="navbar-content">
+              {/* Logo */}
+              <Link to="/" className="logo">
+                <div className="logo-icon">G</div>
+                <span className="logo-text">GoMall</span>
+              </Link>
+
+              {/* Navigation Icons */}
+              <div className="nav-icons">
+                <div className="nav-icon">
+                  <img
+                      src="/images/bell.png"
+                      alt="Thông báo"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Thông báo</span>
+                </div>
+                <div className="nav-icon">
+                  <img
+                      src="/images/setting.png"
+                      alt="Hỗ trợ"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Hỗ trợ</span>
+                </div>
+                <div className="nav-icon">
+                  <img
+                      src="/images/cart.png"
+                      alt="Giỏ hàng"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Giỏ hàng</span>
+                </div>
+                <div className="nav-icon dropdown">
+                  <img
+                      src="/images/user.png"
+                      alt="Tài khoản"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Tài khoản</span>
+                  <div className="dropdown-menu">
+                    <a href="#">Đăng nhập</a>
+                    <a href="#">Đăng ký</a>
+                    <a href="#">Tài khoản của tôi</a>
+                    <a href="#">Đơn hàng</a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                  className="mobile-menu-toggle"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <i className="fas fa-bars"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Links */}
+        <div className="navbar-links">
+          <div className="container">
+            <nav className="nav-menu">
+              <Link
+                  to="/"
+                  className={`nav-link ${isActive("/") ? "active" : ""}`}
+              >
+                Trang chủ
+              </Link>
+              <Link
+                  to="/flash-sale"
+                  className={`nav-link ${isActive("/flash-sale") ? "active" : ""}`}
+              >
+                Flash Sale
+              </Link>
+              <Link
+                  to="/top-products"
+                  className={`nav-link ${isActive("/top-products") ? "active" : ""}`}
+              >
+                Top Products
+              </Link>
+              <Link
+                  to="/category/dien-thoai"
+                  className={`nav-link ${isActive("/category/dien-thoai") ? "active" : ""}`}
+              >
+                Deal hot
+              </Link>
+              <Link
+                  to="/category/laptop"
+                  className={`nav-link ${isActive("/category/laptop") ? "active" : ""}`}
+              >
+                Săn xu đổi quà
+              </Link>
+              <Link
+                  to="/category/thoi-trang"
+                  className={`nav-link ${isActive("/category/thoi-trang") ? "active" : ""}`}
+              >
+                Khách hàng thân thiết
+              </Link>
+              <Link
+                  to="/category/gia-dung"
+                  className={`nav-link ${isActive("/category/gia-dung") ? "active" : ""}`}
+              >
+                Mã giảm giá
+              </Link>
+            </nav>
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+            <div className="mobile-menu">
+              <div className="mobile-menu-content">
+                <div className="mobile-menu-item">
+                  <img
+                      src="/images/user.png"
+                      alt="Tài khoản"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Tài khoản</span>
+                </div>
+                <div className="mobile-menu-item">
+                  <img
+                      src="/images/cart.png"
+                      alt="Giỏ hàng"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Giỏ hàng</span>
+                </div>
+                <div className="mobile-menu-item">
+                  <img
+                      src="/images/help.png"
+                      alt="Hỗ trợ"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Hỗ trợ</span>
+                </div>
+                <div className="mobile-menu-item">
+                  <img
+                      src="/images/bell.png"
+                      alt="Thông báo"
+                      style={{ width: "20px", height: "20px" }}
+                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                  />
+                  <span>Thông báo</span>
+                </div>
+              </div>
+            </div>
+        )}
+      </header>
+  );
+};
 
 export default Navbar;
