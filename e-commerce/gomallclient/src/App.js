@@ -1,31 +1,29 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+// import logo from './logo.svg';
 import './App.css';
-<<<<<<< HEAD
-// import Header from './Component/Header/Header_Logged';
 import HeaderNav from './Component/Header/HeaderNav';
-import Footer from './Component/Footer';
+import Footer from './Component/Footer/Footer';
 import CategoryList from './Component/Category/CategoryList';
-=======
-import Navbar from './Component/Navbar/Navbar';         // Sửa từ ../Component/Navbar/Navbar
-import Footer from './Component/Footer/Footer';        // Sửa từ ../Component/Footer/Footer
+import Navbar from './Component/Navbar/Navbar';
+
+// Import các component chính
 import Home from './Home';
 import FlashSale from './Flash_sale';
 import TopProduct from './TopProduct';
->>>>>>> Homepage_topP
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// Import các component Admin
 import SidebarNav from './Component/Admin/SidebarNav';
 import Breadcrumbs from './Component/Admin/Breadcrumbs';
 import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+// Import các component Auth
 import LoginPage from './Component/Login/login';
-import SignUpPage from './Component/Signup/signup'; 
+import SignUpPage from './Component/Signup/signup';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
-import Footer from './Component/Footer/Footer';
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function AdminLayout() {
   return (
@@ -41,34 +39,67 @@ function AdminLayout() {
         </Routes>
       </div>
     </div>
-  )
+  );
 }
 
 function App() {
   return (
     <Router>
-<<<<<<< HEAD
-      <HeaderNav />
-      <Routes>
-        <Route path="/Admin/*" element={<AdminLayout />} />
-        {/* Các route khác giữ nguyên layout cũ */}
-        <Route path="/*" element={<CategoryList />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/seller" element={<SellerDashboard />} />
-      </Routes>
-      <Footer />
-=======
       <div className="App">
-        <Navbar />
+        {/* Sử dụng Navbar mới cho các trang chính */}
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/flash-sale" element={<FlashSale />} />
-          <Route path="/top-products" element={<TopProduct />} />
+          {/* Admin routes - sử dụng layout riêng */}
+          <Route path="/Admin/*" element={<AdminLayout />} />
+          
+          {/* Auth routes - không có navbar */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          
+          {/* Seller routes - có thể có layout riêng */}
+          <Route path="/seller" element={<SellerDashboard />} />
+          
+          {/* Main routes - sử dụng Navbar và Footer */}
+          <Route path="/" element={
+            <>
+              <Navbar />
+              <Home />
+              <Footer />
+            </>
+          } />
+          <Route path="/flash-sale" element={
+            <>
+              <Navbar />
+              <FlashSale />
+              <Footer />
+            </>
+          } />
+          <Route path="/top-products" element={
+            <>
+              <Navbar />
+              <TopProduct />
+              <Footer />
+            </>
+          } />
+          
+          {/* Category routes - sử dụng Navbar và Footer */}
+          <Route path="/category/*" element={
+            <>
+              <Navbar />
+              <CategoryList />
+              <Footer />
+            </>
+          } />
+          
+          {/* Fallback route */}
+          <Route path="*" element={
+            <>
+              <Navbar />
+              <Home />
+              <Footer />
+            </>
+          } />
         </Routes>
-        <Footer />
       </div>
->>>>>>> Homepage_topP
     </Router>
   );
 }

@@ -1,24 +1,10 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-
-  useEffect(() => {
-    console.log("Current pathname:", location.pathname); // Debug đường dẫn
-  }, [location]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      console.log("Searching for:", searchTerm);
-    }
-  };
 
   const isActive = (path) => {
     return location.pathname === path;
