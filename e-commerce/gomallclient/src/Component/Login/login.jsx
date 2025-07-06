@@ -28,7 +28,6 @@ const LoginPage = () => {
 
   return (
     <>
-      <Navbar />
       <div className="login-container">
         <h2 className="mb-4">Đăng nhập</h2>
         <form onSubmit={handleLogin}>
