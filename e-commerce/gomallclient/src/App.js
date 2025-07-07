@@ -22,6 +22,7 @@ function AdminLayout() {
         <Routes>
           <Route path="/" element={<DashboardPage />} />
           <Route path="ManageUser" element={<ManageUserPage />} />
+          <Route path="ManageUser/User" element={<ManageUserPage />} />
           <Route path="ManageSeller" element={<ManageSellerPage />} />
           <Route path="Items" element={<ItemsPage />} />
         </Routes>

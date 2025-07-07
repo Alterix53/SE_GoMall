@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SellerDetailModal from "../SellerDetailModal";
+import UserSellerListItem from "../UserSellerListItem";
 
 const FILTERS = [
   { key: "all", label: "Tất cả" },
@@ -70,31 +71,17 @@ function ManageSellerPage() {
           <li className="list-group-item text-muted">Không có người bán nào.</li>
         )}
         {filteredSellers.map((seller) => (
-          <li
-            className="list-group-item d-flex align-items-center"
+          <UserSellerListItem
             key={seller.id}
-            style={{ cursor: "pointer" }}
+            data={seller}
             onClick={() => setSelectedSeller(seller)}
-          >
-            <img
-              src={seller.avatarUrl || "/default-avatar.png"}
-              alt="avatar"
-              className="rounded-circle me-3"
-              style={{ width: 40, height: 40, objectFit: "cover" }}
-            />
-            <div>
-              <div className="fw-bold">{seller.username}</div>
-              <div className="text-secondary">{seller.businessName}</div>
-            </div>
-            <span className="ms-auto badge bg-secondary">{seller.status}</span>
-          </li>
+          />
         ))}
       </ul>
       {/* Modal chi tiết người bán */}
       {selectedSeller && (
         <div className="modal show d-block" tabIndex="-1">
-          <div className="modal-backdrop fade show" onClick={() => setSelectedSeller(null)} />
-          <SellerDetailModal seller={selectedSeller} />
+          <SellerDetailModal seller={selectedSeller} onClose={() => setSelectedSeller(null)} />
         </div>
       )}
     </div>
