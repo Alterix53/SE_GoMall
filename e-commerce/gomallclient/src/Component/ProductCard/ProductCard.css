@@ -24,7 +24,7 @@
   border-radius: 4px;
   font-size: 12px;
   font-weight: bold;
-  z-index: 3; /* Đưa badge lên trên */
+  z-index: 3;
   animation: none !important;
   transition: none !important;
   -webkit-animation: none !important;
@@ -89,7 +89,7 @@
   width: 100%;
   height: 200px;
   overflow: hidden;
-  z-index: 1; /* Đưa ảnh xuống dưới badge */
+  z-index: 1;
 }
 
 .product-image img {
@@ -135,7 +135,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.3s ease;
-  white-space: normal; /* Đảm bảo không bị ngắt dòng sai */
+  white-space: normal;
 }
 
 .product-card:hover .product-name {
@@ -219,7 +219,6 @@
   100% { transform: scale(1); }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .product-image {
     height: 150px;

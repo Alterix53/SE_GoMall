@@ -1,150 +1,71 @@
-"use client"
+import React, { useState, useEffect } from "react";
+import { RenderProduct } from "../ProductCard/ProductCard.jsx"; // Điều chỉnh đường dẫn nếu cần
+import "./FlashSaleCarousel.css";
 
-import { useState, useEffect } from "react"
-import ProductCard from "../ProductCard/ProductCard"
-import "./FlashSaleCarousel.css"
-
-const FlashSaleCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [itemsPerView, setItemsPerView] = useState(6)
+const FlashSaleCarousel = ({ products }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(6);
   const [timeLeft, setTimeLeft] = useState({
     hours: 12,
     minutes: 34,
     seconds: 56,
-  })
-
-  const flashSaleProducts = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro Max 256GB",
-      price: 25990000,
-      originalPrice: 34990000,
-      image: "/placeholder.svg?height=200&width=200",
-      rating: 4.8,
-      sold: 1234,
-      discount: 26,
-      flashSale: true,
-    },
-    {
-      id: 2,
-      name: "Samsung Galaxy S24 Ultra",
-      price: 22990000,
-      originalPrice: 31990000,
-      image: "/placeholder.svg?height=200&width=200",
-      rating: 4.7,
-      sold: 856,
-      discount: 28,
-      flashSale: true,
-    },
-    {
-      id: 3,
-      name: "MacBook Air M3 13 inch",
-      price: 23990000,
-      originalPrice: 32990000,
-      image: "/placeholder.svg?height=200&width=200",
-      rating: 4.9,
-      sold: 432,
-      discount: 27,
-      flashSale: true,
-    },
-    {
-      id: 4,
-      name: "iPad Pro 11 inch M4",
-      price: 19990000,
-      originalPrice: 28990000,
-      image: "/placeholder.svg?height=200&width=200",
-      rating: 4.8,
-      sold: 678,
-      discount: 31,
-      flashSale: true,
-    },
-    {
-      id: 5,
-      name: "AirPods Pro 2nd Gen",
-      price: 4490000,
-      originalPrice: 6990000,
-      image: "/placeholder.svg?height=200&width=200",
-      rating: 4.6,
-      sold: 2341,
-      discount: 36,
-      flashSale: true,
-    },
-    {
-      id: 6,
-      name: "Apple Watch Series 9",
-      price: 6990000,
-      originalPrice: 10990000,
-      image: "/placeholder.svg?height=200&width=200",
-      rating: 4.7,
-      sold: 1567,
-      discount: 36,
-      flashSale: true,
-    },
-  ]
+  });
 
   // Handle responsive items per view
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerView(2)
-      } else if (window.innerWidth < 768) {
-        setItemsPerView(3)
-      } else if (window.innerWidth < 1024) {
-        setItemsPerView(4)
-      } else if (window.innerWidth < 1280) {
-        setItemsPerView(5)
-      } else {
-        setItemsPerView(6)
-      }
-    }
+      if (window.innerWidth < 640) setItemsPerView(2);
+      else if (window.innerWidth < 768) setItemsPerView(3);
+      else if (window.innerWidth < 1024) setItemsPerView(4);
+      else if (window.innerWidth < 1280) setItemsPerView(5);
+      else setItemsPerView(6);
+    };
 
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 }
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 }
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 }
-        }
-        return prev
-      })
-    }, 1000)
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        else if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        else if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        return prev;
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   // Auto-slide
   useEffect(() => {
     const interval = setInterval(() => {
-      nextSlide()
-    }, 5000)
+      nextSlide();
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [currentIndex, itemsPerView])
+    return () => clearInterval(interval);
+  }, [currentIndex, itemsPerView]);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + itemsPerView >= flashSaleProducts.length ? 0 : prevIndex + 1))
-  }
+    setCurrentIndex((prevIndex) =>
+      prevIndex + itemsPerView >= (products?.length || 0) ? 0 : prevIndex + 1
+    );
+  };
 
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? Math.max(0, flashSaleProducts.length - itemsPerView) : prevIndex - 1,
-    )
-  }
+      prevIndex === 0 ? Math.max(0, (products?.length || 0) - itemsPerView) : prevIndex - 1
+    );
+  };
 
   const goToSlide = (index) => {
-    setCurrentIndex(index * itemsPerView)
-  }
+    setCurrentIndex(index * itemsPerView);
+  };
 
-  const totalSlides = Math.ceil(flashSaleProducts.length / itemsPerView)
+  const totalSlides = products ? Math.ceil(products.length / itemsPerView) : 0;
 
   return (
     <div className="flash-sale-carousel">
@@ -168,24 +89,32 @@ const FlashSaleCarousel = () => {
           className="carousel-track"
           style={{
             transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-            width: `${(flashSaleProducts.length / itemsPerView) * 100}%`,
+            width: `${(products?.length || 0) / itemsPerView * 100}%`,
           }}
         >
-          {flashSaleProducts.map((product) => (
-            <div key={product.id} className="carousel-item" style={{ width: `${100 / flashSaleProducts.length}%` }}>
-              <ProductCard product={product} />
-            </div>
-          ))}
+          {products?.length > 0 ? (
+            products.map((product, index) => (
+              <div key={product.id || product._id || index} className="carousel-item" style={{ width: `${100 / (products.length || 1)}%` }}>
+                <RenderProduct product={product} />
+              </div>
+            ))
+          ) : (
+            <p style={{ color: "#ff4444", textAlign: "center" }}>Không có sản phẩm flash sale</p>
+          )}
         </div>
 
         {/* Navigation Buttons */}
-        <button className="carousel-btn carousel-btn-prev" onClick={prevSlide} disabled={currentIndex === 0}>
+        <button
+          className="carousel-btn carousel-btn-prev"
+          onClick={prevSlide}
+          disabled={currentIndex === 0 || !products?.length}
+        >
           <i className="fas fa-chevron-left"></i>
         </button>
         <button
           className="carousel-btn carousel-btn-next"
           onClick={nextSlide}
-          disabled={currentIndex + itemsPerView >= flashSaleProducts.length}
+          disabled={currentIndex + itemsPerView >= (products?.length || 0)}
         >
           <i className="fas fa-chevron-right"></i>
         </button>
@@ -198,11 +127,12 @@ const FlashSaleCarousel = () => {
             key={index}
             className={`carousel-dot ${Math.floor(currentIndex / itemsPerView) === index ? "active" : ""}`}
             onClick={() => goToSlide(index)}
+            disabled={!products?.length}
           />
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FlashSaleCarousel
+export default FlashSaleCarousel;
