@@ -13,6 +13,42 @@ const USERS = [
     status: "active",
     avatarUrl: "",
   },
+  {
+    id: 2,
+    username: "user2",
+    email: "user2@email.com",
+    phone: "0911222333",
+    address: "Hà Nội",
+    status: "banned",
+    avatarUrl: "",
+  },
+  {
+    id: 3,
+    username: "user3",
+    email: "user3@email.com",
+    phone: "0909090909",
+    address: "Đà Nẵng",
+    status: "pending",
+    avatarUrl: "",
+  },
+  {
+    id: 4,
+    username: "user4",
+    email: "user4@email.com",
+    phone: "0933444555",
+    address: "Cần Thơ",
+    status: "active",
+    avatarUrl: "",
+  },
+  {
+    id: 5,
+    username: "user5",
+    email: "user5@email.com",
+    phone: "0977666888",
+    address: "Hải Phòng",
+    status: "reported",
+    avatarUrl: "",
+  },
   // ... thêm dữ liệu mẫu
 ];
 
