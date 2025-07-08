@@ -8,7 +8,7 @@ function SidebarNav() {
       <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
         <li style={{ marginBottom: '1rem' }}>
           <NavLink to="/Admin/" end style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-            Dashboard
+            Danh mục quản lý
           </NavLink>
         </li>
         <li style={{ marginBottom: '1rem' }}>
@@ -16,18 +16,18 @@ function SidebarNav() {
             style={{ cursor: 'pointer', fontWeight: openUserMenu ? 'bold' : 'normal', color: openUserMenu ? '#007bff' : '#333' }}
             onClick={() => setOpenUserMenu((prev) => !prev)}
           >
-            Manage Users {openUserMenu ? '▲' : '▼'}
+            Người dùng {openUserMenu ? '▲' : '▼'}
           </div>
           {openUserMenu && (
             <ul style={{ listStyle: 'none', paddingLeft: 16, marginTop: 8 }}>
               <li style={{ marginBottom: 6 }}>
-                <NavLink to="/Admin/ManageUser" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                  Xem thành viên
+                <NavLink to="/Admin/ManageUser/User" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
+                  Thành viên
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/Admin/ManageUser/reported" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                  Thành viên bị báo cáo
+                  Bị báo cáo
                 </NavLink>
               </li>
             </ul>
@@ -35,12 +35,12 @@ function SidebarNav() {
         </li>
         <li style={{ marginBottom: '1rem' }}>
           <NavLink to="/Admin/ManageSeller" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-            Manage Sellers
+            Người Bán
           </NavLink>
         </li>
         <li style={{ marginBottom: '1rem' }}>
           <NavLink to="/Admin/Items" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-            Manage Items
+            Sản phẩm
           </NavLink>
         </li>
       </ul>
