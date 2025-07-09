@@ -1,124 +1,91 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import ProductCard from './Component/ProductCard/ProductCard';
-import './Flash_sale.css'; 
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx"; // Import RenderProduct
+import "./Flash_sale.css";
 
 const FlashSale = () => {
   const [timeLeft, setTimeLeft] = useState({
     hours: 12,
     minutes: 34,
     seconds: 56,
-  })
+  });
+  const [flashSaleProducts, setFlashSaleProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const flashSaleProducts = [
-    {
-      id: 1,
-      name: "Áo thun nam Uniqlo cotton cao cấp",
-      price: 199000,
-      originalPrice: 350000,
-      image: "/images/uniqlo.jpg",
-      rating: 4.6,
-      sold: 2345,
-      discount: 43,
-      flashSale: true,
-    },
-    {
-      id: 2,
-      name: "Giày sneaker nữ thời trang 2025",
-      price: 450000,
-      originalPrice: 750000,
-      image: "/images/sneaker.jpg",
-      rating: 4.7,
-      sold: 1567,
-      discount: 40,
-      flashSale: true,
-    },
-    {
-      id: 3,
-      name: "Nồi chiên không dầu 5L Xiaomi",
-      price: 1290000,
-      originalPrice: 1990000,
-      image: "/images/ChienKhongDau.jpg",
-      rating: 4.8,
-      sold: 890,
-      discount: 35,
-      flashSale: true,
-    },
-    {
-      id: 4,
-      name: "Son môi L'Oréal Paris Matte",
-      price: 150000,
-      originalPrice: 250000,
-      image: "/images/SonMoi.jpg",
-      rating: 4.5,
-      sold: 3456,
-      discount: 40,
-      flashSale: true,
-    },
-    {
-      id: 5,
-      name: "Quần jeans nữ ống suông",
-      price: 299000,
-      originalPrice: 500000,
-      image: "/images/jeannu.jpg",
-      rating: 4.6,
-      sold: 1789,
-      discount: 40,
-      flashSale: true,
-    },
-    {
-      id: 6,
-      name: "Máy xay sinh tố Philips 2L",
-      price: 890000,
-      originalPrice: 1290000,
-      image: "/images/xaysinhto.jpg",
-      rating: 4.7,
-      sold: 1234,
-      discount: 31,
-      flashSale: true,
-    },
-    {
-      id: 7,
-      name: "Túi xách thời trang da cao cấp",
-      price: 599000,
-      originalPrice: 999000,
-      image: "/images/da.jpg",
-      rating: 4.8,
-      sold: 987,
-      discount: 40,
-      flashSale: true,
-    },
-    {
-      id: 8,
-      name: "Kem dưỡng da Innisfree 50ml",
-      price: 250000,
-      originalPrice: 400000,
-      image: "/images/kem.jpg",
-      rating: 4.6,
-      sold: 2341,
-      discount: 37,
-      flashSale: true,
-    },
-  ]
-
-  // Countdown timer
+  // Timer effect
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 }
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 }
-        } else if (prev.hours > 0) {
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 }
+        let { hours, minutes, seconds } = prev;
+        if (seconds > 0) {
+          seconds -= 1;
+        } else if (minutes > 0) {
+          minutes -= 1;
+          seconds = 59;
+        } else if (hours > 0) {
+          hours -= 1;
+          minutes = 59;
+          seconds = 59;
+        } else {
+          return { hours: 12, minutes: 34, seconds: 56 }; // Reset timer
         }
-        return prev
-      })
-    }, 1000)
+        return { hours, minutes, seconds };
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
+
+  // Fetch data effect
+  useEffect(() => {
+    let retries = 0;
+    const maxRetries = 3;
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get("http://localhost:8080/api/products/flash-sale", {
+          timeout: 5000,
+        });
+        console.log("Flash Sale API response:", response.data);
+        const products = response.data?.data?.products || [];
+        if (products.length === 0) {
+          console.warn("No flash sale products from API");
+          return;
+        }
+        setFlashSaleProducts(
+          products.map((product, index) => ({
+            id: product._id || `fallback-${index}`,
+            name: product.name || "Unknown Product",
+            price: product.price?.sale || product.price?.original || 0,
+            originalPrice: product.price?.original || 0,
+            image: product.images?.[0]?.url || "/images/default-product.jpg",
+            rating: product.rating?.average || 0,
+            sold: product.sold || 0,
+            discount: product.price?.original && product.price?.sale
+              ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+              : 0,
+            flashSale: product.isFlashSale || false,
+          }))
+        );
+      } catch (err) {
+        retries++;
+        console.error(`Fetch error (attempt ${retries}/${maxRetries}):`, err.message, err.response?.status, err.response?.statusText);
+        if (retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * retries));
+          await fetchData();
+        } else {
+          console.error("Max retries reached, no data available");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="flash-sale-page">
@@ -156,9 +123,15 @@ const FlashSale = () => {
         {/* Flash Sale Products */}
         <div className="products-section">
           <div className="products-grid">
-            {flashSaleProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading ? (
+              <p>Đang tải sản phẩm...</p>
+            ) : flashSaleProducts.length > 0 ? (
+              flashSaleProducts.map((product, index) => (
+                <RenderProduct key={product.id || index} product={product} />
+              ))
+            ) : (
+              <p>Không có sản phẩm flash sale.</p>
+            )}
           </div>
 
           {/* Load More */}
@@ -171,7 +144,7 @@ const FlashSale = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FlashSale
+export default FlashSale;
