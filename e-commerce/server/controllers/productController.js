@@ -8,25 +8,44 @@ export const getAllProducts = async (req, res) => {
         const { page = 1, limit = 12, ...query } = req.query;
         const filter = { isActive: true };
 
-        if (query.category) filter.categoryID = query.category;
-        if (query.brand) filter.brand = new RegExp(query.brand, "i");
+        console.log("Initial filter:", JSON.stringify(filter)); // Debug filter ban đầu
+        if (query.category) {
+            filter.categoryID = query.category;
+            console.log("Added category filter:", filter.categoryID);
+        }
+        if (query.brand) {
+            filter.brand = new RegExp(query.brand, "i");
+            console.log("Added brand filter:", filter.brand);
+        }
         if (query.minPrice || query.maxPrice) {
             filter.$or = [
                 { "price.sale": { ...(query.minPrice && { $gte: Number(query.minPrice) }), ...(query.maxPrice && { $lte: Number(query.maxPrice) }) } },
                 { "price.original": { ...(query.minPrice && { $gte: Number(query.minPrice) }), ...(query.maxPrice && { $lte: Number(query.maxPrice) }) }, "price.sale": { $exists: false } },
             ];
+            console.log("Added price filter:", filter.$or);
         }
-        if (query.rating) filter["rating.average"] = { $gte: Number(query.rating) };
-        if (query.search) filter.$text = { $search: query.search };
+        if (query.rating) {
+            filter["rating.average"] = { $gte: Number(query.rating) };
+            console.log("Added rating filter:", filter["rating.average"]);
+        }
+        if (query.search) {
+            filter.$text = { $search: query.search };
+            console.log("Added search filter:", filter.$text);
+        }
         if (query.isFlashSale === "true") {
             filter.isFlashSale = true;
             filter.flashSaleEndDate = { $gt: new Date() };
+            console.log("Added flashSale filter:", filter.isFlashSale, filter.flashSaleEndDate);
         }
-        if (query.isFeatured === "true") filter.isFeatured = true;
+        if (query.isFeatured === "true") {
+            filter.isFeatured = true;
+            console.log("Added featured filter:", filter.isFeatured);
+        }
 
         const sort = {};
         if (query.search) sort.score = { $meta: "textScore" };
         sort[query.sortBy || "createdAt"] = query.sortOrder === "desc" ? -1 : 1;
+        console.log("Sort criteria:", sort);
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
@@ -35,7 +54,9 @@ export const getAllProducts = async (req, res) => {
             .skip((Number(page) - 1) * Number(limit))
             .lean();
 
+        console.log("Found products before mapping:", products); // Debug sản phẩm trước khi mapping
         const total = await Product.countDocuments(filter);
+        console.log("Total products found:", total);
 
         console.log("Responding with products:", products);
         res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -63,7 +84,7 @@ export const getAllProducts = async (req, res) => {
     }
 };
 
-// Thêm các hàm khác (getFlashSaleProducts, getTopProducts) tương tự với export
+// Giữ nguyên các hàm khác (getFlashSaleProducts, getTopProducts, getProductById)
 export const getFlashSaleProducts = async (req, res) => {
     try {
         console.log("Request to /api/products/flash-sale received:", req.query);
@@ -165,19 +186,19 @@ export const getTopProducts = async (req, res) => {
 };
 
 export const getProductById = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id)
-      .populate("categoryID", "categoryName slug")
-      .lean();
-    if (!product) {
-      return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
+    try {
+        const product = await Product.findById(req.params.id)
+            .populate("categoryID", "categoryName slug")
+            .lean();
+        if (!product) {
+            return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
+        }
+        res.json({
+            success: true,
+            data: { product },
+        });
+    } catch (error) {
+        console.error("Error in getProductById:", error.message);
+        res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
-    res.json({
-      success: true,
-      data: { product },
-    });
-  } catch (error) {
-    console.error("Error in getProductById:", error.message);
-    res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
-  }
 };

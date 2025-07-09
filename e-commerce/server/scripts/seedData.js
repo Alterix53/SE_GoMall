@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path"; // Thêm module path
-import { fileURLToPath } from "url"; // Thêm module url
+import path from "path"; // Giữ module path
+import { fileURLToPath } from "url"; // Giữ module url
 import Category from "../models/Category.js";
 import Product from "../models/Product.js";
 import Seller from "../models/Seller.js";
@@ -10,16 +9,13 @@ import Seller from "../models/Seller.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cấu hình dotenv với đường dẫn tuyệt đối
-dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+// Định nghĩa trực tiếp URI với tên database khớp (GoMall)
+const MONGODB_URI = "mongodb://localhost:27017/GoMall"; // Thay đổi thành GoMall
 
 const connectDB = async () => {
     try {
-        console.log("Attempting to connect with MONGODB_URI:", process.env.MONGODB_URI);
-        if (!process.env.MONGODB_URI) {
-            throw new Error("MONGODB_URI is not defined in .env");
-        }
-        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("Attempting to connect with MONGODB_URI:", MONGODB_URI);
+        await mongoose.connect(MONGODB_URI); // Loại bỏ useNewUrlParser và useUnifiedTopology
         console.log("MongoDB Connected for seeding");
     } catch (error) {
         console.error("Database connection failed:", error);
@@ -86,8 +82,35 @@ const seedProducts = async (createdCategories, createdSellers) => {
             views: 15678,
             isActive: true,
             isFeatured: true,
+            isFlashSale: true,
+            flashSaleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 giờ từ bây giờ
         },
-        // ... (các sản phẩm khác)
+        {
+            name: "Samsung Galaxy S24 Ultra",
+            slug: "samsung-galaxy-s24-ultra",
+            description: "Samsung Galaxy S24 Ultra với camera 200MP và bút S Pen",
+            shortDescription: "Galaxy S24 Ultra - Đỉnh cao Android",
+            sku: "S24U",
+            brand: "Samsung",
+            categoryID: createdCategories.find((c) => c.slug === "dien-thoai")._id,
+            sellerID: createdSellers[0]._id,
+            images: [{ url: "/images/samsung-s24.jpg", alt: "Samsung Galaxy S24 Ultra", isPrimary: true }],
+            price: { original: 31990000, sale: 25990000 },
+            inventory: { quantity: 50, lowStockThreshold: 5 },
+            specifications: [
+                { name: "Màn hình", value: "6.8 inch Dynamic AMOLED 2X" },
+                { name: "Chip", value: "Snapdragon 8 Gen 3" },
+                { name: "Camera", value: "200MP + 12MP + 10MP" },
+                { name: "Pin", value: "5000 mAh" },
+            ],
+            tags: ["samsung", "smartphone", "premium"],
+            rating: { average: 4.7, count: 890 },
+            sold: 3456,
+            views: 12345,
+            isActive: true,
+            isFlashSale: true,
+            flashSaleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
     ];
 
     await Product.deleteMany({});

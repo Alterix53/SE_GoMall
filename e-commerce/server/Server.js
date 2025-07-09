@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -8,12 +7,9 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
-
-if (!process.env.MONGODB_URI) {
-    console.error("MONGODB_URI is not defined in .env file. Please create .env from .env.example.");
-    process.exit(1);
-}
+// Định nghĩa trực tiếp URI và PORT với giá trị mặc định
+const MONGODB_URI = "mongodb://localhost:27017/GoMall"; // Đảm bảo khớp với seedData.js
+const PORT = 8080;
 
 const app = express();
 
@@ -32,7 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const startServer = async () => {
     try {
-        await connectDB();
+        await connectDB(MONGODB_URI);
         console.log("MongoDB Connected");
 
         const productRoutes = await import("./routes/productRoutes.js");
@@ -57,7 +53,6 @@ const startServer = async () => {
             });
         });
 
-        const PORT = process.env.PORT || 8080; // Sử dụng cổng an toàn
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });
