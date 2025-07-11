@@ -8,7 +8,7 @@ import AdminAvatarModal from './AdminAvatarModal';
 import NotificationButton from './NotificationButton';
 
 function DashboardOverview() {
-    // TODO: thay bằng hook fetch dữ liệu thực tế
+    // TODO: replace with real data fetching hook
     const stats = {
         users: 10250,
         orders: 2350,
@@ -37,14 +37,9 @@ function DashboardOverview() {
         <div className="container-fluid">
           <div className="row">
             <div className="col-12 d-flex justify-content-between align-item-center">
-              {/*Phần bên trái ghi dashboard */}
               <h3 className="mb-0">Dashboard</h3>
-
-              {/*bên phải*/}
               <div className="d-flex align-items-center">
-                {/*nút chuông*/}
                 <NotificationButton />
-                {/*Ảnh admin*/}
                 <AdminAvatarModal avatarUrl="https://i.pravatar.cc/40?img=3" />
               </div>
             </div>
