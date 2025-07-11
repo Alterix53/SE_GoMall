@@ -2,6 +2,10 @@ import React from "react";
 import SummaryCard from './SummaryCard';
 import StatsChart from './StatsChart';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
+import RevenueDistributionTable from './RevenueDistributionTable';
+import TrendingProductsTable from './TrendingProductsTable';
+import AdminAvatarModal from './AdminAvatarModal';
+import NotificationButton from './NotificationButton';
 
 function DashboardOverview() {
     // TODO: thay bằng hook fetch dữ liệu thực tế
@@ -12,12 +16,22 @@ function DashboardOverview() {
         support: 50
     };
 
-    // Dữ liệu nguồn truy cập
-    const trafficData = [
-      { name: 'Trực tiếp', value: 600 },
-      { name: 'Mạng xã hội', value: 400 }
+    // Revenue distribution by category
+    const revenueData = [
+      { name: 'Fashion', value: 350000 },
+      { name: 'Electronics', value: 280000 },
+      { name: 'Home & Garden', value: 120000 },
+      { name: 'Others', value: 62000 }
     ];
-    const COLORS = ['#0d6efd', '#adb5bd'];
+    const COLORS = ['#0d6efd', '#28a745', '#ffc107', '#dc3545'];
+
+    // Trending products data
+    const trendingProducts = [
+      { id: 1, name: "Men's T-Shirt", unitsSold: 320, revenue: "$64,000" },
+      { id: 2, name: "Sneakers", unitsSold: 210, revenue: "$42,000" },
+      { id: 3, name: "Fashion Watch", unitsSold: 150, revenue: "$30,000" },
+      { id: 4, name: "Bluetooth Headphones", unitsSold: 180, revenue: "$27,000" },
+    ];
 
     return (
         <div className="container-fluid">
@@ -29,47 +43,23 @@ function DashboardOverview() {
               {/*bên phải*/}
               <div className="d-flex align-items-center">
                 {/*nút chuông*/}
-                <button className="btn btn-light me-3">
-                  <i className="bi bi-bell"></i>
-                </button>
+                <NotificationButton />
                 {/*Ảnh admin*/}
-                <img
-                  src="https://i.pravatar.cc/40?img=3" // hoặc đường dẫn ảnh admin thật
-                  alt="Admin Avatar"
-                  className="rounded-circle"
-                  style={{ width: 40, height: 40, cursor: 'pointer', objectFit: 'cover' }}
-                  data-bs-toggle="modal"
-                  data-bs-target="#adminModal"
-                />
-                {/* Modal giữ nguyên */}
-                <div className="modal fade" id="adminModal" tabIndex="-1" aria-labelledby="adminModalLabel" aria-hidden="true">
-                  <div className="modal-dialog modal-dialog-end">
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title" id="adminModalLabel">Account</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                      </div>
-                      <div className="modal-body">
-                        <button className="btn btn-outline-danger w-100">Log out</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <AdminAvatarModal avatarUrl="https://i.pravatar.cc/40?img=3" />
               </div>
-
             </div>
           </div>
           <div className="row mb-4">
-            <SummaryCard title="Người dùng" value={stats.users} icon={<i className="bi bi-person fs-2"/>}/>
-            <SummaryCard title="Đơn hàng" value={stats.orders} icon={<i className="bi bi-bag fs-2"/>}/>
-            <SummaryCard title="Doanh thu" value={stats.revenue.toLocaleString() + ' đ'} icon={<i className="bi bi-cash-stack fs-2"/>}/>
-            <SummaryCard title="Hỗ trợ" value={stats.support} icon={<i className="bi bi-chat-dots fs-2"/>}/>
+            <SummaryCard title="Users" value={stats.users} icon={<i className="bi bi-person fs-2"/>}/>
+            <SummaryCard title="Orders" value={stats.orders} icon={<i className="bi bi-bag fs-2"/>}/>
+            <SummaryCard title="Revenue" value={'$' + stats.revenue.toLocaleString()} icon={<i className="bi bi-cash-stack fs-2"/>}/>
+            <SummaryCard title="Support" value={stats.support} icon={<i className="bi bi-chat-dots fs-2"/>}/>
           </div>
           <div className="row g-4 mb-4">
             <div className="col-lg-8">
               <div className="card shadow-sm h-100">
                 <div className="card-body">
-                  <h5 className="mb-3">Thống kê doanh thu</h5>
+                  <h5 className="mb-3">Revenue Statistics</h5>
                   <StatsChart
                     data={[
                       { date: 'Jan', value: 50000 },
@@ -89,28 +79,28 @@ function DashboardOverview() {
             <div className="col-lg-4">
               <div className="card shadow-sm h-100">
                 <div className="card-body">
-                  <h5 className="mb-3">Nguồn truy cập</h5>
-                  <PieChart width={220} height={220}>
-                    <Pie
-                      data={trafficData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      paddingAngle={3}
-                      dataKey="value"
-                      label
-                    >
-                      {trafficData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </PieChart>
-                  <div className="d-flex justify-content-center mt-2">
-                    <span className="me-3"><span style={{display:'inline-block',width:12,height:12,background:'#0d6efd',borderRadius:2,marginRight:4}}></span>Trực tiếp</span>
-                    <span><span style={{display:'inline-block',width:12,height:12,background:'#adb5bd',borderRadius:2,marginRight:4}}></span>Mạng xã hội</span>
+                  <h5 className="mb-3">Revenue Distribution</h5>
+                  <div className="d-flex justify-content-center">
+                    <PieChart width={220} height={220}>
+                      <Pie
+                        data={revenueData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        paddingAngle={3}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {revenueData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </div>
+                  <div className="mt-3">
+                    <RevenueDistributionTable data={revenueData} colors={COLORS} />
                   </div>
                 </div>
               </div>
@@ -120,44 +110,9 @@ function DashboardOverview() {
             <div className="col-12">
               <div className="card shadow-sm">
                 <div className="card-body">
-                  <h5 className="mb-3">Các sản phẩm trend</h5>
+                  <h5 className="mb-3">Trending Products</h5>
                   <div className="table-responsive">
-                    <table className="table table-bordered align-middle mb-0">
-                      <thead className="table-light">
-                        <tr>
-                          <th scope="col">ID</th>
-                          <th scope="col">Tên sản phẩm</th>
-                          <th scope="col">Số lượng bán</th>
-                          <th scope="col">Doanh thu</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>1</td>
-                          <td>Áo thun nam</td>
-                          <td>320</td>
-                          <td>64,000,000 đ</td>
-                        </tr>
-                        <tr>
-                          <td>2</td>
-                          <td>Giày sneaker</td>
-                          <td>210</td>
-                          <td>42,000,000 đ</td>
-                        </tr>
-                        <tr>
-                          <td>3</td>
-                          <td>Đồng hồ thời trang</td>
-                          <td>150</td>
-                          <td>30,000,000 đ</td>
-                        </tr>
-                        <tr>
-                          <td>4</td>
-                          <td>Tai nghe bluetooth</td>
-                          <td>180</td>
-                          <td>27,000,000 đ</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <TrendingProductsTable products={trendingProducts} />
                   </div>
                 </div>
               </div>
