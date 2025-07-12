@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const FILTERS = [
+  { key: "all", label: "Tất cả" },
   { key: "new", label: "Sản phẩm mới lên sàn" },
   { key: "hot", label: "Sản phẩm hot" },
   { key: "reported", label: "Sản phẩm bị báo cáo" },
@@ -32,47 +33,77 @@ const PRODUCTS = [
 ];
 
 function ItemsPage() {
-  const [activeFilter, setActiveFilter] = useState(FILTERS[0].key);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState(FILTERS[0].key); // đổi danh mục
+  const [currentPage, setCurrentPage] = useState(1);  // trang hiện tại
+  const [searchTerm, setSearchTerm] = useState("");   // thanh tìm kiếm
   const itemsPerPage = 12;
 
-  const filteredProducts = PRODUCTS.filter((p) => p.type === activeFilter);
+  // Reset về trang 1 khi đổi filter hoặc search term
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter, searchTerm]);
+
+  // Nếu không có sản phẩm nào trên toàn bộ web
+  if (PRODUCTS.length === 0) {
+    return (
+      <div className="container-fluid">
+        <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý sản phẩm</h2>
+        <div className="alert alert-warning text-center mt-5">Chưa có sản phẩm</div>
+      </div>
+    );
+  }
+
+  // Lọc theo filter
+  let filteredProducts =
+    activeFilter === "all"
+      ? PRODUCTS
+      : PRODUCTS.filter((p) => p.type === activeFilter);
+
+  // Lọc theo search term
+  if (searchTerm.trim() !== "") {
+    filteredProducts = filteredProducts.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+
+  // chia trang để hiển thị (nếu nhiều hơn 12 sản phẩm)
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  // hàm để chuyển trang
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // Reset về trang 1 khi đổi filter
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [activeFilter]);
-
   return (
     <div className="container-fluid">
+      <h2 className="row text-center" style={{ minWidth: 180 }}> Quản lý sản phẩm</h2>
       <div className="row">
-        {/* Sidebar filter */}
-        <div className="col-md-3 col-lg-2 border-end bg-light py-4">
-          <ul className="nav nav-pills flex-column">
+        {/* Filter buttons và thanh tìm kiếm cùng hàng */}
+        <div className="col-12 py-4">
+          <div className="d-flex gap-2 mb-3 align-items-center">
             {FILTERS.map((filter) => (
-              <li className="nav-item mb-2" key={filter.key}>
-                <button
-                  className={`nav-link ${activeFilter === filter.key ? "active" : ""}`}
-                  onClick={() => setActiveFilter(filter.key)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {filter.label}
-                </button>
-              </li>
+              <button
+                key={filter.key}
+                className={`btn btn${activeFilter === filter.key ? "-primary" : "-outline-primary"}`}
+                onClick={() => setActiveFilter(filter.key)}
+                style={{ minWidth: 120 }}
+              >
+                {filter.label}
+              </button>
             ))}
-          </ul>
-        </div>
-        {/* Product list */}
-        <div className="col-md-9 col-lg-10 py-4">
+            <input
+              type="text"
+              className="form-control ms-3"
+              style={{ maxWidth: 250 }}
+              placeholder="Tìm kiếm sản phẩm..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
           <h2 className="mb-4">{FILTERS.find(f => f.key === activeFilter)?.label}</h2>
           <ul className="list-group">
             {paginatedProducts.length === 0 && (

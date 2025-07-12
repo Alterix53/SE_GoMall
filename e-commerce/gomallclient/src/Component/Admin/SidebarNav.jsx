@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 
+// thanh tab bên trái điều hướng các danh mục cần quản lý
 function SidebarNav() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
   return (
@@ -22,12 +23,12 @@ function SidebarNav() {
             <ul style={{ listStyle: 'none', paddingLeft: 16, marginTop: 8 }}>
               <li style={{ marginBottom: 6 }}>
                 <NavLink to="/Admin/ManageUser" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                  Xem thành viên
+                  Users
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/Admin/ManageUser/reported" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                  Thành viên bị báo cáo
+                  Reported users
                 </NavLink>
               </li>
             </ul>

@@ -1,137 +1,96 @@
-  "use client"
+"use client";
 
-import { useState } from "react"
-import ProductCard from './Component/ProductCard/ProductCard';
-import "./TopProduct.css"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx"; // Import RenderProduct
+import "./TopProduct.css";
 
 const TopProduct = () => {
-  const [activeTab, setActiveTab] = useState("bestseller")
-
-  const topProducts = [
-    {
-      id: 1,
-      name: "Áo sơ mi nam cao cấp Uniqlo",
-      price: 399000,
-      originalPrice: 650000,
-      image: "/images/uniqlo.jpg",
-      rating: 4.7,
-      sold: 3456,
-      discount: 39,
-      rank: 1,
-    },
-    {
-      id: 2,
-      name: "Giày thể thao nữ Adidas",
-      price: 899000,
-      originalPrice: 1290000,
-      image: "/images/adidas.jpg",
-      rating: 4.8,
-      sold: 2789,
-      discount: 30,
-      rank: 2,
-    },
-    {
-      id: 3,
-      name: "Nồi cơm điện tử 1.8L Panasonic",
-      price: 1290000,
-      originalPrice: 1790000,
-      image: "/images/noicom.jpg",
-      rating: 4.6,
-      sold: 1567,
-      discount: 28,
-      rank: 3,
-    },
-    {
-      id: 4,
-      name: "Son kem lì Maybelline",
-      price: 180000,
-      originalPrice: 300000,
-      image: "/images/sonkem.jpg",
-      rating: 4.5,
-      sold: 4567,
-      discount: 40,
-      rank: 4,
-    },
-    {
-      id: 5,
-      name: "Quần jeans nam ống suông",
-      price: 349000,
-      originalPrice: 550000,
-      image: "/images/jeans.jpg",
-      rating: 4.7,
-      sold: 2341,
-      discount: 36,
-      rank: 5,
-    },
-    {
-      id: 6,
-      name: "Máy hút bụi cầm tay Xiaomi",
-      price: 990000,
-      originalPrice: 1390000,
-      image: "/images/mayhutbui.jpg",
-      rating: 4.8,
-      sold: 1890,
-      discount: 29,
-      rank: 6,
-    },
-  ]
-
-  const trendingProducts = [
-    {
-      id: 7,
-      name: "Túi xách thời trang Gucci",
-      price: 1290000,
-      originalPrice: 1790000,
-      image: "/images/Gucci.jpg",
-      rating: 4.9,
-      sold: 1234,
-      discount: 28,
-      trending: true,
-    },
-    {
-      id: 8,
-      name: "Kem chống nắng Anessa 50ml",
-      price: 350000,
-      originalPrice: 500000,
-      image: "/images/kemchongnang.jpg",
-      rating: 4.6,
-      sold: 2678,
-      discount: 30,
-      trending: true,
-    },
-  ]
+  const [activeTab, setActiveTab] = useState("bestseller");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const tabs = [
     { id: "bestseller", label: "Bán Chạy Nhất", icon: "fas fa-crown" },
     { id: "trending", label: "Xu Hướng", icon: "fas fa-trending-up" },
     { id: "hot", label: "Sản Phẩm Hot", icon: "fas fa-fire" },
-  ]
+  ];
+
+  // Fetch data effect
+  useEffect(() => {
+    let retries = 0;
+    const maxRetries = 3;
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:8080/api/products/top-products?type=${activeTab}`, {
+          timeout: 5000,
+        });
+        console.log("Top Products API response:", response.data);
+        const products = response.data?.data?.products || [];
+        if (products.length === 0) {
+          console.warn("No top products from API");
+          return;
+        }
+        setProducts(
+          products.map((product, index) => ({
+            id: product._id || `fallback-${index}`,
+            name: product.name || "Unknown Product",
+            price: product.price?.sale || product.price?.original || 0,
+            originalPrice: product.price?.original || 0,
+            image: product.images?.[0]?.url || "/images/default-product.jpg",
+            rating: product.rating?.average || 0,
+            sold: product.sold || 0,
+            discount: product.price?.original && product.price?.sale
+              ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+              : 0,
+            rank: index + 1,
+            trending: product.trending || false,
+          }))
+        );
+      } catch (err) {
+        retries++;
+        console.error(`Fetch error (attempt ${retries}/${maxRetries}):`, err.message, err.response?.status, err.response?.statusText);
+        if (retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 2000 * retries));
+          await fetchData();
+        } else {
+          console.error("Max retries reached, no data available");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [activeTab]);
 
   const getProductsByTab = () => {
     switch (activeTab) {
       case "bestseller":
-        return topProducts
+        return products;
       case "trending":
-        return [...trendingProducts, ...topProducts.slice(0, 4)]
+        return products.filter((p) => p.trending === true || p.sold > 2000);
       case "hot":
-        return topProducts.slice().reverse()
+        return products.sort((a, b) => (b.discount || 0) - (a.discount || 0));
       default:
-        return topProducts
+        return products;
     }
-  }
+  };
 
   const getTabTitle = () => {
     switch (activeTab) {
       case "bestseller":
-        return { title: "Top Sản Phẩm Bán Chạy", badge: "TOP", color: "#ffc107" }
+        return { title: "Top Sản Phẩm Bán Chạy", badge: "TOP", color: "#ffc107" };
       case "trending":
-        return { title: "Sản Phẩm Xu Hướng", badge: "TRENDING", color: "#28a745" }
+        return { title: "Sản Phẩm Xu Hướng", badge: "TRENDING", color: "#28a745" };
       case "hot":
-        return { title: "Sản Phẩm Hot", badge: "HOT", color: "#dc3545" }
+        return { title: "Sản Phẩm Hot", badge: "HOT", color: "#dc3545" };
       default:
-        return { title: "Top Sản Phẩm Bán Chạy", badge: "TOP", color: "#ffc107" }
+        return { title: "Top Sản Phẩm Bán Chạy", badge: "TOP", color: "#ffc107" };
     }
-  }
+  };
 
   return (
     <div className="top-product-page">
@@ -178,19 +137,25 @@ const TopProduct = () => {
           </div>
 
           <div className="products-grid">
-            {getProductsByTab().map((product, index) => (
-              <div key={product.id} className="product-wrapper">
-                {activeTab === "bestseller" && product.rank && product.rank <= 3 && (
-                  <div className={`rank-badge rank-${product.rank}`}>#{product.rank}</div>
-                )}
-                <ProductCard product={product} />
-              </div>
-            ))}
+            {loading ? (
+              <p>Đang tải sản phẩm...</p>
+            ) : products.length > 0 ? (
+              getProductsByTab().map((product, index) => (
+                <div key={product.id || index} className="product-wrapper">
+                  {activeTab === "bestseller" && product.rank && product.rank <= 3 && (
+                    <div className={`rank-badge rank-${product.rank}`}>#{product.rank}</div>
+                  )}
+                  <RenderProduct product={product} />
+                </div>
+              ))
+            ) : (
+              <p>Không có sản phẩm để hiển thị.</p>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TopProduct
+export default TopProduct;

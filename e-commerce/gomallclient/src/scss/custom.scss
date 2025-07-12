@@ -1,15 +1,15 @@
 // === Override biến màu ===
-$primary: #1985a1;
-$secondary: #9d9d9d;
-$success: #69c779;
-$warning: #ffb347;
-$info: #74b9ff;
-$light: #ffffff;
-$dark: #2d3436;
+// $primary: #1985a1;
+// $secondary: #9d9d9d;
+// $success: #69c779;
+// $warning: #ffb347;
+// $info: #74b9ff;
+// $light: #ffffff;
+// $dark: #2d3436;
 
-$body-bg: #fdfdfd;
-$body-color: #212529;
-$link-color: $primary;
+// $body-bg: #fdfdfd;
+// $body-color: #212529;
+// $link-color: $primary;
 
 // === Import bootstrap gốc sau khi override ===
-@import "bootstrap/scss/bootstrap";
+@import "../../node_modules/bootstrap/scss/bootstrap";
