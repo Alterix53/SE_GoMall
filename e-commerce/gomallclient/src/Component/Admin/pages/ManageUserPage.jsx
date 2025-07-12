@@ -60,7 +60,7 @@ function ManageUserPage() {
       <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý thành viên</h2>
       <ul className="list-group">
         {USERS.length === 0 && (
-          <li className="list-group-item text-muted">Không có thành viên nào.</li>
+          <li className="list-group-item text-muted">No users are available.</li>
         )}
         {USERS.map((user) => (
           <UserSellerListItem

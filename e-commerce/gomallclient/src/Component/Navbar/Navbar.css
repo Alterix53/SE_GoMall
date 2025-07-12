@@ -114,10 +114,13 @@
   position: relative;
   transition: color 0.3s;
   cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
 }
 
 .nav-icon:hover {
   color: #ff6b35;
+  background-color: #fff5f2;
 }
 
 .nav-icon i {

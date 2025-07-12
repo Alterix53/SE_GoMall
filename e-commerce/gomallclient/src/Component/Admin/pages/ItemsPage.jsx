@@ -66,12 +66,14 @@ function ItemsPage() {
     );
   }
 
+  // chia trang để hiển thị (nếu nhiều hơn 12 sản phẩm)
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  // hàm để chuyển trang
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };

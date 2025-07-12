@@ -1,13 +1,24 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import UserAccountModal from "../UserAccountModal/UserAccountModal";
 import "./navbar.css";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [modalPosition, setModalPosition] = useState({});
   const location = useLocation();
+  const { isAuthenticated, getCurrentUser, logout } = useAuth();
 
   const isActive = (path) => {
     return location.pathname === path;
+  };
+
+  const handleLogout = () => {
+    logout();
+    // Có thể redirect về trang chủ sau khi đăng xuất
+    window.location.href = '/';
   };
 
   return (
@@ -67,20 +78,24 @@ const Navbar = () => {
                   />
                   <span>Giỏ hàng</span>
                 </div>
-                <div className="nav-icon dropdown">
+                <div 
+                  className="nav-icon" 
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setModalPosition({
+                      top: rect.bottom + 5,
+                      right: window.innerWidth - rect.right
+                    });
+                    setIsAccountModalOpen(true);
+                  }}
+                >
                   <img
                       src="/images/user.png"
                       alt="Tài khoản"
                       style={{ width: "20px", height: "20px" }}
                       onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
                   />
-                  <span>Tài khoản</span>
-                  <div className="dropdown-menu">
-                    <a href="#">Đăng nhập</a>
-                    <a href="#">Đăng ký</a>
-                    <a href="#">Tài khoản của tôi</a>
-                    <a href="#">Đơn hàng</a>
-                  </div>
+                  <span>{isAuthenticated() ? getCurrentUser()?.username || 'Tài khoản' : 'Tài khoản'}</span>
                 </div>
               </div>
 
@@ -188,6 +203,13 @@ const Navbar = () => {
               </div>
             </div>
         )}
+        
+        {/* User Account Modal */}
+        <UserAccountModal 
+          isOpen={isAccountModalOpen} 
+          onClose={() => setIsAccountModalOpen(false)}
+          position={modalPosition}
+        />
       </header>
   );
 };
