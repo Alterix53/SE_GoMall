@@ -1,5 +1,6 @@
-import React from 'react';
-import './Footer.css'; // Import the CSS file for styling
+import React from "react";
+import { Link } from "react-router-dom"; // Import Link
+import "./Footer.css";
 
 export default function Footer() {
   return (
@@ -17,19 +18,19 @@ export default function Footer() {
             <h6 className="fw-bold">Liên kết</h6>
             <ul className="list-unstyled">
               <li>
-                <a href="/about" className="text-decoration-none text-dark">
+                <Link to="/about" className="text-decoration-none text-dark">
                   Về chúng tôi
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/faq" className="text-decoration-none text-dark">
+                <Link to="/faq" className="text-decoration-none text-dark">
                   Câu hỏi thường gặp
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="text-decoration-none text-dark">
+                <Link to="/contact" className="text-decoration-none text-dark">
                   Liên hệ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -37,15 +38,15 @@ export default function Footer() {
           {/* Cột 3: Mạng xã hội */}
           <div className="col-md-4 mb-4">
             <h6 className="fw-bold">Theo dõi chúng tôi</h6>
-            <a href="#" className="text-dark me-3">
+            <a href="https://facebook.com" className="text-dark me-3">
               <i className="bi bi-facebook"></i> Facebook
             </a>
             <br />
-            <a href="#" className="text-dark me-3">
+            <a href="https://instagram.com" className="text-dark me-3">
               <i className="bi bi-instagram"></i> Instagram
             </a>
             <br />
-            <a href="#" className="text-dark">
+            <a href="https://twitter.com" className="text-dark">
               <i className="bi bi-twitter"></i> Twitter
             </a>
           </div>
