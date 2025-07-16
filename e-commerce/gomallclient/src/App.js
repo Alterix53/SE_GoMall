@@ -10,6 +10,7 @@ import Home from './Home';
 import FlashSale from './Flash_sale';
 import TopProduct from './TopProduct';
 
+<<<<<<< HEAD
 // Import các component Admin
 import SidebarNav from './Component/Admin/SidebarNav';
 import Breadcrumbs from './Component/Admin/Breadcrumbs';
@@ -32,6 +33,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function AdminLayout() {
+=======
+
+function App() {
+>>>>>>> Homepage_topP
   return (
     <div className="d-flex">
       <Navbar />
@@ -39,11 +44,18 @@ function AdminLayout() {
       <div className="flex-grow-1 p-3">
         <Breadcrumbs />
         <Routes>
+<<<<<<< HEAD
           <Route path="/" element={<DashboardPage />} />
           <Route path="ManageUser" element={<ManageUserPage />} />
           <Route path="ManageUser/User" element={<ManageUserPage />} />
           <Route path="ManageSeller" element={<ManageSellerPage />} />
           <Route path="Items" element={<ItemsPage />} />
+=======
+          <Route path="/" element={<Home />} />
+          <Route path="/flash-sale" element={<FlashSale />} />
+          <Route path="/top-products" element={<TopProduct />} />
+          
+>>>>>>> Homepage_topP
         </Routes>
       </div>
     </div>

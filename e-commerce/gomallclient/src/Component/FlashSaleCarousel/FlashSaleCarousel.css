@@ -4,12 +4,26 @@
   padding: 24px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-out;
+}
+
+.flash-sale-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* Khoảng cách giữa countdown và thông báo */
+  width: 100%;
+  min-height: 400px; /* Đảm bảo chiều cao đủ để căn giữa */
+  position: relative;
 }
 
 .countdown-timer {
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px; /* Điều chỉnh khoảng cách */
+  width: 100%;
+  max-width: 400px;
 }
 
 .timer-content {
@@ -21,6 +35,8 @@
   align-items: center;
   gap: 12px;
   box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+  text-align: center;
+  width: 100%;
 }
 
 .timer-label {
@@ -50,20 +66,66 @@
   font-size: 16px;
 }
 
+.carousel-wrapper {
+  width: 100%;
+  position: relative;
+  flex-grow: 1; /* Điền phần còn lại của chiều cao */
+}
+
 .carousel-container {
   position: relative;
   overflow: hidden;
   border-radius: 8px;
+  height: 100%; /* Đảm bảo chiếm toàn bộ chiều cao còn lại */
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
 }
 
 .carousel-item {
   flex-shrink: 0;
   padding: 0 8px;
+  height: 100%;
+}
+
+.no-products-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #ff4444;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: pulse 2s infinite;
+  padding: 20px;
+}
+
+.below-timer {
+  position: absolute;
+  top: 100px; /* Điều chỉnh để thẳng dưới countdown (tùy chiều cao timer) */
+  left: 50%;
+  transform: translateX(-50%); /* Căn giữa theo chiều ngang */
+  width: 300px; /* Giảm từ 450px xuống 300px để phù hợp với dòng chữ */
+  height: 150px; /* Chiều cao cố định */
+  z-index: 1;
+  transition: top 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 12px;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: 500;
 }
 
 .carousel-btn {
@@ -166,6 +228,17 @@
   .carousel-item {
     padding: 0 4px;
   }
+
+  .no-products-message {
+    font-size: 1.2rem;
+    height: 120px;
+  }
+
+  .below-timer {
+    top: 80px; /* Điều chỉnh cho màn hình nhỏ */
+    width: 70%;
+    height: 120px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -190,4 +263,27 @@
   .carousel-btn-next {
     right: 8px;
   }
+
+  .no-products-message {
+    font-size: 1rem;
+    height: 100px;
+  }
+
+  .below-timer {
+    top: 60px; /* Điều chỉnh cho màn hình rất nhỏ */
+    width: 80%;
+    height: 100px;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }

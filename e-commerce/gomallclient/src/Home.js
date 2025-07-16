@@ -217,7 +217,7 @@ const Home = () => {
               <h2 className="section-title flash-sale-title">⚡ FLASH SALE</h2>
               <span className="hot-badge">HOT</span>
             </div>
-            <Link to="/flash-sale" className="view-all-btn">
+            <Link to="/flash-sale" className="view-all-btn animated-link">
               Xem Tất Cả
             </Link>
           </div>
@@ -263,7 +263,7 @@ const Home = () => {
         </section>
       </div>
       </div>
-    );
+    ); 
   }
   
   export default Home;
