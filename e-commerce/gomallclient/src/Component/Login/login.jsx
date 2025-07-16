@@ -90,6 +90,7 @@ const LoginPage = () => {
             )}
           </button>
         </form>
+        <p className="mt-3">Chưa có tài khoản <a href="/signup">Đăng ký</a></p>
       </div>
       <Footer />
     </>
