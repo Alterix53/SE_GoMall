@@ -7,6 +7,7 @@ import Home from './Home';
 import FlashSale from './Flash_sale';
 import TopProduct from './TopProduct';
 
+
 function App() {
   return (
     <Router>
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/flash-sale" element={<FlashSale />} />
           <Route path="/top-products" element={<TopProduct />} />
+          
         </Routes>
         <Footer />
       </div>
