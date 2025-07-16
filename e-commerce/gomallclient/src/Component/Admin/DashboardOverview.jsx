@@ -38,15 +38,8 @@ function DashboardOverview() {
           <div className="row">
             <div className="col-12 d-flex justify-content-between align-item-center">
               {/*Phần bên trái ghi dashboard */}
-              <h3 className="mb-0">Dashboard</h3>
+              <h3 className="mb-0">Overall System Statistics</h3>
 
-              {/*bên phải*/}
-              <div className="d-flex align-items-center">
-                {/*nút chuông*/}
-                <NotificationButton />
-                {/*Ảnh admin*/}
-                <AdminAvatarModal avatarUrl="https://i.pravatar.cc/40?img=3" />
-              </div>
             </div>
           </div>
           <div className="row mb-4">

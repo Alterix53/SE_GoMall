@@ -12,35 +12,37 @@ import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
+import HeaderNavAdmin from "./Component/Admin/HeaderNavAdmin";
 
 function AdminLayout() {
   return (
-    <div className="d-flex">
-      <SidebarNav />
-      <div className="flex-grow-1 p-3">
-        <Breadcrumbs />
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="ManageUser" element={<ManageUserPage />} />
-          <Route path="ManageUser/User" element={<ManageUserPage />} />
-          <Route path="ManageSeller" element={<ManageSellerPage />} />
-          <Route path="Items" element={<ItemsPage />} />
-        </Routes>
+    <>
+      <HeaderNavAdmin />
+      <div className="d-flex">
+        <SidebarNav />
+        <div className="flex-grow-1 p-3">
+          <Breadcrumbs />
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="ManageUser" element={<ManageUserPage />} />
+            <Route path="ManageUser/User" element={<ManageUserPage />} />
+            <Route path="ManageSeller" element={<ManageSellerPage />} />
+            <Route path="Items" element={<ItemsPage />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
 function App() {
   return (
     <Router>
-      <HeaderNav />
       <Routes>
         <Route path="/Admin/*" element={<AdminLayout />} />
         {/* Các route khác giữ nguyên layout cũ */}
         <Route path="/*" element={<CategoryList />} />
       </Routes>
-      <Footer />
     </Router>
   );
 }

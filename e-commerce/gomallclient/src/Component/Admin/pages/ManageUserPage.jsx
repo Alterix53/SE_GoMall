@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import UserDetailModal from "../UserDetailModal";
 import UserSellerListItem from "../UserSellerListItem";
 
@@ -52,24 +51,84 @@ const USERS = [
   // ... thêm dữ liệu mẫu
 ];
 
+const USERS_PER_PAGE = 10;
+
 function ManageUserPage() {
   const [selectedUser, setSelectedUser] = useState(null);
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Lọc user theo username
+  const filteredUsers = USERS.filter(user =>
+    user.username.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Reset về trang 1 khi search thay đổi
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  // Tính toán paging
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const startIdx = (currentPage - 1) * USERS_PER_PAGE;
+  const endIdx = startIdx + USERS_PER_PAGE;
+  const usersToShow = filteredUsers.slice(startIdx, endIdx);
 
   return (
-    <div className="container-fluid">
-      <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý thành viên</h2>
-      <ul className="list-group">
-        {USERS.length === 0 && (
-          <li className="list-group-item text-muted">Không có thành viên nào.</li>
-        )}
-        {USERS.map((user) => (
-          <UserSellerListItem
-            key={user.id}
-            data={user}
-            onClick={() => setSelectedUser(user)}
-          />
-        ))}
-      </ul>
+    <div className="container my-4">
+      <div className="card shadow">
+        <div className="card-header bg-primary text-white">
+          <h4 className="mb-0">User Management</h4>
+        </div>
+        <div className="card-body">
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="search users by username"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="list-group">
+            {usersToShow.length === 0 && (
+              <div className="text-muted p-3">No users found.</div>
+            )}
+            {usersToShow.map(user => (
+              <UserSellerListItem
+                key={user.id}
+                data={user}
+                onClick={() => setSelectedUser(user)}
+                className="list-group-item"
+              />
+            ))}
+          </div>
+          {/* Paging controls */}
+          {totalPages > 1 && (
+            <nav className="mt-3">
+              <ul className="pagination justify-content-center">
+                <li className={`page-item${currentPage === 1 ? " disabled" : ""}`}>
+                  <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                    Previous
+                  </button>
+                </li>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <li key={i + 1} className={`page-item${currentPage === i + 1 ? " active" : ""}`}>
+                    <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                      {i + 1}
+                    </button>
+                  </li>
+                ))}
+                <li className={`page-item${currentPage === totalPages ? " disabled" : ""}`}>
+                  <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          )}
+        </div>
+      </div>
       {/* Modal chi tiết thành viên */}
       {selectedUser && (
         <div className="modal show d-block" tabIndex="-1">
