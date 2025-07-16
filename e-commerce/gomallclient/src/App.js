@@ -1,10 +1,12 @@
-// import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
-import HeaderNav from './Component/Header/HeaderNav';
-import Footer from './Component/Footer/Footer';
 
 import CategoryList from './Component/Category/CategoryList';
 import Navbar from './Component/Navbar/Navbar';
+import SearchResult from "./SearchResult";    // Minh
+import SearchBar from './Component/SearchBar/SearchBar';    // Minh
+import ProductCard from './Component/ProductCard/ProductCard';    // Minh
 
 // Import các component chính
 import Home from './Home';
@@ -75,6 +77,7 @@ function App() {
             <Route path="/signin" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/search" element={<SearchResult />} /> {/* Route cho tìm kiếm */}  {/* Minh */}
             
             {/* User routes - có navbar và footer */}
             <Route path="/user" element={

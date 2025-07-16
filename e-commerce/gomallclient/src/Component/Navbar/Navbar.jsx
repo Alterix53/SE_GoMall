@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -48,7 +49,22 @@ const Navbar = () => {
                 <div className="logo-icon">G</div>
                 <span className="logo-text">GoMall</span>
               </Link>
-
+              {/* Search Bar */} 
+                {/* <form className="search-form" onSubmit={handleSearch}>
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm sản phẩm, thương hiệu..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                  />
+                  <button type="submit" className="search-btn">
+                    <i className="fas fa-search"></i>
+                  </button>
+                </form> */}
+                {/* Minh comment */}
+              <SearchBar />  
+                {/* Minh bổ sung */}
               {/* Navigation Icons */}
               <div className="nav-icons">
                 <div className="nav-icon">
