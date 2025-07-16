@@ -5,3 +5,17 @@ node_modules
 .vs
 Debug
 ./e-commerce/server/.env
+./e-commerce/server/node_modules
+./e-commerce/gomallclient/node_modules
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+*.log
+*.env
+*.swp
+*.swo
+*.bak
+*.tmp
+*.cache
+./e-commerce/server/data/db
