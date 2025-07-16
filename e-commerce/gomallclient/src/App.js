@@ -2,6 +2,7 @@
 import './App.css';
 import HeaderNav from './Component/Header/HeaderNav';
 import Footer from './Component/Footer/Footer';
+
 import CategoryList from './Component/Category/CategoryList';
 import Navbar from './Component/Navbar/Navbar';
 
@@ -28,6 +29,11 @@ import UnauthorizedPage from './components/UnauthorizedPage';
 
 // Import AuthContext
 import { AuthProvider } from './contexts/AuthContext';
+
+// seller
+import Statistics from './Component/Sellerdashboard/Statistics';
+import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
+import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -83,6 +89,21 @@ function App() {
             <Route path="/seller" element={
               <ProtectedRoute requiredRole="seller">
                 <SellerDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/seller/statistics" element={
+              <ProtectedRoute requiredRole="seller">
+                <Statistics />
+              </ProtectedRoute>
+            } />
+            <Route path="/seller/orders" element={
+              <ProtectedRoute requiredRole="seller">
+                <ShippingStatus />
+              </ProtectedRoute>
+            } />
+            <Route path="/seller/orders/:id" element={
+              <ProtectedRoute requiredRole="seller">
+                <OrderDetail />
               </ProtectedRoute>
             } />
             
