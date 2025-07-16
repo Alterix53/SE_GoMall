@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-import React from 'react';
-import './footer.css'; // Import the CSS file for styling
-=======
+
 import React from "react";
 import { Link } from "react-router-dom"; // Import Link
 import "./Footer.css";
->>>>>>> Homepage_topP
 
 export default function Footer() {
   return (
