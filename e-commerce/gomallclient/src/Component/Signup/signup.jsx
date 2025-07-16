@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar/Navbar';
 import Footer from '../Footer/Footer';
-import '../Signup/signup';
+import '../Signup/signup.css';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const SignUpPage = () => {
   return (
     <>
       <Navbar />
-      <div className="container mt-5">
+      <div className="signup-container">
         <h2>Đăng ký</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

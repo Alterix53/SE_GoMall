@@ -1,10 +1,11 @@
 .signup-container {
-  max-width: 500px;
-  margin: 50px auto;
+  max-width: 450px;
+  margin: 60px auto;
   padding: 30px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  background: #fefefe;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .signup-container h2 {
@@ -12,7 +13,27 @@
   margin-bottom: 20px;
 }
 
+.signup-container .form-control {
+  border-radius: 8px;
+  margin-bottom: 15px;
+  background-color: #edf3ff;
+}
+
 .signup-container .btn {
   width: 100%;
   margin-top: 10px;
+}
+
+.signup-container p {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup-container a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-container a:hover {
+  text-decoration: underline;
 }
