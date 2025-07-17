@@ -7,6 +7,10 @@ import Navbar from './Component/Navbar/Navbar';
 import SearchResult from "./SearchResult";    // Minh
 import SearchBar from './Component/SearchBar/SearchBar';    // Minh
 import ProductCard from './Component/ProductCard/ProductCard';    // Minh
+import Footer from './Component/Footer/Footer';
+
+// view item detail
+import ViewItemDetail from './Component/viewItemDetail';
 
 // Import các component chính
 import Home from './Home';
@@ -36,8 +40,6 @@ import { AuthProvider } from './contexts/AuthContext';
 import Statistics from './Component/Sellerdashboard/Statistics';
 import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function AdminLayout() {
   return (
@@ -77,7 +79,7 @@ function App() {
             <Route path="/signin" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            <Route path="/search" element={<SearchResult />} /> {/* Route cho tìm kiếm */}  {/* Minh */}
+            
             
             {/* User routes - có navbar và footer */}
             <Route path="/user" element={
@@ -85,6 +87,21 @@ function App() {
                 <Navbar />
                 <UserPage />
                 <Footer />
+              </>
+            } />
+            <Route path="/search" element={
+            <>
+              <Navbar />
+              <SearchResult />
+              <Footer/>
+              </>
+            } /> {/* Route cho tìm kiếm */}  {/* Minh */}
+            
+            <Route path="/product/:id" element={
+            <>
+              <Navbar />
+              <ViewItemDetail />
+              <Footer/>
               </>
             } />
             

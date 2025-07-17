@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import UserAccountModal from "../UserAccountModal/UserAccountModal";
+import SearchBar from "../SearchBar/SearchBar";
 import "./navbar.css";
 
 const Navbar = () => {
@@ -25,6 +26,7 @@ const Navbar = () => {
   return (
       <header className="navbar">
         {/* Top Bar */}
+        
         <div className="navbar-top">
           <div className="container">
             <div className="top-left">
@@ -148,30 +150,7 @@ const Navbar = () => {
               >
                 Top Products
               </Link>
-              <Link
-                  to="/category/dien-thoai"
-                  className={`nav-link ${isActive("/category/dien-thoai") ? "active" : ""}`}
-              >
-                Deal hot
-              </Link>
-              <Link
-                  to="/category/laptop"
-                  className={`nav-link ${isActive("/category/laptop") ? "active" : ""}`}
-              >
-                Săn xu đổi quà
-              </Link>
-              <Link
-                  to="/category/thoi-trang"
-                  className={`nav-link ${isActive("/category/thoi-trang") ? "active" : ""}`}
-              >
-                Khách hàng thân thiết
-              </Link>
-              <Link
-                  to="/category/gia-dung"
-                  className={`nav-link ${isActive("/category/gia-dung") ? "active" : ""}`}
-              >
-                Mã giảm giá
-              </Link>
+              
             </nav>
           </div>
         </div>

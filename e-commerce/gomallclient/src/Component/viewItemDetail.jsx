@@ -50,13 +50,14 @@ export default function ViewItemDetail() {
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={\`star \${i < rating ? "filled" : ""}\`}>★</span>
-    ))
-  }
+      <span key={i} className={`star ${i < rating ? 'filled' : ''}`}>★</span>
+    ));
+  };
 
   return (
+    <>
     <div className="product-detail-container">
-      <header className="header">
+      {/*<header className="header">
         <div className="header-content">
           <div className="logo"><h1>ShopLogo</h1></div>
           <nav className="navigation">
@@ -66,9 +67,9 @@ export default function ViewItemDetail() {
             <a href="/account" className="nav-link">Account</a>
           </nav>
         </div>
-      </header>
+      </header>*/}
 
-      <main className="main-content">
+      <div className="main-content">
         <div className="product-container">
           <div className="image-gallery">
             <div className="main-image">
@@ -78,10 +79,10 @@ export default function ViewItemDetail() {
               {productImages.map((image, index) => (
                 <div
                   key={index}
-                  className={\`thumbnail \${selectedImage === index ? "active" : ""}\`}
+                  className={`thumbnail ${selectedImage === index ? "active" : ""}`}
                   onClick={() => setSelectedImage(index)}
                 >
-                  <img src={image} alt={\`Product \${index + 1}\`} />
+                  <img src={image} alt={`Product ${index + 1}`} />
                 </div>
               ))}
             </div>
@@ -110,7 +111,7 @@ export default function ViewItemDetail() {
                   {sizes.map((size) => (
                     <button
                       key={size}
-                      className={\`size-btn \${selectedSize === size ? "active" : ""}\`}
+                      className={`size-btn ${selectedSize === size ? "active" : ""}`}
                       onClick={() => setSelectedSize(size)}
                     >
                       {size}
@@ -125,11 +126,11 @@ export default function ViewItemDetail() {
                   {colors.map((color) => (
                     <div
                       key={color.name}
-                      className={\`color-swatch \${selectedColor === color.name ? "active" : ""}\`}
+                      className={`color-swatch ${selectedColor === color.name ? "active" : ""}`}
                       style={{ backgroundColor: color.value }}
                       onClick={() => setSelectedColor(color.name)}
                       title={color.name}
-                    />
+                    ></div>
                   ))}
                 </div>
               </div>
@@ -153,10 +154,10 @@ export default function ViewItemDetail() {
 
         <div className="tabs-section">
           <div className="tab-headers">
-            <button className={\`tab-header \${activeTab === "description" ? "active" : ""}\`} onClick={() => setActiveTab("description")}>Description</button>
-            <button className={\`tab-header \${activeTab === "specifications" ? "active" : ""}\`} onClick={() => setActiveTab("specifications")}>Specifications</button>
-            <button className={\`tab-header \${activeTab === "reviews" ? "active" : ""}\`} onClick={() => setActiveTab("reviews")}>Reviews</button>
-            <button className={\`tab-header \${activeTab === "related" ? "active" : ""}\`} onClick={() => setActiveTab("related")}>Related Products</button>
+            <button className={`tab-header ${activeTab === "description" ? "active" : ""}`} onClick={() => setActiveTab("description")}>Description</button>
+            <button className={`tab-header ${activeTab === "specifications" ? "active" : ""}`} onClick={() => setActiveTab("specifications")}>Specifications</button>
+            <button className={`tab-header ${activeTab === "reviews" ? "active" : ""}`} onClick={() => setActiveTab("reviews")}>Reviews</button>
+            <button className={`tab-header ${activeTab === "related" ? "active" : ""}`} onClick={() => setActiveTab("related")}>Related Products</button>
           </div>
 
           <div className="tab-content">
@@ -226,7 +227,8 @@ export default function ViewItemDetail() {
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
+    </>
   )
 }
