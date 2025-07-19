@@ -1,61 +1,206 @@
-import React from 'react';
-import './Footer.css'; // Import the CSS file for styling
+.footer {
+  background: #2c3e50;
+  color: white;
+  margin-top: auto;
+}
 
-export default function Footer() {
-  return (
-    <footer className="footer bg-light text-dark py-5 mt-5 sticky-bot">
-      <div className="container">
-        <div className="row">
-          {/* Cột 1: Logo / Tên */}
-          <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Gomall</h5>
-            <p className="text-muted">Enhance your shopping experience.</p>
-          </div>
+.footer-main {
+  padding: 60px 0 40px;
+}
 
-          {/* Cột 2: Các liên kết */}
-          <div className="col-md-4 mb-4">
-            <h6 className="fw-bold">Liên kết</h6>
-            <ul className="list-unstyled">
-              <li>
-                <a href="/about" className="text-decoration-none text-dark">
-                  Về chúng tôi
-                </a>
-              </li>
-              <li>
-                <a href="/faq" className="text-decoration-none text-dark">
-                  Câu hỏi thường gặp
-                </a>
-              </li>
-              <li>
-                <a href="/contact" className="text-decoration-none text-dark">
-                  Liên hệ
-                </a>
-              </li>
-            </ul>
-          </div>
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-          {/* Cột 3: Mạng xã hội */}
-          <div className="col-md-4 mb-4">
-            <h6 className="fw-bold">Theo dõi chúng tôi</h6>
-            <a href="#" className="text-dark me-3">
-              <i className="bi bi-facebook"></i> Facebook
-            </a>
-            <br />
-            <a href="#" className="text-dark me-3">
-              <i className="bi bi-instagram"></i> Instagram
-            </a>
-            <br />
-            <a href="#" className="text-dark">
-              <i className="bi bi-twitter"></i> Twitter
-            </a>
-          </div>
-        </div>
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
 
-        <hr />
-        <div className="text-center text-muted small mt-4">
-          © 2025 Gomall. All rights reserved.
-        </div>
-      </div>
-    </footer>
-  );
+.footer-section h3.footer-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.logo-icon {
+  background: #ff6b35;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff6b35;
+}
+
+.footer-description {
+  color: #bdc3c7;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.social-links {
+  display: flex;
+  gap: 12px;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  background: #34495e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  background: #ff6b35;
+  transform: translateY(-2px);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px;
+}
+
+.footer-links a {
+  color: #bdc3c7;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-size: 14px;
+}
+
+.footer-links a:hover {
+  color: #ff6b35;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #bdc3c7;
+  font-size: 14px;
+}
+
+.contact-item i {
+  color: #ff6b35;
+  font-size: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.footer-bottom {
+  background: #1a252f;
+  padding: 20px 0;
+  border-top: 1px solid #34495e;
+}
+
+.footer-bottom-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.copyright {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin: 0;
+}
+
+.footer-bottom-links {
+  display: flex;
+  gap: 20px;
+}
+
+.footer-bottom-links a {
+  color: #7f8c8d;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-bottom-links a:hover {
+  color: #ff6b35;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-main {
+    padding: 40px 0 30px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .footer-bottom-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .footer-main {
+    padding: 30px 0 20px;
+  }
+
+  .footer-grid {
+    gap: 20px;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .footer-bottom-links {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
