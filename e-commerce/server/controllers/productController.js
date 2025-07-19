@@ -49,6 +49,7 @@ export const getAllProducts = async (req, res) => {
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .sort(sort)
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -59,7 +60,6 @@ export const getAllProducts = async (req, res) => {
         console.log("Total products found:", total);
 
         console.log("Responding with products:", products);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -79,12 +79,10 @@ export const getAllProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getAllProducts:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
 
-// Giữ nguyên các hàm khác (getFlashSaleProducts, getTopProducts, getProductById)
 export const getFlashSaleProducts = async (req, res) => {
     try {
         console.log("Request to /api/products/flash-sale received:", req.query);
@@ -97,6 +95,7 @@ export const getFlashSaleProducts = async (req, res) => {
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .sort({ flashSaleEndDate: 1 })
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -105,7 +104,6 @@ export const getFlashSaleProducts = async (req, res) => {
         const total = await Product.countDocuments(filter);
 
         console.log("Responding with flash sale products:", products);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -125,7 +123,6 @@ export const getFlashSaleProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getFlashSaleProducts:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
@@ -151,6 +148,7 @@ export const getTopProducts = async (req, res) => {
 
         const products = await Product.find({ isActive: true })
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .sort(sort)
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -159,7 +157,6 @@ export const getTopProducts = async (req, res) => {
         const total = await Product.countDocuments({ isActive: true });
 
         console.log("Responding with top products:", products);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -180,7 +177,6 @@ export const getTopProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getTopProducts:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
@@ -189,6 +185,7 @@ export const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .lean();
         if (!product) {
             return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });

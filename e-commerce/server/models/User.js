@@ -1,14 +1,25 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, index: true },
+    role: { type: String, enum: ['user', 'admin', 'seller'], default: 'user', index: true },
     fullName: { type: String },
     phoneNumber: { type: String },
     address: { type: String },
+    shopName: { type: String }, // Chỉ dùng cho seller
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
+}, { timestamps: true });
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
+    next();
 });
 
-module.exports = mongoose.model('User', userSchema);
+export default mongoose.model('User', userSchema);

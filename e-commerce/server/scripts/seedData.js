@@ -1,21 +1,21 @@
-import mongoose from "mongoose";
-import path from "path"; // Giữ module path
-import { fileURLToPath } from "url"; // Giữ module url
-import Category from "../models/Category.js";
-import Product from "../models/Product.js";
-import Seller from "../models/Seller.js";
+import mongoose from 'mongoose';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Category from '../models/Category.js';
+import Product from '../models/Product.js';
+import User from '../models/User.js'; // Thay Seller bằng User
 
 // Lấy đường dẫn file hiện tại trong ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Định nghĩa trực tiếp URI với tên database khớp (GoMall)
-const MONGODB_URI = "mongodb://localhost:27017/GoMall"; // Thay đổi thành GoMall
+const MONGODB_URI = "mongodb://localhost:27017/GoMall";
 
 const connectDB = async () => {
     try {
         console.log("Attempting to connect with MONGODB_URI:", MONGODB_URI);
-        await mongoose.connect(MONGODB_URI); // Loại bỏ useNewUrlParser và useUnifiedTopology
+        await mongoose.connect(MONGODB_URI);
         console.log("MongoDB Connected for seeding");
     } catch (error) {
         console.error("Database connection failed:", error);
@@ -42,9 +42,9 @@ const seedCategories = async () => {
 };
 
 const seedSellers = async () => {
-    const sellersData = [{ username: "seller1", password: "pass123", shopName: "TechShop", email: "techshop@example.com" }];
-    await Seller.deleteMany({});
-    const createdSellers = await Seller.insertMany(sellersData);
+    const sellersData = [{ username: "seller1", password: "pass123", shopName: "TechShop", email: "techshop@example.com", role: "seller" }];
+    await User.deleteMany({ role: 'seller' }); // Chỉ xóa sellers, không xóa tất cả users
+    const createdSellers = await User.insertMany(sellersData);
     console.log("Sellers seeded successfully:", createdSellers.map(s => s.shopName));
     return createdSellers;
 };
@@ -83,7 +83,7 @@ const seedProducts = async (createdCategories, createdSellers) => {
             isActive: true,
             isFeatured: true,
             isFlashSale: true,
-            flashSaleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 giờ từ bây giờ
+            flashSaleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
         },
         {
             name: "Samsung Galaxy S24 Ultra",
