@@ -19,14 +19,16 @@ function AdminLayout() {
     <>
       <HeaderNavAdmin />
       <div className="d-flex">
+        
         <SidebarNav />
         <div className="flex-grow-1 p-3">
           <Breadcrumbs />
           <Routes>
             <Route path="/" element={<DashboardPage />} />
-            <Route path="ManageUser" element={<ManageUserPage />} />
-            <Route path="ManageUser/User" element={<ManageUserPage />} />
-            <Route path="ManageSeller" element={<ManageSellerPage />} />
+            <Route path="viewcustomer" element={<ManageUserPage />} />
+            <Route path="reportedusers" element={<ManageUserPage />} />
+            <Route path="viewseller" element={<ManageSellerPage />} />
+            <Route path="pendingrequest" element={<ManageSellerPage />} />
             <Route path="Items" element={<ItemsPage />} />
           </Routes>
         </div>
