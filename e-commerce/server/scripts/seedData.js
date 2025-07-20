@@ -1,13 +1,21 @@
 import mongoose from 'mongoose';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import axios from 'axios';
 import Category from '../models/Category.js';
+import User from '../models/User.js';
 import Product from '../models/Product.js';
-import User from '../models/User.js'; // Thay Seller bằng User
+import '../models/Order.js';
+import '../models/Cart.js';
+import '../models/Review.js';
+import '../models/Payment.js';
 
 // Lấy đường dẫn file hiện tại trong ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+console.log("Current script directory:", __dirname); // Debug log
 
 // Định nghĩa trực tiếp URI với tên database khớp (GoMall)
 const MONGODB_URI = "mongodb://localhost:27017/GoMall";
@@ -23,98 +31,153 @@ const connectDB = async () => {
     }
 };
 
+// Hàm đọc và parse JSON
+const readJSON = (fileName) => {
+    const filePath = path.join(__dirname, '../../data/', fileName); // Trỏ lên /e-commerce/data/
+    console.log(`Debug: Looking for file at: ${filePath}`);
+    if (!fs.existsSync(filePath)) {
+        console.error(`Debug: File not found at: ${filePath}`);
+        return [];
+    }
+    try {
+        const jsonData = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(jsonData);
+    } catch (error) {
+        console.error(`Error reading ${fileName}:`, error);
+        return [];
+    }
+};
+
+// Hàm download và lưu ảnh
+const downloadImage = async (url, filename) => {
+    const imageDir = path.join(__dirname, '../public/images/');
+    if (!fs.existsSync(imageDir)) fs.mkdirSync(imageDir, { recursive: true });
+
+    const filePath = path.join(imageDir, filename);
+    const writer = fs.createWriteStream(filePath);
+
+    if (url.includes('amazon.de') || url.includes('mlb.com') || url.includes('comsenz.com') || url.includes('naver.com') || url.includes('ebay.co.uk') || url.includes('huffingtonpost.com')) {
+        url = `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`;
+        console.log(`Replaced fake URL with Picsum: ${url}`);
+    }
+
+    try {
+        const response = await axios({
+            url,
+            method: 'GET',
+            responseType: 'stream',
+            timeout: 20000 // Tăng timeout lên 20 giây
+        });
+        response.data.pipe(writer);
+
+        return new Promise((resolve, reject) => {
+            writer.on('finish', () => resolve(`/images/${filename}`));
+            writer.on('error', reject);
+        });
+    } catch (error) {
+        console.error(`Error downloading image from ${url}:`, error);
+        return `/images/default.jpg`;
+    }
+};
+
 const seedCategories = async () => {
-    const categoriesData = [
-        { categoryName: "Điện thoại", slug: "dien-thoai", description: "Điện thoại thông minh các loại", image: "/images/categories/phone.jpg", icon: "fas fa-mobile-alt" },
-        { categoryName: "Laptop", slug: "laptop", description: "Máy tính xách tay", image: "/images/categories/laptop.jpg", icon: "fas fa-laptop" },
-        { categoryName: "Thời trang", slug: "thoi-trang", description: "Sản phẩm thời trang", image: "/images/categories/clothes.jpg", icon: "fas fa-tshirt" },
-        { categoryName: "Gia dụng", slug: "gia-dung", description: "Đồ dùng gia đình", image: "/images/categories/gia-dung.jpg", icon: "fas fa-home" },
-        { categoryName: "Mỹ phẩm", slug: "my-pham", description: "Sản phẩm làm đẹp", image: "/images/categories/my-pham.jpg", icon: "fas fa-spa" },
-        { categoryName: "Sách", slug: "sach", description: "Sách và tài liệu", image: "/images/categories/book.jpg", icon: "fas fa-book" },
-        { categoryName: "Thể thao", slug: "the-thao", description: "Đồ thể thao", image: "/images/categories/the-thao.jpg", icon: "fas fa-dumbbell" },
-        { categoryName: "Xe cộ", slug: "xe-co", description: "Phương tiện giao thông", image: "/images/categories/xe-co.jpg", icon: "fas fa-car" },
-    ];
+    const categoriesData = readJSON('Categories.json');
+    if (!categoriesData.length) return [];
+
+    const mappedCategories = await Promise.all(categoriesData.map(async cat => {
+        const imagePath = cat.image ? await downloadImage(cat.image, `category_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`) : '/images/default.jpg';
+        return {
+            categoryName: cat.categoryName,
+            slug: cat.slug,
+            description: cat.description || '',
+            image: imagePath,
+            icon: cat.icon || 'fas fa-default-icon',
+            parentID: null
+        };
+    }));
 
     await Category.deleteMany({});
-    const createdCategories = await Category.insertMany(categoriesData);
+    const createdCategories = await Category.insertMany(mappedCategories);
+
+    for (let i = 0; i < categoriesData.length; i++) {
+        if (categoriesData[i].parentID) {
+            const parentIndex = categoriesData[i].parentID - 1;
+            if (parentIndex >= 0 && parentIndex < createdCategories.length) {
+                await Category.updateOne(
+                    { _id: createdCategories[i]._id },
+                    { parentID: createdCategories[parentIndex]._id }
+                );
+            }
+        }
+    }
+
     console.log("Categories seeded successfully:", createdCategories.map(c => ({ categoryName: c.categoryName, slug: c.slug, _id: c._id })));
     return createdCategories;
 };
 
-const seedSellers = async () => {
-    const sellersData = [{ username: "seller1", password: "pass123", shopName: "TechShop", email: "techshop@example.com", role: "seller" }];
-    await User.deleteMany({ role: 'seller' }); // Chỉ xóa sellers, không xóa tất cả users
-    const createdSellers = await User.insertMany(sellersData);
-    console.log("Sellers seeded successfully:", createdSellers.map(s => s.shopName));
-    return createdSellers;
+const seedUsers = async () => {
+    const usersData = readJSON('users.json');
+    if (!usersData.length) return { allUsers: [], sellers: [] };
+
+    const mappedUsers = usersData.map(user => ({
+        username: user.username || `default_user_${Math.random().toString(36).slice(2)}`,
+        password: user.password || 'defaultpassword123',
+        email: user.email || `default_${Math.random().toString(36).slice(2)}@example.com`,
+        role: user.role || 'user',
+        fullName: user.fullName || '',
+        phoneNumber: user.phoneNumber || '',
+        address: user.address || '',
+        shopName: user.shopName || (user.role === 'seller' ? 'Default Shop' : ''),
+        isActive: user.isActive !== false
+    }));
+
+    await User.deleteMany({});
+    const createdUsers = await User.insertMany(mappedUsers);
+    const createdSellers = createdUsers.filter(u => u.role === 'seller');
+    console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role })));
+    console.log("Sellers extracted:", createdSellers.map(s => s.shopName));
+    return { allUsers: createdUsers, sellers: createdSellers };
 };
 
 const seedProducts = async (createdCategories, createdSellers) => {
-    if (!createdCategories || !createdCategories.length) {
-        throw new Error("No categories found to seed products. Created categories:", createdCategories);
-    }
-    if (!createdSellers || !createdSellers.length) {
-        throw new Error("No sellers found to seed products. Created sellers:", createdSellers);
-    }
+    const productsData = readJSON('products.json');
+    if (!productsData.length) return [];
 
-    const products = [
-        {
-            name: "iPhone 15 Pro Max 256GB",
-            slug: "iphone-15-pro-max-256gb",
-            description: "iPhone 15 Pro Max với chip A17 Pro mạnh mẽ, camera 48MP và màn hình Super Retina XDR 6.7 inch",
-            shortDescription: "iPhone 15 Pro Max - Đỉnh cao công nghệ",
-            sku: "IP15PM256",
-            brand: "Apple",
-            categoryID: createdCategories.find((c) => c.slug === "dien-thoai")._id,
-            sellerID: createdSellers[0]._id,
-            images: [{ url: "/images/iphone-15.jpg", alt: "iPhone 15 Pro Max", isPrimary: true }],
-            price: { original: 34990000, sale: 29990000 },
-            inventory: { quantity: 100, lowStockThreshold: 10 },
-            specifications: [
-                { name: "Màn hình", value: "6.7 inch Super Retina XDR" },
-                { name: "Chip", value: "A17 Pro" },
-                { name: "Camera", value: "48MP + 12MP + 12MP" },
-                { name: "Pin", value: "4441 mAh" },
-            ],
-            tags: ["iphone", "apple", "smartphone", "premium"],
-            rating: { average: 4.8, count: 1234 },
-            sold: 5234,
-            views: 15678,
-            isActive: true,
-            isFeatured: true,
-            isFlashSale: true,
-            flashSaleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        },
-        {
-            name: "Samsung Galaxy S24 Ultra",
-            slug: "samsung-galaxy-s24-ultra",
-            description: "Samsung Galaxy S24 Ultra với camera 200MP và bút S Pen",
-            shortDescription: "Galaxy S24 Ultra - Đỉnh cao Android",
-            sku: "S24U",
-            brand: "Samsung",
-            categoryID: createdCategories.find((c) => c.slug === "dien-thoai")._id,
-            sellerID: createdSellers[0]._id,
-            images: [{ url: "/images/samsung-s24.jpg", alt: "Samsung Galaxy S24 Ultra", isPrimary: true }],
-            price: { original: 31990000, sale: 25990000 },
-            inventory: { quantity: 50, lowStockThreshold: 5 },
-            specifications: [
-                { name: "Màn hình", value: "6.8 inch Dynamic AMOLED 2X" },
-                { name: "Chip", value: "Snapdragon 8 Gen 3" },
-                { name: "Camera", value: "200MP + 12MP + 10MP" },
-                { name: "Pin", value: "5000 mAh" },
-            ],
-            tags: ["samsung", "smartphone", "premium"],
-            rating: { average: 4.7, count: 890 },
-            sold: 3456,
-            views: 12345,
-            isActive: true,
-            isFlashSale: true,
-            flashSaleEndDate: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        },
-    ];
+    const mappedProducts = await Promise.all(productsData.map(async product => {
+        const imagePaths = product.images_url ? await Promise.all(product.images_url.split(',').map(async (url, index) => ({
+            url: await downloadImage(url, `product_${product.name}_${index}_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`),
+            alt: product.images_alt || 'Product Image',
+            isPrimary: index === 0
+        }))) : [{ url: '/images/default.jpg', alt: 'Default', isPrimary: true }];
 
+        return {
+            name: product.name || 'Default Product Name',
+            slug: product.slug || `default-slug-${Math.random().toString(36).slice(2)}`,
+            description: product.description || '',
+            shortDescription: product.shortDescription || '',
+            sku: product.sku || `SKU-${Math.random().toString(36).slice(2).toUpperCase()}`,
+            brand: product.brand || '',
+            categoryID: createdCategories[Math.floor(Math.random() * createdCategories.length)]._id,
+            sellerID: createdSellers.length > 0 ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id : null,
+            images: imagePaths,
+            price: { original: Number(product.price_original || 0), sale: Number(product.price_sale || 0) },
+            inventory: { quantity: Number(product.inventory_quantity || 0), lowStockThreshold: Number(product.inventory_lowStockThreshold || 10) },
+            specifications: product.specifications || [],
+            tags: product.tags ? product.tags.split(',') : [],
+            rating: { average: Number(product.rating_average || 0), count: Number(product.rating_count || 0) },
+            sold: Number(product.sold || 0),
+            views: Number(product.views || 0),
+            isActive: product.isActive !== false,
+            isFeatured: product.isFeatured || false,
+            isFlashSale: product.isFlashSale || false,
+            flashSalePrice: Number(product.flashSalePrice || 0),
+            flashSaleEndDate: product.flashSaleEndDate && !isNaN(new Date(product.flashSaleEndDate)) ? new Date(product.flashSaleEndDate) : null
+        };
+    }));
+
+    const validProducts = mappedProducts.filter(p => p.sellerID !== null && p.categoryID !== null);
     await Product.deleteMany({});
-    const createdProducts = await Product.insertMany(products);
+    const createdProducts = await Product.insertMany(validProducts);
     console.log("Products seeded successfully:", createdProducts.map(p => p.name));
     return createdProducts;
 };
@@ -123,13 +186,13 @@ const seedData = async () => {
     try {
         await connectDB();
 
-        console.log("Seeding categories...");
+        console.log("Seeding categories from JSON...");
         const createdCategories = await seedCategories();
 
-        console.log("Seeding sellers...");
-        const createdSellers = await seedSellers();
+        console.log("Seeding users (including sellers) from JSON...");
+        const { sellers: createdSellers } = await seedUsers();
 
-        console.log("Seeding products...");
+        console.log("Seeding products from JSON...");
         await seedProducts(createdCategories, createdSellers);
 
         console.log("Data seeded successfully!");

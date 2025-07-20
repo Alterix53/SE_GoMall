@@ -1,0 +1,82 @@
+[
+  {
+    "categoryName": "Electronics - Phones",
+    "slug": "electronics-phones",
+    "description": "A wide range of smartphones from top brands like Apple, Samsung, and Google. Features advanced cameras, long battery life, and high-performance processors for everyday use and gaming.",
+    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-mobile-alt",
+    "parentID": 1
+  },
+  {
+    "categoryName": "Electronics - Laptops",
+    "slug": "electronics-laptops",
+    "description": "Portable computers for work, gaming, and entertainment. Includes ultrabooks, gaming laptops, and business models with powerful CPUs, ample RAM, and high-resolution displays.",
+    "image": "https://images.unsplash.com/photo-1583195764036-fd0f7f3f8aec?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-laptop",
+    "parentID": 2
+  },
+  {
+    "categoryName": "Fashion - Clothing",
+    "slug": "fashion-clothing",
+    "description": "Trendy apparel for men, women, and kids. From casual wear to formal outfits, including shirts, pants, dresses, and jackets made from quality fabrics.",
+    "image": "https://images.unsplash.com/photo-1516762689617-e9b49043e749?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-tshirt",
+    "parentID": 3
+  },
+  {
+    "categoryName": "Sports - Equipment",
+    "slug": "sports-equipment",
+    "description": "Gear for various sports including running shoes, gym weights, balls, and protective equipment. Designed for performance, durability, and comfort during activities.",
+    "image": "https://images.unsplash.com/photo-1600585154526-990d71fee436?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-dumbbell",
+    "parentID": 4
+  },
+  {
+    "categoryName": "Electronics - Accessories",
+    "slug": "electronics-accessories",
+    "description": "Essential add-ons like chargers, cases, headphones, and screen protectors for phones and laptops. Compatible with multiple devices and brands.",
+    "image": "https://images.unsplash.com/photo-1600585154298-33e970dc79b3?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-headphones",
+    "parentID": 5
+  },
+  {
+    "categoryName": "Fashion - Shoes",
+    "slug": "fashion-shoes",
+    "description": "Footwear collection including sneakers, boots, sandals, and formal shoes. Available in various sizes, colors, and materials for all occasions.",
+    "image": "https://images.unsplash.com/photo-1600585154473-8a4e3e6a467c?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-shoe-prints",
+    "parentID": 6
+  },
+  {
+    "categoryName": "Sports - Apparel",
+    "slug": "sports-apparel",
+    "description": "Activewear such as jerseys, shorts, tracksuits, and compression gear. Breathable fabrics for workouts, running, and team sports.",
+    "image": "https://images.unsplash.com/photo-1600585154487-6c0e2e7479b3?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-running",
+    "parentID": 7
+  },
+  {
+    "categoryName": "Electronics - Tablets",
+    "slug": "electronics-tablets",
+    "description": "Portable tablets for productivity and entertainment. Features large screens, stylus support, and integration with ecosystems like iOS and Android.",
+    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-tablet-alt",
+    "parentID": 8
+  },
+  {
+    "categoryName": "Fashion - Accessories",
+    "slug": "fashion-accessories",
+    "description": "Items like bags, belts, hats, and jewelry to complement outfits. Stylish and functional pieces for daily use and special events.",
+    "image": "https://images.unsplash.com/photo-1600585154463-7e9eb3a950e1?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-hat-cowboy",
+    "parentID": 9
+  },
+  {
+    "categoryName": "Sports - Outdoor Gear",
+    "slug": "sports-outdoor-gear",
+    "description": "Equipment for outdoor activities including tents, backpacks, hiking boots, and cycling gear. Built for durability in various weather conditions.",
+    "image": "https://images.unsplash.com/photo-1600585154396-2d5f6e4d7d7b?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop",
+    "icon": "fas fa-hiking",
+    "parentID": 10
+  }
+]

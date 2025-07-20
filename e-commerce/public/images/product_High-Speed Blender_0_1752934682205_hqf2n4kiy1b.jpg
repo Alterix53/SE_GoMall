@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>对不起，你访问的页面不存在</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+    <meta name="keywords" content="上网导航,网址大全,网址导航,hao123上网导航,hao123网址,hao123导航,hao123网址大全,hao123活动, 抽奖活动"/>
+    <meta name="description"
+          content="hao123是最具权威的中文上网导航，汇集最优秀的网站及资源。及时收录影视、音乐、小说、游戏等分类的网址和内容，让您的网络生活更简单精彩。上网，从hao123开始。"/>
+    <link rel="stylesheet" href="//hao123-static.cdn.bcebos.com/fe-res/error/error404/error-high.css">
+</head>
+<body monkey="error-404">
+<header monkey="header">
+    <div class="container">
+        <a class="logo" alog-text="hao123logo" href="http://www.hao123.com/"></a>
+
+        <div class="sitelist">
+            <a class="site" href="http://life.hao123.com/">生活&nbsp;&bull;&nbsp;hao到家</a>
+            <a class="site" href="http://v.hao123.com/">hao123影视</a>
+            <a class="site" href="http://news.hao123.com/">hao123新闻</a>
+            <a class="site" href="http://tejia.hao123.com">hao123特价</a>
+            <a class="site" href="http://game.hao123.com/">hao123游戏</a>
+        </div>
+    </div>
+</header>
+<div class="content">
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="520" height="650"></canvas>
+    </div>
+    <div class="chicken">
+    </div>
+    <div class="dialog">
+        <a alog-text="返回首页" class="home"></a>
+        <a alog-text="继续访问" class="goon"></a>
+    </div>
+</div>
+<footer monkey="footer">
+    <div class="container">
+        <div class="sitelist">
+            <a class="site" href="http://www.hao123.com/abouthao123.htm">关于我们</a>
+            <a class="site" href="http://www.hao123.com/redian/problem.htm">常见问题</a>
+            <a class="site" href="http://www.hao123.com/feedback">反馈意见</a>
+            <a class="site" href="http://www.hao123.com/sitemap">全站地图</a>
+
+            <div class="site last">京ICP证030173号</div>
+        </div>
+    </div>
+</footer>
+<script>
+    function _isIeLow() {
+        var ie = navigator.userAgent.match(/msie (\d+\.\d+)/i);
+        if (ie) {
+            return parseInt(ie[1]) < 9;
+        }
+        return false;
+    }
+
+    if (_isIeLow()) {
+        window.location.href = 'error-low.html' + location.search;
+    }
+    var script = document.createElement('script');
+    script.src = '//s0.hao123img.com/res/js/track.js?' + ~(+new Date / 36e5);
+    script.setAttribute('data-log-config', 'pageId:hao123-error-404;page:hao123-error-404;level:2');
+    document.body.appendChild(script);
+</script>
+<script src="//hao123-static.cdn.bcebos.com/fe-res/error/error404/game.min.js"></script>
+</body>
+</html>

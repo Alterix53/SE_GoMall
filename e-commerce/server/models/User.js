@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
-    role: { type: String, enum: ['user', 'admin', 'seller'], default: 'user', index: true },
+    role: { type: [String], enum: { values: ['user', 'admin', 'seller'], message: '{VALUE} is not a valid role' }, default: ['user'], index: true },
     fullName: { type: String },
     phoneNumber: { type: String },
     address: { type: String },

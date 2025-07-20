@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+	<meta charset="UTF-8" />
+<meta name="description" content="Powerful and Business Class Email Solutions.
+Sooma is a cloud based email solution provider that acts as a full-dressed reliable platform for companies that offer email as part of their services." /><meta name="keywords" content="Business cloud mailbox, Email continuity, Mail protection services, Domain management services,  SMTP Hosting, Solutions for service providers, Solution for business, Solutions for partners" /><meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="pingback" href="https://sooma.com/xmlrpc.php" />
+
+	<script type="text/javascript">
+		document.documentElement.className = 'js';
+	</script>
+
+	<title>Sooma</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><style id="et-builder-googlefonts-cached-inline">/* Original: https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200italic,300,300italic,regular,italic,600,600italic,700,700italic,900,900italic&#038;subset=latin,latin-ext&#038;display=swap *//* User Agent: Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) Safari/538.1 Daum/4.1 */@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 200;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdi18E.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 300;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidi18E.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 400;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7psDc.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 600;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdi18E.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 700;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdi18E.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 900;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydi18E.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 200;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmRdr.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 300;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmRdr.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 400;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNq7g.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 600;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmRdr.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 700;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmRdr.ttf) format('truetype');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 900;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmRdr.ttf) format('truetype');}/* User Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0 */@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 200;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdi18I.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 300;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidi18I.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 400;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7psDQ.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 600;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdi18I.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 700;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdi18I.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 900;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydi18I.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 200;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmRdo.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 300;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmRdo.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 400;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNq7j.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 600;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmRdo.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 700;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmRdo.woff) format('woff');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 900;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmRdo.woff) format('woff');}/* User Agent: Mozilla/5.0 (Windows NT 6.3; rv:39.0) Gecko/20100101 Firefox/39.0 */@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 200;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZYokSdi18Q.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 300;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZMkidi18Q.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 400;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK1dSBYKcSV-LCoeQqfX1RYOo3qPZ7psDI.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 600;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZY4lCdi18Q.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 700;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZclSdi18Q.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: italic;font-weight: 900;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKwdSBYKcSV-LCoeQqfX1RYOo3qPZZklydi18Q.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 200;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i94_wmRdu.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 300;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ik4zwmRdu.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 400;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xK3dSBYKcSV-LCoeQqfX1RYOo3qNq7l.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 600;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3i54rwmRdu.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 700;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3ig4vwmRdu.woff2) format('woff2');}@font-face {font-family: 'Source Sans Pro';font-style: normal;font-weight: 900;font-display: swap;src: url(https://fonts.gstatic.com/s/sourcesanspro/v22/6xKydSBYKcSV-LCoeQqfX1RYOo3iu4nwmRdu.woff2) format('woff2');}</style><link rel="alternate" hreflang="pt-pt" href="https://sooma.com/pt-pt/" />
+<script type="text/javascript">
+			let jqueryParams=[],jQuery=function(r){return jqueryParams=[...jqueryParams,r],jQuery},$=function(r){return jqueryParams=[...jqueryParams,r],$};window.jQuery=jQuery,window.$=jQuery;let customHeadScripts=!1;jQuery.fn=jQuery.prototype={},$.fn=jQuery.prototype={},jQuery.noConflict=function(r){if(window.jQuery)return jQuery=window.jQuery,$=window.jQuery,customHeadScripts=!0,jQuery.noConflict},jQuery.ready=function(r){jqueryParams=[...jqueryParams,r]},$.ready=function(r){jqueryParams=[...jqueryParams,r]},jQuery.load=function(r){jqueryParams=[...jqueryParams,r]},$.load=function(r){jqueryParams=[...jqueryParams,r]},jQuery.fn.ready=function(r){jqueryParams=[...jqueryParams,r]},$.fn.ready=function(r){jqueryParams=[...jqueryParams,r]};</script><meta name="dc.title" content="Sooma">
+<meta name="dc.description" content="Cloud based email solution on a highly customizable webmail platform">
+<meta name="dc.relation" content="https://sooma.com/pt-pt/">
+<meta name="dc.source" content="https://sooma.com/pt-pt/">
+<meta name="dc.language" content="pt_PT">
+<meta name="description" content="Cloud based email solution on a highly customizable webmail platform">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<link rel="canonical" href="https://sooma.com/pt-pt/">
+<script id="website-schema" type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"WebSite","name":"Sooma","alternateName":"Sooma","description":"Cloud based email solution on a highly customizable webmail platform","url":"https:\/\/sooma.com\/pt-pt\/"}</script>
+<meta property="og:url" content="https://sooma.com/pt-pt/">
+<meta property="og:site_name" content="Sooma">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sooma">
+<meta property="og:description" content="Cloud based email solution on a highly customizable webmail platform">
+<meta property="fb:pages" content="">
+<meta property="fb:admins" content="">
+<meta property="fb:app_id" content="">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="">
+<meta name="twitter:creator" content="">
+<meta name="twitter:title" content="Sooma">
+<meta name="twitter:description" content="Cloud based email solution on a highly customizable webmail platform">
+<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link rel="alternate" type="application/rss+xml" title="Sooma &raquo; Feed" href="https://sooma.com/pt-pt/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Sooma &raquo; Feed de comentários" href="https://sooma.com/pt-pt/comments/feed/" />
+<script type="application/ld+json">{"@context":"https:\/\/schema.org","@type":"Organization","name":"Sooma","url":"https:\/\/sooma.com","alternateName":"Sooma","description":"Sooma"}</script>
+<meta content="Divi v.4.27.4" name="generator"/><style id='wp-block-library-theme-inline-css' type='text/css'>
+.wp-block-audio :where(figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-audio :where(figcaption){color:#ffffffa6}.wp-block-audio{margin:0 0 1em}.wp-block-code{border:1px solid #ccc;border-radius:4px;font-family:Menlo,Consolas,monaco,monospace;padding:.8em 1em}.wp-block-embed :where(figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-embed :where(figcaption){color:#ffffffa6}.wp-block-embed{margin:0 0 1em}.blocks-gallery-caption{color:#555;font-size:13px;text-align:center}.is-dark-theme .blocks-gallery-caption{color:#ffffffa6}:root :where(.wp-block-image figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme :root :where(.wp-block-image figcaption){color:#ffffffa6}.wp-block-image{margin:0 0 1em}.wp-block-pullquote{border-bottom:4px solid;border-top:4px solid;color:currentColor;margin-bottom:1.75em}.wp-block-pullquote cite,.wp-block-pullquote footer,.wp-block-pullquote__citation{color:currentColor;font-size:.8125em;font-style:normal;text-transform:uppercase}.wp-block-quote{border-left:.25em solid;margin:0 0 1.75em;padding-left:1em}.wp-block-quote cite,.wp-block-quote footer{color:currentColor;font-size:.8125em;font-style:normal;position:relative}.wp-block-quote:where(.has-text-align-right){border-left:none;border-right:.25em solid;padding-left:0;padding-right:1em}.wp-block-quote:where(.has-text-align-center){border:none;padding-left:0}.wp-block-quote.is-large,.wp-block-quote.is-style-large,.wp-block-quote:where(.is-style-plain){border:none}.wp-block-search .wp-block-search__label{font-weight:700}.wp-block-search__button{border:1px solid #ccc;padding:.375em .625em}:where(.wp-block-group.has-background){padding:1.25em 2.375em}.wp-block-separator.has-css-opacity{opacity:.4}.wp-block-separator{border:none;border-bottom:2px solid;margin-left:auto;margin-right:auto}.wp-block-separator.has-alpha-channel-opacity{opacity:1}.wp-block-separator:not(.is-style-wide):not(.is-style-dots){width:100px}.wp-block-separator.has-background:not(.is-style-dots){border-bottom:none;height:1px}.wp-block-separator.has-background:not(.is-style-wide):not(.is-style-dots){height:2px}.wp-block-table{margin:0 0 1em}.wp-block-table td,.wp-block-table th{word-break:normal}.wp-block-table :where(figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-table :where(figcaption){color:#ffffffa6}.wp-block-video :where(figcaption){color:#555;font-size:13px;text-align:center}.is-dark-theme .wp-block-video :where(figcaption){color:#ffffffa6}.wp-block-video{margin:0 0 1em}:root :where(.wp-block-template-part.has-background){margin-bottom:0;margin-top:0;padding:1.25em 2.375em}
+</style>
+<style id='wpseopress-local-business-style-inline-css' type='text/css'>
+span.wp-block-wpseopress-local-business-field{margin-right:8px}
+
+</style>
+<style id='wpseopress-table-of-contents-style-inline-css' type='text/css'>
+.wp-block-wpseopress-table-of-contents li.active>a{font-weight:bold}
+
+</style>
+<style id='global-styles-inline-css' type='text/css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--brandon: brandon;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:root { --wp--style--global--content-size: 823px;--wp--style--global--wide-size: 1080px; }:where(body) { margin: 0; }.wp-site-blocks > .alignleft { float: left; margin-right: 2em; }.wp-site-blocks > .alignright { float: right; margin-left: 2em; }.wp-site-blocks > .aligncenter { justify-content: center; margin-left: auto; margin-right: auto; }:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}.is-layout-flow > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-flow > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-flow > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignleft{float: left;margin-inline-start: 0;margin-inline-end: 2em;}.is-layout-constrained > .alignright{float: right;margin-inline-start: 2em;margin-inline-end: 0;}.is-layout-constrained > .aligncenter{margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)){max-width: var(--wp--style--global--content-size);margin-left: auto !important;margin-right: auto !important;}.is-layout-constrained > .alignwide{max-width: var(--wp--style--global--wide-size);}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}body{padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px;}:root :where(.wp-element-button, .wp-block-button__link){background-color: #32373c;border-width: 0;color: #fff;font-family: inherit;font-size: inherit;line-height: inherit;padding: calc(0.667em + 2px) calc(1.333em + 2px);text-decoration: none;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-brandon-font-family{font-family: var(--wp--preset--font-family--brandon) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel='stylesheet' id='style-css' href='https://sooma.com/wp-content/plugins/divi-switch/switch-style.css?ver=6.8.2' type='text/css' media='all' />
+<link rel='stylesheet' id='wpa-css-css' href='https://sooma.com/wp-content/plugins/honeypot/includes/css/wpa.css?ver=2.2.13' type='text/css' media='all' />
+<link rel='stylesheet' id='uaf_client_css-css' href='https://sooma.com/files/useanyfont/uaf.css?ver=1748929761' type='text/css' media='all' />
+<link rel='stylesheet' id='wpml-legacy-horizontal-list-0-css' href='https://sooma.com/wp-content/plugins/sitepress-multilingual-cms/templates/language-switchers/legacy-list-horizontal/style.min.css?ver=1' type='text/css' media='all' />
+<style id='wpml-legacy-horizontal-list-0-inline-css' type='text/css'>
+.wpml-ls-statics-footer a, .wpml-ls-statics-footer .wpml-ls-sub-menu a, .wpml-ls-statics-footer .wpml-ls-sub-menu a:link, .wpml-ls-statics-footer li:not(.wpml-ls-current-language) .wpml-ls-link, .wpml-ls-statics-footer li:not(.wpml-ls-current-language) .wpml-ls-link:link {color:#444444;background-color:#ffffff;}.wpml-ls-statics-footer .wpml-ls-sub-menu a:hover,.wpml-ls-statics-footer .wpml-ls-sub-menu a:focus, .wpml-ls-statics-footer .wpml-ls-sub-menu a:link:hover, .wpml-ls-statics-footer .wpml-ls-sub-menu a:link:focus {color:#000000;background-color:#eeeeee;}.wpml-ls-statics-footer .wpml-ls-current-language > a {color:#444444;background-color:#ffffff;}.wpml-ls-statics-footer .wpml-ls-current-language:hover>a, .wpml-ls-statics-footer .wpml-ls-current-language>a:focus {color:#000000;background-color:#eeeeee;}
+</style>
+<link rel='stylesheet' id='tablepress-default-css' href='https://sooma.com/wp-content/plugins/tablepress/css/build/default.css?ver=3.1.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scss-css' href='https://sooma.com/wp-content/cache/busting/1/sccss.css?ver=1715911290' type='text/css' media='all' />
+<link rel='stylesheet' id='divi-style-css' href='https://sooma.com/wp-content/themes/Divi/style-static.min.css?ver=4.27.4' type='text/css' media='all' />
+<script type="text/javascript" id="wpml-cookie-js-extra">
+/* <![CDATA[ */
+var wpml_cookies = {"wp-wpml_current_language":{"value":"pt-pt","expires":1,"path":"\/"}};
+var wpml_cookies = {"wp-wpml_current_language":{"value":"pt-pt","expires":1,"path":"\/"}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sooma.com/wp-content/plugins/sitepress-multilingual-cms/res/js/cookies/language-cookie.js?ver=476000" id="wpml-cookie-js" defer="defer" data-wp-strategy="defer"></script>
+<link rel="https://api.w.org/" href="https://sooma.com/pt-pt/wp-json/" /><link rel="alternate" title="JSON" type="application/json" href="https://sooma.com/pt-pt/wp-json/wp/v2/pages/36" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://sooma.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress 6.8.2" />
+<link rel='shortlink' href='https://sooma.com/pt-pt/' />
+<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed" href="https://sooma.com/pt-pt/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsooma.com%2Fpt-pt%2F" />
+<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed" href="https://sooma.com/pt-pt/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsooma.com%2Fpt-pt%2F&#038;format=xml" />
+<meta name="generator" content="WPML ver:4.7.6 stt:1,42,41;" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /><script type="text/javascript">
+if (window.location.pathname == "/" && window.location.hostname == "sooma.pt") window.location = "https://sooma.pt/pt-pt/";	
+if (window.location.pathname == "/" && window.location.hostname == "sooma.com.br") window.location = "https://sooma.com.br/pt-br/";	</script><style class='wp-fonts-local' type='text/css'>
+@font-face{font-family:brandon;font-style:normal;font-weight:400;font-display:fallback;src:url('https://sooma.com/files/useanyfont/170719102053Brandon.woff2') format('woff2');}
+</style>
+<link rel="icon" href="https://sooma.com/files/2022/06/cropped-icon-sooma-512-1-32x32.png" sizes="32x32" />
+<link rel="icon" href="https://sooma.com/files/2022/06/cropped-icon-sooma-512-1-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://sooma.com/files/2022/06/cropped-icon-sooma-512-1-180x180.png" />
+<meta name="msapplication-TileImage" content="https://sooma.com/files/2022/06/cropped-icon-sooma-512-1-270x270.png" />
+<style id="sccss">/*
+vermelho: #eb1d24; hover: #d4262c
+texto: #212121;
+texto-light: #777777;
+fundos: #121b26;
+success: #35bf2e;
+warning: #f7931e;
+info: #1472e2;
+gray: #a5a5a5;
+--
+botão cinza: #eee; hover: d7d7d7
+*/
+/*------------------------------------------------
+									BRIEFING
+------------------------------------------------*/
+.gform_wrapper .gfield_html.gfield_no_follows_desc {
+	margin-top: 50px;
+}
+.form_saved_message_sent {
+    border: 0;
+    background-color: white;
+    border-radius: 0;
+}
+.form_saved_message_sent span:first-child {
+    padding: 20px 20px 23px;
+}
+.gform_wrapper .gfield.mais ul.gfield_checkbox li {
+    text-align: left;
+    width: 100%;
+    font-weight: bold;
+}
+.gform_wrapper .gfield.mais {
+    margin: 0 0 30px!important;
+}
+.gform_wrapper .gfield.mais ul.gfield_checkbox {
+    margin: 0;
+}
+.gform_wrapper .gfield.mais .gfield_checkbox li label {
+    margin: 0;
+}
+.gform_wrapper .gfield.mais label:first-child {
+    display: none;
+}
+.field_sublabel_below p.mini {
+    width: 100%;
+    font-size: 13px;
+    font-weight: normal;
+    padding-top: 3px;
+}
+.gform_wrapper p.intro {
+    font-size: 18px;
+    color: #818992;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.5em;
+}
+
+.gform_wrapper h1 {
+    text-align: center;
+  	font-size: 45px;
+}
+.gform_wrapper p.intro {
+    text-align: center;
+}
+.gform_wrapper .form_saved_message {
+    margin: 1em 0px;
+    line-height: 1.8;
+    border: 0;
+    background-color: white;
+    border-radius: 0;
+}
+
+.gform_wrapper h2 {
+    font-size: 28px;
+    line-height: 1.4em;
+}
+
+.gform_wrapper .fim.gfield_html {
+    text-align: center;    
+}
+
+.gform_wrapper .ginput_container_fileupload input {
+    padding: 7px !important;
+}
+.gform_wrapper .gfield_required {
+    color: #394049;
+}
+.gform_wrapper ul li.gfield.divided.product {
+font-size: 36px;
+text-align: center;
+padding: 25px 0;
+color: #818992;
+}
+
+.gform_wrapper ul li.gfield.divided {
+    padding-top: 8px;
+    margin-top: 30px;
+}
+
+.gform_wrapper .ginput_complex.ginput_container.has_first_name.no_middle_name.has_last_name span {
+    width: 48%;
+    float: left;
+}
+.gform_wrapper .ginput_complex.ginput_container.has_first_name.no_middle_name.has_last_name span.name_first {
+    margin-right: 0;
+}
+.gform_wrapper .name_last {
+    margin-left: 4%;
+}
+.gform_wrapper textarea.large {
+    width: 100%;
+}
+
+.gform_wrapper a {
+    color: #eb1d24!important;
+    transition: .2s linear;
+    border-bottom: 1px dotted #eb1d24;
+}
+.gform_wrapper a:hover {
+    color: #eb1d24;
+    border-bottom: 1px dotted #eb1d24;
+}
+a.gform_save_link, a.gform_save_link:hover {
+    border-bottom: 0;
+}
+a.gform_save_link:hover {
+    color: #00C538!important;
+}
+.gform_wrapper .gfield.info p.mini {
+    width: 100%;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+    background-color: white;
+    padding: 10px 30px 12px;
+}
+.gform_wrapper .gfield.info {
+    margin-top: 20px;
+}
+
+.gfield.mais.field_sublabel_below.field_description_below {
+    margin-top: -30px;
+}
+
+.gfield.gf_right_half.field_sublabel_below.field_description_below.submenu {
+margin-top: -30px;
+}
+
+.gform_wrapper p.mini {
+    width: 100%;
+    font-size: 13px;
+}
+.gform_wrapper .top_label .gsection_description {
+width: 84%;
+font-size: 15px;
+padding-top: 5px;
+margin: 0 auto;
+}
+
+li#field_1_36 {
+    margin-bottom: 0px !important;
+    padding: 0 10px 10px;
+}
+
+li#field_1_38 {
+    margin-top: 40px;
+}
+li#field_1_39 {
+    margin-top: 50px;
+}
+li#field_1_40 {
+    margin-top: 50px;
+}
+.gform_wrapper li#field_1_38 div.gfield_description {
+    padding: 0;
+}
+
+.gform_wrapper .gf_right_half.logo {
+    padding: 30px 36px;
+    background: #394049;
+    color: white;
+}
+.gform_wrapper .gf_right_half.logo p {
+    padding: 5px 0 8px;
+    color: #A6AAB1;
+    line-height: 1.5em;
+}
+.gf_right_half.logo p a:hover {
+    color: #fff!important;
+    border-bottom: 1px dotted white;
+}
+.gform_wrapper .gfield_list td.gfield_list_cell input, .gform_wrapper .top_label .gfield_list {
+    width: 100%;
+}
+.gform_wrapper table.gfield_list tr td.gfield_list_icons, .gform_wrapper table.gfield_list tr td:last-child {
+    padding: 0px 0px 0px 12px;
+    width: 63px !important;
+}
+.gform_wrapper td.gfield_list_icons img.add_list_item {
+    margin: 0px 15px 0px 0px!important;
+}
+.gform_wrapper ul.gfield_checkbox, .gform_wrapper ul.gfield_radio {
+    margin: 14px 0px 3px 0 !important;
+}
+
+.gform_wrapper li.briefing {
+    margin-bottom: -9px;
+}
+.gform_wrapper .briefing ul {
+    overflow: hidden;
+    padding: 17px 17px 12px;
+    background: #eee;
+}
+.gform_wrapper .briefing.last {
+    margin-bottom: 40px;
+}
+.gform_wrapper .gfield_checkbox li label, .gform_wrapper .gfield_radio li label {
+    line-height: 1.6;
+    color: #394049;
+}
+.gform_wrapper img.add_list_item {
+    background-size: 0;
+    opacity: 0.7;
+}
+.gform_wrapper img.delete_list_item {
+    background-size: 0;
+    opacity: 0.2;
+}
+
+.gform_wrapper .briefing .gfield_radio li {
+    width: 50%;
+    float: left;
+    display: block;
+}
+.gform_wrapper .briefing label.gfield_label {
+    display: none;
+}
+
+.gform_wrapper.gf_browser_gecko .gfield_checkbox li input, .gform_wrapper.gf_browser_gecko .gfield_checkbox li input[type="checkbox"], .gform_wrapper.gf_browser_gecko .gfield_radio li input[type="radio"] {
+    margin: 6px 10px 0 0!important;
+}
+.gform_wrapper ul.gfield_checkbox li input[type="checkbox"] + label {
+    color: #394049;
+    margin-left: 20px;
+}
+
+li.gfield.gfield_error.gfield_contains_required div.ginput_container, .gform_wrapper li.gfield_html {
+    max-width: 100%;
+}
+
+.gform_wrapper .top_label li.gfield.gf_left_half input.large, .gform_wrapper .top_label li.gfield.gf_left_half input.medium, .gform_wrapper .top_label li.gfield.gf_left_half select.large, .gform_wrapper .top_label li.gfield.gf_left_half select.medium, .gform_wrapper .top_label li.gfield.gf_right_half input.large, .gform_wrapper .top_label li.gfield.gf_right_half input.medium, .gform_wrapper .top_label li.gfield.gf_right_half select.large, .gform_wrapper .top_label li.gfield.gf_right_half select.medium {
+    width: 100%;
+}
+.gform_wrapper .top_label li.gfield.gf_left_half {
+    margin: 0px 4% 0px;
+    width: 48%;
+}
+.gform_wrapper .top_label li.gfield.gf_right_half {
+    width: 48%;
+    margin: 0px 0px 34px;
+}
+
+.gform_wrapper textarea.small {
+    width: 100%;
+}
+
+.gform_wrapper .gform_page_footer .button.gform_previous_button {
+    cursor: pointer;
+    margin-bottom: 0;
+    background: none;
+    border: 0;
+    border-bottom: 1px dotted #7d8289;
+    color: #7d8289;
+    padding: 14px 0 4px !important;
+    font-size: 15px;
+    transition: .2s linear;
+}
+.gform_wrapper .gform_page_footer .button.gform_previous_button:hover {
+    color: #eb1d24;
+    border-bottom: 1px dotted #eb1d24;
+}
+
+.gform_wrapper .gform_page_footer {
+    margin: 50px 0px 0px;
+    width: 100%;
+    clear: both;
+    padding: 32px 0px 0px;
+    border-top: 2px dotted #d0d5d8 !important;
+}
+
+.gform_wrapper .gform_page_footer .button.gform_next_button, .gform_wrapper .gform_page_footer .button.gform_button, .gform_wrapper .gform_footer input[type="submit"] {
+    margin-right: 28px;
+    float: left;
+    cursor: pointer;
+    background-color: #eb1d24;
+    border: 0;
+    border-radius: 3px;
+    padding: 16px 26px 18px !important;
+    font-size: 14px;
+    color: white;
+    font-weight: bold;
+    transition: .2s linear;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.gform_wrapper .gform_page_footer .button.gform_next_button:hover, .gform_wrapper .gform_page_footer .button.gform_button:hover, .gform_wrapper .gform_footer input[type="submit"]:hover {
+    background-color: #d4262c;
+}
+.gform_wrapper .gform_footer {
+    padding: 0;
+    margin: 0;
+}
+
+a.gform_save_link {
+    position: fixed;
+    z-index: 10;
+    top: 16px;
+    right: 20px;
+    font-size: 13px;
+    color: rgb(163, 167, 173) !important;
+}
+a.gform_save_link::after {
+    display: block;
+    content: url("/files/2016/05/guardar.png");
+    float: right;
+    margin-left: 8px;
+}
+
+.gform_wrapper .gsection {
+    border-bottom: 0px none;
+    padding: 20px 0px 0px!important;
+    margin: 40px 0px !important;
+    border-top: 2px solid #d0d5d8;
+    text-align: center;
+}
+
+.gform_wrapper h2.gsection_title {
+    font-size: 32px;
+    line-height: 1.4em;
+    font-weight: normal;
+    padding: 8px 0 6px!important;
+}
+
+.gform_wrapper .gfield_description {
+    width: 100%;
+    font-size: 13px;
+    font-weight: normal;
+    color: #7d8289;
+}
+
+.gform_wrapper select, .gform_wrapper select:focus {
+   -webkit-appearance: none;
+   -moz-appearance: none;
+   appearance: none;
+   
+    background: url("/files/2015/12/select-arrow1.png") no-repeat;
+    background-position: 96% center;
+}
+.gform_wrapper select::-ms-expand { /* for IE 11 */
+    display: none;
+}
+
+.gform_wrapper .ginput_complex input[type="text"], .gform_wrapper textarea.medium {
+    width: 100%;
+}
+
+.gform_wrapper .ginput_complex .ginput_right, .gform_wrapper.gf_browser_gecko ul.gform_fields li.gfield div.ginput_complex span.ginput_right select, .gform_wrapper.gf_browser_gecko ul.gform_fields li.gfield select {
+    margin-left: 0;
+}
+.gform_wrapper .ginput_complex .ginput_right select, .gform_wrapper .ginput_complex select {
+    width: 100% !important;
+}
+.gform_wrapper.gf_browser_gecko select {
+    padding: 6px 0px 7px;
+}
+.gform_wrapper select {
+    background-color: #eee;
+    border: 1px solid #eee;
+    padding: 2px 16px 2px 2px;
+    color: rgb(40, 40, 40);
+    text-indent: 4px;
+}
+.gform_wrapper select:focus {
+    border-color: #d0d5d8;
+    color: #394049;
+    background: url("/files/2015/12/select-arrow1.png") no-repeat white;
+    background-position: 96% center;
+}
+
+.gform_wrapper .gf_step.gf_step_active {
+    background-image: url("/files/2015/12/editing-onboarding.png");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+}
+.gform_wrapper .gf_step.gf_step_completed {
+    background-image: url("/files/2016/05/tick-2.png");
+    opacity: 1;
+    background-repeat: no-repeat;
+    background-position: right top;
+    color: white;
+}
+.gform_wrapper .gf_step.gf_step_pending {
+    opacity: 1;
+    color: rgba(156, 159, 164, 0.5);
+}
+.gform_wrapper #gf_step_1_2 {
+    margin: 0px 12px;
+}
+
+.gform_wrapper .top_label .gfield_label {
+    margin: 0 0 7px;
+    font-weight: normal;
+    display: inline-block;
+    line-height: 1.3;
+    clear: both;
+    font-size: 18px;
+    text-transform: initial;
+    color: #394049;
+}
+
+.gform_body .gfield {
+    margin-bottom: 30px;
+}
+.gform_body .gfield_label {
+    margin-bottom: 18px;
+}
+.gform_wrapper input.large {
+    width: 100%!important;
+}
+.gform_body input, .gform_wrapper textarea {
+    padding: 7px 12px 10px !important;
+    color: #394049;
+    border: 1px solid #eee;
+    background: #eee;
+    text-indent: 0 !important;
+}
+/*.gform_body input:focus, .gform_wrapper textarea:focus {
+    border: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    background: #eee;
+}*/
+.gform_wrapper .ginput_complex label {
+    font-size: 13px;
+    margin: 2px 0px 17px;
+    font-weight: initial;
+    letter-spacing: 0;
+    color: #7d8289;
+}
+
+.gform_wrapper .ginput_complex .ginput_full input[type="text"] {
+    width: 100% !important;
+}
+.gform_wrapper .field_description_below .gfield_description {
+    padding-top: 5px;
+    line-height: 1.6em;
+}
+.gform_wrapper li.gfield_error input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]):not([type="image"]):not([type="file"]), .gform_wrapper li.gfield_error textarea {
+    border: 0;
+  	border-bottom: 1px solid red;
+}
+.gform_body .form-headers h1 {
+    padding-bottom: 12px;
+  	font-size: 45px;
+}
+.gform_body .form-headers {
+    padding-bottom: 25px;
+}
+.gform_body p.intro {
+  color: #394049;
+  font-weight: initial;
+  max-width: 630px;
+  margin: 0 auto 20px;
+}
+
+.gform_wrapper .gf_step {
+    font-size: 18px;
+    padding: 0px 22px 6px;
+    display: inline;
+    font-family: "Soleil", sans-serif;
+}
+
+.gform_wrapper {
+    margin: 0;
+    max-width: 100%;
+}
+.gform_wrapper .gf_page_steps {
+    z-index: 9;
+    width: 100%;
+    margin: 0;
+    border-bottom: 0;
+    position: fixed;
+    background-color: #1e242c;
+    color: white;
+    left: 0;
+    top: 0;
+    text-align: center;
+    padding: 18px 0;
+    background-repeat: no-repeat;
+    background-position: 20px 15px;
+}
+.gform_wrapper .gf_step span.gf_step_number {
+    display: none;
+}
+.gform_wrapper .gf_step {
+    margin: 0;
+}
+.gform_wrapper .gform_fileupload_multifile .gform_drop_area {
+    border: 2px dashed #d0d5d8;
+    color: #7d8289;
+    background-color: #eee;
+}
+span#extensions_message {
+    font-size: 13px;
+    color: #7d8289;
+}
+.gform_body input.gform_button_select_files {
+    padding: 13px 18px 11px!important;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    background: rgba(57, 64, 73, 0.5);
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: .2s linear;
+    font-family: "soleil", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.gform_body input.gform_button_select_files:hover {
+    background: #d4262c;
+}
+.gform_wrapper h3 {
+    font-weight: normal;
+    color: #7d8289;
+}
+/*Erros*/
+
+.gform_wrapper .gfield_error .ginput_complex .ginput_left input[type="email"], .gform_wrapper .gfield_error .ginput_complex .ginput_left input[type="number"], .gform_wrapper .gfield_error .ginput_complex .ginput_left input[type="password"], .gform_wrapper .gfield_error .ginput_complex .ginput_left input[type="tel"], .gform_wrapper .gfield_error .ginput_complex .ginput_left input[type="text"], .gform_wrapper .gfield_error .ginput_complex .ginput_left input[type="url"], .gform_wrapper .gfield_error .ginput_complex .ginput_right input[type="email"], .gform_wrapper .gfield_error .ginput_complex .ginput_right input[type="number"], .gform_wrapper .gfield_error .ginput_complex .ginput_right input[type="password"], .gform_wrapper .gfield_error .ginput_complex .ginput_right input[type="tel"], .gform_wrapper .gfield_error .ginput_complex .ginput_right input[type="text"], .gform_wrapper .gfield_error .ginput_complex .ginput_right input[type="url"], .gform_wrapper .ginput_complex input[type="email"], .gform_wrapper .ginput_complex input[type="number"], .gform_wrapper .ginput_complex input[type="password"], .gform_wrapper .ginput_complex input[type="tel"], .gform_wrapper .ginput_complex input[type="text"], .gform_wrapper .ginput_complex input[type="url"] {
+    width: 100%;
+}
+.gform_wrapper .top_label .gfield_error textarea.textarea {
+    width: 100%;
+}
+.gform_wrapper li.gfield.gfield_error.gfield_contains_required label.gfield_label {
+    margin-top: 0;
+}
+.gform_wrapper li.gfield.gfield_error.gfield_contains_required div.ginput_container {
+    margin-top: 7px;
+}
+.gform_wrapper li.gfield.gfield_error.gfield_contains_required div.gfield_description, .gform_wrapper li.gfield.gfield_error.gfield_contains_required div.ginput_container, .gform_wrapper li.gfield.gfield_error.gfield_contains_required fieldset legend.gfield_label, .gform_wrapper li.gfield.gfield_error.gfield_contains_required label.gfield_label {
+    margin-left: 0;
+}
+.gform_wrapper li.gfield.gfield_error.gfield_contains_required div.ginput_container, .gform_wrapper li.gfield_html {
+    max-width: 100%;
+}
+.gform_wrapper li.gfield_error div.ginput_complex.ginput_container label, .gform_wrapper li.gfield_error ul.gfield_checkbox, .gform_wrapper li.gfield_error ul.gfield_radio {
+    color: red;
+}
+.gform_wrapper .top_label .gfield_error {
+    width: 100%;
+}
+.gform_wrapper .top_label li.gfield.gfield_error.gf_left_half, .gform_wrapper .top_label li.gfield.gfield_error.gf_right_half {
+    width: 48% !important;
+}
+.gform_wrapper .ginput_complex .ginput_left, .gform_wrapper .ginput_complex .ginput_right, .gform_wrapper .top_label li.gfield.gfield_error.gf_left_half, .gform_wrapper .top_label li.gfield.gfield_error.gf_right_half {
+    width: 50% !important;
+}
+.gform_wrapper .ginput_complex .ginput_left, .gform_wrapper .top_label li.gfield.gfield_error.gf_left_half {
+    margin-right: 4%;
+}
+.gform_wrapper li.gfield_error textarea {
+    border: 1px solid #d7dde0;
+    border-bottom: 1px solid red;
+}
+.gform_wrapper div.validation_error {
+    color: red;
+    font-size: 15px;
+    font-weight: normal;
+    border-top: 0;
+    border-bottom: 0;
+    padding: 18px 20px 22px;
+    text-align: center;
+    background-color: white;
+    margin-bottom: 35px;
+}
+div.gf_page_steps + div.validation_error {
+    margin-top: 0;
+}
+.gform_wrapper li.gfield.gfield_error, .gform_wrapper li.gfield.gfield_error.gfield_contains_required.gfield_creditcard_warning {
+    background-color: transparent;
+    padding: 0px;
+    border-top: 0;
+    border-bottom: 0;
+}
+.gform_wrapper li.gfield_error input[type="text"] {
+    border: 1px solid #d7dde0;
+    border-bottom: 1px solid red;
+}
+li.gfield.gfield_error.gfield_contains_required .gfield_required {
+    color: red;
+}
+.gform_wrapper li.gfield.gfield_error.gfield_contains_required div.gfield_description {
+    padding-right: 0 !important;
+    color: red;
+}
+.action, #post-3483 {
+    background-color: #edf2f4!important;
+}
+.gfield.conteudos {
+  padding: 46px 63px 50px !important;
+  background-color: #FFF;
+  text-align: center;
+}
+.et_pb_pricing_content_top {
+    border-bottom: 1px solid #e4e8ea;
+}
+  body .gform_wrapper ul li.gfield.ecommerce, body .gform_wrapper ul li.gfield.catalogo {
+      padding: 130px 40px 32px;
+  }
+  .gfield.catalogo, .gfield.ecommerce {
+      background-position-x: center;
+      background-position-y: 40px;
+  }
+  li.gfield.catalogo .gfield_label, li.gfield.ecommerce .gfield_label {
+      text-align: center;
+      width: 100%;
+  }
+  .gform_wrapper .gfield_checkbox li label, .gform_wrapper .gfield_radio li label, .gform_wrapper *, .gform_wrapper *::after, .gform_wrapper *::before {
+      font-size: 15px;
+  }
+
+/*------------------------------------------------
+										OUTROS
+------------------------------------------------*/
+.footer-widget {
+display: inline-flex;
+}
+#icl_lang_sel_widget-4 {
+    width: 107px;
+}
+.wpml-ls-slot-sidebar-3:first-child {
+	display: none!important;
+}
+#text-6 {
+    padding-top: 2.5px;
+}
+/*------------------------------------------------
+										POP-UP
+------------------------------------------------*/
+.gform_wrapper ul.gform_fields li.gfield {
+    padding-right: 0;
+}
+.pum-theme-1403 .pum-content + .pum-close {
+	color: #eb1d24!important;
+	font-family: inherit;
+	border: none;
+	border-radius: 0;
+	box-shadow: none!important;
+	text-shadow: none!important;
+	background-color: transparent!important;
+	font-weight: 800;
+  font-size: 30px!important;
+}
+.pum-theme-1403 .pum-title {
+	font-size: 34px;
+  color: #000!important;
+  font-family: 'brandon' !important;
+  margin-bottom: 30px;
+}
+.pum-theme-1403 {
+	background-color: rgba( 0, 0, 0, 0.75)!important;
+}
+/*------------------------------------------------
+										CONTACTOS
+------------------------------------------------*/
+.gform_wrapper input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]):not([type="image"]):not([type="file"]), .gform_wrapper textarea.medium {
+	background: #eee;
+	border: none;
+}
+.gform_wrapper {
+margin: 0 auto;
+max-width: 100%;
+}
+.gform_wrapper .gform_footer {
+overflow: auto;
+}
+.gform_wrapper .top_label .gfield_label {
+margin: 0;
+font-weight: 500;
+}
+.gform_wrapper ul li.gfield {
+margin-bottom: 15px!important;
+}
+.gform_wrapper .gform_footer input[type="submit"] {
+border: 0;
+	padding: 13px 25px;
+	color: #fff;
+	background-color: #eb1d24;
+	border-radius: 2px;
+	cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'brandon' !important;
+  font-size: 14px;
+  -webkit-transition: all 0.2s;
+	-moz-transition: all 0.2s;
+	transition: all 0.2s;
+}
+.gform_wrapper .gform_footer input[type="submit"]:hover {
+	background-color: #d4262c;
+}
+.gform_wrapper .ginput_complex label {
+margin-top: 0px;
+color: #aaa;
+}
+.gform_wrapper textarea.large {
+height: 15.625em;
+width: 100%;
+}
+/*------------------------------------------------
+										MENU
+------------------------------------------------*/
+.wpml-ls-sidebars-sidebar-3 ul {
+	float: right;
+}
+a.wpml-ls-link {
+	padding-top: 0!important;
+}
+.wpml-ls-sidebars-sidebar-3 {
+	padding: 0!important;
+} 
+/*---------------------------------------------------------------*/
+body.et_pb_button_helper_class .et_pb_button, body.et_pb_button_helper_class .et_pb_button:hover {
+	padding: 12px 25px !important;
+}
+.home .header-content {
+	max-width: 55%;
+  padding-right: 0;
+}
+.visto {
+    margin-right: 8px;
+    font-family: "ETmodules";
+}
+/*logos plataforms*/
+.plataforms {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+}
+.plataforms-logo.ios {
+    width: 70px;
+}
+.plataforms-logo.android {
+    width: 43px;
+}
+.plataforms-logo img {
+    max-width: 140px;
+    margin: 0 auto;
+}
+.plataforms-logo {
+    float: left;
+    overflow: auto;
+    width: 165px;
+    margin-right: 50px;
+    display: inline-flex;
+}
+.plataforms-logo:last-child {
+    margin-right: 0;    
+}
+.et_pb_fullwidth_header.intro-topo.et_pb_fullwidth_header p {
+    color: #ddd;    
+}
+.et_pb_fullwidth_header.intro-topo .et_pb_fullwidth_header_container.center .header-content {
+    width: 100%;
+    max-width: 1080px;
+    padding: 10px 0;
+}
+.et_pb_bg_layout_light.et_pb_module.et_pb_button {
+    color: #fff;    
+}
+/*Page Solutions*/
+.solutions p {
+    color: #777;
+    font-size: 16px;
+    line-height: 1.6em;
+}
+.solutions-title h2 {
+    padding-bottom: 0;
+}
+.we-do img {
+    position: absolute;
+    left: 0;
+    max-width: 45%;
+}
+img.favicon {
+    max-width: 30px;
+    margin-right: 8px;    
+}
+.destaque p {
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1.4em;
+}
+a.text-link {
+    text-decoration: underline;
+    font-size: 18px;
+}
+a.text-link:hover {
+    text-decoration: none;
+    color: #d4262c;
+}
+.parceiros-table .et_pb_column {
+	    border: 1px solid #ccc;
+}
+/*Parceiros
+.grayscale {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    opacity: 1;
+    border: 1px solid #ccc;
+    width: 31.6% !important;
+    margin: 0 1% !important;
+}
+/*
+.grayscale:hover {
+    -webkit-filter: grayscale(0%);
+    filter: grayscale(0%);
+    opacity: 1;
+}
+/*
+/*Footer*/
+.et_pb_widget {
+    width: 100%;
+}
+#text-6 .textwidget {
+    float: right;
+}
+#text-5 a {
+    margin-right: 22px; 
+    color: #a5a5a5;
+    font-size: 18px;
+}
+#text-5 a:hover {
+    color: #777;
+    text-decoration: underline;
+}
+#text-5 .textwidget img {
+    max-width: 30px;
+    margin-right: 15px;
+    vertical-align: top;
+}
+#footer-widgets {
+    padding: 2% 0 0;
+    border-top: 1px solid #ddd;
+}
+.et_pb_gutters3 .footer-widget {
+    margin: 0 5.5% 2% 0;
+}
+/*---*/
+body.et_pb_button_helper_class .et_pb_button:hover {
+    color: #fff !important;    
+}
+/*buy mailbox*/
+.pro {
+    border: 1px solid hsla(0,0%,50.2%,.2);
+    border-radius: 2px;
+    box-shadow: -10px 10px 35px RGBA(20,114,226,.1);
+    margin: 0 0.5%;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.box-3 {
+    padding: 5px 25px 60px;    
+}
+.box-3 a.more-mailbox {
+    text-decoration: underline;
+    margin-right: 8px;
+}
+.box-3 a.more-mailbox:hover {
+    text-decoration: none;
+    color: #d4262c;
+}
+.box-3 p {
+    font-size: 16px;
+    color: #777;
+}
+a.button-pro {
+    font-family: 'brandon' !important;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+    background: #eb1d24;
+    padding: 15px 50px;
+    color: #fff;
+    border-radius: 2px;
+    transition: .2 ease;
+}
+a.button-pro:hover {
+    background: #d4262c;
+    color: #fff;
+}
+a.button-mailbox {
+    font-family: 'brandon' !important;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+    background: #eee;
+    padding: 15px 50px;
+    color: #777;
+    border-radius: 2px;
+    transition: .2 ease;
+}
+a.button-mailbox:hover {
+    background: #d7d7d7;
+    color: #222;
+}
+.price {
+    font-size: 46px;
+    font-weight: 300;
+    color: #212121;
+    padding-bottom: 12px;
+}
+.standard:hover, .pro:hover {
+    transform: translate(0,-20px);
+    transition-delay: 0s !important;  
+}
+.standard {
+    border: 1px solid hsla(0, 0%, 50.2%, 0.2);
+    border-radius: 2px;
+    box-shadow: -10px 10px 35px RGBA(20, 114, 226, 0.1);
+    margin: 0 0.5% !important;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+}
+.box-1 {
+    background: #f4f4f4;
+    padding: 16px 25px;
+}
+.box-1pro {
+    background: #212121;
+    padding: 16px 25px;
+}
+.per {
+    color: #777;
+    font-size: 16px;
+}
+.box-2 {
+    padding: 40px 25px 25px;
+}
+/*---*/
+.section_separators .ds_slant_top::before {
+    background: white;
+}
+/*tabela preco*/
+.check, .none {
+    font-family: "ETmodules";    
+}
+
+.learn-more a {
+    padding-top: 10px;
+    display: block; 
+    color: #777;
+}
+.learn-more a:hover {
+    color: #eb1d24;   
+}
+.learn-more h2 {
+    padding-bottom: 22px;
+}
+.more {
+    color: #eb1d24;
+    border: 2px solid rgba(235, 29, 36, 0.8);
+    padding: 4px;
+    border-radius: 50%;
+    margin-right: 8px;
+    font-family: "ETmodules";
+}
+.all {
+    overflow: auto;
+    position: absolute;
+    width: 100%;
+}
+.elements {
+    display: block;    
+}
+.icons-sooma img {
+    max-width: 65%;
+    margin-bottom: 10px;
+}
+.icons-sooma.last{
+    margin-right: 0;
+}
+.icons-sooma {
+    margin-right: 5px;
+    display: block;
+    width: 121px;
+    text-align: center;
+    float: left;
+}
+/*cover-red-home*/
+.et_pb_fullwidth_header.cover .et_pb_button_one.et_pb_button {
+    padding: 14px 30px !important;
+    background: #eb1d24;
+    letter-spacing: 1px;
+    font-size: 14px;
+    color: #fff !important;
+}
+.et_pb_fullwidth_header.cover .et_pb_button_one.et_pb_button:hover {
+    background: #d4262c !important;
+}
+.et_pb_fullwidth_header.cover .et_pb_fullwidth_header_container.left .header-content {
+    margin-right: 0;
+}
+.et_pb_fullwidth_header.cover .et_pb_fullwidth_header_container.left .header-content h1 {
+    font-size: 48px;
+    line-height: 1em;
+}
+.et_pb_fullwidth_header.cover {
+    padding: 60px 0 100px;
+}
+/*
+.et_pb_fullwidth_header p::before {
+    border-top: 2px dotted rgba(255, 255, 255, 0.6);
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    top: 195px;
+    width: 165px; 
+}*/
+.et_pb_fullwidth_header p {
+    font-size: 24px;
+    line-height: 1.4em;
+    padding-top: 14px;
+}
+
+/*blurb services*/
+.services .et_pb_main_blurb_image {
+    margin-bottom: 25px;
+    text-align: left;
+}
+.shadow {
+    box-shadow: 0 20px 20px rgba(0,0,0,.08);
+    padding: 20px;
+}
+/*
+.section-header::after {
+    background: #eb1d24;
+    content: " ";
+    display: block;
+    height: 1px;
+    width: 45px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}*/
+/*menu-fixo*/
+.et_header_style_left .et-fixed-header #et-top-navigation nav > ul > li > a {
+    padding-bottom: 0;    
+}
+#main-header.et-fixed-header {
+    box-shadow: 0 2px 4px 0 RGBA(20, 114, 226, 0.1) !important;   
+    border-bottom: 2px solid RGBA(20, 114, 226, 0.1);
+}
+.et-fixed-header .logo_container a {
+    background-image: url("/files/2017/08/icon-sooma.svg");
+    height: 40px;
+    display: block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    flex: 0 1 150px;
+    position: static;
+}
+.et-fixed-header img#logo {
+    display: none;
+}
+/*menu*/
+#top-menu li.solutions-menu li.current-menu-item > a  {
+    background: #fff;
+    color: #777;
+}
+#top-menu li li.current-menu-item > a {
+    color: #212121;
+    background: #eee;
+}
+body.admin-bar.et_fixed_nav #main-header {
+    top: 32px !important;    
+}
+#after-menu-widgets .et_pb_widget ul li:last-child {
+    padding-right: 0;
+}
+.et_pb_widget #menu-menu-right a, .et_pb_widget #menu-menu-right-br a, .et_pb_widget #menu-menu-right-pt a {
+    color: #777;
+    font-weight: normal;    
+}
+.et_pb_widget #menu-menu-right a:hover {
+    color: #eb1d24;
+}
+#after-menu-widgets .et_pb_widget ul li {
+    margin-bottom: 0;
+    padding-right: 22px;
+}
+#top-menu .menu-item-has-children > a:first-child {
+    padding-right: 18px;
+}
+#top-menu .menu-item-has-children > a:first-child::after {
+    font-size: 14px;
+}
+#top-menu .menu-item-has-children > a:first-child::after {
+    top: 21px;
+}
+#before-menu-widgets {
+    display: none;    
+}
+#menu-menu-right, #menu-menu-right-br, #menu-menu-right-pt {
+    display: flex;
+    padding-top: 20px;
+}
+.container.et_menu_container {
+    display: flex;
+}
+.et_header_style_left .logo_container {
+    flex: 0 1 150px;
+    position: static;
+}
+.et_header_style_left #et-top-navigation {
+    flex: 1 0 auto;
+    padding: 20px 0 25px 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+ /*.et_fixed_nav.et_secondary_nav_enabled #main-header {
+    border-bottom: 2px solid #eee;
+   box-shadow: 0px 30px 88px #fff !important;
+}*/
+/*
+#logo {
+    position: relative;
+    top: -6px;    
+}
+
+.et_header_style_left #et-top-navigation, .et_header_style_left .et-fixed-header #et-top-navigation {
+    padding: 8px 0 0 0;    
+}*/
+#top-menu li {
+    top: 6px;    
+}
+#top-menu-nav > ul > li > a:hover {
+    opacity: 1;
+    color: #eb1d24;    
+}
+.nav ul li a:hover {
+    opacity: 1;
+    background-color: #eee;
+}
+.et-fixed-header #top-menu li li a {
+    font-size: 16px;
+}
+#top-menu li li a {
+    width: auto;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-family: 'Source Sans Pro', Helvetica, Arial, Lucida, sans-serif !important;
+    font-weight: initial;
+}
+.nav li li {
+    line-height: 1.6em;
+    width: 100%;
+}
+#top-menu li li {
+    padding: 0;
+}
+.nav li ul {
+    padding: 8px 0;
+    border-radius: 2px;
+}
+#top-menu .menu-item-has-children > a:first-child::after {
+    top: 20px;    
+}
+.et_header_style_left #et-top-navigation nav > ul > li > a {
+    padding-bottom: 10px !important;
+    padding-top: 20px;    
+    font-weight: initial;
+}
+#top-menu > li:first-child::before, #top-menu li li::before {
+    display: none;
+}
+/*
+#top-menu li {
+    padding-right: 16px;
+    padding-left: 16px;
+}
+#top-menu li::before {
+    border-left: 1px dotted gray;
+    content: "";
+    display: block;
+    height: 15px;
+    left: 0;
+    margin-top: 0;
+    position: absolute;
+    top: 27px;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 0;    
+}
+*/
+.et_pb_widget ul li.login a {
+    padding: 8px 14px !important;
+    border-radius: 2px;
+    background: #ddd;
+    font-weight: initial;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: .8px;
+    font-family: 'brandon' !important;
+}
+.et_pb_widget ul li.login a:hover {
+    background: rgba(128, 128, 128, 0.5);
+    color: #212121 !important;
+    opacity: 1;
+}
+/*
+#top-menu li a {
+    font-family: 'brandon' !important;
+}
+*/
+body.et_pb_button_helper_class .et_pb_button {
+    font-family: 'brandon' !important;
+}
+
+@media only screen and (min-width : 981px) {
+.mockup img {
+    margin-top: -350px;
+    max-width: 90%;
+}
+.standard, .pro {
+    width: 32.8% !important;
+}
+/*
+.parceiros-table {
+    position: relative;
+    top: -2px;    
+}
+*/
+}
+/*---------------------------------------------------------
+													MOBILE
+--------------------------------------------------------*/
+.et_header_style_left .mobile_menu_bar {
+    padding-bottom: 0;
+}
+@media only screen and (min-width : 981px) {
+  #top-menu .menu-suporte, #top-menu .menu-login {
+  display: none;
+  }
+}
+@media only screen and (max-width : 980px) {
+#after-menu-widgets .popmake-support, #after-menu-widgets .login, #after-menu-widgets .menu-suporte, #after-menu-widgets {
+  display: none!important;
+  }
+  .et_header_style_left #logo {
+  	max-width: 90%;
+  }
+  .plataforms .et_pb_text_inner {
+  	text-align: center;
+		margin: 0 auto;
+		width: 60%;
+  }
+  .plataforms-logo img {
+  	max-width: 100%;
+		margin: 0 auto;
+		text-align: center;
+  }
+  .plataforms-logo {
+  	width: 100%;
+		position: relative;
+		margin-bottom: 20px;
+    display: inline-block;
+		text-align: center;
+		margin: 0 auto;
+    float: none;
+    margin-bottom: 20px;
+  }
+  .standard, .pro {
+    margin-bottom: 30px!important;
+}
+  .et_pb_fullwidth_header.cover {
+    padding: 50px 0 60px;
+	}
+  .home .header-content {
+    max-width: 100%;
+    padding-right: 0;
+    margin-left: 0 !important;
+	}
+	.esq.et_pb_row {
+    display: flex;
+    flex-direction: column;
+	}
+	.et_pb_column.et_pb_column_1_2.esq-img {
+    order: 2;
+	}
+}
+@media only screen and (max-width : 768px) {
+  #mobile_menu {
+  	top: 104px;
+  }
+   #footer-widgets .footer-widget:nth-child(n) {
+  	margin-bottom: 7.5%!important;
+  }
+  #footer-widgets .footer-widget:last-child {
+    margin-bottom: 0 !important;
+}
+  #footer-widgets {
+    padding: 5% 0 0;
+	}
+  #icl_lang_sel_widget-4 {
+    width: 90px;
+	}
+  #text-6 {
+  	width: 38%;
+  }
+  .footer-widget #text-5  img {
+  	display: none;
+  }
+  .footer-widget #text-5 {
+  	text-align: center;
+  }
+
+}</style><link rel="stylesheet" id="et-core-unified-36-cached-inline-styles" href="https://sooma.com/wp-content/et-cache/36/et-core-unified-36.min.css?ver=1732697963" /><link rel="stylesheet" id="et-core-unified-deferred-36-cached-inline-styles" href="https://sooma.com/wp-content/et-cache/36/et-core-unified-deferred-36.min.css?ver=1732697963" /></head>
+<body class="home wp-singular page-template-default page page-id-36 wp-theme-Divi ds_border_top ds_footer_bullets ds_footer_hide_option section_separators et_button_no_icon et_button_custom_icon et_pb_button_helper_class et_fixed_nav et_show_nav et_primary_nav_dropdown_animation_expand et_secondary_nav_dropdown_animation_fade et_header_style_left et_pb_svg_logo et_pb_footer_columns2 et_cover_background et_pb_gutter et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db">
+	<div id="page-container">
+
+	
+	
+			<header id="main-header" data-height-onload="66">
+			<div class="container clearfix et_menu_container">
+							<div class="logo_container">
+					<span class="logo_helper"></span>
+					<a href="https://sooma.com/pt-pt/">
+						<img src="/files/2017/08/logo-sooma.svg" width="93" height="43" alt="Sooma" id="logo" data-height-percentage="54" />
+					</a>
+				</div>
+							<div id="et-top-navigation" data-height="66" data-fixed-height="66">
+											<nav id="top-menu-nav">
+						<ul id="top-menu" class="nav"><li id="menu-item-77" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-77"><a href="#">Service</a>
+<ul class="sub-menu">
+	<li id="menu-item-76" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-76"><a href="https://sooma.com/pt-pt/enterprise-email/">Enterprise Email</a></li>
+	<li id="menu-item-75" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-75"><a href="https://sooma.com/pt-pt/email-continuity/">Email continuity</a></li>
+	<li id="menu-item-74" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-74"><a href="https://sooma.com/pt-pt/mail-protection-services/">Email protection</a></li>
+	<li id="menu-item-72" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-72"><a href="https://sooma.com/pt-pt/smtp-hosting/">SMTP Hosting</a></li>
+</ul>
+</li>
+<li id="menu-item-1389" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1389"><a href="/service-providers/">Solutions</a>
+<ul class="sub-menu">
+	<li id="menu-item-1388" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1388"><a href="https://sooma.com/pt-pt/service-providers/">Service providers</a></li>
+	<li id="menu-item-1387" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1387"><a href="https://sooma.com/pt-pt/business/">Business</a></li>
+</ul>
+</li>
+<li id="menu-item-65" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-65"><a href="https://sooma.com/pt-pt/about-us/">About us</a></li>
+<li id="menu-item-1343" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1343"><a href="https://sooma.com/pt-pt/contacts/">Contacts</a></li>
+<li id="menu-item-1538" class="popmake-support menu-suporte menu-item menu-item-type-custom menu-item-object-custom menu-item-1538"><a href="http://ajuda.sooma.pt/">Support</a></li>
+<li id="menu-item-1539" class="login menu-login menu-item menu-item-type-custom menu-item-object-custom menu-item-1539"><a target="_blank" href="https://mail.sooma.com/login.php">Login</a></li>
+</ul>						</nav>
+					
+					
+					
+					
+					<div id="et_mobile_nav_menu">
+				<div class="mobile_nav closed">
+					<span class="select_page">Select Page</span>
+					<span class="mobile_menu_bar mobile_menu_bar_toggle"></span>
+				</div>
+			</div>				</div> <!-- #et-top-navigation -->
+			</div> <!-- .container -->
+					</header> <!-- #main-header -->
+			<div id="et-main-area">
+	
+<div id="main-content">
+
+
+			
+				<article id="post-36" class="post-36 page type-page status-publish hentry">
+
+				
+					<div class="entry-content">
+					<div class="et-l et-l--post">
+			<div class="et_builder_inner_content et_pb_gutters3">
+		<div class="et_pb_section et_pb_section_0 et_pb_fullwidth_section et_section_regular" >
+				
+				
+				
+				
+				
+				
+				<section class="et_pb_module et_pb_fullwidth_header et_pb_fullwidth_header_0 cover et_hover_enabled et_pb_text_align_left et_pb_bg_layout_dark">
+				
+				
+				
+				
+				<div class="et_pb_fullwidth_header_container left">
+					<div class="header-content-container center">
+					<div class="header-content">
+						
+						
+						
+						<div class="et_pb_header_content_wrapper"><h1>Powerful and enterprise&#8211;class email solutions</h1>
+<p>Designed for service providers and businesses around the globe</p></div>
+						<a class="et_pb_button et_pb_more_button et_pb_button_one" href="/enterprise-email/">Know more</a>
+					</div>
+				</div>
+					
+				</div>
+				<div class="et_pb_fullwidth_header_overlay"></div>
+				<div class="et_pb_fullwidth_header_scroll"></div>
+			</section>
+				
+				
+			</div><div class="et_pb_section et_pb_section_1 et_section_regular" >
+				
+				
+				
+				
+				
+				
+				<div class="et_pb_row et_pb_row_0 et_pb_row_fullwidth et_pb_gutters1">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_0  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_0  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><div class="all">
+<div class="icons-sooma"><picture fetchpriority="high" decoding="async" class="alignnone size-full wp-image-219">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/icon-mensagem.png.webp 351w, https://sooma.com/files/2017/07/icon-mensagem-150x150.png.webp 150w, https://sooma.com/files/2017/07/icon-mensagem-300x300.png.webp 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+<img fetchpriority="high" decoding="async" src="https://sooma.com/files/2017/07/icon-mensagem.png" alt="icon mensagem" width="351" height="351" srcset="https://sooma.com/files/2017/07/icon-mensagem.png 351w, https://sooma.com/files/2017/07/icon-mensagem-150x150.png 150w, https://sooma.com/files/2017/07/icon-mensagem-300x300.png 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+</picture>
+<span class="elements">Email</span></div>
+<div class="icons-sooma"><picture loading="lazy" decoding="async" class="alignnone size-full wp-image-220">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/icon-contactos.png.webp 351w, https://sooma.com/files/2017/07/icon-contactos-150x150.png.webp 150w, https://sooma.com/files/2017/07/icon-contactos-300x300.png.webp 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+<img loading="lazy" decoding="async" src="https://sooma.com/files/2017/07/icon-contactos.png" alt="icon contactos" width="351" height="351" srcset="https://sooma.com/files/2017/07/icon-contactos.png 351w, https://sooma.com/files/2017/07/icon-contactos-150x150.png 150w, https://sooma.com/files/2017/07/icon-contactos-300x300.png 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+</picture>
+<span class="elements">Contacts</span></div>
+<div class="icons-sooma"><picture loading="lazy" decoding="async" class="alignnone size-full wp-image-221">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/icon-calendario.png.webp 351w, https://sooma.com/files/2017/07/icon-calendario-150x150.png.webp 150w, https://sooma.com/files/2017/07/icon-calendario-300x300.png.webp 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+<img loading="lazy" decoding="async" src="https://sooma.com/files/2017/07/icon-calendario.png" alt="icon calendário" width="351" height="351" srcset="https://sooma.com/files/2017/07/icon-calendario.png 351w, https://sooma.com/files/2017/07/icon-calendario-150x150.png 150w, https://sooma.com/files/2017/07/icon-calendario-300x300.png 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+</picture>
+<span class="elements">Calendar</span></div>
+<div class="icons-sooma last"><picture loading="lazy" decoding="async" class="alignnone size-full wp-image-237">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/icon-admin.png.webp 351w, https://sooma.com/files/2017/07/icon-admin-150x150.png.webp 150w, https://sooma.com/files/2017/07/icon-admin-300x300.png.webp 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+<img loading="lazy" decoding="async" src="https://sooma.com/files/2017/07/icon-admin.png" alt="icon admin" width="351" height="351" srcset="https://sooma.com/files/2017/07/icon-admin.png 351w, https://sooma.com/files/2017/07/icon-admin-150x150.png 150w, https://sooma.com/files/2017/07/icon-admin-300x300.png 300w" sizes="(max-width: 351px) 100vw, 351px"/>
+</picture>
+<span class="elements">Administration</span></div>
+</div></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_1  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_0 mockup et_pb_image_sticky">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/mockup-soomagray.svg" alt="Sooma" title="Sooma" class="wp-image-761" /></span>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div>
+				
+				
+			</div><div class="et_pb_section et_pb_section_2 et_section_regular" >
+				
+				
+				
+				
+				
+				
+				<div class="et_pb_row et_pb_row_1">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_2  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_1 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h2>Boost your productivity with Sooma’s simple email solutions.</h2>
+<p><a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_3  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_2  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p>Sooma is a cloud-based email solution provider that acts as a full-service, reliable platform for companies that offer email as part of their services. Whether you are just starting your business and need a basic email package, or have an established business and need to migrate over 10,000 emails to a reliable email solution provider, Sooma’s cloud-based email services can scale to meet your requirements.</p></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div>
+				
+				
+			</div><div class="et_pb_section et_pb_section_3 et_section_regular" >
+				
+				
+				
+				
+				
+				
+				<div class="et_pb_row et_pb_row_2">
+				<div class="et_pb_column et_pb_column_4_4 et_pb_column_4  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_3  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h2>Why top brands trust Sooma</h2></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_3">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_5  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_4 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Reliable email system</h3>
+<p>Sooma delivers a reliable email system that will handle all your email problems and give you the peace of mind you deserve. We will also handle all your email management and maintenance issues like anti-spam, anti-virus and e-system failures. <a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_6  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_1 et_animated et-waypoint">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/Sooma-Reliable-email-system.svg" alt="Reliable email system" title="Reliable email system" class="wp-image-301" /></span>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_4 esq">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_7 esq-img  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_2 et_animated et-waypoint">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/example.svg" alt="" title="" class="wp-image-294" /></span>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_8  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_5 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Secure cloud service</h3>
+<p>Sooma provides total data security with complete protection for end points, email and networks. Our secure cloud service delivers comprehensive data security and central remote management that helps to increase productivity, provides faster response times and end-to-end security. <a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_5">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_9  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_6 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Privacy</h3>
+<p>Sooma is your data privacy force field that surrounds and protects emails and files anywhere they are shared. It is an easy-to-use data security platform that ensures control. <a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_10  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_3 et_animated et-waypoint">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/Sooma-Privacy.svg" alt="Privacy" title="Privacy" class="wp-image-300" /></span>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_6 esq">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_11 esq-img  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_4 et_animated et-waypoint">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/Enhanced-accessibility.svg" alt="Enhanced accessibility" title="Enhanced accessibility" class="wp-image-306" /></span>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_12  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_7 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Enhanced accessibility</h3>
+<p>Configure your Symbian, Android, iOS or Windows phone or tablet to access your collaborative business mailbox on the go. <a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_7">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_13  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_8 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Improved synchronization</h3>
+<p>Synchronize and update your inbox, calendar and contacts in real-time across all your devices the way it should be. <a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_14  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_5 et_animated et-waypoint">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/Improved-synchronization.svg" alt="Improved synchronization" title="Improved synchronization" class="wp-image-305" /></span>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_8 esq">
+				<div class="et_pb_column et_pb_column_1_2 et_pb_column_15 esq-img  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_6 et_animated et-waypoint">
+				
+				
+				
+				
+				<span class="et_pb_image_wrap "><img decoding="async" src="/files/2017/07/Sooma-Optimized-email-performance.svg" alt="Optimized email performance" title="Optimized email performance" class="wp-image-303" /></span>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_2 et_pb_column_16  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_9 learn-more  et_pb_text_align_left et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Optimized email performance</h3>
+<p>Sooma is a robust, highly modular and scalable email solution that enables your business to expansion and change without affecting your productivity or reliability. <a href="/enterprise-email/"><span class="more">L</span>Learn more</a></p></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div>
+				
+				
+			</div><div class="et_pb_section et_pb_section_4 et_section_regular" >
+				
+				
+				
+				
+				
+				
+				<div class="et_pb_row et_pb_row_9">
+				<div class="et_pb_column et_pb_column_4_4 et_pb_column_17  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_10  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h2>Cloud mailbox for business</h2></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_10 et_pb_gutters1">
+				<div class="et_pb_column et_pb_column_1_3 et_pb_column_18 standard  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_11 box-1  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Standard</h3></div>
+			</div><div class="et_pb_module et_pb_text et_pb_text_12 box-2  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p class="price">€ 1,00</p>
+<p class="per">User / month</p>
+<p>5 GB mailbox with … Shared calendaring and contacts.</p></div>
+			</div><div class="et_pb_module et_pb_text et_pb_text_13 box-3  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p><a class="more-mailbox" href="/enterprise-email/">Learn more</a></p></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_3 et_pb_column_19 pro  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_14 box-1pro  et_pb_text_align_center et_pb_bg_layout_dark">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Mailbox Pro</h3></div>
+			</div><div class="et_pb_module et_pb_text et_pb_text_15 box-2  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p class="price">€ 3,50</p>
+<p class="per">User / month</p>
+<p>50 GB mailbox with … Shared calendaring and contacts.</p></div>
+			</div><div class="et_pb_module et_pb_text et_pb_text_16 box-3  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p><a class="more-mailbox" href="/enterprise-email/">Learn more</a></p></div>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_3 et_pb_column_20 standard  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_17 box-1  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h3>Email continuity</h3></div>
+			</div><div class="et_pb_module et_pb_text et_pb_text_18 box-2  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p class="price">€ 0,80</p>
+<p class="per">User / month</p>
+<p>5 GB mailbox with … Shared calendaring and contacts.</p></div>
+			</div><div class="et_pb_module et_pb_text et_pb_text_19 box-3  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><p><a class="more-mailbox" href="/email-continuity/">Learn more</a></p></div>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div>
+				
+				
+			</div><div class="et_pb_section et_pb_section_5 et_section_regular et_section_transparent" >
+				
+				
+				
+				
+				
+				
+				<div class="et_pb_row et_pb_row_11">
+				<div class="et_pb_column et_pb_column_4_4 et_pb_column_21  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_text et_pb_text_20  et_pb_text_align_center et_pb_bg_layout_light">
+				
+				
+				
+				
+				<div class="et_pb_text_inner"><h2>Start sending emails with confidence in minutes</h2>
+<p>Enhance your results-driven email marketing strategy!</p></div>
+			</div><div class="et_pb_button_module_wrapper et_pb_button_0_wrapper et_pb_button_alignment_center et_pb_module ">
+				<a class="et_pb_button et_pb_button_0 et_pb_bg_layout_dark" href="/contacts/">Get started</a>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div>
+				
+				
+			</div><div class="et_pb_section et_pb_section_6 et_section_regular" >
+				
+				
+				
+				
+				
+				
+				<div class="et_pb_row et_pb_row_12 parceiros-table et_pb_gutters2">
+				<div class="et_pb_column et_pb_column_1_4 et_pb_column_22 grayscale  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_7 parceiros">
+				
+				
+				
+				
+				<a href="https://www.remax.pt/" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="Remax" class="wp-image-492">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/Parceiros-Remax.jpg.webp 350w, https://sooma.com/files/2017/07/Parceiros-Remax-150x150.jpg.webp 150w, https://sooma.com/files/2017/07/Parceiros-Remax-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2017/07/Parceiros-Remax.jpg" alt="Remax" srcset="https://sooma.com/files/2017/07/Parceiros-Remax.jpg 350w, https://sooma.com/files/2017/07/Parceiros-Remax-150x150.jpg 150w, https://sooma.com/files/2017/07/Parceiros-Remax-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_4 et_pb_column_23 grayscale  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_8 parceiros">
+				
+				
+				
+				
+				<a href="https://www.nos.pt/" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="NOS" class="wp-image-521">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/Parceiros-NOS-2.jpg.webp 350w, https://sooma.com/files/2017/07/Parceiros-NOS-2-150x150.jpg.webp 150w, https://sooma.com/files/2017/07/Parceiros-NOS-2-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2017/07/Parceiros-NOS-2.jpg" alt="NOS" srcset="https://sooma.com/files/2017/07/Parceiros-NOS-2.jpg 350w, https://sooma.com/files/2017/07/Parceiros-NOS-2-150x150.jpg 150w, https://sooma.com/files/2017/07/Parceiros-NOS-2-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_4 et_pb_column_24 grayscale  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_9 parceiros">
+				
+				
+				
+				
+				<a href="https://www.ordemenfermeiros.pt/" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="Ordem dos enfermeiros" class="wp-image-490">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/Parceiros-Ordem-dos-enfermeiros.jpg.webp 350w, https://sooma.com/files/2017/07/Parceiros-Ordem-dos-enfermeiros-150x150.jpg.webp 150w, https://sooma.com/files/2017/07/Parceiros-Ordem-dos-enfermeiros-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2017/07/Parceiros-Ordem-dos-enfermeiros.jpg" alt="Ordem dos enfermeiros" srcset="https://sooma.com/files/2017/07/Parceiros-Ordem-dos-enfermeiros.jpg 350w, https://sooma.com/files/2017/07/Parceiros-Ordem-dos-enfermeiros-150x150.jpg 150w, https://sooma.com/files/2017/07/Parceiros-Ordem-dos-enfermeiros-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_4 et_pb_column_25  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_10 parceiros">
+				
+				
+				
+				
+				<a href="http://www.cm-lisboa.pt/" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="Câmara Municipal de Lisboa" class="wp-image-1213">
+<source type="image/webp" srcset="https://sooma.com/files/2019/05/camara-m-l.jpg.webp 350w, https://sooma.com/files/2019/05/camara-m-l-150x150.jpg.webp 150w, https://sooma.com/files/2019/05/camara-m-l-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2019/05/camara-m-l.jpg" alt="Câmara Municipal de Lisboa" srcset="https://sooma.com/files/2019/05/camara-m-l.jpg 350w, https://sooma.com/files/2019/05/camara-m-l-150x150.jpg 150w, https://sooma.com/files/2019/05/camara-m-l-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div><div class="et_pb_row et_pb_row_13 parceiros-table et_pb_gutters2">
+				<div class="et_pb_column et_pb_column_1_4 et_pb_column_26 grayscale  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_11 parceiros">
+				
+				
+				
+				
+				<a href="https://www.slbenfica.pt/pt-pt" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="SLB" class="wp-image-508">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/Parceiros-SLB2.jpg.webp 350w, https://sooma.com/files/2017/07/Parceiros-SLB2-150x150.jpg.webp 150w, https://sooma.com/files/2017/07/Parceiros-SLB2-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2017/07/Parceiros-SLB2.jpg" alt="SLB" srcset="https://sooma.com/files/2017/07/Parceiros-SLB2.jpg 350w, https://sooma.com/files/2017/07/Parceiros-SLB2-150x150.jpg 150w, https://sooma.com/files/2017/07/Parceiros-SLB2-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_4 et_pb_column_27 grayscale  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_12 parceiros">
+				
+				
+				
+				
+				<a href="https://www.medicosdomundo.pt/" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="Médicos do Mundo" class="wp-image-507">
+<source type="image/webp" srcset="https://sooma.com/files/2017/07/Parceiros-Medicos-do-Mundo2.jpg.webp 350w, https://sooma.com/files/2017/07/Parceiros-Medicos-do-Mundo2-150x150.jpg.webp 150w, https://sooma.com/files/2017/07/Parceiros-Medicos-do-Mundo2-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2017/07/Parceiros-Medicos-do-Mundo2.jpg" alt="Médicos do Mundo" srcset="https://sooma.com/files/2017/07/Parceiros-Medicos-do-Mundo2.jpg 350w, https://sooma.com/files/2017/07/Parceiros-Medicos-do-Mundo2-150x150.jpg 150w, https://sooma.com/files/2017/07/Parceiros-Medicos-do-Mundo2-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_4 et_pb_column_28 grayscale  et_pb_css_mix_blend_mode_passthrough">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_13 parceiros">
+				
+				
+				
+				
+				<a href="https://www.chip7.pt/"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="Chip 7" class="wp-image-1216">
+<source type="image/webp" srcset="https://sooma.com/files/2019/05/chip-7-logo.jpg.webp 350w, https://sooma.com/files/2019/05/chip-7-logo-150x150.jpg.webp 150w, https://sooma.com/files/2019/05/chip-7-logo-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2019/05/chip-7-logo.jpg" alt="Chip 7" srcset="https://sooma.com/files/2019/05/chip-7-logo.jpg 350w, https://sooma.com/files/2019/05/chip-7-logo-150x150.jpg 150w, https://sooma.com/files/2019/05/chip-7-logo-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div><div class="et_pb_column et_pb_column_1_4 et_pb_column_29  et_pb_css_mix_blend_mode_passthrough et-last-child">
+				
+				
+				
+				
+				<div class="et_pb_module et_pb_image et_pb_image_14 parceiros">
+				
+				
+				
+				
+				<a href="https://zap.aeiou.pt/" target="_blank"><span class="et_pb_image_wrap "><picture loading="lazy" decoding="async" title="ZAP aeiou" class="wp-image-1224">
+<source type="image/webp" srcset="https://sooma.com/files/2019/05/zap-aeiou-logo.jpg.webp 350w, https://sooma.com/files/2019/05/zap-aeiou-logo-150x150.jpg.webp 150w, https://sooma.com/files/2019/05/zap-aeiou-logo-300x300.jpg.webp 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+<img loading="lazy" decoding="async" width="350" height="350" src="/files/2019/05/zap-aeiou-logo.jpg" alt="ZAP aeiou" srcset="https://sooma.com/files/2019/05/zap-aeiou-logo.jpg 350w, https://sooma.com/files/2019/05/zap-aeiou-logo-150x150.jpg 150w, https://sooma.com/files/2019/05/zap-aeiou-logo-300x300.jpg 300w" sizes="(max-width: 350px) 100vw, 350px"/>
+</picture>
+</span></a>
+			</div>
+			</div>
+				
+				
+				
+				
+			</div>
+				
+				
+			</div>		</div>
+	</div>
+						</div>
+
+				
+				</article>
+
+			
+
+</div>
+
+
+			<footer id="main-footer">
+				
+<div class="container">
+	<div id="footer-widgets" class="clearfix">
+		<div class="footer-widget"><div id="text-5" class="fwidget et_pb_widget widget_text">			<div class="textwidget"><img src="/files/2017/08/icon-sooma.svg" alt="icon-sooma" class="alignnone size-full wp-image-430" /><a href="https://sooma.com/pt-pt/quem-somos/">Quem somos</a><a href="https://sooma.com/pt-pt/suporte/">Suporte</a><a href="https://sooma.com/pt-pt/contactos/">Contactos</a> </div>
+		</div></div><div class="footer-widget"><div id="text-6" class="fwidget et_pb_widget widget_text">			<div class="textwidget"><p><a class="sooma-en" href="https://sooma.com/">EN</a></p>
+</div>
+		</div></div>	</div>
+</div>
+
+
+		
+				<div id="footer-bottom">
+					<div class="container clearfix">
+				<p id="footer-info">Designed by <a href="https://www.elegantthemes.com" title="Premium WordPress Themes">Elegant Themes</a> | Powered by <a href="https://www.wordpress.org">WordPress</a></p>					</div>
+				</div>
+			</footer>
+		</div>
+
+
+	</div>
+
+	<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/pt-pt\/*"},{"not":{"href_matches":["\/wp-*.php","\/wp-admin\/*","\/files\/*","\/wp-content\/*","\/wp-content\/plugins\/*","\/wp-content\/themes\/Divi\/*","\/pt-pt\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+	<script type="text/javascript">
+				var et_animation_data = [{"class":"et_pb_image_1","style":"slideLeft","repeat":"once","duration":"500ms","delay":"0ms","intensity":"10%","starting_opacity":"0%","speed_curve":"ease-in-out"},{"class":"et_pb_image_2","style":"slideLeft","repeat":"once","duration":"500ms","delay":"0ms","intensity":"10%","starting_opacity":"0%","speed_curve":"ease-in-out"},{"class":"et_pb_image_3","style":"slideLeft","repeat":"once","duration":"500ms","delay":"0ms","intensity":"10%","starting_opacity":"0%","speed_curve":"ease-in-out"},{"class":"et_pb_image_4","style":"slideLeft","repeat":"once","duration":"500ms","delay":"0ms","intensity":"10%","starting_opacity":"0%","speed_curve":"ease-in-out"},{"class":"et_pb_image_5","style":"slideLeft","repeat":"once","duration":"500ms","delay":"0ms","intensity":"10%","starting_opacity":"0%","speed_curve":"ease-in-out"},{"class":"et_pb_image_6","style":"slideLeft","repeat":"once","duration":"500ms","delay":"0ms","intensity":"10%","starting_opacity":"0%","speed_curve":"ease-in-out"}];
+				</script>
+	
+<div class="wpml-ls-statics-footer wpml-ls wpml-ls-legacy-list-horizontal">
+	<ul><li class="wpml-ls-slot-footer wpml-ls-item wpml-ls-item-pt-pt wpml-ls-current-language wpml-ls-first-item wpml-ls-last-item wpml-ls-item-legacy-list-horizontal">
+				<a href="https://sooma.com/pt-pt/" class="wpml-ls-link">
+                                                        <img
+            class="wpml-ls-flag"
+            src="https://sooma.com/wp-content/plugins/sitepress-multilingual-cms/res/flags/pt-pt.png"
+            alt=""
+            width=18
+            height=12
+    /><span class="wpml-ls-native">Português</span></a>
+			</li></ul>
+</div>
+<link rel='stylesheet' id='wp-block-library-css' href='https://sooma.com/wp-includes/css/dist/block-library/style.min.css?ver=6.8.2' type='text/css' media='none' onload="media='all'" />
+<script type="text/javascript" src="https://sooma.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.1" id="jquery-core-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1" id="jquery-migrate-js"></script>
+<script type="text/javascript" id="jquery-js-after">
+/* <![CDATA[ */
+jqueryParams.length&&$.each(jqueryParams,function(e,r){if("function"==typeof r){var n=String(r);n.replace("$","jQuery");var a=new Function("return "+n)();$(document).ready(a)}});
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sooma.com/wp-content/plugins/honeypot/includes/js/wpa.js?ver=2.2.13" id="wpascript-js"></script>
+<script type="text/javascript" id="wpascript-js-after">
+/* <![CDATA[ */
+wpa_field_info = {"wpa_field_name":"uamvnj6256","wpa_field_value":639311,"wpa_add_test":"no"}
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sooma.com/wp-content/plugins/wp-armour-extended/includes/js/wpae.js?ver=1.39" id="wpaescript-js"></script>
+<script type="text/javascript" id="rocket-browser-checker-js-after">
+/* <![CDATA[ */
+"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
+/* ]]> */
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-extra">
+/* <![CDATA[ */
+var RocketPreloadLinksConfig = {"excludeUris":"\/(?:.+\/)?feed(?:\/(?:.+\/?)?)?$|\/(?:.+\/)?embed\/|\/(index.php\/)?(.*)wp-json(\/.*|$)|\/refer\/|\/go\/|\/recommend\/|\/recommends\/","usesTrailingSlash":"1","imageExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php","fileExt":"jpg|jpeg|gif|png|tiff|bmp|webp|avif|pdf|doc|docx|xls|xlsx|php|html|htm","siteUrl":"https:\/\/sooma.com\/pt-pt\/","onHoverDelay":"100","rateThrottle":"3"};
+/* ]]> */
+</script>
+<script type="text/javascript" id="rocket-preload-links-js-after">
+/* <![CDATA[ */
+(function() {
+"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},e=function(){function i(e,t){for(var n=0;n<t.length;n++){var i=t[n];i.enumerable=i.enumerable||!1,i.configurable=!0,"value"in i&&(i.writable=!0),Object.defineProperty(e,i.key,i)}}return function(e,t,n){return t&&i(e.prototype,t),n&&i(e,n),e}}();function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function n(e,t){i(this,n),this.browser=e,this.config=t,this.options=this.browser.options,this.prefetched=new Set,this.eventTime=null,this.threshold=1111,this.numOnHover=0}return e(n,[{key:"init",value:function(){!this.browser.supportsLinkPrefetch()||this.browser.isDataSaverModeOn()||this.browser.isSlowConnection()||(this.regex={excludeUris:RegExp(this.config.excludeUris,"i"),images:RegExp(".("+this.config.imageExt+")$","i"),fileExt:RegExp(".("+this.config.fileExt+")$","i")},this._initListeners(this))}},{key:"_initListeners",value:function(e){-1<this.config.onHoverDelay&&document.addEventListener("mouseover",e.listener.bind(e),e.listenerOptions),document.addEventListener("mousedown",e.listener.bind(e),e.listenerOptions),document.addEventListener("touchstart",e.listener.bind(e),e.listenerOptions)}},{key:"listener",value:function(e){var t=e.target.closest("a"),n=this._prepareUrl(t);if(null!==n)switch(e.type){case"mousedown":case"touchstart":this._addPrefetchLink(n);break;case"mouseover":this._earlyPrefetch(t,n,"mouseout")}}},{key:"_earlyPrefetch",value:function(t,e,n){var i=this,r=setTimeout(function(){if(r=null,0===i.numOnHover)setTimeout(function(){return i.numOnHover=0},1e3);else if(i.numOnHover>i.config.rateThrottle)return;i.numOnHover++,i._addPrefetchLink(e)},this.config.onHoverDelay);t.addEventListener(n,function e(){t.removeEventListener(n,e,{passive:!0}),null!==r&&(clearTimeout(r),r=null)},{passive:!0})}},{key:"_addPrefetchLink",value:function(i){return this.prefetched.add(i.href),new Promise(function(e,t){var n=document.createElement("link");n.rel="prefetch",n.href=i.href,n.onload=e,n.onerror=t,document.head.appendChild(n)}).catch(function(){})}},{key:"_prepareUrl",value:function(e){if(null===e||"object"!==(void 0===e?"undefined":r(e))||!1 in e||-1===["http:","https:"].indexOf(e.protocol))return null;var t=e.href.substring(0,this.config.siteUrl.length),n=this._getPathname(e.href,t),i={original:e.href,protocol:e.protocol,origin:t,pathname:n,href:t+n};return this._isLinkOk(i)?i:null}},{key:"_getPathname",value:function(e,t){var n=t?e.substring(this.config.siteUrl.length):e;return n.startsWith("/")||(n="/"+n),this._shouldAddTrailingSlash(n)?n+"/":n}},{key:"_shouldAddTrailingSlash",value:function(e){return this.config.usesTrailingSlash&&!e.endsWith("/")&&!this.regex.fileExt.test(e)}},{key:"_isLinkOk",value:function(e){return null!==e&&"object"===(void 0===e?"undefined":r(e))&&(!this.prefetched.has(e.href)&&e.origin===this.config.siteUrl&&-1===e.href.indexOf("?")&&-1===e.href.indexOf("#")&&!this.regex.excludeUris.test(e.href)&&!this.regex.images.test(e.href))}}],[{key:"run",value:function(){"undefined"!=typeof RocketPreloadLinksConfig&&new n(new RocketBrowserCompatibilityChecker({capture:!0,passive:!0}),RocketPreloadLinksConfig).init()}}]),n}();t.run();
+}());
+/* ]]> */
+</script>
+<script type="text/javascript" id="divi-custom-script-js-extra">
+/* <![CDATA[ */
+var DIVI = {"item_count":"%d Item","items_count":"%d Items"};
+var et_builder_utils_params = {"condition":{"diviTheme":true,"extraTheme":false},"scrollLocations":["app","top"],"builderScrollLocations":{"desktop":"app","tablet":"app","phone":"app"},"onloadScrollLocation":"app","builderType":"fe"};
+var et_frontend_scripts = {"builderCssContainerPrefix":"#et-boc","builderCssLayoutPrefix":"#et-boc .et-l"};
+var et_pb_custom = {"ajaxurl":"https:\/\/sooma.com\/wp-admin\/admin-ajax.php","images_uri":"https:\/\/sooma.com\/wp-content\/themes\/Divi\/images","builder_images_uri":"https:\/\/sooma.com\/wp-content\/themes\/Divi\/includes\/builder\/images","et_frontend_nonce":"f8e900862f","subscription_failed":"Please, check the fields below to make sure you entered the correct information.","et_ab_log_nonce":"d07d188889","fill_message":"Please, fill in the following fields:","contact_error_message":"Please, fix the following errors:","invalid":"Invalid email","captcha":"Captcha","prev":"Prev","previous":"Previous","next":"Next","wrong_captcha":"You entered the wrong number in captcha.","wrong_checkbox":"Checkbox","ignore_waypoints":"no","is_divi_theme_used":"1","widget_search_selector":".widget_search","ab_tests":[],"is_ab_testing_active":"","page_id":"36","unique_test_id":"","ab_bounce_rate":"5","is_cache_plugin_active":"yes","is_shortcode_tracking":"","tinymce_uri":"https:\/\/sooma.com\/wp-content\/themes\/Divi\/includes\/builder\/frontend-builder\/assets\/vendors","accent_color":"#eb1d24","waypoints_options":[]};
+var et_pb_box_shadow_elements = [];
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/js/scripts.min.js?ver=4.27.4" id="divi-custom-script-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/jquery.fitvids.js?ver=4.27.4" id="fitvids-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-includes/js/comment-reply.min.js?ver=6.8.2" id="comment-reply-js" async="async" data-wp-strategy="async"></script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/jquery.mobile.js?ver=4.27.4" id="jquery-mobile-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/magnific-popup.js?ver=4.27.4" id="magnific-popup-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/easypiechart.js?ver=4.27.4" id="easypiechart-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/salvattore.js?ver=4.27.4" id="salvattore-js"></script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/core/admin/js/common.js?ver=4.27.4" id="et-core-common-js"></script>
+<script type="text/javascript" id="et-builder-modules-script-motion-js-extra">
+/* <![CDATA[ */
+var et_pb_motion_elements = {"desktop":[],"tablet":[],"phone":[]};
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/motion-effects.js?ver=4.27.4" id="et-builder-modules-script-motion-js"></script>
+<script type="text/javascript" id="et-builder-modules-script-sticky-js-extra">
+/* <![CDATA[ */
+var et_pb_sticky_elements = [];
+/* ]]> */
+</script>
+<script type="text/javascript" src="https://sooma.com/wp-content/themes/Divi/includes/builder/feature/dynamic-assets/assets/js/sticky-elements.js?ver=4.27.4" id="et-builder-modules-script-sticky-js"></script>
+</body>
+</html>
