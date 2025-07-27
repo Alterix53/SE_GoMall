@@ -1,44 +1,56 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Import Link
-import "./ProductCard.css";
+import "./ProductCard.css"
 
 export const RenderProduct = ({ product }) => {
   if (!product || !product.name) {
-    console.warn("Invalid product data:", product);
-    return <p style={{ color: "#ff4444", textAlign: "center" }}>Sản phẩm không hợp lệ</p>;
+    console.warn("Invalid product data:", product)
+    return (
+      <div className="product-card" style={{ minHeight: "300px", padding: "20px", textAlign: "center" }}>
+        <p style={{ color: "#ff4444" }}>Sản phẩm không hợp lệ</p>
+      </div>
+    )
   }
 
-  const formatPrice = (price) =>
-    new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
-  const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold);
+  const formatPrice = (price) => {
+    if (!price) return "0 ₫"
+    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price)
+  }
+
+  const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
+
+  console.log("Rendering product:", product.name, product)
 
   return (
-    <Link to={`/product/${product.id || product._id}`} className="product-card-link">
-      <div className="product-card">
+    <div className="product-card" style={{ minHeight: "300px" }}>
+      {product.discount > 0 && <span className="discount-badge">-{product.discount}%</span>}
+      {product.isFlashSale && <span className="flash-sale-badge">Flash Sale</span>}
+
+      <div className="product-image">
         <img
-          src={product.image || "/images/default-product.jpg"}
+          src={product.image || "/placeholder.svg?height=200&width=200&text=Product"}
           alt={product.name}
-          className="product-image"
           onError={(e) => {
-            console.error("Image load error for:", product.name);
-            e.target.src = "/images/default-product.jpg";
+            console.error("Image load error for:", product.name)
+            e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image"
           }}
         />
+      </div>
+
+      <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
-        <div className="product-price">
+        <div className="price-section">
           <span className="current-price">{formatPrice(product.price)}</span>
-          {product.originalPrice && (
+          {product.originalPrice && product.originalPrice > product.price && (
             <span className="original-price">{formatPrice(product.originalPrice)}</span>
           )}
         </div>
         <div className="product-stats">
           <span className="rating">★ {product.rating || "N/A"}</span>
-          <span className="sold">Đã bán {formatSold(product.sold || 0)}</span>
+          <span className="sold">Đã bán {formatSold(product.sold)}</span>
         </div>
       </div>
-    </Link>
-  );
-};
+    </div>
+  )
+}
 
-const ProductCard = ({ product }) => <RenderProduct product={product} />;
-export default ProductCard;
+const ProductCard = ({ product }) => <RenderProduct product={product} />
+export default ProductCard

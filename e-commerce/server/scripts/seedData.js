@@ -1,3 +1,4 @@
+// <DOCUMENT filename="seedData.js">
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
@@ -11,13 +12,11 @@ import '../models/Cart.js';
 import '../models/Review.js';
 import '../models/Payment.js';
 
-// Lấy đường dẫn file hiện tại trong ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log("Current script directory:", __dirname); // Debug log
+console.log("Current script directory:", __dirname);
 
-// Định nghĩa URI với tên database
 const MONGODB_URI = "mongodb://localhost:27017/GoMall";
 
 const connectDB = async () => {
@@ -31,7 +30,6 @@ const connectDB = async () => {
     }
 };
 
-// Hàm đọc và parse JSON
 const readJSON = (fileName) => {
     const filePath = path.join(__dirname, '../../data/', fileName);
     console.log(`Debug: Looking for file at: ${filePath}`);
@@ -48,13 +46,11 @@ const readJSON = (fileName) => {
     }
 };
 
-// Hàm xử lý URL ảnh (sử dụng trực tiếp, không tải về)
 const processImageUrl = async (url, filename) => {
     if (!url) {
         console.log("No URL provided, using fallback image");
         return 'https://source.unsplash.com/random/400x300';
     }
-    // Thay thế URL không đáng tin cậy bằng fallback
     if (url.includes('amazon.de') || url.includes('mlb.com') || url.includes('comsenz.com') || url.includes('naver.com') || url.includes('ebay.co.uk') || url.includes('huffingtonpost.com')) {
         console.log(`Replaced fake URL with fallback: https://source.unsplash.com/random/400x300`);
         return 'https://source.unsplash.com/random/400x300';
@@ -117,16 +113,21 @@ const seedUsers = async () => {
         fullName: user.fullName || '',
         phoneNumber: user.phoneNumber || '',
         address: user.address || '',
-        shopName: user.shopName || (user.role === 'seller' ? 'Default Shop' : ''),
+        shop: user.role.includes('seller') ? {
+            shopID: user.shop?.shopID || new mongoose.Types.ObjectId(),
+            name: user.shop?.name || 'Default Shop',
+            address: user.shop?.address || '',
+            isActive: user.shop?.isActive !== false
+        } : null,
         isActive: user.isActive !== false,
         profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300'
     }));
 
     await User.deleteMany({});
     const createdUsers = await User.insertMany(mappedUsers);
-    const createdSellers = createdUsers.filter(u => u.role === 'seller'); // Lọc seller dựa trên role
-    console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role, _id: u._id })));
-    console.log("Sellers extracted:", createdSellers.map(s => ({ username: s.username, _id: s._id })));
+    const createdSellers = createdUsers.filter(u => u.role.includes('seller'));
+    console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role, _id: u._id, shop: u.shop })));
+    console.log("Sellers extracted:", createdSellers.map(s => ({ username: s.username, _id: s._id, shop: s.shop })));
     return { allUsers: createdUsers, sellers: createdSellers };
 };
 
@@ -145,7 +146,10 @@ const seedProducts = async (createdCategories, createdSellers) => {
             alt: product.images_alt || 'Product Image',
             isPrimary: index === 0
         }))) : [{ url: 'https://source.unsplash.com/random/400x300', alt: 'Default', isPrimary: true }];
-        const categoryID = createdCategories.length > 0 ? createdCategories[Math.floor(Math.random() * createdCategories.length)]._id : new mongoose.Types.ObjectId();
+        const categoryIndex = product.categoryID - 1;
+        const categoryID = createdCategories.length > 0 && categoryIndex >= 0 && categoryIndex < createdCategories.length 
+            ? createdCategories[categoryIndex]._id 
+            : new mongoose.Types.ObjectId();
         const sellerID = createdSellers.length > 0 ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id : new mongoose.Types.ObjectId();
         return {
             name: product.name || 'Default Product Name',
@@ -167,16 +171,27 @@ const seedProducts = async (createdCategories, createdSellers) => {
             isActive: product.isActive !== false,
             isFeatured: product.isFeatured || false,
             isFlashSale: product.isFlashSale || false,
-            flashSalePrice: Number(product.flashSalePrice || (product.price_sale * 0.9) || 0), // Fallback nếu price_sale undefined
-            flashSaleEndDate: product.flashSaleEndDate && !isNaN(new Date(product.flashSaleEndDate)) ? new Date(product.flashSaleEndDate) : null
+            flashSalePrice: Number(product.flashSalePrice || (product.price_sale * 0.9) || 0),
+            flashSaleEndDate: new Date(product.flashSaleEndDate) || new Date('2025-07-30'), // Đảm bảo parse Date
+            createdAt: new Date()
         };
     }));
-    console.log("Mapped products:", mappedProducts);
-    const validProducts = mappedProducts; // Bỏ filter tạm thời để đảm bảo tất cả sản phẩm được lưu
+    console.log("Mapped products:", mappedProducts.map(p => ({
+        name: p.name,
+        categoryID: p.categoryID,
+        isFlashSale: p.isFlashSale,
+        flashSaleEndDate: p.flashSaleEndDate
+    })));
+    const validProducts = mappedProducts;
     console.log("Valid products after filter:", validProducts);
     await Product.deleteMany({});
     const createdProducts = await Product.insertMany(validProducts);
-    console.log("Products seeded successfully:", createdProducts.map(p => ({ name: p.name, _id: p._id })));
+    console.log("Products seeded successfully:", createdProducts.map(p => ({
+        name: p.name,
+        _id: p._id,
+        isFlashSale: p.isFlashSale,
+        flashSaleEndDate: p.flashSaleEndDate ? p.flashSaleEndDate.toISOString() : null
+    })));
     return createdProducts;
 };
 
@@ -196,9 +211,10 @@ const seedData = async () => {
         console.log("Data seeded successfully!");
         process.exit(0);
     } catch (error) {
-        console.error("Error seeding data:", error);
+        console.error("Error seeding data:", error.stack);
         process.exit(1);
     }
 };
 
 seedData();
+// </DOCUMENT>

@@ -51,6 +51,7 @@ const FlashSale = () => {
         });
         console.log("Flash Sale API response:", response.data);
         const products = response.data?.data?.products || [];
+        console.log("Flash sale products received:", products.map(p => ({ name: p.name, price: p.price, flashSaleEndDate: p.flashSaleEndDate instanceof Date ? p.flashSaleEndDate.toISOString() : p.flashSaleEndDate })));
         if (products.length === 0) {
           console.warn("No flash sale products from API");
           return;

@@ -2,92 +2,101 @@
   {
     "username": "cpaoletti0",
     "password": "bW7\\Ndx,A)bI$RBJ",
-    "email": "cpaoletti0@webeden.co.uk",
+    "email": "cpaoletti0@shopee.com",
     "role": "seller",
     "fullName": "Channa Paoletti",
-    "isActive": false,
-    "profile_image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "shopID": "507f1f77bcf86cd799439011", 
+    "isActive": true,
+    "profile_image": "/images/adidas.jpg"
   },
   {
     "username": "xirdale1",
     "password": "dA4>*A*\"qX",
-    "email": "xirdale1@lycos.com",
+    "email": "xirdale1@shopee.com",
     "role": "admin",
     "fullName": "Xavier Irdale",
+    "shopID": null, 
     "isActive": true,
-    "profile_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "profile_image": "/images/dell-xps.jpg"
   },
   {
     "username": "ashannahan2",
     "password": "zB3)!F+%x",
-    "email": "ashannahan2@google.ru",
+    "email": "ashannahan2@shopee.com",
     "role": "seller",
     "fullName": "Aland Shannahan",
-    "shopName": "Trunyx",
+    "shopID": "507f1f77bcf86cd799439012", 
     "isActive": true,
-    "profile_image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "profile_image": "/images/ao-hoodie.jpg"
   },
   {
     "username": "bpell3",
     "password": "sJ1\"AM!4g`,+`.W",
-    "email": "bpell3@oakley.com",
+    "email": "bpell3@shopee.com",
     "role": "admin",
     "fullName": "Babita Pell",
+    "shopID": null, 
     "isActive": false,
-    "profile_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "profile_image": "/images/macbook-air.jpg"
   },
   {
     "username": "fpieterick4",
     "password": "gP7?&7|DW3yXD/",
-    "email": "fpieterick4@clickbank.net",
-    "role": "admin",
+    "email": "fpieterick4@shopee.com",
+    "role": "seller",
     "fullName": "Frederic Pieterick",
+    "shopID": "507f1f77bcf86cd799439013", 
     "isActive": true,
-    "profile_image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "profile_image": "/images/kem-cetaphil.jpg"
   },
   {
     "username": "fvowles5",
     "password": "eK2)dfw#LO6.hQ}t",
-    "email": "fvowles5@wired.com",
+    "email": "fvowles5@shopee.com",
     "role": "seller",
     "fullName": "Ferdie Vowles",
-    "isActive": false,
-    "profile_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "shopID": "507f1f77bcf86cd799439014", 
+    "isActive": true,
+    "profile_image": "/images/noi-philips.jpg"
   },
   {
     "username": "ewarlowe6",
     "password": "iD6%fK,TLO8(m",
-    "email": "ewarlowe6@answers.com",
+    "email": "ewarlowe6@shopee.com",
     "role": "admin",
     "fullName": "Elizabeth Warlowe",
+    "shopID": null, 
     "isActive": false,
-    "profile_image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "profile_image": "/images/jeans.jpg"
   },
   {
     "username": "kdumbare7",
     "password": "xP2.QuN@%%3M#",
-    "email": "kdumbare7@mac.com",
+    "email": "kdumbare7@shopee.com",
     "role": "user",
     "fullName": "Kasper Dumbare",
-    "isActive": false,
-    "profile_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "shopID": null, 
+    "isActive": true,
+    "profile_image": "/images/giay-nike.jpg"
   },
   {
     "username": "shuton8",
     "password": "wD1@|v&CZmgKF",
-    "email": "shuton8@simplemachines.org",
+    "email": "shuton8@shopee.com",
     "role": "user",
     "fullName": "Sibilla Huton",
-    "isActive": true,
-    "profile_image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "shopID": null, 
+    "isActive": false,
+    "profile_image": "/images/Gucci.jpg"
   },
   {
     "username": "dtombs9",
     "password": "yN3\"Y8HX",
-    "email": "dtombs9@epa.gov",
+    "email": "dtombs9@shopee.com",
     "role": "user",
     "fullName": "Delphinia Tombs",
-    "isActive": false,
-    "profile_image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&q=80&w=400&h=300&fit=crop"
+    "shopID": null, 
+    "isActive": true,
+    "profile_image": "/images/may-ep-hurom.jpg"
   }
 ]
