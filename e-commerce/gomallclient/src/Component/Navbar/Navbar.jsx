@@ -78,6 +78,7 @@ const Navbar = () => {
                   />
                   <span>Thông báo</span>
                 </div>
+
                 <div className="nav-icon">
                   <img
                       src="/images/setting.png"
@@ -87,6 +88,7 @@ const Navbar = () => {
                   />
                   <span>Hỗ trợ</span>
                 </div>
+                <Link to={isAuthenticated() ? "/cart" : "/signin" }>
                 <div className="nav-icon">
                   <img
                       src="/images/cart.png"
@@ -96,6 +98,8 @@ const Navbar = () => {
                   />
                   <span>Giỏ hàng</span>
                 </div>
+                </Link>
+              
                 <div 
                   className="nav-icon" 
                   onClick={(e) => {

@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     address: { type: String },
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
+    
 });
 
 module.exports = mongoose.model('User', userSchema);

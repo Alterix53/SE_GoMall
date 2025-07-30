@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import './UserPage.css';
-
+import { Link } from 'react-router-dom';
 const UserPage = () => {
   const { user, isAuthenticated } = useAuth();
 
@@ -77,10 +77,13 @@ const UserPage = () => {
           <div className="user-section">
             <h2>Hành động nhanh</h2>
             <div className="quick-actions">
-              <button className="action-btn">
-                <i className="fas fa-shopping-cart"></i>
-                Xem giỏ hàng
-              </button>
+              <Link to="/cart">
+                <div className="action-btn">
+                  <i className="fas fa-shopping-cart"></i>
+                  Xem giỏ hàng
+                </div>
+              </Link>
+
               <button className="action-btn">
                 <i className="fas fa-heart"></i>
                 Sản phẩm yêu thích
@@ -89,10 +92,12 @@ const UserPage = () => {
                 <i className="fas fa-box"></i>
                 Lịch sử đơn hàng
               </button>
-              <button className="action-btn">
-                <i className="fas fa-cog"></i>
-                Cài đặt tài khoản
-              </button>
+              <Link to="/user/settings">
+                <button className="action-btn" >
+                  <i className="fas fa-cog"></i>
+                  Cài đặt tài khoản
+                </button>
+              </Link>
             </div>
           </div>
         </div>
