@@ -27,20 +27,7 @@ const Navbar = () => {
       <header className="navbar">
         {/* Top Bar */}
         
-        <div className="navbar-top">
-          <div className="container">
-            <div className="top-left">
-              <span>Miễn phí vận chuyển đơn từ 150k</span>
-              <span>•</span>
-              <span>Hỗ trợ 24/7</span>
-            </div>
-            <div className="top-right">
-              <span>Tải ứng dụng</span>
-              <span>•</span>
-              <span>Kết nối</span>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Main Navbar */}
         <div className="navbar-main">
@@ -86,7 +73,7 @@ const Navbar = () => {
                       style={{ width: "20px", height: "20px" }}
                       onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
                   />
-                  <span>Hỗ trợ</span>
+                  <span>Trở thành người bán</span>
                 </div>
                 <Link to={isAuthenticated() ? "/cart" : "/signin" }>
                 <div className="nav-icon">
