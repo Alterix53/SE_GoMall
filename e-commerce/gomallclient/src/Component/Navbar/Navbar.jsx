@@ -27,7 +27,20 @@ const Navbar = () => {
       <header className="navbar">
         {/* Top Bar */}
         
-        
+        <div className="navbar-top">
+          <div className="container">
+            <div className="top-left">
+              <span>Miễn phí vận chuyển đơn từ 150k</span>
+              <span>•</span>
+              <span>Hỗ trợ 24/7</span>
+            </div>
+            <div className="top-right">
+              <span>Tải ứng dụng</span>
+              <span>•</span>
+              <span>Kết nối</span>
+            </div>
+          </div>
+        </div>
 
         {/* Main Navbar */}
         <div className="navbar-main">
