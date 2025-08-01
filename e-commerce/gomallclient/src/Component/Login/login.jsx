@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Navbar from '../Navbar/Navbar'; 
+=======
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../Navbar/Navbar';
+>>>>>>> Login_Seller_Dashboard
 import Footer from '../Footer/Footer';
 import '../Login/login.css';
 
@@ -15,6 +20,7 @@ const LoginPage = () => {
   const location = useLocation();
   const { login } = useAuth();
 
+<<<<<<< HEAD
   // Lấy trang trước đó để redirect sau khi đăng nhập
   const from = location.state?.from?.pathname || '/';
 
@@ -36,6 +42,40 @@ const LoginPage = () => {
       setError('Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
       setLoading(false);
+=======
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    // Lấy danh sách người dùng từ localStorage
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    // Tìm user có thông tin trùng khớp
+    const account = users.find(
+      (user) => user.username === username && user.password === password
+    );
+
+    if (!account) {
+      alert('Sai tài khoản hoặc mật khẩu!');
+      return;
+    }
+
+    // Lưu trạng thái đăng nhập
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', account.username);
+    localStorage.setItem('userRole', account.role);
+
+    // Điều hướng theo vai trò
+    if (account.role === 'seller') {
+      if (account.sellerStatus === 'approved') {
+        navigate('/seller-dashboard');
+      } else {
+        alert('Tài khoản người bán của bạn chưa được phê duyệt.');
+        return;
+      }
+    } else {
+      // buyer mặc định
+      navigate('/home'); // hoặc /marketplace tùy hệ thống
+>>>>>>> Login_Seller_Dashboard
     }
   };
 
@@ -53,6 +93,7 @@ const LoginPage = () => {
         <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label className="form-label">Tài khoản</label>
+<<<<<<< HEAD
             <input 
               type="text" 
               className="form-control" 
@@ -60,11 +101,20 @@ const LoginPage = () => {
               onChange={(e) => setUsername(e.target.value)} 
               disabled={loading}
               required 
+=======
+            <input
+              type="text"
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+>>>>>>> Login_Seller_Dashboard
             />
           </div>
 
           <div className="mb-3">
             <label className="form-label">Mật khẩu</label>
+<<<<<<< HEAD
             <input 
               type="password" 
               className="form-control" 
@@ -72,6 +122,14 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)} 
               disabled={loading}
               required 
+=======
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+>>>>>>> Login_Seller_Dashboard
             />
           </div>
 

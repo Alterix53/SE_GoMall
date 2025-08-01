@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import FlashSaleCarousel from "./Component/FlashSaleCarousel/FlashSaleCarousel";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
-import axios from "axios";
+import { useProductCache } from "./hooks/useProductCache";
 import "./Home.css";
 
 const Home = () => {
@@ -10,6 +10,8 @@ const Home = () => {
   const [categoryProducts, setCategoryProducts] = useState({});
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [flashSaleProducts, setFlashSaleProducts] = useState([]); // State riêng cho flash sale
+
+  const { getAllProducts, loading, error } = useProductCache();
 
   const categories = [
     { name: "Điện thoại", image: "/images/Phone.png" },
@@ -23,16 +25,12 @@ const Home = () => {
   ];
 
   useEffect(() => {
-    let retries = 0;
-    const maxRetries = 3;
-
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/products", {
-          timeout: 5000,
-        });
-        console.log("API response:", response.data);
-        const products = response.data?.data?.products || [];
+        // Use custom hook instead of direct cache service
+        const response = await getAllProducts();
+        console.log("API response:", response);
+        const products = response?.data?.products || [];
         if (products.length === 0) {
           console.warn("No products from API");
           return;
@@ -101,22 +99,15 @@ const Home = () => {
             }))
         );
       } catch (err) {
-        retries++;
-        console.error(`Fetch error (attempt ${retries}/${maxRetries}):`, err.message, err.response?.status, err.response?.statusText);
-        if (retries < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 2000 * retries));
-          await fetchData();
-        } else {
-          console.error("Max retries reached, no data available");
-          setCategoryProducts({});
-          setFeaturedProducts([]);
-          setFlashSaleProducts([]);
-        }
+        console.error("Error fetching products:", err.message);
+        setCategoryProducts({});
+        setFeaturedProducts([]);
+        setFlashSaleProducts([]);
       }
     };
 
     fetchData();
-  }, []);
+  }, [getAllProducts]);
 
   return (
     <div className="home-page">

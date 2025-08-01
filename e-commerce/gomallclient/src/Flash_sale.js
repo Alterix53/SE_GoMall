@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import productCacheService from "./utils/productCache";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx"; // Import RenderProduct
 import "./Flash_sale.css";
 
@@ -40,17 +40,13 @@ const FlashSale = () => {
 
   // Fetch data effect
   useEffect(() => {
-    let retries = 0;
-    const maxRetries = 3;
-
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:8080/api/products/flash-sale", {
-          timeout: 5000,
-        });
-        console.log("Flash Sale API response:", response.data);
-        const products = response.data?.data?.products || [];
+        // Use cache service instead of direct API call
+        const response = await productCacheService.getFlashSaleProducts();
+        console.log("Flash Sale API response:", response);
+        const products = response?.data?.products || [];
         if (products.length === 0) {
           console.warn("No flash sale products from API");
           return;
@@ -71,14 +67,7 @@ const FlashSale = () => {
           }))
         );
       } catch (err) {
-        retries++;
-        console.error(`Fetch error (attempt ${retries}/${maxRetries}):`, err.message, err.response?.status, err.response?.statusText);
-        if (retries < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 2000 * retries));
-          await fetchData();
-        } else {
-          console.error("Max retries reached, no data available");
-        }
+        console.error("Error fetching flash sale products:", err.message);
       } finally {
         setLoading(false);
       }

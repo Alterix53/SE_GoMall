@@ -19,16 +19,32 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (form.password !== form.confirm) {
+
+    const { username, email, password, confirm } = form;
+
+    if (password !== confirm) {
       alert('Mật khẩu không khớp!');
       return;
     }
 
-    localStorage.setItem('account', JSON.stringify({
-      username: form.username,
-      email: form.email,
-      password: form.password,
-    }));
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    const existing = users.find(u => u.username === username);
+    if (existing) {
+      alert('Tên đăng nhập đã tồn tại!');
+      return;
+    }
+
+    const newUser = {
+      username,
+      email,
+      password,
+      role: 'buyer',         // mặc định là người mua
+      sellerStatus: null     // chưa đăng ký làm người bán
+    };
+
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
 
     alert('Đăng ký thành công!');
     navigate('/login');

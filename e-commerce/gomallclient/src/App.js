@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 
 import Cart from './Component/Cart/Cart';
@@ -31,6 +31,8 @@ import ItemsPage from './Component/Admin/pages/ItemsPage';
 import LoginPage from './Component/Login/login';
 import SignUpPage from './Component/Signup/signup';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
+
+// 
 import UserPage from './Component/UserPage/UserPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import UnauthorizedPage from './components/UnauthorizedPage';
@@ -43,6 +45,22 @@ import { CartProvider } from "./contexts/CartContext";
 import Statistics from './Component/Sellerdashboard/Statistics';
 import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
+import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
+import Navbar from './Component/Navbar/Navbar';
+import Footer from './Component/Footer/Footer';
+
+
+const LayoutWrapper = ({ children }) => {
+  const location = useLocation();
+  const hideLayout = ['/login', '/signup'].includes(location.pathname);
+  return (
+    <>
+      {!hideLayout && <Navbar />}
+      {children}
+      {!hideLayout && <Footer />}
+    </>
+  );
+};
 
 function AdminLayout() {
   return (
@@ -68,127 +86,136 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
-          <div className="App">
-            {/* Sử dụng Navbar mới cho các trang chính */}
-            <Routes>
-              {/* Admin routes - sử dụng layout riêng */}
-              <Route path="/Admin/*" element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminLayout />
-                </ProtectedRoute>
-              } />
-              
-              {/* Auth routes - không có navbar */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signin" element={<LoginPage />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
-              
-              
-              {/* User routes - có navbar và footer */}
-              <Route path="/user" element={
+          <LayoutWrapper>
+            <div className="App">
+              {/* Sử dụng Navbar mới cho các trang chính */}
+              <Routes>
+                {/* Admin routes - sử dụng layout riêng */}
+                <Route path="/Admin/*" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminLayout />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Auth routes - không có navbar */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signin" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                
+                
+                {/* User routes - có navbar và footer */}
+                <Route path="/user" element={
+                  <>
+                    <Navbar />
+                    <UserPage />
+                    <Footer />
+                  </>
+                } />
+                <Route path="/user/settings" element={
+                  <>
+                    <Navbar />
+                    <UserSettings />
+                    <Footer />
+                  </>
+                } />
+                <Route path="/search" element={
                 <>
                   <Navbar />
-                  <UserPage />
-                  <Footer />
-                </>
-              } />
-              <Route path="/user/settings" element={
+                  <SearchResult />
+                  <Footer/>
+                  </>
+                } /> {/* Route cho tìm kiếm */}  {/* Minh */}
+                
+                <Route path="/product/:id" element={
                 <>
                   <Navbar />
-                  <UserSettings />
-                  <Footer />
-                </>
-              } />
-              <Route path="/search" element={
-              <>
-                <Navbar />
-                <SearchResult />
-                <Footer/>
-                </>
-              } /> {/* Route cho tìm kiếm */}  {/* Minh */}
-              
-              <Route path="/product/:id" element={
-              <>
-                <Navbar />
-                <ProductDetail />
-                <Footer/>
-                </>
-              } />
-              <Route path="/cart" element={
-                <>
-                  <Navbar />
-                  <Cart />
-                  <Footer />
-                </>
-              } />
-              {/* Seller routes - có thể có layout riêng */}
-              <Route path="/seller" element={
-                <ProtectedRoute requiredRole="seller">
-                  <SellerDashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/seller/statistics" element={
-                <ProtectedRoute requiredRole="seller">
-                  <Statistics />
-                </ProtectedRoute>
-              } />
-              <Route path="/seller/orders" element={
-                <ProtectedRoute requiredRole="seller">
-                  <ShippingStatus />
-                </ProtectedRoute>
-              } />
-              <Route path="/seller/orders/:id" element={
-                <ProtectedRoute requiredRole="seller">
-                  <OrderDetail />
-                </ProtectedRoute>
-              } />
-              
-              {/* Main routes - sử dụng Navbar và Footer */}
-              <Route path="/" element={
-                <>
-                  <Navbar />
-                  <Home />
-                  <Footer />
-                </>
-              } />
-              <Route path="/flash-sale" element={
-                <>
-                  <Navbar />
-                  <FlashSale />
-                  <Footer />
-                </>
-              } />
-              <Route path="/top-products" element={
-                <>
-                  <Navbar />
-                  <TopProduct />
-                  <Footer />
-                </>
-              } />
-              
-              {/* Category routes - sử dụng Navbar và Footer */}
-              <Route path="/category/*" element={
-                <>
-                  <Navbar />
-                  <CategoryList />
-                  <Footer />
-                </>
-              } />
-              
-              {/* Fallback route */}
-              <Route path="*" element={
-                <>
-                  <Navbar />
-                  <Home />
-                  <Footer />
-                </>
-              } />
-            </Routes>
-          </div>
+                  <ProductDetail />
+                  <Footer/>
+                  </>
+                } />
+                <Route path="/cart" element={
+                  <>
+                    <Navbar />
+                    <Cart />
+                    <Footer />
+                  </>
+                } />
+                {/* SELLER ROUTES - có thể có layout riêng */}
+                <Route path="/seller" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <SellerDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/seller/statistics" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <Statistics />
+                  </ProtectedRoute>
+                } />
+                <Route path="/seller/orders" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <ShippingStatus />
+                  </ProtectedRoute>
+                } />
+                <Route path="/seller/orders/:id" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <OrderDetail />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Main routes - sử dụng Navbar và Footer */}
+                <Route path="/" element={
+                  <>
+                    <Navbar />
+                    <Home />
+                    <Footer />
+                  </>
+                } />
+                <Route path="/flash-sale" element={
+                  <>
+                    <Navbar />
+                    <FlashSale />
+                    <Footer />
+                  </>
+                } />
+                <Route path="/top-products" element={
+                  <>
+                    <Navbar />
+                    <TopProduct />
+                    <Footer />
+                  </>
+                } />
+                <Route path="/register-seller" element={
+                  <>
+                    <Navbar />
+                    <RegisterSeller />
+                    <Footer />
+                  </>} />
+                
+                {/* Category routes - sử dụng Navbar và Footer */}
+                <Route path="/category/*" element={
+                  <>
+                    <Navbar />
+                    <CategoryList />
+                    <Footer />
+                  </>
+                } />
+                
+                {/* Fallback route */}
+                <Route path="*" element={
+                  <>
+                    <Navbar />
+                    <Home />
+                    <Footer />
+                  </>
+                } />
+              </Routes>
+            </div>
+          </LayoutWrapper>
         </Router>
       </CartProvider>
     </AuthProvider>
+
   );
 }
 
