@@ -3,7 +3,6 @@
   border-radius: 12px;
   padding: 24px;
   position: relative;
-  overflow: hidden;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   animation: fadeIn 1s ease-out;
 }
@@ -12,16 +11,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px; /* Khoảng cách giữa countdown và thông báo */
+  gap: 30px;
   width: 100%;
-  min-height: 400px; /* Đảm bảo chiều cao đủ để căn giữa */
-  position: relative;
+  min-height: 450px;
 }
 
 .countdown-timer {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px; /* Điều chỉnh khoảng cách */
+  margin-bottom: 20px;
   width: 100%;
   max-width: 400px;
 }
@@ -66,107 +64,190 @@
   font-size: 16px;
 }
 
-.carousel-wrapper {
+.products-container {
   width: 100%;
-  position: relative;
-  flex-grow: 1; /* Điền phần còn lại của chiều cao */
-}
-
-.carousel-container {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  height: 100%; /* Đảm bảo chiếm toàn bộ chiều cao còn lại */
-}
-
-.carousel-track {
+  max-width: 1200px;
   display: flex;
-  transition: transform 0.5s ease-in-out;
-  height: 100%;
-}
-
-.carousel-item {
-  flex-shrink: 0;
-  padding: 0 8px;
-  height: 100%;
-}
-
-.no-products-message {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 1.5rem;
-  color: #ff4444;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: pulse 2s infinite;
-  padding: 20px;
-}
-
-.below-timer {
-  position: absolute;
-  top: 100px; /* Điều chỉnh để thẳng dưới countdown (tùy chiều cao timer) */
-  left: 50%;
-  transform: translateX(-50%); /* Căn giữa theo chiều ngang */
-  width: 300px; /* Giảm từ 450px xuống 300px để phù hợp với dòng chữ */
-  height: 150px; /* Chiều cao cố định */
-  z-index: 1;
-  transition: top 0.3s ease;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  gap: 12px;
-  font-size: 1.2rem;
-  color: #333;
-  font-weight: 500;
+  position: relative;
+  padding: 0 40px;
 }
 
-.carousel-btn {
+.carousel-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
   border: none;
+  color: #ff6b35;
+  font-size: 24px;
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
   z-index: 2;
 }
 
-.carousel-btn:hover:not(:disabled) {
-  background: white;
-  transform: translateY(-50%) scale(1.1);
+.carousel-arrow:hover {
+  background: rgba(255, 255, 255, 1);
 }
 
-.carousel-btn:disabled {
+.carousel-arrow:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.carousel-btn-prev {
+.carousel-arrow.left {
+  left: 0;
+}
+
+.carousel-arrow.right {
+  right: 0;
+}
+
+.products-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 20px;
+}
+
+.product-item {
+  flex: 1;
+  max-width: 300px;
+  min-width: 270px;
+  height: auto;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  padding-bottom: 20px;
+}
+
+.product-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.discount-badge {
+  position: absolute;
+  top: 12px;
   left: 12px;
-}
-
-.carousel-btn-next {
-  right: 12px;
-}
-
-.carousel-btn i {
+  background: #ff4444;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
   font-size: 14px;
+  font-weight: bold;
+  z-index: 3;
+}
+
+.flash-sale-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ff6b35;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 3;
+}
+
+.product-image {
+  height: 220px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-item:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-info {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 12px 0;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.price-section {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.current-price {
+  color: #ff6b35;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.original-price {
+  color: #999;
+  font-size: 16px;
+  text-decoration: line-through;
+}
+
+.product-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.rating {
+  color: #ffc107;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+}
+
+.sold {
+  font-weight: 500;
 }
 
 .carousel-dots {
@@ -177,8 +258,8 @@
 }
 
 .carousel-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   border: none;
   background: #ccc;
@@ -191,99 +272,100 @@
   transform: scale(1.2);
 }
 
-.carousel-dot:hover {
-  background: #ff6666;
+/* Responsive */
+@media (max-width: 1024px) {
+  .products-grid {
+    gap: 16px;
+  }
+
+  .product-item {
+    max-width: 280px;
+    min-width: 250px;
+    height: auto;
+  }
+
+  .product-image {
+    height: 200px;
+  }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .flash-sale-carousel {
     padding: 16px;
   }
 
-  .timer-content {
-    padding: 8px 16px;
-    gap: 8px;
+  .products-container {
+    padding: 0 30px;
   }
 
-  .timer-label {
-    font-size: 12px;
+  .products-grid {
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .timer-digit {
-    padding: 4px 8px;
-    font-size: 14px;
-    min-width: 32px;
+  .product-item {
+    flex: 0 0 calc(50% - 6px);
+    max-width: 220px;
+    min-width: 200px;
+    height: auto;
   }
 
-  .carousel-btn {
-    width: 32px;
-    height: 32px;
+  .product-image {
+    height: 160px;
   }
 
-  .carousel-btn i {
-    font-size: 12px;
+  .product-info {
+    padding: 12px;
+    min-height: 140px;
   }
 
-  .carousel-item {
-    padding: 0 4px;
-  }
-
-  .no-products-message {
-    font-size: 1.2rem;
-    height: 120px;
-  }
-
-  .below-timer {
-    top: 80px; /* Điều chỉnh cho màn hình nhỏ */
-    width: 70%;
-    height: 120px;
+  .carousel-arrow {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
   }
 }
 
 @media (max-width: 480px) {
-  .flash-sale-carousel {
-    padding: 12px;
-  }
-
-  .countdown-timer {
-    margin-bottom: 16px;
-  }
-
-  .timer-content {
+  .products-grid {
     flex-direction: column;
-    gap: 6px;
-    text-align: center;
+    align-items: center;
+    gap: 16px;
   }
 
-  .carousel-btn-prev {
-    left: 8px;
+  .product-item {
+    flex: none;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
   }
 
-  .carousel-btn-next {
-    right: 8px;
+  .product-image {
+    height: 200px;
   }
 
-  .no-products-message {
-    font-size: 1rem;
-    height: 100px;
+  .products-container {
+    padding: 0 20px;
   }
 
-  .below-timer {
-    top: 60px; /* Điều chỉnh cho màn hình rất nhỏ */
-    width: 80%;
-    height: 100px;
+  .carousel-arrow.left {
+    left: -10px;
+  }
+
+  .carousel-arrow.right {
+    right: -10px;
   }
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

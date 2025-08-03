@@ -1,3 +1,4 @@
+// <DOCUMENT filename="seedData.js">
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
@@ -11,13 +12,11 @@ import '../models/Cart.js';
 import '../models/Review.js';
 import '../models/Payment.js';
 
-// Lấy đường dẫn file hiện tại trong ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log("Current script directory:", __dirname); // Debug log
+console.log("Current script directory:", __dirname);
 
-// Định nghĩa trực tiếp URI với tên database khớp (GoMall)
 const MONGODB_URI = "mongodb://localhost:27017/GoMall";
 
 const connectDB = async () => {
@@ -31,9 +30,8 @@ const connectDB = async () => {
     }
 };
 
-// Hàm đọc và parse JSON
 const readJSON = (fileName) => {
-    const filePath = path.join(__dirname, '../../data/', fileName); // Trỏ lên /e-commerce/data/
+    const filePath = path.join(__dirname, '../../data/', fileName);
     console.log(`Debug: Looking for file at: ${filePath}`);
     if (!fs.existsSync(filePath)) {
         console.error(`Debug: File not found at: ${filePath}`);
@@ -48,47 +46,31 @@ const readJSON = (fileName) => {
     }
 };
 
-// Hàm download và lưu ảnh
-const downloadImage = async (url, filename) => {
-    const imageDir = path.join(__dirname, '../public/images/');
-    if (!fs.existsSync(imageDir)) fs.mkdirSync(imageDir, { recursive: true });
-
-    const filePath = path.join(imageDir, filename);
-    const writer = fs.createWriteStream(filePath);
-
+const processImageUrl = async (url, filename) => {
+    if (!url) {
+        console.log("No URL provided, using fallback image");
+        return 'https://source.unsplash.com/random/400x300';
+    }
     if (url.includes('amazon.de') || url.includes('mlb.com') || url.includes('comsenz.com') || url.includes('naver.com') || url.includes('ebay.co.uk') || url.includes('huffingtonpost.com')) {
-        url = `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`;
-        console.log(`Replaced fake URL with Picsum: ${url}`);
+        console.log(`Replaced fake URL with fallback: https://source.unsplash.com/random/400x300`);
+        return 'https://source.unsplash.com/random/400x300';
     }
-
-    try {
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream',
-            timeout: 20000 // Tăng timeout lên 20 giây
-        });
-        response.data.pipe(writer);
-
-        return new Promise((resolve, reject) => {
-            writer.on('finish', () => resolve(`/images/${filename}`));
-            writer.on('error', reject);
-        });
-    } catch (error) {
-        console.error(`Error downloading image from ${url}:`, error);
-        return `/images/default.jpg`;
-    }
+    return url;
 };
 
 const seedCategories = async () => {
     const categoriesData = readJSON('Categories.json');
-    if (!categoriesData.length) return [];
+    console.log("Raw categories data:", categoriesData);
+    if (!categoriesData.length) {
+        console.warn("No categories data found in Categories.json");
+        return [];
+    }
 
     const mappedCategories = await Promise.all(categoriesData.map(async cat => {
-        const imagePath = cat.image ? await downloadImage(cat.image, `category_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`) : '/images/default.jpg';
+        const imagePath = cat.image ? await processImageUrl(cat.image, `category_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`) : 'https://source.unsplash.com/random/400x300';
         return {
-            categoryName: cat.categoryName,
-            slug: cat.slug,
+            categoryName: cat.categoryName || 'Default Category',
+            slug: cat.slug || `default-slug-${Math.random().toString(36).slice(2)}`,
             description: cat.description || '',
             image: imagePath,
             icon: cat.icon || 'fas fa-default-icon',
@@ -117,7 +99,11 @@ const seedCategories = async () => {
 
 const seedUsers = async () => {
     const usersData = readJSON('users.json');
-    if (!usersData.length) return { allUsers: [], sellers: [] };
+    console.log("Raw users data:", usersData);
+    if (!usersData.length) {
+        console.warn("No users data found in users.json");
+        return { allUsers: [], sellers: [] };
+    }
 
     const mappedUsers = usersData.map(user => ({
         username: user.username || `default_user_${Math.random().toString(36).slice(2)}`,
@@ -127,29 +113,44 @@ const seedUsers = async () => {
         fullName: user.fullName || '',
         phoneNumber: user.phoneNumber || '',
         address: user.address || '',
-        shopName: user.shopName || (user.role === 'seller' ? 'Default Shop' : ''),
-        isActive: user.isActive !== false
+        shop: user.role.includes('seller') ? {
+            shopID: user.shop?.shopID || new mongoose.Types.ObjectId(),
+            name: user.shop?.name || 'Default Shop',
+            address: user.shop?.address || '',
+            isActive: user.shop?.isActive !== false
+        } : null,
+        isActive: user.isActive !== false,
+        profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300'
     }));
 
     await User.deleteMany({});
     const createdUsers = await User.insertMany(mappedUsers);
-    const createdSellers = createdUsers.filter(u => u.role === 'seller');
-    console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role })));
-    console.log("Sellers extracted:", createdSellers.map(s => s.shopName));
+    const createdSellers = createdUsers.filter(u => u.role.includes('seller'));
+    console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role, _id: u._id, shop: u.shop })));
+    console.log("Sellers extracted:", createdSellers.map(s => ({ username: s.username, _id: s._id, shop: s.shop })));
     return { allUsers: createdUsers, sellers: createdSellers };
 };
 
 const seedProducts = async (createdCategories, createdSellers) => {
     const productsData = readJSON('products.json');
-    if (!productsData.length) return [];
+    console.log("Raw products data:", productsData);
+    if (!productsData.length) {
+        console.warn("No products data found in products.json");
+        return [];
+    }
 
     const mappedProducts = await Promise.all(productsData.map(async product => {
+        console.log("Processing product:", product);
         const imagePaths = product.images_url ? await Promise.all(product.images_url.split(',').map(async (url, index) => ({
-            url: await downloadImage(url, `product_${product.name}_${index}_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`),
+            url: await processImageUrl(url, `product_${product.name}_${index}_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`),
             alt: product.images_alt || 'Product Image',
             isPrimary: index === 0
-        }))) : [{ url: '/images/default.jpg', alt: 'Default', isPrimary: true }];
-
+        }))) : [{ url: 'https://source.unsplash.com/random/400x300', alt: 'Default', isPrimary: true }];
+        const categoryIndex = product.categoryID - 1;
+        const categoryID = createdCategories.length > 0 && categoryIndex >= 0 && categoryIndex < createdCategories.length 
+            ? createdCategories[categoryIndex]._id 
+            : new mongoose.Types.ObjectId();
+        const sellerID = createdSellers.length > 0 ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id : new mongoose.Types.ObjectId();
         return {
             name: product.name || 'Default Product Name',
             slug: product.slug || `default-slug-${Math.random().toString(36).slice(2)}`,
@@ -157,8 +158,8 @@ const seedProducts = async (createdCategories, createdSellers) => {
             shortDescription: product.shortDescription || '',
             sku: product.sku || `SKU-${Math.random().toString(36).slice(2).toUpperCase()}`,
             brand: product.brand || '',
-            categoryID: createdCategories[Math.floor(Math.random() * createdCategories.length)]._id,
-            sellerID: createdSellers.length > 0 ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id : null,
+            categoryID: categoryID,
+            sellerID: sellerID,
             images: imagePaths,
             price: { original: Number(product.price_original || 0), sale: Number(product.price_sale || 0) },
             inventory: { quantity: Number(product.inventory_quantity || 0), lowStockThreshold: Number(product.inventory_lowStockThreshold || 10) },
@@ -170,15 +171,27 @@ const seedProducts = async (createdCategories, createdSellers) => {
             isActive: product.isActive !== false,
             isFeatured: product.isFeatured || false,
             isFlashSale: product.isFlashSale || false,
-            flashSalePrice: Number(product.flashSalePrice || 0),
-            flashSaleEndDate: product.flashSaleEndDate && !isNaN(new Date(product.flashSaleEndDate)) ? new Date(product.flashSaleEndDate) : null
+            flashSalePrice: Number(product.flashSalePrice || (product.price_sale * 0.9) || 0),
+            flashSaleEndDate: new Date(product.flashSaleEndDate) || new Date('2025-07-30'), // Đảm bảo parse Date
+            createdAt: new Date()
         };
     }));
-
-    const validProducts = mappedProducts.filter(p => p.sellerID !== null && p.categoryID !== null);
+    console.log("Mapped products:", mappedProducts.map(p => ({
+        name: p.name,
+        categoryID: p.categoryID,
+        isFlashSale: p.isFlashSale,
+        flashSaleEndDate: p.flashSaleEndDate
+    })));
+    const validProducts = mappedProducts;
+    console.log("Valid products after filter:", validProducts);
     await Product.deleteMany({});
     const createdProducts = await Product.insertMany(validProducts);
-    console.log("Products seeded successfully:", createdProducts.map(p => p.name));
+    console.log("Products seeded successfully:", createdProducts.map(p => ({
+        name: p.name,
+        _id: p._id,
+        isFlashSale: p.isFlashSale,
+        flashSaleEndDate: p.flashSaleEndDate ? p.flashSaleEndDate.toISOString() : null
+    })));
     return createdProducts;
 };
 
@@ -198,9 +211,10 @@ const seedData = async () => {
         console.log("Data seeded successfully!");
         process.exit(0);
     } catch (error) {
-        console.error("Error seeding data:", error);
+        console.error("Error seeding data:", error.stack);
         process.exit(1);
     }
 };
 
 seedData();
+// </DOCUMENT>

@@ -43,10 +43,11 @@ const FlashSale = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Use cache service instead of direct API call
-        const response = await productCacheService.getFlashSaleProducts();
-        console.log("Flash Sale API response:", response);
-        const products = response?.data?.products || [];
+        const response = await axios.get("http://localhost:8080/api/products/flash-sale", {
+          timeout: 5000,
+        });
+        console.log("Flash Sale API response:", response.data);
+        const products = response.data?.data?.products || [];
         if (products.length === 0) {
           console.warn("No flash sale products from API");
           return;
