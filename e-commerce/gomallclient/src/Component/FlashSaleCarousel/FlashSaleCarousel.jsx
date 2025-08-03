@@ -1,78 +1,95 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { RenderProduct } from "../ProductCard/ProductCard.jsx"; // Điều chỉnh đường dẫn nếu cần
-import "./FlashSaleCarousel.css";
+"use client"
 
-const FlashSaleCarousel = ({ products }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(6);
+import { useState, useEffect, memo } from "react"
+import "./FlashSaleCarousel.css"
+
+const FlashSaleCarousel = memo(({ products }) => {
+  console.log("FlashSaleCarousel received:", products)
+
   const [timeLeft, setTimeLeft] = useState({
     hours: 12,
-    minutes: 34,
-    seconds: 56,
-  });
+    minutes: 29,
+    seconds: 19,
+  })
 
-  // Định nghĩa hàm với useCallback
-  const nextSlide = useCallback(() => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex + itemsPerView >= (products?.length || 0) ? 0 : prevIndex + 1
-    );
-  }, [itemsPerView, products?.length]);
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const productsPerPage = 4
+  const totalPages = Math.ceil(products.length / productsPerPage)
 
-  const prevSlide = useCallback(() => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? Math.max(0, (products?.length || 0) - itemsPerView) : prevIndex - 1
-    );
-  }, [itemsPerView, products?.length]);
+  // Format price function
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price)
+  }
 
-  const goToSlide = useCallback((index) => {
-    setCurrentIndex(index * itemsPerView);
-  }, [itemsPerView]);
-
-  // Handle responsive items per view
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerView(2);
-      else if (window.innerWidth < 768) setItemsPerView(3);
-      else if (window.innerWidth < 1024) setItemsPerView(4);
-      else if (window.innerWidth < 1280) setItemsPerView(5);
-      else setItemsPerView(6);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // Format sold function
+  const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold)
 
   // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        else if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        else if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 }
+        else if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 }
+        else if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 }
+        return { hours: 12, minutes: 29, seconds: 19 }
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
-    return () => clearInterval(timer);
-  }, []);
+  // Handle navigation
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1))
+  }
 
-  // Auto-slide
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000);
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(totalPages - 1, prev + 1))
+  }
 
-    return () => clearInterval(interval);
-  }, [nextSlide]);
+  // Render single product
+  const renderProduct = (product) => {
+    console.log("Rendering product:", product.name)
+    return (
+      <div key={product.id} className="product-item">
+        {product.discount > 0 && <span className="discount-badge">-{product.discount}%</span>}
+        {product.isFlashSale && <span className="flash-sale-badge">Flash Sale</span>}
 
-  const totalSlides = products ? Math.ceil(products.length / itemsPerView) : 0;
+        <div className="product-image">
+          <img
+            src={product.image || "/placeholder.svg"}
+            alt={product.name}
+            onError={(e) => {
+              e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image"
+            }}
+          />
+        </div>
+
+        <div className="product-info">
+          <h3 className="product-name">{product.name}</h3>
+          <div className="price-section">
+            <span className="current-price">{formatPrice(product.price)}</span>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="original-price">{formatPrice(product.originalPrice)}</span>
+            )}
+          </div>
+          <div className="product-stats">
+            <span className="rating">★ {product.rating || "N/A"} ({product.ratingCount || 0} đánh giá)</span>
+            <span className="sold">Đã bán {formatSold(product.sold)}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const currentProducts = products.slice(
+    currentIndex * productsPerPage,
+    (currentIndex + 1) * productsPerPage
+  )
 
   return (
     <div className="flash-sale-carousel">
-      {/* Main Container for Centered Layout */}
       <div className="flash-sale-main">
-        {/* Countdown Timer */}
+        {/* Timer */}
         <div className="countdown-timer">
           <div className="timer-content">
             <span className="timer-label">Kết thúc trong:</span>
@@ -86,70 +103,44 @@ const FlashSaleCarousel = ({ products }) => {
           </div>
         </div>
 
-        {/* Carousel or No Products Message */}
-        <div className="carousel-wrapper">
-          <div
-            className="carousel-container"
-            style={{ display: products?.length > 0 ? "block" : "none" }}
-          >
-            <div
-              className="carousel-track"
-              style={{
-                transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-                width: `${(products?.length || 0) / itemsPerView * 100}%`,
-              }}
-            >
-              {products?.length > 0 &&
-                products.map((product, index) => (
-                  <div
-                    key={product.id || product._id || index}
-                    className="carousel-item"
-                    style={{ width: `${100 / (products.length || 1)}%` }}
-                  >
-                    <RenderProduct product={product} />
-                  </div>
-                ))}
-            </div>
-
-            {/* Navigation Buttons */}
-            <button
-              className="carousel-btn carousel-btn-prev"
-              onClick={prevSlide}
-              disabled={currentIndex === 0 || !products?.length}
-            >
-              <i className="fas fa-chevron-left"></i>
+        {/* Products Container with Arrows */}
+        <div className="products-container">
+          {totalPages > 1 && (
+            <button className="carousel-arrow left" onClick={handlePrev} disabled={currentIndex === 0}>
+              ←
             </button>
-            <button
-              className="carousel-btn carousel-btn-next"
-              onClick={nextSlide}
-              disabled={currentIndex + itemsPerView >= (products?.length || 0)}
-            >
-              <i className="fas fa-chevron-right"></i>
-            </button>
-          </div>
-
-          {/* No Products Message */}
-          {!products?.length > 0 && (
-            <div className="no-products-message centered-message">
-              <p>Không có sản phẩm flash sale</p>
+          )}
+          {products && products.length > 0 ? (
+            <div className="products-grid">
+              {currentProducts.map((product) => renderProduct(product))}
             </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "20px", color: "#999" }}>
+              <p>Không có sản phẩm Flash Sale hiện tại.</p>
+            </div>
+          )}
+          {totalPages > 1 && (
+            <button className="carousel-arrow right" onClick={handleNext} disabled={currentIndex === totalPages - 1}>
+              →
+            </button>
           )}
         </div>
 
-        {/* Dots Indicator */}
+        {/* Carousel Dots */}
         <div className="carousel-dots">
-          {Array.from({ length: totalSlides }).map((_, index) => (
+          {Array.from({ length: totalPages }).map((_, index) => (
             <button
               key={index}
-              className={`carousel-dot ${Math.floor(currentIndex / itemsPerView) === index ? "active" : ""}`}
-              onClick={() => goToSlide(index)}
-              disabled={!products?.length}
-            />
+              className={`carousel-dot ${index === currentIndex ? "active" : ""}`}
+              onClick={() => setCurrentIndex(index)}
+            ></button>
           ))}
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default FlashSaleCarousel;
+FlashSaleCarousel.displayName = "FlashSaleCarousel"
+
+export default FlashSaleCarousel
