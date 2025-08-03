@@ -98,18 +98,22 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [showFAQ, setShowFAQ] = useState(false);
 
-  const { addToCart } = useCart();
+  const { addToCart, loading, error } = useCart();
 
-  const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      size: selectedSize,
-      quantity,
-    });
-    alert("Đã thêm vào giỏ hàng!");
+  const handleAddToCart = async () => {
+    try {
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        size: selectedSize,
+        quantity,
+      });
+      alert("Đã thêm vào giỏ hàng!");
+    } catch (error) {
+      alert("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+    }
   };
 
   return (
@@ -162,8 +166,9 @@ const ProductDetail = () => {
             className="btn btn-dark w-100"
             style={{ margin: '0 0 16px 0', fontWeight: 600, maxWidth: 300 }}
             onClick={handleAddToCart}
+            disabled={loading}
           >
-            Add to Cart
+            {loading ? "Đang thêm..." : "Add to Cart"}
           </button>
           <div style={{ marginTop: 16 }}>
             <div style={{ fontWeight: 500, marginBottom: 4 }}>Other info</div>

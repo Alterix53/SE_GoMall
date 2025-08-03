@@ -4,6 +4,7 @@ import connectDB from "./config/database.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import productRoutes from "./routes/productRoutes.js"; // Import trực tiếp
+import cartRoutes from "./routes/cartRoutes.js"; // Import cart routes
 import './models/User.js'; // Đăng ký User
 import './models/Product.js';
 import './models/Category.js';
@@ -40,6 +41,7 @@ const startServer = async () => {
         console.log("MongoDB Connected");
 
         app.use("/api/products", productRoutes); // Sử dụng trực tiếp
+        app.use("/api/cart", cartRoutes); // Sử dụng cart routes
 
         app.use((err, req, res, next) => {
             console.error("Error middleware:", err.stack);
