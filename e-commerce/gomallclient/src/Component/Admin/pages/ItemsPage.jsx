@@ -48,7 +48,10 @@ function ItemsPage() {
     const fetchProducts = async () => {
       setLoading(true);
       setError(null);
+<<<<<<< HEAD
       console.log('[Product API] Bắt đầu fetch danh sách sản phẩm...', { status: activeFilter, search: searchTerm, page: currentPage });
+=======
+>>>>>>> Admin_Dashboard
       try {
         const adminToken = localStorage.getItem('adminToken');
         if (!adminToken) throw new Error('Admin token not found');
@@ -62,18 +65,27 @@ function ItemsPage() {
         if (res.success) {
           setProducts(res.data.products || res.data || []);
           setTotalPages(res.data.totalPages || 1);
+<<<<<<< HEAD
           console.log(`[Product API] Lấy danh sách sản phẩm thành công. Số lượng: ${res.data.products?.length ?? (res.data?.length ?? 0)}`);
+=======
+>>>>>>> Admin_Dashboard
         } else {
           setProducts([]);
           setTotalPages(1);
           setError(res.message || 'Lỗi khi lấy danh sách sản phẩm');
+<<<<<<< HEAD
           console.error('[Product API] Lỗi khi lấy danh sách sản phẩm:', res.message);
+=======
+>>>>>>> Admin_Dashboard
         }
       } catch (err) {
         setError(err.message || 'Lỗi khi lấy danh sách sản phẩm');
         setProducts([]);
         setTotalPages(1);
+<<<<<<< HEAD
         console.error('[Product API] Lỗi khi fetch sản phẩm:', err);
+=======
+>>>>>>> Admin_Dashboard
       } finally {
         setLoading(false);
       }

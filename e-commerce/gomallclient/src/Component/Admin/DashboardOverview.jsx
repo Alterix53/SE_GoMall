@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SummaryCard from './SummaryCard';
 import StatsChart from './StatsChart';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
@@ -6,8 +6,10 @@ import RevenueDistributionTable from './RevenueDistributionTable';
 import TrendingProductsTable from './TrendingProductsTable';
 import AdminAvatarModal from './AdminAvatarModal';
 import NotificationButton from './NotificationButton';
+import { adminAPI } from '../../utils/api';
 
 function DashboardOverview() {
+<<<<<<< HEAD
     // TODO: replace with real data fetching hook
     const stats = {
         users: 10250,
@@ -15,40 +17,163 @@ function DashboardOverview() {
         revenue: 812000,
         support: 50
     };
+=======
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [dashboardData, setDashboardData] = useState({
+        stats: {
+            users: { total: 0, active: 0, inactive: 0 },
+            products: { total: 0, active: 0, inactive: 0 },
+            orders: { total: 0, pending: 0, completed: 0 },
+            sellers: { total: 0, active: 0, inactive: 0 },
+            revenue: { total: 0, average: 0 }
+        },
+        revenueData: [],
+        topProducts: [],
+        revenueStats: []
+    });
 
-    // Revenue distribution by category
-    const revenueData = [
-      { name: 'Fashion', value: 350000 },
-      { name: 'Electronics', value: 280000 },
-      { name: 'Home & Garden', value: 120000 },
-      { name: 'Others', value: 62000 }
-    ];
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Get admin token from localStorage or context
+                const adminToken = localStorage.getItem('adminToken');
+                if (!adminToken) {
+                    throw new Error('Admin token not found');
+                }
+
+                // Fetch all dashboard data in parallel
+                const [statsResponse, revenueResponse, topProductsResponse, revenueStatsResponse] = await Promise.all([
+                    adminAPI.getDashboardStats(adminToken),
+                    adminAPI.getRevenueStats(adminToken, 'month'),
+                    adminAPI.getTopSellingProducts(adminToken, 5),
+                    adminAPI.getRevenueStats(adminToken, 'month')
+                ]);
+
+                // Check for errors
+                if (!statsResponse.success) {
+                    throw new Error(statsResponse.message || 'Failed to fetch dashboard stats');
+                }
+
+                if (!revenueResponse.success) {
+                    throw new Error(revenueResponse.message || 'Failed to fetch revenue data');
+                }
+
+                if (!topProductsResponse.success) {
+                    throw new Error(topProductsResponse.message || 'Failed to fetch top products');
+                }
+
+                // Process revenue data for pie chart
+                const revenueData = revenueResponse.data.map(item => ({
+                    name: item.categoryName || 'Other',
+                    value: item.revenue || 0
+                }));
+
+                // Process revenue stats for line chart
+                const revenueStats = revenueStatsResponse.data.map(item => ({
+                    date: `${item._id?.month || 1}/${item._id?.year || 2024}`,
+                    value: item.revenue || 0
+                }));
+
+                setDashboardData({
+                    stats: statsResponse.data,
+                    revenueData,
+                    topProducts: topProductsResponse.data,
+                    revenueStats
+                });
+
+            } catch (err) {
+                console.error('Error fetching dashboard data:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+>>>>>>> Admin_Dashboard
+
     const COLORS = ['#0d6efd', '#28a745', '#ffc107', '#dc3545'];
 
-    // Trending products data
-    const trendingProducts = [
-      { id: 1, name: "Men's T-Shirt", unitsSold: 320, revenue: "$64,000" },
-      { id: 2, name: "Sneakers", unitsSold: 210, revenue: "$42,000" },
-      { id: 3, name: "Fashion Watch", unitsSold: 150, revenue: "$30,000" },
-      { id: 4, name: "Bluetooth Headphones", unitsSold: 180, revenue: "$27,000" },
-    ];
+    if (loading) {
+        return (
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-12 text-center">
+                        <div className="spinner-border text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <p className="mt-2">Đang tải dữ liệu dashboard...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-12">
+                        <div className="alert alert-danger" role="alert">
+                            <h4 className="alert-heading">Lỗi!</h4>
+                            <p>{error}</p>
+                            <hr />
+                            <p className="mb-0">
+                                Vui lòng kiểm tra kết nối mạng và thử lại.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container-fluid">
           <div className="row">
             <div className="col-12 d-flex justify-content-between align-item-center">
+<<<<<<< HEAD
               <h3 className="mb-0">Dashboard</h3>
               <div className="d-flex align-items-center">
                 <NotificationButton />
                 <AdminAvatarModal avatarUrl="https://i.pravatar.cc/40?img=3" />
               </div>
+=======
+              {/*Phần bên trái ghi dashboard */}
+              <h3 className="mb-0">Overall System Statistics</h3>
+>>>>>>> Admin_Dashboard
             </div>
           </div>
           <div className="row mb-4">
-            <SummaryCard title="Users" value={stats.users} icon={<i className="bi bi-person fs-2"/>}/>
-            <SummaryCard title="Orders" value={stats.orders} icon={<i className="bi bi-bag fs-2"/>}/>
-            <SummaryCard title="Revenue" value={'$' + stats.revenue.toLocaleString()} icon={<i className="bi bi-cash-stack fs-2"/>}/>
-            <SummaryCard title="Support" value={stats.support} icon={<i className="bi bi-chat-dots fs-2"/>}/>
+            <SummaryCard 
+                title="Users" 
+                value={dashboardData.stats.users.total} 
+                icon={<i className="bi bi-person fs-2"/>}
+                subtitle={`${dashboardData.stats.users.active} active`}
+            />
+            <SummaryCard 
+                title="Orders" 
+                value={dashboardData.stats.orders.total} 
+                icon={<i className="bi bi-bag fs-2"/>}
+                subtitle={`${dashboardData.stats.orders.pending} pending`}
+            />
+            <SummaryCard 
+                title="Revenue" 
+                value={'$' + dashboardData.stats.revenue.total.toLocaleString()} 
+                icon={<i className="bi bi-cash-stack fs-2"/>}
+                subtitle={`Avg: $${dashboardData.stats.revenue.average.toLocaleString()}`}
+            />
+            <SummaryCard 
+                title="Sellers" 
+                value={dashboardData.stats.sellers.total} 
+                icon={<i className="bi bi-shop fs-2"/>}
+                subtitle={`${dashboardData.stats.sellers.active} active`}
+            />
           </div>
           <div className="row g-4 mb-4">
             <div className="col-lg-8">
@@ -56,14 +181,7 @@ function DashboardOverview() {
                 <div className="card-body">
                   <h5 className="mb-3">Revenue Statistics</h5>
                   <StatsChart
-                    data={[
-                      { date: 'Jan', value: 50000 },
-                      { date: 'Feb', value: 80000 },
-                      { date: 'Mar', value: 120000 },
-                      { date: 'Apr', value: 110000 },
-                      { date: 'May', value: 170000 },
-                      { date: 'Jun', value: 150000 },
-                    ]}
+                    data={dashboardData.revenueStats}
                     dataKey="value"
                     xKey="date"
                     height={250}
@@ -78,7 +196,7 @@ function DashboardOverview() {
                   <div className="d-flex justify-content-center">
                     <PieChart width={220} height={220}>
                       <Pie
-                        data={revenueData}
+                        data={dashboardData.revenueData}
                         cx="50%"
                         cy="50%"
                         innerRadius={50}
@@ -88,14 +206,14 @@ function DashboardOverview() {
                         dataKey="value"
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       >
-                        {revenueData.map((entry, index) => (
+                        {dashboardData.revenueData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                     </PieChart>
                   </div>
                   <div className="mt-3">
-                    <RevenueDistributionTable data={revenueData} colors={COLORS} />
+                    <RevenueDistributionTable data={dashboardData.revenueData} colors={COLORS} />
                   </div>
                 </div>
               </div>
@@ -107,7 +225,7 @@ function DashboardOverview() {
                 <div className="card-body">
                   <h5 className="mb-3">Trending Products</h5>
                   <div className="table-responsive">
-                    <TrendingProductsTable products={trendingProducts} />
+                    <TrendingProductsTable products={dashboardData.topProducts} />
                   </div>
                 </div>
               </div>
@@ -116,4 +234,5 @@ function DashboardOverview() {
         </div>
       );
     }
+
 export default DashboardOverview; 

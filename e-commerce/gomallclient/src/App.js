@@ -26,6 +26,7 @@ import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
+import HeaderNavAdmin from "./Component/Admin/HeaderNavAdmin";
 
 // Import các component Auth
 import LoginPage from './Component/Login/login';
@@ -64,6 +65,7 @@ const LayoutWrapper = ({ children }) => {
 
 function AdminLayout() {
   return (
+<<<<<<< HEAD
     <div className="d-flex">
       <Navbar />
       <SidebarNav />
@@ -76,13 +78,32 @@ function AdminLayout() {
           <Route path="ManageSeller" element={<ManageSellerPage />} />
           <Route path="Items" element={<ItemsPage />} />
         </Routes>
+=======
+    <>
+      <HeaderNavAdmin />
+      <div className="d-flex">
+        
+        <SidebarNav />
+        <div className="flex-grow-1 p-3">
+          <Breadcrumbs />
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="viewcustomer" element={<ManageUserPage />} />
+            <Route path="reportedusers" element={<ManageUserPage />} />
+            <Route path="viewseller" element={<ManageSellerPage />} />
+            <Route path="pendingrequest" element={<ManageSellerPage />} />
+            <Route path="Items" element={<ItemsPage />} />
+          </Routes>
+        </div>
+>>>>>>> Admin_Dashboard
       </div>
-    </div>
+    </>
   );
 }
 
 function App() {
   return (
+<<<<<<< HEAD
     <AuthProvider>
       <CartProvider>
         <Router>
@@ -216,6 +237,15 @@ function App() {
       </CartProvider>
     </AuthProvider>
 
+=======
+    <Router>
+      <Routes>
+        <Route path="/Admin/*" element={<AdminLayout />} />
+        {/* Các route khác giữ nguyên layout cũ */}
+        <Route path="/*" element={<CategoryList />} />
+      </Routes>
+    </Router>
+>>>>>>> Admin_Dashboard
   );
 }
 
