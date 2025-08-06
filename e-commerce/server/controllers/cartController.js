@@ -1,9 +1,5 @@
 import Cart from '../models/Cart.js';
-<<<<<<< HEAD
-import CartItem from '../models/CartItem.js';
-=======
 // import CartItem from '../models/CartItem.js';
->>>>>>> Admin_Dashboard
 import Product from '../models/Product.js';
 
 // Get user's cart

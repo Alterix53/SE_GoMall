@@ -2,16 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
-<<<<<<< HEAD
-    username: { type: String, required: true, unique: true, index: true }, 
-    password: { type: String, required: true },
-    email: { type: String, required: true, unique: true, index: true },
-    role: { type: [String], enum: { values: ['user', 'admin', 'seller'], message: '{VALUE} is not a valid role' }, default: ['user'], index: true },
-    fullName: { type: String },
-    phoneNumber: { type: String },
-    address: { type: String },
-    shopID: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop' },
-=======
     username: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
@@ -20,7 +10,6 @@ const userSchema = new mongoose.Schema({
     phoneNumber: { type: String },
     address: { type: String },
     shopName: { type: String }, // Chỉ dùng cho seller
->>>>>>> Admin_Dashboard
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
 }, { timestamps: true });

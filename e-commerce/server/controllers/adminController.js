@@ -61,9 +61,6 @@ export const getSystemOverview = ResponseHandler.asyncHandler(async (req, res) =
     ResponseHandler.success(res, overview, "Lấy tổng quan hệ thống thành công");
 });
 
-<<<<<<< HEAD
-// Create user (admin function)
-=======
 // User Management Controllers
 export const getAllUsers = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to get all users:", req.query);
@@ -81,7 +78,6 @@ export const getUserById = ResponseHandler.asyncHandler(async (req, res) => {
     ResponseHandler.success(res, user, "Lấy thông tin người dùng thành công");
 });
 
->>>>>>> Admin_Dashboard
 export const createUser = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to create user:", req.body);
     
@@ -91,10 +87,6 @@ export const createUser = ResponseHandler.asyncHandler(async (req, res) => {
     ResponseHandler.success(res, { user }, "Tạo người dùng thành công", 201);
 });
 
-<<<<<<< HEAD
-// Update user (admin function)
-=======
->>>>>>> Admin_Dashboard
 export const updateUser = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to update user:", req.params.id);
     
@@ -105,10 +97,6 @@ export const updateUser = ResponseHandler.asyncHandler(async (req, res) => {
     ResponseHandler.success(res, { user }, "Cập nhật người dùng thành công");
 });
 
-<<<<<<< HEAD
-// Delete user (admin function)
-=======
->>>>>>> Admin_Dashboard
 export const deleteUser = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to delete user:", req.params.id);
     
@@ -116,8 +104,6 @@ export const deleteUser = ResponseHandler.asyncHandler(async (req, res) => {
     await adminService.deleteUser(userId);
     
     ResponseHandler.success(res, null, "Xóa người dùng thành công");
-<<<<<<< HEAD
-=======
 });
 
 export const updateUserStatus = ResponseHandler.asyncHandler(async (req, res) => {
@@ -360,5 +346,4 @@ export const toggleMaintenanceMode = ResponseHandler.asyncHandler(async (req, re
     const result = await adminService.toggleMaintenanceMode(enabled);
     
     ResponseHandler.success(res, result, "Cập nhật chế độ bảo trì thành công");
->>>>>>> Admin_Dashboard
 });
