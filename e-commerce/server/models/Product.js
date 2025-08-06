@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    slug: { type: String, required: true },
+    slug: { type: String, required: true, index: true },
     description: String,
     shortDescription: String,
     sku: { type: String, required: true },
     brand: String,
-    categoryID: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-    sellerID: { type: mongoose.Schema.Types.ObjectId, ref: "Seller", required: true },
+    categoryID: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true, index: true },
+    sellerID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true }, // Thay Seller bằng User vì đã gộp
     images: [{
         url: String,
         alt: String,
@@ -38,6 +38,6 @@ const productSchema = new mongoose.Schema({
     isFlashSale: { type: Boolean, default: false },
     flashSalePrice: Number,
     flashSaleEndDate: Date,
-});
+}, { timestamps: true });
 
-export default mongoose.model("Product", productSchema);
+export default mongoose.model('Product', productSchema);
