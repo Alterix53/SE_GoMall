@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { adminAPI } from '../../../utils/api';
 
 const FILTERS = [
   { key: "all", label: "Tất cả" },
@@ -8,72 +9,83 @@ const FILTERS = [
 ];
 
 // Dữ liệu mẫu, bạn có thể thay bằng dữ liệu thực tế
-const PRODUCTS = [
-  { id: 1, name: "Áo thun nam", manufacturer: "Công ty A", sold: 120, type: "new" },
-  { id: 2, name: "Giày thể thao", manufacturer: "Công ty B", sold: 300, type: "hot" },
-  { id: 3, name: "Túi xách nữ", manufacturer: "Công ty C", sold: 15, type: "reported" },
-  { id: 4, name: "Mũ lưỡi trai", manufacturer: "Công ty D", sold: 80, type: "hot" },
-  { id: 5, name: "Quần jeans", manufacturer: "Công ty E", sold: 50, type: "new" },
-  { id: 6, name: "Áo khoác", manufacturer: "Công ty F", sold: 60, type: "new" },
-  { id: 7, name: "Váy nữ", manufacturer: "Công ty G", sold: 90, type: "hot" },
-  { id: 8, name: "Áo thun nam", manufacturer: "Công ty A", sold: 120, type: "new" },
-  { id: 9, name: "Giày thể thao", manufacturer: "Công ty B", sold: 300, type: "hot" },
-  { id: 10, name: "Túi xách nữ", manufacturer: "Công ty C", sold: 15, type: "reported" },
-  { id: 11, name: "Mũ lưỡi trai", manufacturer: "Công ty D", sold: 80, type: "hot" },
-  { id: 12, name: "Quần jeans", manufacturer: "Công ty E", sold: 50, type: "new" },
-  { id: 13, name: "Áo khoác", manufacturer: "Công ty F", sold: 60, type: "new" },
-  { id: 14, name: "Váy nữ", manufacturer: "Công ty G", sold: 90, type: "hot" },
-  { id: 15, name: "Áo thun nam", manufacturer: "Công ty A", sold: 120, type: "new" },
-  { id: 16, name: "Giày thể thao", manufacturer: "Công ty B", sold: 300, type: "hot" },
-  { id: 17, name: "Túi xách nữ", manufacturer: "Công ty C", sold: 15, type: "reported" },
-  { id: 18, name: "Mũ lưỡi trai", manufacturer: "Công ty D", sold: 80, type: "hot" },
-  { id: 19, name: "Quần jeans", manufacturer: "Công ty E", sold: 50, type: "new" },
-  { id: 20, name: "Áo khoác", manufacturer: "Công ty F", sold: 60, type: "new" },
-  { id: 21, name: "Váy nữ", manufacturer: "Công ty G", sold: 90, type: "hot" },
-];
+// const PRODUCTS = [
+//   { id: 1, name: "Áo thun nam", manufacturer: "Công ty A", sold: 120, type: "new" },
+//   { id: 2, name: "Giày thể thao", manufacturer: "Công ty B", sold: 300, type: "hot" },
+//   { id: 3, name: "Túi xách nữ", manufacturer: "Công ty C", sold: 15, type: "reported" },
+//   { id: 4, name: "Mũ lưỡi trai", manufacturer: "Công ty D", sold: 80, type: "hot" },
+//   { id: 5, name: "Quần jeans", manufacturer: "Công ty E", sold: 50, type: "new" },
+//   { id: 6, name: "Áo khoác", manufacturer: "Công ty F", sold: 60, type: "new" },
+//   { id: 7, name: "Váy nữ", manufacturer: "Công ty G", sold: 90, type: "hot" },
+//   { id: 8, name: "Áo thun nam", manufacturer: "Công ty A", sold: 120, type: "new" },
+//   { id: 9, name: "Giày thể thao", manufacturer: "Công ty B", sold: 300, type: "hot" },
+//   { id: 10, name: "Túi xách nữ", manufacturer: "Công ty C", sold: 15, type: "reported" },
+//   { id: 11, name: "Mũ lưỡi trai", manufacturer: "Công ty D", sold: 80, type: "hot" },
+//   { id: 12, name: "Quần jeans", manufacturer: "Công ty E", sold: 50, type: "new" },
+//   { id: 13, name: "Áo khoác", manufacturer: "Công ty F", sold: 60, type: "new" },
+//   { id: 14, name: "Váy nữ", manufacturer: "Công ty G", sold: 90, type: "hot" },
+//   { id: 15, name: "Áo thun nam", manufacturer: "Công ty A", sold: 120, type: "new" },
+//   { id: 16, name: "Giày thể thao", manufacturer: "Công ty B", sold: 300, type: "hot" },
+//   { id: 17, name: "Túi xách nữ", manufacturer: "Công ty C", sold: 15, type: "reported" },
+//   { id: 18, name: "Mũ lưỡi trai", manufacturer: "Công ty D", sold: 80, type: "hot" },
+//   { id: 19, name: "Quần jeans", manufacturer: "Công ty E", sold: 50, type: "new" },
+//   { id: 20, name: "Áo khoác", manufacturer: "Công ty F", sold: 60, type: "new" },
+//   { id: 21, name: "Váy nữ", manufacturer: "Công ty G", sold: 90, type: "hot" },
+// ]; // XÓA DỮ LIỆU MẪU
 
 function ItemsPage() {
-  const [activeFilter, setActiveFilter] = useState(FILTERS[0].key); // đổi danh mục
-  const [currentPage, setCurrentPage] = useState(1);  // trang hiện tại
-  const [searchTerm, setSearchTerm] = useState("");   // thanh tìm kiếm
+  const [activeFilter, setActiveFilter] = useState(FILTERS[0].key);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [products, setProducts] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const itemsPerPage = 12;
 
-  // Reset về trang 1 khi đổi filter hoặc search term
+  // Fetch products từ API
+  React.useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      console.log('[Product API] Bắt đầu fetch danh sách sản phẩm...', { status: activeFilter, search: searchTerm, page: currentPage });
+      try {
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) throw new Error('Admin token not found');
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+          search: searchTerm.trim(),
+          status: activeFilter !== 'all' ? activeFilter : '',
+        };
+        const res = await adminAPI.getAllProducts(adminToken, params);
+        if (res.success) {
+          setProducts(res.data.products || res.data || []);
+          setTotalPages(res.data.totalPages || 1);
+          console.log(`[Product API] Lấy danh sách sản phẩm thành công. Số lượng: ${res.data.products?.length ?? (res.data?.length ?? 0)}`);
+        } else {
+          setProducts([]);
+          setTotalPages(1);
+          setError(res.message || 'Lỗi khi lấy danh sách sản phẩm');
+          console.error('[Product API] Lỗi khi lấy danh sách sản phẩm:', res.message);
+        }
+      } catch (err) {
+        setError(err.message || 'Lỗi khi lấy danh sách sản phẩm');
+        setProducts([]);
+        setTotalPages(1);
+        console.error('[Product API] Lỗi khi fetch sản phẩm:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [activeFilter, searchTerm, currentPage]);
+
+  // Reset về trang 1 khi đổi filter hoặc search
   React.useEffect(() => {
     setCurrentPage(1);
   }, [activeFilter, searchTerm]);
 
-  // Nếu không có sản phẩm nào trên toàn bộ web
-  if (PRODUCTS.length === 0) {
-    return (
-      <div className="container-fluid">
-        <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý sản phẩm</h2>
-        <div className="alert alert-warning text-center mt-5">Chưa có sản phẩm</div>
-      </div>
-    );
-  }
-
-  // Lọc theo filter
-  let filteredProducts =
-    activeFilter === "all"
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.type === activeFilter);
-
-  // Lọc theo search term
-  if (searchTerm.trim() !== "") {
-    filteredProducts = filteredProducts.filter((p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
-
-  // chia trang để hiển thị (nếu nhiều hơn 12 sản phẩm)
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // hàm để chuyển trang
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
@@ -105,12 +117,14 @@ function ItemsPage() {
             />
           </div>
           <h2 className="mb-4">{FILTERS.find(f => f.key === activeFilter)?.label}</h2>
+          {loading && <div className="text-center py-3">Loading...</div>}
+          {error && <div className="text-danger py-2">{error}</div>}
           <ul className="list-group">
-            {paginatedProducts.length === 0 && (
+            {!loading && products.length === 0 && (
               <li className="list-group-item text-muted">Không có sản phẩm nào.</li>
             )}
-            {paginatedProducts.map((product) => (
-              <li className="list-group-item d-flex justify-content-between align-items-center" key={product.id}>
+            {products.map((product) => (
+              <li className="list-group-item d-flex justify-content-between align-items-center" key={product._id || product.id}>
                 <span>{product.name}</span>
                 <span className="text-end">
                   <div className="fw-bold">{product.manufacturer}</div>

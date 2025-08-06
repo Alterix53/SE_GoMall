@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SellerDetailModal from "../SellerDetailModal";
 import UserSellerListItem from "../UserSellerListItem";
+import { adminAPI } from '../../../utils/api';
 
 const FILTERS = [
   { key: "all", label: "Tất cả" },
@@ -10,38 +11,48 @@ const FILTERS = [
   { key: "reported", label: "Bị báo cáo" },
 ];
 
-const SELLERS = [
-  {
-    id: 1,
-    username: "seller1",
-    businessName: "Công ty ABC",
-    email: "seller1@email.com",
-    phone: "0123456789",
-    address: "Hà Nội",
-    status: "active",
-    avatarUrl: "",
-  },
-  // ... thêm dữ liệu mẫu
-];
-
 function ManageSellerPage() {
   const [activeFilter, setActiveFilter] = useState(FILTERS[0].key);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSeller, setSelectedSeller] = useState(null);
+  const [sellers, setSellers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  let filteredSellers =
-    activeFilter === "all"
-      ? SELLERS
-      : SELLERS.filter((s) => s.status === activeFilter);
+  // Fetch sellers từ API
+  React.useEffect(() => {
+    const fetchSellers = async () => {
+      setLoading(true);
+      setError(null);
+      console.log('[Seller API] Bắt đầu fetch danh sách seller...', { status: activeFilter, search: searchTerm });
+      try {
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) throw new Error('Admin token not found');
+        const params = {
+          status: activeFilter !== 'all' ? activeFilter : '',
+          search: searchTerm.trim(),
+        };
+        const res = await adminAPI.getAllSellers(adminToken, params);
+        if (res.success) {
+          setSellers(res.data.sellers || res.data || []);
+          console.log(`[Seller API] Lấy danh sách seller thành công. Số lượng: ${res.data.sellers?.length ?? (res.data?.length ?? 0)}`);
+        } else {
+          setSellers([]);
+          setError(res.message || 'Lỗi khi lấy danh sách seller');
+          console.error('[Seller API] Lỗi khi lấy danh sách seller:', res.message);
+        }
+      } catch (err) {
+        setError(err.message || 'Lỗi khi lấy danh sách seller');
+        setSellers([]);
+        console.error('[Seller API] Lỗi khi fetch seller:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSellers();
+  }, [activeFilter, searchTerm]);
 
-  if (searchTerm.trim() !== "") {
-    filteredSellers = filteredSellers.filter(
-      (s) =>
-        s.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
+  let filteredSellers = sellers;
 
   return (
     <div className="container-fluid">
@@ -66,13 +77,15 @@ function ManageSellerPage() {
           onChange={e => setSearchTerm(e.target.value)}
         />
       </div>
+      {loading && <div className="text-center py-3">Loading...</div>}
+      {error && <div className="text-danger py-2">{error}</div>}
       <ul className="list-group">
-        {filteredSellers.length === 0 && (
+        {!loading && filteredSellers.length === 0 && (
           <li className="list-group-item text-muted">Không có người bán nào.</li>
         )}
         {filteredSellers.map((seller) => (
           <UserSellerListItem
-            key={seller.id}
+            key={seller._id || seller.id}
             data={seller}
             onClick={() => setSelectedSeller(seller)}
           />
