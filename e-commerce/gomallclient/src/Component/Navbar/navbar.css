@@ -2,21 +2,12 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-<<<<<<< HEAD
   background: white;
-=======
-  background: #0077b6;  /* Updated to header bar color */
-  color: white;  /* Updated to white text */
->>>>>>> Admin_Dashboard
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-top {
-<<<<<<< HEAD
   background: #ff6b35;
-=======
-  background: #0077b6;  /* Updated to header bar color */
->>>>>>> Admin_Dashboard
   color: white;
   font-size: 12px;
   padding: 8px 0;
@@ -52,20 +43,12 @@
   align-items: center;
   gap: 8px;
   text-decoration: none;
-<<<<<<< HEAD
   color: #ff6b35;
 }
 
 .logo-icon {
   background: #ff6b35;
-=======
-  color: white;  /* Updated to white text */
-}
-
-.logo-icon {
-  background: #00b4d8;  /* Updated to secondary color */
->>>>>>> Admin_Dashboard
-  color: white;
+    color: white;
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -79,32 +62,20 @@
 .logo-text {
   font-size: 24px;
   font-weight: bold;
-<<<<<<< HEAD
-=======
-  color: white;  /* Updated to white text */
->>>>>>> Admin_Dashboard
 }
 
 .search-form {
   flex: 1;
   max-width: 600px;
   display: flex;
-<<<<<<< HEAD
   border: 2px solid #e0e0e0;
-=======
-  border: 2px solid rgba(255, 255, 255, 0.3);  /* Updated border */
->>>>>>> Admin_Dashboard
   border-radius: 8px;
   overflow: hidden;
   transition: border-color 0.3s;
 }
 
 .search-form:focus-within {
-<<<<<<< HEAD
   border-color: #ff6b35;
-=======
-  border-color: #00b4d8;  /* Updated to secondary color */
->>>>>>> Admin_Dashboard
 }
 
 .search-input {
@@ -113,23 +84,10 @@
   border: none;
   outline: none;
   font-size: 14px;
-<<<<<<< HEAD
 }
 
 .search-btn {
   background: #ff6b35;
-=======
-  background: rgba(255, 255, 255, 0.1);  /* Updated background */
-  color: white;  /* Updated text color */
-}
-
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);  /* Updated placeholder color */
-}
-
-.search-btn {
-  background: #00b4d8;  /* Updated to secondary color */
->>>>>>> Admin_Dashboard
   color: white;
   border: none;
   padding: 12px 20px;
@@ -138,11 +96,7 @@
 }
 
 .search-btn:hover {
-<<<<<<< HEAD
   background: #e55a2b;
-=======
-  background: #0099c4;  /* Darker shade of secondary color */
->>>>>>> Admin_Dashboard
 }
 
 .nav-icons {
@@ -155,11 +109,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-<<<<<<< HEAD
   color: #666;
-=======
-  color: rgba(255, 255, 255, 0.8);  /* Updated to white with opacity */
->>>>>>> Admin_Dashboard
   font-size: 12px;
   position: relative;
   transition: color 0.3s;
@@ -169,13 +119,8 @@
 }
 
 .nav-icon:hover {
-<<<<<<< HEAD
   color: #ff6b35;
   background-color: #fff5f2;
-=======
-  color: #00b4d8;  /* Updated to secondary color */
-  background-color: rgba(255, 255, 255, 0.1);  /* Updated hover background */
->>>>>>> Admin_Dashboard
 }
 
 .nav-icon i {
@@ -187,11 +132,7 @@
   position: absolute;
   top: -8px;
   right: -8px;
-<<<<<<< HEAD
   background: #ff4444;
-=======
-  background: #ef4444;  /* Keep red for cart count */
->>>>>>> Admin_Dashboard
   color: white;
   border-radius: 50%;
   width: 18px;
@@ -212,11 +153,7 @@
   top: 100%;
   right: 0;
   background: white;
-<<<<<<< HEAD
   border: 1px solid #e0e0e0;
-=======
-  border: 1px solid rgba(3, 4, 94, 0.1);  /* Updated border */
->>>>>>> Admin_Dashboard
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   min-width: 180px;
@@ -241,11 +178,7 @@
 .dropdown-menu a {
   display: block;
   padding: 12px 16px;
-<<<<<<< HEAD
   color: #333;
-=======
-  color: #03045e;  /* Updated to main text color */
->>>>>>> Admin_Dashboard
   text-decoration: none;
   font-size: 14px;
   border-bottom: 1px solid #f0f0f0;
@@ -256,13 +189,8 @@
 }
 
 .dropdown-menu a:hover {
-<<<<<<< HEAD
   background: #f8f8f8;
   color: #ff6b35;
-=======
-  background: #00b4d8;  /* Updated to secondary color */
-  color: white;
->>>>>>> Admin_Dashboard
 }
 
 .mobile-menu-toggle {
@@ -270,22 +198,13 @@
   background: none;
   border: none;
   font-size: 24px;
-<<<<<<< HEAD
   color: #666;
-=======
-  color: white;  /* Updated to white */
->>>>>>> Admin_Dashboard
   cursor: pointer;
 }
 
 .navbar-links {
-<<<<<<< HEAD
   background: #f8f8f8;
   border-top: 1px solid #e0e0e0;
-=======
-  background: rgba(255, 255, 255, 0.1);  /* Updated background */
-  border-top: 1px solid rgba(255, 255, 255, 0.2);  /* Updated border */
->>>>>>> Admin_Dashboard
   padding: 12px 0;
 }
 
@@ -302,11 +221,7 @@
 }
 
 .nav-link {
-<<<<<<< HEAD
   color: #666;
-=======
-  color: rgba(255, 255, 255, 0.8);  /* Updated to white with opacity */
->>>>>>> Admin_Dashboard
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -316,11 +231,7 @@
 
 .nav-link:hover,
 .nav-link.active {
-<<<<<<< HEAD
   color: #ff6b35;
-=======
-  color: #00b4d8;  /* Updated to secondary color */
->>>>>>> Admin_Dashboard
 }
 
 .mobile-menu {
@@ -338,11 +249,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 0;
-<<<<<<< HEAD
   color: #333;
-=======
-  color: #03045e;  /* Updated to main text color */
->>>>>>> Admin_Dashboard
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
 }
