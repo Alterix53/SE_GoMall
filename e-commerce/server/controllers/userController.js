@@ -16,9 +16,12 @@ export const loginUser = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to login user:", req.body);
     
     const { username, password } = req.body;
-    const result = await userService.authenticateUser(username, password);
-    
-    ResponseHandler.success(res, result, "Đăng nhập thành công");
+    try {
+        const result = await userService.authenticateUser(username, password);
+        ResponseHandler.success(res, result, "Đăng nhập thành công");
+    } catch (error) {
+        ResponseHandler.error(res, error.message || "Đăng nhập thất bại", 401);
+    }
 });
 
 // Get user profile
