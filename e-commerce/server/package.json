@@ -5,15 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-<<<<<<< HEAD
-    "start": "node server.js",
-    "seed": "node scripts/seedData.js"
-=======
     "start": "node Server.js",
     "dev": "nodemon Server.js",
     "create-admin": "node scripts/createAdmin.js",
     "seed-data": "node scripts/seedData.js"
->>>>>>> Admin_Dashboard
   },
   "keywords": [
     "ecommerce",
