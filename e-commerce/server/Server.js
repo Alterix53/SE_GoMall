@@ -35,6 +35,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Endpoint Flash Sale
 app.get('/api/products/flash-sale', async (req, res) => {
     try {
