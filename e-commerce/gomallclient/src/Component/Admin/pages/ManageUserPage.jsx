@@ -1,55 +1,7 @@
 import React, { useState, useEffect } from "react";
 import UserDetailModal from "../UserDetailModal";
 import UserSellerListItem from "../UserSellerListItem";
-
-const USERS = [
-  {
-    id: 1,
-    username: "user1",
-    email: "user1@email.com",
-    phone: "0987654321",
-    address: "TP.HCM",
-    status: "active",
-    avatarUrl: "",
-  },
-  {
-    id: 2,
-    username: "user2",
-    email: "user2@email.com",
-    phone: "0911222333",
-    address: "Hà Nội",
-    status: "banned",
-    avatarUrl: "",
-  },
-  {
-    id: 3,
-    username: "user3",
-    email: "user3@email.com",
-    phone: "0909090909",
-    address: "Đà Nẵng",
-    status: "pending",
-    avatarUrl: "",
-  },
-  {
-    id: 4,
-    username: "user4",
-    email: "user4@email.com",
-    phone: "0933444555",
-    address: "Cần Thơ",
-    status: "active",
-    avatarUrl: "",
-  },
-  {
-    id: 5,
-    username: "user5",
-    email: "user5@email.com",
-    phone: "0977666888",
-    address: "Hải Phòng",
-    status: "reported",
-    avatarUrl: "",
-  },
-  // ... thêm dữ liệu mẫu
-];
+import { adminAPI } from '../../../utils/api';
 
 const USERS_PER_PAGE = 10;
 
@@ -57,22 +9,48 @@ function ManageUserPage() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Lọc user theo username
-  const filteredUsers = USERS.filter(user =>
-    user.username.toLowerCase().includes(search.toLowerCase())
-  );
+  // Fetch users từ API
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const adminToken = localStorage.getItem('adminToken');
+        if (!adminToken) throw new Error('Admin token not found');
+        const params = {
+          page: currentPage,
+          limit: USERS_PER_PAGE,
+          search: search.trim(),
+        };
+        const res = await adminAPI.getAllUsers(adminToken, params);
+        if (res.success) {
+          setUsers(res.data.users || res.data || []);
+          setTotalPages(res.data.totalPages || 1);
+        } else {
+          setUsers([]);
+          setTotalPages(1);
+          setError(res.message || 'Lỗi khi lấy danh sách user');
+        }
+      } catch (err) {
+        setError(err.message || 'Lỗi khi lấy danh sách user');
+        setUsers([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, [search, currentPage]);
 
   // Reset về trang 1 khi search thay đổi
   useEffect(() => {
     setCurrentPage(1);
   }, [search]);
-
-  // Tính toán paging
-  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
-  const startIdx = (currentPage - 1) * USERS_PER_PAGE;
-  const endIdx = startIdx + USERS_PER_PAGE;
-  const usersToShow = filteredUsers.slice(startIdx, endIdx);
 
   return (
     <div className="container my-4">
@@ -90,13 +68,15 @@ function ManageUserPage() {
               onChange={e => setSearch(e.target.value)}
             />
           </div>
+          {loading && <div className="text-center py-3">Loading...</div>}
+          {error && <div className="text-danger py-2">{error}</div>}
           <div className="list-group">
-            {usersToShow.length === 0 && (
+            {!loading && users.length === 0 && (
               <div className="text-muted p-3">No users found.</div>
             )}
-            {usersToShow.map(user => (
+            {users.map(user => (
               <UserSellerListItem
-                key={user.id}
+                key={user._id || user.id}
                 data={user}
                 onClick={() => setSelectedUser(user)}
                 className="list-group-item"

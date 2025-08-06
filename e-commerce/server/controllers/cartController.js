@@ -1,5 +1,5 @@
 import Cart from '../models/Cart.js';
-import CartItem from '../models/CartItem.js';
+// import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
 
 // Get user's cart
