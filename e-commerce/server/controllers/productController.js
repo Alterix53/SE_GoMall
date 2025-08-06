@@ -1,9 +1,62 @@
-import mongoose from "mongoose";
-import Product from "../models/Product.js";
-import Category from "../models/Category.js";
+import productService from "../services/productService.js";
+import ResponseHandler from "../utils/responseHandler.js";
 
-export const getAllProducts = async (req, res) => {
+// Get all products with filtering and pagination
+export const getAllProducts = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to /api/products received:", req.query);
+    
+    const result = await productService.getAllProducts(req.query);
+    
+    console.log("Responding with products:", result.products);
+    ResponseHandler.success(res, result, "Lấy danh sách sản phẩm thành công");
+});
+
+// Get flash sale products
+export const getFlashSaleProducts = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to /api/products/flash-sale received:", req.query);
+    
+    const result = await productService.getFlashSaleProducts(req.query);
+    
+    console.log("Responding with flash sale products:", result.products);
+    ResponseHandler.success(res, result, "Lấy danh sách flash sale thành công");
+});
+
+// Get top products by type
+export const getTopProducts = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to /api/products/top-products received:", req.query);
+    
+    const result = await productService.getTopProducts(req.query);
+    
+    console.log("Responding with top products:", result.products);
+    ResponseHandler.success(res, result, "Lấy danh sách sản phẩm nổi bật thành công");
+});
+
+// Get product statistics
+export const getProductStats = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to /api/products/stats received");
+    
+    const result = await productService.getProductStats();
+    
+    ResponseHandler.success(res, result, "Lấy thống kê sản phẩm thành công");
+});
+
+// Get product by ID
+export const getProductById = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to get product by ID:", req.params.id);
+    
     try {
+<<<<<<< HEAD
+        const product = await productService.getProductById(req.params.id);
+        ResponseHandler.success(res, { product }, "Lấy thông tin sản phẩm thành công");
+    } catch (error) {
+        if (error.message === "Sản phẩm không tồn tại") {
+            ResponseHandler.notFound(res, error.message);
+        } else {
+            throw error;
+        }
+    }
+});
+=======
         console.log("Request to /api/products received:", req.query);
         const { page = 1, limit = 12, ...query } = req.query;
         const filter = { isActive: true };
@@ -49,6 +102,7 @@ export const getAllProducts = async (req, res) => {
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .sort(sort)
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -59,7 +113,6 @@ export const getAllProducts = async (req, res) => {
         console.log("Total products found:", total);
 
         console.log("Responding with products:", products);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -79,12 +132,10 @@ export const getAllProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getAllProducts:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
 
-// Giữ nguyên các hàm khác (getFlashSaleProducts, getTopProducts, getProductById)
 export const getFlashSaleProducts = async (req, res) => {
     try {
         console.log("Request to /api/products/flash-sale received:", req.query);
@@ -97,6 +148,7 @@ export const getFlashSaleProducts = async (req, res) => {
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .sort({ flashSaleEndDate: 1 })
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -105,7 +157,6 @@ export const getFlashSaleProducts = async (req, res) => {
         const total = await Product.countDocuments(filter);
 
         console.log("Responding with flash sale products:", products);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -125,7 +176,6 @@ export const getFlashSaleProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getFlashSaleProducts:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
@@ -151,6 +201,7 @@ export const getTopProducts = async (req, res) => {
 
         const products = await Product.find({ isActive: true })
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .sort(sort)
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -159,7 +210,6 @@ export const getTopProducts = async (req, res) => {
         const total = await Product.countDocuments({ isActive: true });
 
         console.log("Responding with top products:", products);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -180,7 +230,6 @@ export const getTopProducts = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getTopProducts:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
@@ -189,6 +238,7 @@ export const getProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
             .lean();
         if (!product) {
             return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
@@ -202,3 +252,4 @@ export const getProductById = async (req, res) => {
         res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
+>>>>>>> Data_Schema

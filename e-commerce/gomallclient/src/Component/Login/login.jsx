@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import Navbar from '../Navbar/Navbar'; 
+import Navbar from '../Navbar/Navbar';
 import Footer from '../Footer/Footer';
 import '../Login/login.css';
 
@@ -15,27 +15,38 @@ const LoginPage = () => {
   const location = useLocation();
   const { login } = useAuth();
 
-  // Lấy trang trước đó để redirect sau khi đăng nhập
-  const from = location.state?.from?.pathname || '/';
-
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
 
-    try {
-      const result = await login(username, password);
-      
-      if (result.success) {
-        // Redirect về trang trước đó hoặc trang mặc định
-        navigate(from, { replace: true });
+    // Lấy danh sách người dùng từ localStorage
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    // Tìm user có thông tin trùng khớp
+    const account = users.find(
+      (user) => user.username === username && user.password === password
+    );
+
+    if (!account) {
+      alert('Sai tài khoản hoặc mật khẩu!');
+      return;
+    }
+
+    // Lưu trạng thái đăng nhập
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', account.username);
+    localStorage.setItem('userRole', account.role);
+
+    // Điều hướng theo vai trò
+    if (account.role === 'seller') {
+      if (account.sellerStatus === 'approved') {
+        navigate('/seller-dashboard');
       } else {
-        setError(result.message);
+        alert('Tài khoản người bán của bạn chưa được phê duyệt.');
+        return;
       }
-    } catch (error) {
-      setError('Đăng nhập thất bại. Vui lòng thử lại.');
-    } finally {
-      setLoading(false);
+    } else {
+      // buyer mặc định
+      navigate('/home'); // hoặc /marketplace tùy hệ thống
     }
   };
 
@@ -53,25 +64,23 @@ const LoginPage = () => {
         <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label className="form-label">Tài khoản</label>
-            <input 
-              type="text" 
-              className="form-control" 
-              value={username} 
-              onChange={(e) => setUsername(e.target.value)} 
-              disabled={loading}
-              required 
+            <input
+              type="text"
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
             />
           </div>
 
           <div className="mb-3">
             <label className="form-label">Mật khẩu</label>
-            <input 
-              type="password" 
-              className="form-control" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              disabled={loading}
-              required 
+            <input
+              type="password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
 
@@ -90,6 +99,7 @@ const LoginPage = () => {
             )}
           </button>
         </form>
+        <p className="mt-3">Chưa có tài khoản <a href="/signup">Đăng ký</a></p>
       </div>
       <Footer />
     </>

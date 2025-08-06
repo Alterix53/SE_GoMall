@@ -13,17 +13,17 @@ const UnauthorizedPage = () => {
             <div className="card">
               <div className="card-body">
                 <h1 className="text-danger mb-4">403</h1>
-                <h2 className="mb-3">Không có quyền truy cập</h2>
+                <h2 className="mb-3">Error 403: forbidden</h2>
                 <p className="text-muted mb-4">
-                  Bạn không có quyền truy cập vào trang này. 
-                  Vui lòng liên hệ quản trị viên nếu bạn nghĩ đây là lỗi.
+                  You have no access on this page.
+                  Contact website's administrators if this is an issue.
                 </p>
                 <div className="d-grid gap-2 d-md-block">
                   <Link to="/" className="btn btn-primary me-md-2">
                     Về trang chủ
                   </Link>
                   <Link to="/login" className="btn btn-outline-secondary">
-                    Đăng nhập khác
+                    Login
                   </Link>
                 </div>
               </div>

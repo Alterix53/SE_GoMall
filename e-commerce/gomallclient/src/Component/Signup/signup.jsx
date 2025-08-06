@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar/Navbar';
 import Footer from '../Footer/Footer';
-import '../Signup/signup';
+import '../Signup/signup.css';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -19,16 +19,32 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (form.password !== form.confirm) {
+
+    const { username, email, password, confirm } = form;
+
+    if (password !== confirm) {
       alert('Mật khẩu không khớp!');
       return;
     }
 
-    localStorage.setItem('account', JSON.stringify({
-      username: form.username,
-      email: form.email,
-      password: form.password,
-    }));
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    const existing = users.find(u => u.username === username);
+    if (existing) {
+      alert('Tên đăng nhập đã tồn tại!');
+      return;
+    }
+
+    const newUser = {
+      username,
+      email,
+      password,
+      role: 'buyer',         // mặc định là người mua
+      sellerStatus: null     // chưa đăng ký làm người bán
+    };
+
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
 
     alert('Đăng ký thành công!');
     navigate('/login');
@@ -37,58 +53,28 @@ const SignUpPage = () => {
   return (
     <>
       <Navbar />
-      <div className="signup-page">
-        <div className="signup-container">
-          <h2>Đăng ký</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Tên đăng nhập</label>
-              <input 
-                name="username" 
-                type="text" 
-                className="form-control" 
-                value={form.username} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Email</label>
-              <input 
-                name="email" 
-                type="email" 
-                className="form-control" 
-                value={form.email} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Mật khẩu</label>
-              <input 
-                name="password" 
-                type="password" 
-                className="form-control" 
-                value={form.password} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Nhập lại mật khẩu</label>
-              <input 
-                name="confirm" 
-                type="password" 
-                className="form-control" 
-                value={form.confirm} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
-            <button type="submit" className="btn btn-success">Đăng ký</button>
-          </form>
-          <p className="login-link">Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
-        </div>
+      <div className="signup-container">
+        <h2>Đăng ký</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Tên đăng nhập</label>
+            <input name="username" type="text" className="form-control" value={form.username} onChange={handleChange} required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
+            <input name="email" type="email" className="form-control" value={form.email} onChange={handleChange} required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Mật khẩu</label>
+            <input name="password" type="password" className="form-control" value={form.password} onChange={handleChange} required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Nhập lại mật khẩu</label>
+            <input name="confirm" type="password" className="form-control" value={form.confirm} onChange={handleChange} required />
+          </div>
+          <button type="submit" className="btn btn-success">Đăng ký</button>
+        </form>
+        <p className="mt-3">Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
       </div>
       <Footer />
     </>

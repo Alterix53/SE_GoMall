@@ -68,7 +68,7 @@ const UserAccountModal = ({ isOpen, onClose, position }) => {
               Tài khoản
             </button>
             
-            <button className="dropdown-btn">
+            <button className="dropdown-btn" onClick={() => handleNavigate('/cart')}>
               <i className="fas fa-shopping-cart"></i>
               Giỏ hàng
             </button>
@@ -83,7 +83,7 @@ const UserAccountModal = ({ isOpen, onClose, position }) => {
               Đơn hàng
             </button>
             
-            <button className="dropdown-btn">
+            <button className="dropdown-btn" onClick = {() => handleNavigate('/user/settings')}>
               <i className="fas fa-cog"></i>
               Cài đặt
             </button>
