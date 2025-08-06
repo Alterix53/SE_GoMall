@@ -1,0 +1,75 @@
+/* register-seller.css */
+
+.register-seller-container {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.register-seller-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+  margin-bottom: 16px;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  cursor: pointer;
+}
+
+/* Optional: Upload file style */
+input[type="file"]::file-selector-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+input[type="file"]:hover::file-selector-button {
+  background: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .register-seller-container {
+    margin: 40px 20px;
+    padding: 20px;
+  }
+}

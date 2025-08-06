@@ -1,0 +1,58 @@
+[
+  {
+    "categoryName": "Điện thoại",
+    "slug": "dien-thoai",
+    "description": "Các loại điện thoại thông minh từ các thương hiệu hàng đầu.",
+    "image": "/images/Phone.png",
+    "icon": "fas fa-mobile-alt",
+    "parentID": null
+  },
+  {
+    "categoryName": "Laptop",
+    "slug": "laptop",
+    "description": "Laptop phục vụ công việc và giải trí.",
+    "image": "/images/Laptop.png",
+    "icon": "fas fa-laptop",
+    "parentID": null
+  },
+  {
+    "categoryName": "Thời trang",
+    "slug": "thoi-trang",
+    "description": "Quần áo thời trang cho nam và nữ.",
+    "image": "/images/Clothes.png",
+    "icon": "fas fa-tshirt",
+    "parentID": null
+  },
+  {
+    "categoryName": "Thể thao",
+    "slug": "the-thao",
+    "description": "Dụng cụ thể thao chuyên nghiệp.",
+    "image": "/images/sneaker.jpg",
+    "icon": "fas fa-dumbbell",
+    "parentID": null
+  },
+  {
+    "categoryName": "Gia dụng",
+    "slug": "gia-dung",
+    "description": "Thiết bị gia dụng hiện đại.",
+    "image": "/images/DoGiaDung.png",
+    "icon": "fas fa-home",
+    "parentID": null
+  },
+  {
+    "categoryName": "Mỹ phẩm",
+    "slug": "my-pham",
+    "description": "Sản phẩm chăm sóc da chất lượng cao.",
+    "image": "/images/MyPham.png",
+    "icon": "fas fa-spa",
+    "parentID": null
+  },
+  {
+    "categoryName": "Phụ kiện",
+    "slug": "phu-kien",
+    "description": "Phụ kiện thời trang cao cấp.",
+    "image": "/images/Gucci.jpg",
+    "icon": "fas fa-bag-shopping",
+    "parentID": null
+  }
+]
