@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
 import { validationResult } from 'express-validator';
+import userFileService from '../services/userFileService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -21,41 +21,34 @@ export const register = async (req, res) => {
 
         const { username, email, password, fullName, phoneNumber, address } = req.body;
 
-        // Check if user already exists
-        const existingUser = await User.findOne({
-            $or: [{ email }, { username }]
-        });
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: 'User with this email or username already exists'
-            });
-        }
-
-        // Create new user
-        const user = new User({
+        // Tạo user data
+        const userData = {
             username,
             email,
-            password, // Will be hashed by pre-save middleware
-            fullName,
-            phoneNumber,
-            address,
-            role: ['user'] // Default role
-        });
+            password: hashedPassword,
+            fullName: fullName || '',
+            phoneNumber: phoneNumber || '',
+            address: address || '',
+            role: 'user', // Default role
+            isActive: true
+        };
 
-        await user.save();
+        // Lưu user vào file
+        const user = userFileService.addUser(userData);
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, email: user.email, role: user.role },
+            { userId: user.id, email: user.email, role: user.role },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
 
         // Return user data (without password) and token
         const userResponse = {
-            _id: user._id,
+            id: user.id,
             username: user.username,
             email: user.email,
             fullName: user.fullName,
@@ -77,6 +70,14 @@ export const register = async (req, res) => {
 
     } catch (error) {
         console.error('Registration error:', error);
+        
+        if (error.message.includes('Email hoặc username đã tồn tại')) {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Server error during registration',
@@ -100,8 +101,8 @@ export const login = async (req, res) => {
 
         const { email, password } = req.body;
 
-        // Find user by email
-        const user = await User.findOne({ email });
+        // Find user by email từ file
+        const user = userFileService.findUserByEmail(email);
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -128,14 +129,14 @@ export const login = async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, email: user.email, role: user.role },
+            { userId: user.id, email: user.email, role: user.role },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
 
         // Return user data (without password) and token
         const userResponse = {
-            _id: user._id,
+            id: user.id,
             username: user.username,
             email: user.email,
             fullName: user.fullName,
@@ -193,7 +194,7 @@ export const getCurrentUser = async (req, res) => {
         const user = req.user;
 
         const userResponse = {
-            _id: user._id,
+            id: user.id,
             username: user.username,
             email: user.email,
             fullName: user.fullName,
@@ -235,7 +236,7 @@ export const refreshToken = async (req, res) => {
 
         // Verify refresh token
         const decoded = jwt.verify(refreshToken, JWT_SECRET);
-        const user = await User.findById(decoded.userId);
+        const user = userFileService.findUserById(decoded.userId);
 
         if (!user || !user.isActive) {
             return res.status(401).json({
@@ -246,7 +247,7 @@ export const refreshToken = async (req, res) => {
 
         // Generate new access token
         const newToken = jwt.sign(
-            { userId: user._id, email: user.email, role: user.role },
+            { userId: user.id, email: user.email, role: user.role },
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
