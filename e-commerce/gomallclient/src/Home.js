@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import FlashSaleCarousel from "./Component/FlashSaleCarousel/FlashSaleCarousel";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
 import { useProductCache } from "./hooks/useProductCache";
-import ProductAnimation from "./Component/ProductAnimation/ProductAnimation";
+import ProductAnimation from "./Component/ProductAnimation/ProductAnimation.jsx";
 import "./Home.css";
 
 const Home = () => {
@@ -12,7 +12,24 @@ const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [flashSaleProducts, setFlashSaleProducts] = useState([]); // State riêng cho flash sale
 
-  const { getAllProducts, loading, error } = useProductCache();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Function to fetch all products
+  const fetchAllProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8080/api/products');
+      const data = await response.json();
+      console.log("All products API response:", data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching all products:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to fetch flash sale products
   const fetchFlashSaleProducts = async () => {
@@ -63,8 +80,8 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Use custom hook instead of direct cache service
-        const response = await getAllProducts();
+        // Use direct API call instead of cache service
+        const response = await fetchAllProducts();
         console.log("API response:", response);
         const products = response?.data?.products || [];
         if (products.length === 0) {
@@ -128,7 +145,7 @@ const Home = () => {
     };
 
     fetchData();
-  }, [getAllProducts]);
+  }, []);
 
   return (
     <div className="home-page">
