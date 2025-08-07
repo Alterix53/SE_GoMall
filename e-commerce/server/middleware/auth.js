@@ -26,10 +26,33 @@ export const authenticateToken = async (req, res, next) => {
             });
         }
 
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account is deactivated'
+            });
+        }
+
         req.user = user;
         next();
     } catch (error) {
         console.error('Auth middleware error:', error);
+        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Token has expired'
+            });
+        }
+        
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid token'
+            });
+        }
+
         return res.status(403).json({
             success: false,
             message: 'Invalid token'

@@ -240,6 +240,133 @@ class ProductService {
             discount: this.calculateDiscount(product),
         };
     }
+
+    // Create new product
+    async createProduct(productData) {
+        // Validate required fields
+        if (!productData.name || !productData.categoryID || !productData.sellerID) {
+            throw new Error("Thiếu thông tin bắt buộc: tên sản phẩm, danh mục, người bán");
+        }
+
+        // Generate SKU if not provided
+        if (!productData.sku) {
+            productData.sku = `SKU-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+        }
+
+        // Generate slug if not provided
+        if (!productData.slug) {
+            productData.slug = productData.name
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim('-');
+        }
+
+        // Set default values
+        productData.price = {
+            original: Number(productData.price?.original || productData.price || 0),
+            sale: Number(productData.price?.sale || 0)
+        };
+
+        productData.inventory = {
+            quantity: Number(productData.inventory?.quantity || 0),
+            lowStockThreshold: Number(productData.inventory?.lowStockThreshold || 10)
+        };
+
+        productData.rating = {
+            average: Number(productData.rating?.average || 0),
+            count: Number(productData.rating?.count || 0)
+        };
+
+        const product = new Product(productData);
+        await product.save();
+
+        return product.populate("categoryID", "categoryName slug");
+    }
+
+    // Update product
+    async updateProduct(productId, updateData, sellerId) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        // Kiểm tra quyền sở hữu
+        if (product.sellerID.toString() !== sellerId.toString()) {
+            throw new Error("Không có quyền cập nhật sản phẩm này");
+        }
+
+        // Xử lý dữ liệu cập nhật
+        if (updateData.price) {
+            updateData.price = {
+                original: Number(updateData.price.original || updateData.price || 0),
+                sale: Number(updateData.price.sale || 0)
+            };
+        }
+
+        if (updateData.inventory) {
+            updateData.inventory = {
+                quantity: Number(updateData.inventory.quantity || 0),
+                lowStockThreshold: Number(updateData.inventory.lowStockThreshold || 10)
+            };
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            updateData,
+            { new: true, runValidators: true }
+        ).populate("categoryID", "categoryName slug");
+
+        return updatedProduct;
+    }
+
+    // Delete product
+    async deleteProduct(productId, sellerId) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        // Kiểm tra quyền sở hữu
+        if (product.sellerID.toString() !== sellerId.toString()) {
+            throw new Error("Không có quyền xóa sản phẩm này");
+        }
+
+        await Product.findByIdAndDelete(productId);
+        return true;
+    }
+
+    // Get products by seller
+    async getProductsBySeller(sellerId, query = {}) {
+        const { page = 1, limit = 12 } = query;
+        const filter = { sellerID: sellerId };
+
+        if (query.isActive !== undefined) {
+            filter.isActive = query.isActive === 'true';
+        }
+
+        const products = await Product.find(filter)
+            .populate("categoryID", "categoryName slug")
+            .sort({ createdAt: -1 })
+            .limit(Number(limit))
+            .skip((Number(page) - 1) * Number(limit))
+            .lean();
+
+        const total = await Product.countDocuments(filter);
+
+        return {
+            products: this.addDiscountToProducts(products),
+            pagination: {
+                current: Number(page),
+                pages: Math.ceil(total / Number(limit)),
+                total,
+                limit: Number(limit),
+            },
+        };
+    }
 }
 
 export default new ProductService(); 

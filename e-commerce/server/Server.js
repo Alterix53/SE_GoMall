@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"; // Import cart routes
+import authRoutes from "./routes/authRoutes.js"; // Import auth routes
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import './models/User.js';
@@ -33,6 +34,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Endpoint Flash Sale
 app.get('/api/products/flash-sale', async (req, res) => {
@@ -130,6 +134,7 @@ const startServer = async () => {
 
         app.use("/api/products", productRoutes);
         app.use("/api/cart", cartRoutes); // Sử dụng cart routes
+        app.use("/api/auth", authRoutes); // Sử dụng auth routes
 
         app.use((err, req, res, next) => {
             console.error("Error middleware:", err.stack);
