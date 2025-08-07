@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import Seller from '../models/Seller.js';
 import { validationResult } from 'express-validator';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -85,6 +86,124 @@ export const register = async (req, res) => {
     }
 };
 
+// POST /api/auth/register-seller - Seller registration
+export const registerSeller = async (req, res) => {
+    try {
+        // Validate input
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation errors',
+                errors: errors.array()
+            });
+        }
+
+        const { 
+            username, 
+            email, 
+            password, 
+            fullName, 
+            phoneNumber, 
+            address,
+            storeName,
+            businessLicense,
+            sellerPhoneNumber,
+            sellerAddress,
+            verificationDocs
+        } = req.body;
+
+        // Check if user already exists
+        const existingUser = await User.findOne({
+            $or: [{ email }, { username }]
+        });
+
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'User with this email or username already exists'
+            });
+        }
+
+        // Check if seller already exists for this user
+        const existingSeller = await Seller.findOne({ userID: existingUser?._id });
+        if (existingSeller) {
+            return res.status(400).json({
+                success: false,
+                message: 'Seller account already exists for this user'
+            });
+        }
+
+        // Create new user first
+        const user = new User({
+            username,
+            email,
+            password,
+            fullName,
+            phoneNumber,
+            address,
+            role: ['user'] // Start as user, will be updated when seller is approved
+        });
+
+        await user.save();
+
+        // Create seller record
+        const seller = new Seller({
+            userID: user._id,
+            storeName,
+            businessLicense,
+            address: sellerAddress || address,
+            phoneNumber: sellerPhoneNumber || phoneNumber,
+            verificationDocs: verificationDocs || [],
+            status: 'pending'
+        });
+
+        await seller.save();
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { userId: user._id, email: user.email, role: user.role },
+            JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
+        );
+
+        // Return user data and token
+        const userResponse = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            fullName: user.fullName,
+            phoneNumber: user.phoneNumber,
+            address: user.address,
+            role: user.role,
+            createdAt: user.createdAt,
+            isActive: user.isActive,
+            sellerInfo: {
+                _id: seller._id,
+                storeName: seller.storeName,
+                status: seller.status
+            }
+        };
+
+        res.status(201).json({
+            success: true,
+            message: 'Seller registration submitted successfully. Pending approval.',
+            data: {
+                user: userResponse,
+                token
+            }
+        });
+
+    } catch (error) {
+        console.error('Seller registration error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during seller registration',
+            error: process.env.NODE_ENV === 'development' ? error.message : {}
+        });
+    }
+};
+
 // POST /api/auth/login - User login
 export const login = async (req, res) => {
     try {
@@ -126,6 +245,19 @@ export const login = async (req, res) => {
             });
         }
 
+        // Check if user is a seller and get seller info
+        let sellerInfo = null;
+        if (user.role.includes('seller')) {
+            const seller = await Seller.findOne({ userID: user._id });
+            if (seller) {
+                sellerInfo = {
+                    _id: seller._id,
+                    storeName: seller.storeName,
+                    status: seller.status
+                };
+            }
+        }
+
         // Generate JWT token
         const token = jwt.sign(
             { userId: user._id, email: user.email, role: user.role },
@@ -143,7 +275,8 @@ export const login = async (req, res) => {
             address: user.address,
             role: user.role,
             createdAt: user.createdAt,
-            isActive: user.isActive
+            isActive: user.isActive,
+            sellerInfo
         };
 
         res.json({
@@ -192,6 +325,19 @@ export const getCurrentUser = async (req, res) => {
         // User is already attached to req by auth middleware
         const user = req.user;
 
+        // Check if user is a seller and get seller info
+        let sellerInfo = null;
+        if (user.role.includes('seller')) {
+            const seller = await Seller.findOne({ userID: user._id });
+            if (seller) {
+                sellerInfo = {
+                    _id: seller._id,
+                    storeName: seller.storeName,
+                    status: seller.status
+                };
+            }
+        }
+
         const userResponse = {
             _id: user._id,
             username: user.username,
@@ -201,7 +347,8 @@ export const getCurrentUser = async (req, res) => {
             address: user.address,
             role: user.role,
             createdAt: user.createdAt,
-            isActive: user.isActive
+            isActive: user.isActive,
+            sellerInfo
         };
 
         res.json({

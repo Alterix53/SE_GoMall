@@ -1,20 +1,50 @@
 import express from 'express';
-import * as userController from '../controllers/userController.js';
-import authenticateToken from '../middleware/auth.js';
+import {
+    getAllUsers,
+    getUserById,
+    updateUser,
+    deleteUser,
+    getUsersByRole,
+    backupUsers
+} from '../controllers/userController.js';
+import { authenticateToken, checkRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// KHÔNG middleware cho login/register
-router.post('/login', userController.loginUser);
-router.post('/register', userController.registerUser);
+// Tất cả routes đều yêu cầu authentication
+router.use(authenticateToken);
 
-// Các route dưới đây mới cần middleware
-router.get('/profile/:id', authenticateToken, userController.getUserProfile);
-router.put('/profile/:id', authenticateToken, userController.updateUserProfile);
-router.put('/profile/:id/password', authenticateToken, userController.changePassword);
+// Admin routes
+router.get('/', checkRole(['admin']), getAllUsers);
+router.get('/role/:role', checkRole(['admin']), getUsersByRole);
+router.post('/backup', checkRole(['admin']), backupUsers);
 
-router.get('/users', authenticateToken, userController.getAllUsers);
-router.put('/users/:id/deactivate', authenticateToken, userController.deactivateUser);
-router.put('/users/:id/activate', authenticateToken, userController.activateUser);
+// User routes (có thể là admin hoặc chính user đó)
+router.get('/:id', (req, res, next) => {
+    // Cho phép admin hoặc chính user đó xem thông tin
+    if (req.user.role === 'admin' || req.user.id === req.params.id) {
+        next();
+    } else {
+        res.status(403).json({
+            success: false,
+            message: 'Insufficient permissions'
+        });
+    }
+}, getUserById);
+
+router.put('/:id', (req, res, next) => {
+    // Cho phép admin hoặc chính user đó cập nhật thông tin
+    if (req.user.role === 'admin' || req.user.id === req.params.id) {
+        next();
+    } else {
+        res.status(403).json({
+            success: false,
+            message: 'Insufficient permissions'
+        });
+    }
+}, updateUser);
+
+// Chỉ admin mới có thể xóa user
+router.delete('/:id', checkRole(['admin']), deleteUser);
 
 export default router;

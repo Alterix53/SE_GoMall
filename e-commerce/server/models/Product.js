@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     sku: { type: String, required: true },
     brand: String,
     categoryID: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true, index: true },
-    sellerID: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true }, // Thay Seller bằng User vì đã gộp
+    sellerID: { type: mongoose.Schema.Types.ObjectId, ref: 'Seller', required: true, index: true },
     images: [{
         url: String,
         alt: String,
