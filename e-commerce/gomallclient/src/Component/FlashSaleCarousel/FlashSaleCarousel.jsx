@@ -56,10 +56,10 @@ const FlashSaleCarousel = memo(({ products }) => {
 
         <div className="product-image">
           <img
-            src={product.image || "/placeholder.svg"}
+            src={product.image || "/images/default-product.jpg"}
             alt={product.name}
             onError={(e) => {
-              e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image"
+              e.target.src = "/images/default-product.jpg"
             }}
           />
         </div>
@@ -67,14 +67,14 @@ const FlashSaleCarousel = memo(({ products }) => {
         <div className="product-info">
           <h3 className="product-name">{product.name}</h3>
           <div className="price-section">
-            <span className="current-price">{formatPrice(product.price)}</span>
-            {product.originalPrice && product.originalPrice > product.price && (
+            <span className="current-price">{formatPrice(product.flashSalePrice || product.price)}</span>
+            {product.originalPrice && product.originalPrice > (product.flashSalePrice || product.price) && (
               <span className="original-price">{formatPrice(product.originalPrice)}</span>
             )}
           </div>
           <div className="product-stats">
-            <span className="rating">★ {product.rating || "N/A"} ({product.ratingCount || 0} đánh giá)</span>
-            <span className="sold">Đã bán {formatSold(product.sold)}</span>
+            <span className="rating">★ {product.rating || "N/A"} ({product.ratingCount || 0} reviews)</span>
+            <span className="sold">Sold {formatSold(product.sold)}</span>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ const FlashSaleCarousel = memo(({ products }) => {
         {/* Timer */}
         <div className="countdown-timer">
           <div className="timer-content">
-            <span className="timer-label">Kết thúc trong:</span>
+            <span className="timer-label">Ends in:</span>
             <div className="timer-digits">
               <div className="timer-digit">{String(timeLeft.hours).padStart(2, "0")}</div>
               <span className="timer-separator">:</span>
@@ -116,7 +116,7 @@ const FlashSaleCarousel = memo(({ products }) => {
             </div>
           ) : (
             <div style={{ textAlign: "center", padding: "20px", color: "#999" }}>
-              <p>Không có sản phẩm Flash Sale hiện tại.</p>
+              <p>No Flash Sale products available.</p>
             </div>
           )}
           {totalPages > 1 && (

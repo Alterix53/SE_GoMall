@@ -1,54 +1,54 @@
 import Payment from '../models/Payment.js';
 import Order from '../models/Order.js';
 
-// Xử lý thanh toán
+// Process payment
 export const processPayment = async (req, res) => {
   try {
     const { orderID, amount, paymentMethod, cardNumber, expiryDate, cvv } = req.body;
-    const userID = req.user._id; // Lấy từ JWT token
+    const userID = req.user._id; // Get from JWT token
     
-    // Validation cơ bản
+    // Basic validation
     if (!orderID || !amount || !paymentMethod) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
     
-    // Validation cho credit card
+    // Credit card validation
     if (paymentMethod === 'credit_card') {
       if (!cardNumber || !expiryDate || !cvv) {
         return res.status(400).json({ message: 'Card information is required for credit card payment' });
       }
       
-      // Kiểm tra định dạng thẻ (Luhn algorithm)
+      // Check card format (Luhn algorithm)
       if (!isValidCardNumber(cardNumber)) {
         return res.status(400).json({ message: 'Invalid card number' });
       }
       
-      // Kiểm tra expiry date
+      // Check expiry date
       if (!isValidExpiryDate(expiryDate)) {
         return res.status(400).json({ message: 'Invalid expiry date' });
       }
       
-      // Kiểm tra CVV
+      // Check CVV
       if (!isValidCVV(cvv)) {
         return res.status(400).json({ message: 'Invalid CVV' });
       }
     }
     
-    // Kiểm tra order tồn tại và thuộc về user này
+    // Check order exists and belongs to user
     const order = await Order.findOne({ _id: orderID, userID });
     if (!order) return res.status(404).json({ message: 'Order not found' });
     
-    // Kiểm tra order chưa được thanh toán
+    // Check order not already processed
     if (order.status !== 'Pending') {
       return res.status(400).json({ message: 'Order is already processed' });
     }
     
-    // Kiểm tra amount khớp với order total
+    // Check amount matches order total
     if (amount !== order.total) {
       return res.status(400).json({ message: 'Payment amount does not match order total' });
     }
     
-    // Tạo payment
+    // Create payment
     const payment = await Payment.create({ 
       orderID, 
       userID,
@@ -62,7 +62,7 @@ export const processPayment = async (req, res) => {
       }
     });
     
-    // Cập nhật trạng thái order
+    // Update order status
     order.status = 'Processing';
     await order.save();
     

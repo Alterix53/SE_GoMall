@@ -85,7 +85,7 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
         console.log("Requested category:", categoryName);
         const category = await Category.findOne({ categoryName });
         if (!category) {
-            return res.json({ success: false, message: "Danh mục không tồn tại" });
+            return res.json({ success: false, message: "Category not found" });
         }
         const products = await Product.find({ categoryID: category._id, isActive: true }).sort({ createdAt: 1 });
         console.log(`Products for category ${categoryName}:`, products.map(p => p.name));
@@ -117,7 +117,7 @@ app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);
     res.status(500).json({
         success: false,
-        message: "Có lỗi xảy ra!",
+        message: "An error occurred!",
         error: process.env.NODE_ENV === "development" ? err.message : {},
     });
 });
@@ -126,7 +126,7 @@ app.use((req, res) => {
     console.log("404 Not Found for path:", req.path);
     res.status(404).json({
         success: false,
-        message: "API endpoint không tồn tại",
+        message: "API endpoint not found",
     });
 });
 

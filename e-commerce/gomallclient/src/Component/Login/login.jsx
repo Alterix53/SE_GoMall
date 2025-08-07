@@ -27,7 +27,7 @@ const LoginPage = () => {
     );
 
     if (!account) {
-      alert('Sai tài khoản hoặc mật khẩu!');
+      alert('Wrong username or password!');
       return;
     }
 
@@ -41,7 +41,7 @@ const LoginPage = () => {
       if (account.sellerStatus === 'approved') {
         navigate('/seller-dashboard');
       } else {
-        alert('Tài khoản người bán của bạn chưa được phê duyệt.');
+        alert('Your seller account has not been approved yet.');
         return;
       }
     } else {
@@ -53,7 +53,7 @@ const LoginPage = () => {
   return (
     <>
       <div className="login-container">
-        <h2 className="mb-4">Đăng nhập</h2>
+        <h2 className="mb-4">Login</h2>
         
         {error && (
           <div className="alert alert-danger" role="alert">
@@ -63,7 +63,7 @@ const LoginPage = () => {
         
         <form onSubmit={handleLogin}>
           <div className="mb-3">
-            <label className="form-label">Tài khoản</label>
+            <label className="form-label">Username</label>
             <input
               type="text"
               className="form-control"
@@ -74,7 +74,7 @@ const LoginPage = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Mật khẩu</label>
+            <label className="form-label">Password</label>
             <input
               type="password"
               className="form-control"
@@ -92,10 +92,10 @@ const LoginPage = () => {
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Đang đăng nhập...
+                Logging in...
               </>
             ) : (
-              'Đăng nhập'
+              'Login'
             )}
           </button>
         </form>

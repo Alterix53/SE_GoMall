@@ -1,10 +1,10 @@
 import Order from '../models/Order.js';
 
-// Tạo order mới
+// Create new order
 export const createOrder = async (req, res) => {
   try {
     const { total, shippingAddress, paymentMethod, items } = req.body;
-    const userID = req.user._id; // Lấy từ user object trong req.user
+    const userID = req.user._id; // Get from user object in req.user
     
     if (!total || !shippingAddress || !items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Missing required fields' });
@@ -23,10 +23,10 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// Lấy danh sách order của user
+// Get user orders list
 export const getUserOrders = async (req, res) => {
   try {
-    const userID = req.user._id; // Lấy từ user object trong req.user
+    const userID = req.user._id; // Get from user object in req.user
     if (!userID) return res.status(400).json({ message: 'Missing userID' });
     const orders = await Order.find({ userID });
     res.status(200).json({ success: true, orders });
@@ -35,7 +35,7 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
-// Lấy chi tiết order
+// Get order details
 export const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -47,7 +47,7 @@ export const getOrderById = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái order
+// Update order status
 export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -60,7 +60,7 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-// Hủy order
+// Cancel order
 export const cancelOrder = async (req, res) => {
   try {
     const { id } = req.params;
