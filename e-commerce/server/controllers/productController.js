@@ -9,7 +9,7 @@ export const getAllProducts = ResponseHandler.asyncHandler(async (req, res) => {
     const result = await productService.getAllProducts(req.query);
     
     console.log("Responding with products:", result.products);
-    ResponseHandler.success(res, result, "Lấy danh sách sản phẩm thành công");
+    ResponseHandler.success(res, result, "Get product list successfully");
 });
 
 // Get flash sale products
@@ -19,7 +19,7 @@ export const getFlashSaleProducts = ResponseHandler.asyncHandler(async (req, res
     const result = await productService.getFlashSaleProducts(req.query);
     
     console.log("Responding with flash sale products:", result.products);
-    ResponseHandler.success(res, result, "Lấy danh sách flash sale thành công");
+    ResponseHandler.success(res, result, "Get flash sale list successfully");
 });
 
 // Get top products by type
@@ -29,7 +29,7 @@ export const getTopProducts = ResponseHandler.asyncHandler(async (req, res) => {
     const result = await productService.getTopProducts(req.query);
     
     console.log("Responding with top products:", result.products);
-    ResponseHandler.success(res, result, "Lấy danh sách sản phẩm nổi bật thành công");
+    ResponseHandler.success(res, result, "Get featured products list successfully");
 });
 
 // Get product statistics
@@ -38,7 +38,7 @@ export const getProductStats = ResponseHandler.asyncHandler(async (req, res) => 
     
     const result = await productService.getProductStats();
     
-    ResponseHandler.success(res, result, "Lấy thống kê sản phẩm thành công");
+    ResponseHandler.success(res, result, "Get product statistics successfully");
 });
 
 // Get product by ID
@@ -47,9 +47,9 @@ export const getProductById = ResponseHandler.asyncHandler(async (req, res) => {
     
     try {
         const product = await productService.getProductById(req.params.id);
-        ResponseHandler.success(res, { product }, "Lấy thông tin sản phẩm thành công");
+        ResponseHandler.success(res, { product }, "Get product information successfully");
     } catch (error) {
-        if (error.message === "Sản phẩm không tồn tại") {
+        if (error.message === "Product not found") {
             ResponseHandler.notFound(res, error.message);
         } else {
             throw error;
@@ -166,4 +166,4 @@ export const handleProductImageUpload = (req, res, next) => {
         }
         next();
     });
-}; 
+};

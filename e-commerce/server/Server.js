@@ -7,6 +7,9 @@ import { fileURLToPath } from "url";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"; // Import cart routes
 import authRoutes from "./routes/authRoutes.js"; // Import auth routes
+import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import './models/User.js';
@@ -14,6 +17,7 @@ import './models/Order.js';
 import './models/Cart.js';
 import './models/Review.js';
 import './models/Payment.js';
+import userRoutes from "./routes/userRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,7 +90,7 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
         console.log("Requested category:", categoryName);
         const category = await Category.findOne({ categoryName });
         if (!category) {
-            return res.json({ success: false, message: "Danh mục không tồn tại" });
+            return res.json({ success: false, message: "Category not found" });
         }
         const products = await Product.find({ categoryID: category._id, isActive: true }).sort({ createdAt: 1 });
         console.log(`Products for category ${categoryName}:`, products.map(p => p.name));
@@ -108,13 +112,32 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
     }
 });
 
+// Simple categories endpoint for testing
+app.get('/api/categories', async (req, res) => {
+    try {
+        const categories = await Category.find({}).sort({ categoryName: 1 });
+        res.json({
+            success: true,
+            data: { categories },
+            message: "Get categories list successfully"
+        });
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes); // Thêm prefix /api/cart
+app.use("/api/auth", userRoutes); // Mount auth routes trước
+app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);
     res.status(500).json({
         success: false,
-        message: "Có lỗi xảy ra!",
+        message: "An error occurred!",
         error: process.env.NODE_ENV === "development" ? err.message : {},
     });
 });
@@ -123,7 +146,7 @@ app.use((req, res) => {
     console.log("404 Not Found for path:", req.path);
     res.status(404).json({
         success: false,
-        message: "API endpoint không tồn tại",
+        message: "API endpoint not found",
     });
 });
 
@@ -131,27 +154,6 @@ const startServer = async () => {
     try {
         await connectDB(MONGODB_URI);
         console.log("MongoDB Connected");
-
-        app.use("/api/products", productRoutes);
-        app.use("/api/cart", cartRoutes); // Sử dụng cart routes
-        app.use("/api/auth", authRoutes); // Sử dụng auth routes
-
-        app.use((err, req, res, next) => {
-            console.error("Error middleware:", err.stack);
-            res.status(500).json({
-                success: false,
-                message: "Có lỗi xảy ra!",
-                error: process.env.NODE_ENV === "development" ? err.message : {},
-            });
-        });
-
-        app.use((req, res) => {
-            console.log("404 Not Found for path:", req.path);
-            res.status(404).json({
-                success: false,
-                message: "API endpoint không tồn tại",
-            });
-        });
 
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);

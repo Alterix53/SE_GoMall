@@ -81,3 +81,5 @@ export const requireRole = (roles) => {
         next();
     };
 }; 
+
+export default authenticateToken; 

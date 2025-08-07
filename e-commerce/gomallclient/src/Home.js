@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import FlashSaleCarousel from "./Component/FlashSaleCarousel/FlashSaleCarousel";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
 import { useProductCache } from "./hooks/useProductCache";
+import ProductAnimation from "./Component/ProductAnimation/ProductAnimation";
 import "./Home.css";
 
 const Home = () => {
@@ -13,15 +14,50 @@ const Home = () => {
 
   const { getAllProducts, loading, error } = useProductCache();
 
+  // Function to fetch flash sale products
+  const fetchFlashSaleProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/products/flash-sale');
+      const data = await response.json();
+      console.log("Flash sale API response:", data);
+      
+      if (data.success && data.data?.products) {
+        const flashProducts = data.data.products.map(product => ({
+          id: product._id,
+          name: product.name || "Unknown Product",
+          price: product.price?.sale || product.price?.original || 0,
+          originalPrice: product.price?.original || 0,
+          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
+          rating: product.rating?.average || 0,
+          ratingCount: product.rating?.count || 0,
+          sold: product.sold || 0,
+          discount: product.price?.original && product.flashSalePrice
+            ? Math.round(((product.price.original - product.flashSalePrice) / product.price.original) * 100)
+            : 0,
+          isFlashSale: product.isFlashSale || false,
+          flashSalePrice: product.flashSalePrice || 0,
+        }));
+        console.log("Flash sale products:", flashProducts);
+        setFlashSaleProducts(flashProducts);
+      } else {
+        console.warn("No flash sale products from API");
+        setFlashSaleProducts([]);
+      }
+    } catch (error) {
+      console.error("Error fetching flash sale products:", error);
+      setFlashSaleProducts([]);
+    }
+  };
+
   const categories = [
-    { name: "Điện thoại", image: "/images/Phone.png" },
-    { name: "Laptop", image: "/images/Laptop.png" },
-    { name: "Thời trang", image: "/images/Clothes.png" },
-    { name: "Mỹ phẩm", image: "/images/MyPham.png" },
-    { name: "Gia dụng", image: "/images/DoGiaDung.png" },
-    { name: "Sách", image: "/images/Book.png" },
-    { name: "Thể thao", image: "/images/TheThao.png" },
-    { name: "Xe cộ", image: "/images/Xe.png" },
+    { name: "Phones", image: "/images/Phone.png" },
+    { name: "Laptops", image: "/images/Laptop.png" },
+    { name: "Fashion", image: "/images/Clothes.png" },
+    { name: "Cosmetics", image: "/images/MyPham.png" },
+    { name: "Home & Garden", image: "/images/DoGiaDung.png" },
+    { name: "Books", image: "/images/Book.png" },
+    { name: "Sports", image: "/images/TheThao.png" },
+    { name: "Vehicles", image: "/images/Xe.png" },
   ];
 
   useEffect(() => {
@@ -50,7 +86,7 @@ const Home = () => {
               name: product.name || "Unknown Product",
               price: product.price?.sale || product.price?.original || 0,
               originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
+              image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
               rating: product.rating?.average || 0,
               sold: product.sold || 0,
               discount: product.price?.original && product.price?.sale
@@ -73,7 +109,7 @@ const Home = () => {
               name: product.name || "Unknown Product",
               price: product.price?.sale || product.price?.original || 0,
               originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
+              image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
               rating: product.rating?.average || 0,
               sold: product.sold || 0,
               discount: product.price?.original && product.price?.sale
@@ -81,23 +117,8 @@ const Home = () => {
                 : 0,
             }))
         );
-        // Giả sử flash sale là sản phẩm có discount lớn nhất (có thể thay bằng endpoint riêng)
-        setFlashSaleProducts(
-          uniqueProducts
-            .filter(product => product.discount && product.discount > 20) // Ví dụ: discount > 20%
-            .sort((a, b) => (b.discount || 0) - (a.discount || 0))
-            .slice(0, 6)
-            .map(product => ({
-              id: product._id,
-              name: product.name || "Unknown Product",
-              price: product.price?.sale || product.price?.original || 0,
-              originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
-              rating: product.rating?.average || 0,
-              sold: product.sold || 0,
-              discount: product.discount || 0,
-            }))
-        );
+        // Fetch flash sale products separately
+        await fetchFlashSaleProducts();
       } catch (err) {
         console.error("Error fetching products:", err.message);
         setCategoryProducts({});
@@ -115,16 +136,12 @@ const Home = () => {
       <section className="hero-banner">
         <div className="hero-content">
           <div className="hero-text">
-            <h1 className="hero-title">Mua Sắm Thông Minh</h1>
-            <p className="hero-subtitle">Hàng triệu sản phẩm chính hãng, giá tốt nhất</p>
-            <Link to="/shop" className="hero-cta">Khám Phá Ngay</Link>
+            <h1 className="hero-title">Smart Shopping</h1>
+            <p className="hero-subtitle">Millions of authentic products at the best prices</p>
+            <Link to="/shop" className="hero-cta">Explore Now</Link>
           </div>
           <div className="hero-image">
-            <img
-              src="/images/hero-shopping.png"
-              alt="Shopping"
-              onError={(e) => (e.target.src = "/images/default-product.jpg")}
-            />
+            <ProductAnimation />
           </div>
         </div>
       </section>
@@ -135,19 +152,19 @@ const Home = () => {
           <div className="features-grid">
             <div className="feature-item">
               <i className="fas fa-truck"></i>
-              <span>Miễn phí vận chuyển</span>
+              <span>Free Shipping</span>
             </div>
             <div className="feature-item">
               <i className="fas fa-shield-alt"></i>
-              <span>Bảo hành chính hãng</span>
+              <span>Authentic Warranty</span>
             </div>
             <div className="feature-item">
               <i className="fas fa-star"></i>
-              <span>Đánh giá 5 sao</span>
+              <span>5-Star Rating</span>
             </div>
             <div className="feature-item">
               <i className="fas fa-headphones"></i>
-              <span>Hỗ trợ 24/7</span>
+              <span>24/7 Support</span>
             </div>
           </div>
         </div>
@@ -157,7 +174,7 @@ const Home = () => {
         {/* Categories */}
         <section className="categories-section">
           <div className="section-card">
-            <h2 className="section-title">Danh Mục Nổi Bật</h2>
+            <h2 className="section-title">Featured Categories</h2>
             <div className="categories-grid">
               {categories.map((category, index) => (
                 <div
@@ -186,7 +203,7 @@ const Home = () => {
             <div className="section-header">
               <h2 className="section-title">{selectedCategory}</h2>
               <Link to="/" className="view-all-btn" onClick={() => setSelectedCategory(null)}>
-                Quay lại
+                Back
               </Link>
             </div>
             <div className="products-grid">
@@ -195,7 +212,7 @@ const Home = () => {
                   <RenderProduct key={product.id || product._id || index} product={product} />
                 ))
               ) : (
-                <p>Không có sản phẩm cho danh mục này.</p>
+                <p>No products for this category.</p>
               )}
             </div>
           </section>
@@ -209,7 +226,7 @@ const Home = () => {
               <span className="hot-badge">HOT</span>
             </div>
             <Link to="/flash-sale" className="view-all-btn animated-link">
-              Xem Tất Cả
+              View All
             </Link>
           </div>
           <FlashSaleCarousel products={flashSaleProducts} />
@@ -218,9 +235,9 @@ const Home = () => {
         {/* Featured Products */}
         <section className="featured-products-section">
           <div className="section-header">
-            <h2 className="section-title">Sản Phẩm Nổi Bật</h2>
+            <h2 className="section-title">Featured Products</h2>
             <Link to="/top-products" className="view-all-btn">
-              Xem Tất Cả
+              View All
             </Link>
           </div>
           <div className="products-grid">
@@ -229,7 +246,7 @@ const Home = () => {
                 <RenderProduct key={product.id || product._id || index} product={product} />
               ))
             ) : (
-              <p>Không có sản phẩm nổi bật.</p>
+              <p>No featured products.</p>
             )}
           </div>
         </section>
@@ -237,9 +254,9 @@ const Home = () => {
         {/* Top Products Preview */}
         <section className="top-products-section">
           <div className="section-header">
-            <h2 className="section-title">Top Sản Phẩm Bán Chạy</h2>
+            <h2 className="section-title">Top Selling Products</h2>
             <Link to="/top-products" className="view-all-btn">
-              Xem Tất Cả
+              View All
             </Link>
           </div>
           <div className="products-grid">
@@ -248,7 +265,7 @@ const Home = () => {
                 <RenderProduct key={product.id || product._id || index} product={product} />
               ))
             ) : (
-              <p>Không có sản phẩm bán chạy.</p>
+              <p>No top selling products.</p>
             )}
           </div>
         </section>

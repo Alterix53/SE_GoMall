@@ -1,5 +1,4 @@
 import Cart from '../models/Cart.js';
-import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
 
 // Get user's cart
@@ -32,7 +31,7 @@ export const getUserCart = async (req, res) => {
         res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
         res.status(500).json({ 
             success: false, 
-            message: "Lỗi server", 
+            message: "Server error", 
             error: error.message 
         });
     }
@@ -50,7 +49,7 @@ export const addToCart = async (req, res) => {
             res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
             return res.status(404).json({
                 success: false,
-                message: "Sản phẩm không tồn tại"
+                message: "Product not found"
             });
         }
 

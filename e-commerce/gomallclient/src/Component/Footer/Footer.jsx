@@ -11,26 +11,26 @@ export default function Footer() {
           {/* Cột 1: Logo / Tên */}
           <div className="col-md-4 mb-4">
             <h5 className="fw-bold">Gomall</h5>
-            <p className="text-muted">Nơi trải nghiệm mua hàng dành cho bạn.</p>
+            <p className="text-muted">Your shopping experience destination.</p>
           </div>
 
           {/* Cột 2: Các liên kết */}
           <div className="col-md-4 mb-4">
-            <h6 className="fw-bold">Liên kết</h6>
+            <h6 className="fw-bold">Links</h6>
             <ul className="list-unstyled">
               <li>
                 <Link to="/about" className="text-decoration-none text-dark">
-                  Về chúng tôi
+                  About Us
                 </Link>
               </li>
               <li>
                 <Link to="/faq" className="text-decoration-none text-dark">
-                  Câu hỏi thường gặp
+                  FAQ
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-decoration-none text-dark">
-                  Liên hệ
+                  Contact
                 </Link>
               </li>
             </ul>
@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Cột 3: Mạng xã hội */}
           <div className="col-md-4 mb-4">
-            <h6 className="fw-bold">Theo dõi chúng tôi</h6>
+            <h6 className="fw-bold">Follow Us</h6>
             <a href="https://facebook.com" className="text-dark me-3">
               <i className="bi bi-facebook"></i> Facebook
             </a>
