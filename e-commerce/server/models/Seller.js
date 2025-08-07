@@ -1,56 +1,54 @@
 import mongoose from 'mongoose';
 
 const sellerSchema = new mongoose.Schema({
-    userID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-        unique: true,
-        index: true
+    userID: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
     },
-
-    storeName: {
-        type: String,
-        required: true
+    businessName: { 
+        type: String, 
+        required: true 
     },
-
-    businessLicense: {
-        type: String,
-        required: true
+    businessDescription: { 
+        type: String 
     },
-
-    address: {
-        type: String,
-        required: true
+    businessAddress: { 
+        type: String 
     },
-
-    phoneNumber: {
-        type: String,
-        required: true
+    businessPhone: { 
+        type: String 
     },
-
-    verificationDocs: {
-        type: [String], 
-        default: []
+    businessEmail: { 
+        type: String 
     },
-
-    status: {
-        type: String,
-        enum: ['pending', 'approved', 'rejected'],
-        default: 'pending',
-        index: true
+    taxNumber: { 
+        type: String 
     },
-
-    isActive: {
-        type: Boolean,
-        default: true
+    status: { 
+        type: String, 
+        enum: ['pending', 'approved', 'rejected', 'suspended'], 
+        default: 'pending' 
     },
-
-    createdAt: {
-        type: Date,
-        default: Date.now
+    approvedAt: { 
+        type: Date 
+    },
+    approvedBy: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    },
+    rating: { 
+        type: Number, 
+        default: 0 
+    },
+    totalSales: { 
+        type: Number, 
+        default: 0 
+    },
+    createdAt: { 
+        type: Date, 
+        default: Date.now 
     }
-
 }, { timestamps: true });
 
 export default mongoose.model('Seller', sellerSchema);

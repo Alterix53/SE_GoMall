@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 import Category from '../models/Category.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
+import Seller from '../models/Seller.js';
 import '../models/Order.js';
 import '../models/Cart.js';
 import '../models/Review.js';
@@ -88,19 +89,6 @@ const seedUsers = async () => {
                 isActive: true
             },
             {
-                username: 'seller1',
-                password: 'seller123',
-                email: 'seller1@gomall.com',
-                role: 'seller',
-                fullName: 'Seller One',
-                shop: {
-                    name: 'Tech Store',
-                    address: '123 Tech Street',
-                    isActive: true
-                },
-                isActive: true
-            },
-            {
                 username: 'user1',
                 password: 'user123',
                 email: 'user1@gomall.com',
@@ -113,18 +101,45 @@ const seedUsers = async () => {
         await User.deleteMany({});
         const createdUsers = await User.insertMany(defaultUsers);
         console.log(`✅ Created ${createdUsers.length} default users`);
-        return { allUsers: createdUsers, sellers: createdUsers.filter(u => u.role === 'seller') };
+        return { allUsers: createdUsers, sellers: [] };
     }
 
     // Clear existing users
     await User.deleteMany({});
     
-    // Create users from data
-    const createdUsers = await User.insertMany(usersData);
-    const sellers = createdUsers.filter(u => u.role.includes('seller'));
+    // Filter out sellers from users data
+    const regularUsers = usersData.filter(u => !u.role.includes('seller'));
+    const sellerUsers = usersData.filter(u => u.role.includes('seller'));
     
-    console.log(`✅ Created ${createdUsers.length} users (${sellers.length} sellers)`);
-    return { allUsers: createdUsers, sellers };
+    // Create regular users
+    const createdUsers = await User.insertMany(regularUsers);
+    console.log(`✅ Created ${createdUsers.length} regular users`);
+    
+    // Create seller users and seller profiles
+    const createdSellers = [];
+    for (const sellerData of sellerUsers) {
+        // Create user account for seller
+        const userData = { ...sellerData };
+        delete userData.shop; // Remove shop data from user
+        userData.role = 'user'; // Set role as user
+        
+        const sellerUser = await User.create(userData);
+        
+        // Create seller profile
+        const sellerProfile = await Seller.create({
+            userID: sellerUser._id,
+            businessName: sellerData.shop?.name || 'Unknown Store',
+            businessAddress: sellerData.shop?.address || '',
+            businessPhone: sellerData.phoneNumber || '',
+            businessEmail: sellerData.email,
+            status: 'approved'
+        });
+        
+        createdSellers.push(sellerProfile);
+    }
+    
+    console.log(`✅ Created ${createdSellers.length} seller profiles`);
+    return { allUsers: [...createdUsers, ...sellerUsers.map(s => ({ ...s, role: 'user' }))], sellers: createdSellers };
 };
 
 const seedProducts = async (createdCategories, createdSellers) => {
@@ -139,16 +154,28 @@ const seedProducts = async (createdCategories, createdSellers) => {
     // Clear existing products
     await Product.deleteMany({});
     
-    // Create category map
+    // Create category maps
     const categoryMap = {};
+    const categoryNameMap = {};
     createdCategories.forEach((cat, index) => {
         categoryMap[index + 1] = cat._id;
+        categoryNameMap[cat.categoryName] = cat._id;
     });
 
     // Transform products data
     console.log("🔄 Transforming products data...");
     const transformedProducts = productsData.map((product, index) => {
-        const categoryID = categoryMap[product.categoryID] || createdCategories[0]?._id || new mongoose.Types.ObjectId();
+        // Try to find category by name first, then by ID, then fallback to first category
+        const categoryID = 
+            (product.categoryName && categoryNameMap[product.categoryName]) ||
+            categoryMap[product.categoryID] ||
+            createdCategories[0]?._id ||
+            new mongoose.Types.ObjectId();
+        
+        // Log if category not found by ID
+        if (!categoryMap[product.categoryID] && product.categoryID) {
+            console.log(`⚠️ Category ID ${product.categoryID} not found for product "${product.name}", using fallback category`);
+        }
         const sellerID = createdSellers.length > 0 
             ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id 
             : new mongoose.Types.ObjectId();
@@ -166,13 +193,15 @@ const seedProducts = async (createdCategories, createdSellers) => {
             sellerID: sellerID,
             images: [{
                 url: product.images_url || `/images/default-product.jpg`,
+                alt: product.name,
                 isPrimary: true
             }],
             inventory: {
                 quantity: product.inventory_quantity || 100,
                 lowStockThreshold: product.inventory_lowStockThreshold || 10
             },
-            tags: product.tags ? product.tags.split(', ') : [],
+            tags: product.tags ? product.tags.split(', ').map(tag => tag.trim()) : [],
+            brand: product.brand || product.name.split(' ')[0], // Extract brand from product name if not provided
             rating: {
                 average: Math.floor(Math.random() * 2) + 4, // 4-5 stars
                 count: product.rating_count || 0
