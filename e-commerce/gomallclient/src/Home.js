@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import FlashSaleCarousel from "./Component/FlashSaleCarousel/FlashSaleCarousel";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
 import { useProductCache } from "./hooks/useProductCache";
+import ProductAnimation from "./Component/ProductAnimation/ProductAnimation";
 import "./Home.css";
 
 const Home = () => {
@@ -26,7 +27,7 @@ const Home = () => {
           name: product.name || "Unknown Product",
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
-          image: product.images?.[0]?.url || "/images/default-product.jpg",
+          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
           rating: product.rating?.average || 0,
           ratingCount: product.rating?.count || 0,
           sold: product.sold || 0,
@@ -85,7 +86,7 @@ const Home = () => {
               name: product.name || "Unknown Product",
               price: product.price?.sale || product.price?.original || 0,
               originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
+              image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
               rating: product.rating?.average || 0,
               sold: product.sold || 0,
               discount: product.price?.original && product.price?.sale
@@ -108,7 +109,7 @@ const Home = () => {
               name: product.name || "Unknown Product",
               price: product.price?.sale || product.price?.original || 0,
               originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
+              image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
               rating: product.rating?.average || 0,
               sold: product.sold || 0,
               discount: product.price?.original && product.price?.sale
@@ -140,11 +141,7 @@ const Home = () => {
             <Link to="/shop" className="hero-cta">Explore Now</Link>
           </div>
           <div className="hero-image">
-            <img
-              src="/images/hero-shopping.png"
-              alt="Shopping"
-              onError={(e) => (e.target.src = "/images/default-product.jpg")}
-            />
+            <ProductAnimation />
           </div>
         </div>
       </section>

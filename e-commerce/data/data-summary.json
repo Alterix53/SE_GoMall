@@ -1,0 +1,57 @@
+{
+  "totalCategories": 10,
+  "totalProducts": 20,
+  "productsPerCategory": 2,
+  "categories": [
+    {
+      "name": "Phones",
+      "slug": "phones",
+      "productCount": 2
+    },
+    {
+      "name": "Laptops",
+      "slug": "laptops",
+      "productCount": 2
+    },
+    {
+      "name": "Fashion",
+      "slug": "fashion",
+      "productCount": 2
+    },
+    {
+      "name": "Sports",
+      "slug": "sports",
+      "productCount": 2
+    },
+    {
+      "name": "Home & Garden",
+      "slug": "home-garden",
+      "productCount": 2
+    },
+    {
+      "name": "Beauty & Cosmetics",
+      "slug": "beauty-cosmetics",
+      "productCount": 2
+    },
+    {
+      "name": "Accessories",
+      "slug": "accessories",
+      "productCount": 2
+    },
+    {
+      "name": "Books",
+      "slug": "books",
+      "productCount": 2
+    },
+    {
+      "name": "Vehicles",
+      "slug": "vehicles",
+      "productCount": 2
+    },
+    {
+      "name": "Electronics",
+      "slug": "electronics",
+      "productCount": 2
+    }
+  ]
+}

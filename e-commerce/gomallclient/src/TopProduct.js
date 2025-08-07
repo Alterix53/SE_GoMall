@@ -39,7 +39,7 @@ const TopProduct = () => {
           name: product.name || "Unknown Product",
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
-          image: product.images?.[0]?.url || "/images/default-product.jpg",
+                        image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
           rating: product.rating?.average || 0,
           sold: product.sold || 0,
           discount: product.price?.original && product.price?.sale

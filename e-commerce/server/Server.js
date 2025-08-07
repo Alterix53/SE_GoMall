@@ -8,6 +8,7 @@ import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"; // Import cart routes
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import './models/User.js';
@@ -104,6 +105,21 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
     } catch (error) {
         console.error("Error fetching products by category:", error.stack);
         res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+});
+
+// Simple categories endpoint for testing
+app.get('/api/categories', async (req, res) => {
+    try {
+        const categories = await Category.find({}).sort({ categoryName: 1 });
+        res.json({
+            success: true,
+            data: { categories },
+            message: "Get categories list successfully"
+        });
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 });
 
