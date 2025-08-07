@@ -9,12 +9,12 @@ export const RenderProduct = ({ product }) => {
       </div>
     )
   }
-
+  // Minh 
   const formatPrice = (price) => {
     if (!price) return "0 ₫"
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price)
   }
-
+  // Minh
   const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
 
   console.log("Rendering product:", product.name, product)
