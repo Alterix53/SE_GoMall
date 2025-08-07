@@ -47,8 +47,6 @@ import Statistics from './Component/Sellerdashboard/Statistics';
 import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
-import Navbar from './Component/Navbar/Navbar';
-import Footer from './Component/Footer/Footer';
 
 
 const LayoutWrapper = ({ children }) => {
@@ -56,29 +54,13 @@ const LayoutWrapper = ({ children }) => {
   const hideLayout = ['/login', '/signup'].includes(location.pathname);
   return (
     <>
-      {!hideLayout && <Navbar />}
       {children}
-      {!hideLayout && <Footer />}
     </>
   );
 };
 
 function AdminLayout() {
   return (
-<<<<<<< HEAD
-    <div className="d-flex">
-      <Navbar />
-      <SidebarNav />
-      <div className="flex-grow-1 p-3">
-        <Breadcrumbs />
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="ManageUser" element={<ManageUserPage />} />
-          <Route path="ManageUser/User" element={<ManageUserPage />} />
-          <Route path="ManageSeller" element={<ManageSellerPage />} />
-          <Route path="Items" element={<ItemsPage />} />
-        </Routes>
-=======
     <>
       <HeaderNavAdmin />
       <div className="d-flex">
@@ -95,7 +77,6 @@ function AdminLayout() {
             <Route path="Items" element={<ItemsPage />} />
           </Routes>
         </div>
->>>>>>> Admin_Dashboard
       </div>
     </>
   );
@@ -103,7 +84,6 @@ function AdminLayout() {
 
 function App() {
   return (
-<<<<<<< HEAD
     <AuthProvider>
       <CartProvider>
         <Router>
@@ -237,15 +217,6 @@ function App() {
       </CartProvider>
     </AuthProvider>
 
-=======
-    <Router>
-      <Routes>
-        <Route path="/Admin/*" element={<AdminLayout />} />
-        {/* Các route khác giữ nguyên layout cũ */}
-        <Route path="/*" element={<CategoryList />} />
-      </Routes>
-    </Router>
->>>>>>> Admin_Dashboard
   );
 }
 

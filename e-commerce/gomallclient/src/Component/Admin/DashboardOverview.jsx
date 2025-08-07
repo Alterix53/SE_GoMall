@@ -9,15 +9,6 @@ import NotificationButton from './NotificationButton';
 import { adminAPI } from '../../utils/api';
 
 function DashboardOverview() {
-<<<<<<< HEAD
-    // TODO: replace with real data fetching hook
-    const stats = {
-        users: 10250,
-        orders: 2350,
-        revenue: 812000,
-        support: 50
-    };
-=======
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [dashboardData, setDashboardData] = useState({
@@ -95,7 +86,6 @@ function DashboardOverview() {
 
         fetchDashboardData();
     }, []);
->>>>>>> Admin_Dashboard
 
     const COLORS = ['#0d6efd', '#28a745', '#ffc107', '#dc3545'];
 
@@ -137,16 +127,11 @@ function DashboardOverview() {
         <div className="container-fluid">
           <div className="row">
             <div className="col-12 d-flex justify-content-between align-item-center">
-<<<<<<< HEAD
               <h3 className="mb-0">Dashboard</h3>
               <div className="d-flex align-items-center">
                 <NotificationButton />
                 <AdminAvatarModal avatarUrl="https://i.pravatar.cc/40?img=3" />
               </div>
-=======
-              {/*Phần bên trái ghi dashboard */}
-              <h3 className="mb-0">Overall System Statistics</h3>
->>>>>>> Admin_Dashboard
             </div>
           </div>
           <div className="row mb-4">

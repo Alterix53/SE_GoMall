@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-<<<<<<< HEAD
-=======
 import Admin from '../models/Admin.js';
->>>>>>> Admin_Dashboard
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -61,8 +58,6 @@ export const requireRole = (roles) => {
 
         next();
     };
-<<<<<<< HEAD
-=======
 };
 
 // Admin authentication middleware
@@ -144,5 +139,4 @@ export const adminRateLimit = (req, res, next) => {
     
     rateLimitMap.set(clientIP, clientData);
     next();
->>>>>>> Admin_Dashboard
 }; 

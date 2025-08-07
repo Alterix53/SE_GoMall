@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 import axios from 'axios';
 
-// Tạo axios instance với base URL
+// Tạo axios instance với base URL cho user API
 const api = axios.create({
   baseURL: 'http://localhost:8080/api',
   timeout: 10000,
@@ -40,7 +39,7 @@ api.interceptors.response.use(
   }
 );
 
-// Helper functions
+// Helper functions cho user API
 export const apiService = {
   // GET request
   get: (url, config = {}) => {
@@ -105,11 +104,9 @@ export const getUserFromToken = (token) => {
   }
 };
 
-export default api; 
-=======
+// Admin API functions - sử dụng fetch API
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Admin API functions
 export const adminAPI = {
     // Admin authentication
     login: async (credentials) => {
@@ -547,5 +544,6 @@ export const adminAPI = {
         });
         return response.json();
     },
-}; 
->>>>>>> Admin_Dashboard
+};
+
+export default api;

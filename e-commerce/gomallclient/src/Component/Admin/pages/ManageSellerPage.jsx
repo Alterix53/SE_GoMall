@@ -24,10 +24,7 @@ function ManageSellerPage() {
     const fetchSellers = async () => {
       setLoading(true);
       setError(null);
-<<<<<<< HEAD
       console.log('[Seller API] Bắt đầu fetch danh sách seller...', { status: activeFilter, search: searchTerm });
-=======
->>>>>>> Admin_Dashboard
       try {
         const adminToken = localStorage.getItem('adminToken');
         if (!adminToken) throw new Error('Admin token not found');
@@ -38,25 +35,16 @@ function ManageSellerPage() {
         const res = await adminAPI.getAllSellers(adminToken, params);
         if (res.success) {
           setSellers(res.data.sellers || res.data || []);
-<<<<<<< HEAD
           console.log(`[Seller API] Lấy danh sách seller thành công. Số lượng: ${res.data.sellers?.length ?? (res.data?.length ?? 0)}`);
         } else {
           setSellers([]);
           setError(res.message || 'Lỗi khi lấy danh sách seller');
           console.error('[Seller API] Lỗi khi lấy danh sách seller:', res.message);
-=======
-        } else {
-          setSellers([]);
-          setError(res.message || 'Lỗi khi lấy danh sách seller');
->>>>>>> Admin_Dashboard
         }
       } catch (err) {
         setError(err.message || 'Lỗi khi lấy danh sách seller');
         setSellers([]);
-<<<<<<< HEAD
         console.error('[Seller API] Lỗi khi fetch seller:', err);
-=======
->>>>>>> Admin_Dashboard
       } finally {
         setLoading(false);
       }

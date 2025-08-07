@@ -3,10 +3,7 @@ import User from "../models/User.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import Seller from "../models/Seller.js";
-<<<<<<< HEAD
-=======
 import Category from "../models/Category.js";
->>>>>>> Admin_Dashboard
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -346,8 +343,6 @@ class AdminService {
 
         return { message: "Xóa người dùng thành công" };
     }
-<<<<<<< HEAD
-=======
 
     // User Management Services
     async getAllUsers({ page = 1, limit = 10, search = '', status = '' }) {
@@ -828,7 +823,6 @@ class AdminService {
             message: `Maintenance mode ${enabled ? 'enabled' : 'disabled'}`
         };
     }
->>>>>>> Admin_Dashboard
 }
 
 export default new AdminService(); 

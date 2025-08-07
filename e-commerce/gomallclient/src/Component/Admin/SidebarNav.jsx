@@ -25,24 +25,6 @@ function SidebarNav() {
               marginBottom: '0.5rem'
             }}
           >
-<<<<<<< HEAD
-            Manage Users {openUserMenu ? '▲' : '▼'}
-          </div>
-          {openUserMenu && (
-            <ul style={{ listStyle: 'none', paddingLeft: 16, marginTop: 8 }}>
-              <li style={{ marginBottom: 6 }}>
-                <NavLink to="/Admin/ManageUser" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                  Users
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/Admin/ManageUser/reported" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                  Reported users
-                </NavLink>
-              </li>
-            </ul>
-          )}
-=======
             Manage Customers
           </div>
           <ul style={{ listStyle: 'none', paddingLeft: 16, margin: 0 }}>
@@ -57,16 +39,10 @@ function SidebarNav() {
               </NavLink>
             </li>
           </ul>
->>>>>>> Admin_Dashboard
         </li>
 
         {/* Manage Sellers Section */}
         <li style={{ marginBottom: '1rem' }}>
-<<<<<<< HEAD
-          <NavLink to="/Admin/ManageSeller" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-            Manage Sellers
-          </NavLink>
-=======
           <div
             style={{ 
               fontWeight: 'bold',
@@ -92,7 +68,6 @@ function SidebarNav() {
               </NavLink>
             </li>
           </ul>
->>>>>>> Admin_Dashboard
         </li>
 
         {/* Manage Items Section */}

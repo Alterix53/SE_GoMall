@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import UserAccountModal from "../UserAccountModal/UserAccountModal";
 import SearchBar from "../SearchBar/SearchBar";
-import "./navbar.css";
+import "./Navbar.css";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

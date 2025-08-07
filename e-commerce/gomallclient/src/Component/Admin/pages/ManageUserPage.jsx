@@ -53,22 +53,6 @@ function ManageUserPage() {
   }, [search]);
 
   return (
-<<<<<<< HEAD
-    <div className="container-fluid">
-      <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý thành viên</h2>
-      <ul className="list-group">
-        {USERS.length === 0 && (
-          <li className="list-group-item text-muted">No users are available.</li>
-        )}
-        {USERS.map((user) => (
-          <UserSellerListItem
-            key={user.id}
-            data={user}
-            onClick={() => setSelectedUser(user)}
-          />
-        ))}
-      </ul>
-=======
     <div className="container my-4">
       <div className="card shadow">
         <div className="card-header bg-primary text-white">
@@ -125,7 +109,6 @@ function ManageUserPage() {
           )}
         </div>
       </div>
->>>>>>> Admin_Dashboard
       {/* Modal chi tiết thành viên */}
       {selectedUser && (
         <div className="modal show d-block" tabIndex="-1">
