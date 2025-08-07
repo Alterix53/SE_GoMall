@@ -139,16 +139,28 @@ const seedProducts = async (createdCategories, createdSellers) => {
     // Clear existing products
     await Product.deleteMany({});
     
-    // Create category map
+    // Create category maps
     const categoryMap = {};
+    const categoryNameMap = {};
     createdCategories.forEach((cat, index) => {
         categoryMap[index + 1] = cat._id;
+        categoryNameMap[cat.categoryName] = cat._id;
     });
 
     // Transform products data
     console.log("🔄 Transforming products data...");
     const transformedProducts = productsData.map((product, index) => {
-        const categoryID = categoryMap[product.categoryID] || createdCategories[0]?._id || new mongoose.Types.ObjectId();
+        // Try to find category by name first, then by ID, then fallback to first category
+        const categoryID = 
+            (product.categoryName && categoryNameMap[product.categoryName]) ||
+            categoryMap[product.categoryID] ||
+            createdCategories[0]?._id ||
+            new mongoose.Types.ObjectId();
+        
+        // Log if category not found by ID
+        if (!categoryMap[product.categoryID] && product.categoryID) {
+            console.log(`⚠️ Category ID ${product.categoryID} not found for product "${product.name}", using fallback category`);
+        }
         const sellerID = createdSellers.length > 0 
             ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id 
             : new mongoose.Types.ObjectId();
@@ -166,13 +178,15 @@ const seedProducts = async (createdCategories, createdSellers) => {
             sellerID: sellerID,
             images: [{
                 url: product.images_url || `/images/default-product.jpg`,
+                alt: product.name,
                 isPrimary: true
             }],
             inventory: {
                 quantity: product.inventory_quantity || 100,
                 lowStockThreshold: product.inventory_lowStockThreshold || 10
             },
-            tags: product.tags ? product.tags.split(', ') : [],
+            tags: product.tags ? product.tags.split(', ').map(tag => tag.trim()) : [],
+            brand: product.brand || product.name.split(' ')[0], // Extract brand from product name if not provided
             rating: {
                 average: Math.floor(Math.random() * 2) + 4, // 4-5 stars
                 count: product.rating_count || 0

@@ -41,6 +41,61 @@ export const getProductStats = ResponseHandler.asyncHandler(async (req, res) => 
     ResponseHandler.success(res, result, "Get product statistics successfully");
 });
 
+// Search products
+export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to search products:", req.query);
+    
+    try {
+        const { keyword, category, minPrice, maxPrice, sortBy, page = 1, limit = 12 } = req.query;
+        
+        // Build search query
+        let query = { isActive: true };
+        
+        // Keyword search
+        if (keyword) {
+            console.log('Searching for keyword:', keyword);
+            const words = keyword.trim().split(/\s+/).filter(word => word.length > 0);
+            
+            if (words.length > 0) {
+                query.$and = words.map(word => ({
+                    $or: [
+                        { name: { $regex: word, $options: 'i' } },
+                        { description: { $regex: word, $options: 'i' } },
+                        { brand: { $regex: word, $options: 'i' } }
+                    ]
+                }));
+            }
+            console.log('Search query:', JSON.stringify(query));
+        }
+        
+        // Category filter
+        if (category) {
+            query.categoryID = category;
+        }
+        
+        // Price filter
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) query.price.$gte = parseInt(minPrice);
+            if (maxPrice) query.price.$lte = parseInt(maxPrice);
+        }
+        
+        // Execute search
+        const products = await productService.searchProducts(query, {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sortBy: sortBy || 'createdAt'
+        });
+        
+        console.log(`Found ${products.products.length} products for keyword: ${keyword}`);
+        ResponseHandler.success(res, products, "Search products successfully");
+        
+    } catch (error) {
+        console.error("Error searching products:", error);
+        throw error;
+    }
+});
+
 // Get product by ID
 export const getProductById = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to get product by ID:", req.params.id);
