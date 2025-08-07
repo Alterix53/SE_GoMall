@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import userFileService from '../services/userFileService.js';
+import User from '../models/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -16,7 +16,7 @@ export const authenticateToken = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, JWT_SECRET);
-        const user = userFileService.findUserById(decoded.userId);
+        const user = await User.findById(decoded.userId);
         
         if (!user) {
             return res.status(401).json({
@@ -59,7 +59,7 @@ export const authenticateToken = async (req, res, next) => {
     }
 };
 
-export const checkRole = (roles) => {
+export const requireRole = (roles) => {
     return (req, res, next) => {
         if (!req.user) {
             return res.status(401).json({
@@ -82,4 +82,40 @@ export const checkRole = (roles) => {
     };
 };
 
-export default authenticateToken; 
+// Middleware to check if user is a seller
+export const requireSeller = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Authentication required'
+            });
+        }
+
+        const userRoles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
+        
+        if (!userRoles.includes('seller')) {
+            return res.status(403).json({
+                success: false,
+                message: 'Seller access required'
+            });
+        }
+
+        // You can also check if the seller is approved here if needed
+        // const seller = await Seller.findOne({ userID: req.user._id });
+        // if (!seller || seller.status !== 'approved') {
+        //     return res.status(403).json({
+        //         success: false,
+        //         message: 'Seller account not approved'
+        //     });
+        // }
+
+        next();
+    } catch (error) {
+        console.error('Require seller middleware error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+}; 

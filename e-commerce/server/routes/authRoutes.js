@@ -2,6 +2,7 @@ import express from 'express';
 import { body } from 'express-validator';
 import {
     register,
+    registerSeller,
     login,
     logout,
     getCurrentUser,
@@ -44,6 +45,31 @@ const registerValidation = [
         .withMessage('Address must not exceed 500 characters')
 ];
 
+const sellerRegisterValidation = [
+    ...registerValidation,
+    body('storeName')
+        .trim()
+        .isLength({ min: 2, max: 100 })
+        .withMessage('Store name must be between 2 and 100 characters'),
+    body('businessLicense')
+        .trim()
+        .notEmpty()
+        .withMessage('Business license is required'),
+    body('sellerPhoneNumber')
+        .optional()
+        .matches(/^[\+]?[1-9][\d]{0,15}$/)
+        .withMessage('Please provide a valid seller phone number'),
+    body('sellerAddress')
+        .optional()
+        .trim()
+        .isLength({ max: 500 })
+        .withMessage('Seller address must not exceed 500 characters'),
+    body('verificationDocs')
+        .optional()
+        .isArray()
+        .withMessage('Verification documents must be an array')
+];
+
 const loginValidation = [
     body('email')
         .isEmail()
@@ -62,6 +88,7 @@ const refreshTokenValidation = [
 
 // Auth routes
 router.post('/register', registerValidation, register);
+router.post('/register-seller', sellerRegisterValidation, registerSeller);
 router.post('/login', loginValidation, login);
 router.post('/logout', authenticateToken, logout);
 router.get('/me', authenticateToken, getCurrentUser);

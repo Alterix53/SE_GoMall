@@ -1,27 +1,20 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
 
 const sellerSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        index: true
-    },
-
-    password: {
-        type: String,
-        required: true
-    },
-
-    email: {
-        type: String,
+    userID: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
         unique: true,
         index: true
     },
 
     storeName: {
+        type: String,
+        required: true
+    },
+
+    businessLicense: {
         type: String,
         required: true
     },
@@ -48,11 +41,6 @@ const sellerSchema = new mongoose.Schema({
         index: true
     },
 
-    userID: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' 
-    },
-
     isActive: {
         type: Boolean,
         default: true
@@ -64,12 +52,5 @@ const sellerSchema = new mongoose.Schema({
     }
 
 }, { timestamps: true });
-
-sellerSchema.pre('save', async function(next) {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
-    next();
-});
 
 export default mongoose.model('Seller', sellerSchema);
