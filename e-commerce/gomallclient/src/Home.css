@@ -1,3 +1,4 @@
+/*Home.css*/
 .home-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #f0f4f8, #e0e8f0); /* Gradient nhẹ nhàng */
@@ -59,6 +60,13 @@
   background: #f8f9fa;
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hero-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
 }
 
 .hero-image img {

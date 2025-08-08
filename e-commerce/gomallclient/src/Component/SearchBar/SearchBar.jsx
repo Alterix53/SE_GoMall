@@ -20,7 +20,7 @@ const SearchBar = ({ defaultValue = "" }) => { // Thêm prop defaultValue
       <div className="search-container">
         <input
           type="text"
-          placeholder="Tìm kiếm sản phẩm, ..."
+          placeholder="Search products, ..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           className="search-input"

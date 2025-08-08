@@ -6,7 +6,7 @@ export const RenderProduct = ({ product }) => {
     console.warn("Invalid product data:", product)
     return (
       <div className="product-card" style={{ minHeight: "300px", padding: "20px", textAlign: "center" }}>
-        <p style={{ color: "#ff4444" }}>Sản phẩm không hợp lệ</p>
+        <p style={{ color: "#ff4444" }}>Invalid product</p>
       </div>
     )
   }
@@ -47,7 +47,7 @@ export const RenderProduct = ({ product }) => {
         </div>
         <div className="product-stats">
           <span className="rating">★ {product.rating || "N/A"}</span>
-          <span className="sold">Đã bán {formatSold(product.sold)}</span>
+          <span className="sold">Sold {formatSold(product.sold)}</span>
         </div>
       </div>
     </Link>

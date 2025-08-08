@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import productCacheService from "./utils/productCache";
-import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx"; // Import RenderProduct
+import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
 import "./Flash_sale.css";
 
 const FlashSale = () => {
@@ -43,30 +42,33 @@ const FlashSale = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:8080/api/products/flash-sale", {
-          timeout: 5000,
-        });
-        console.log("Flash Sale API response:", response.data);
-        const products = response.data?.data?.products || [];
+        const response = await fetch("http://localhost:8080/api/products/flash-sale");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log("Flash Sale API response:", data);
+        const products = data?.data?.products || [];
         if (products.length === 0) {
           console.warn("No flash sale products from API");
+          setFlashSaleProducts([]);
           return;
         }
-        setFlashSaleProducts(
-          products.map((product, index) => ({
-            id: product._id || `fallback-${index}`,
-            name: product.name || "Unknown Product",
-            price: product.price?.sale || product.price?.original || 0,
-            originalPrice: product.price?.original || 0,
-            image: product.images?.[0]?.url || "/images/default-product.jpg",
-            rating: product.rating?.average || 0,
-            sold: product.sold || 0,
-            discount: product.price?.original && product.price?.sale
-              ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-              : 0,
-            flashSale: product.isFlashSale || false,
-          }))
-        );
+        const mappedProducts = products.map((product, index) => ({
+          id: product._id || `fallback-${index}`,
+          name: product.name || "Unknown Product",
+          price: product.flashSalePrice || product.price?.sale || product.price?.original || 0,
+          originalPrice: product.price?.original || 0,
+                        image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
+          rating: product.rating?.average || 0,
+          sold: product.sold || 0,
+          discount: product.price?.original && product.flashSalePrice
+            ? Math.round(((product.price.original - product.flashSalePrice) / product.price.original) * 100)
+            : 0,
+          flashSale: product.isFlashSale || false,
+        }));
+        console.log("Mapped flash sale products:", mappedProducts);
+        setFlashSaleProducts(mappedProducts);
       } catch (err) {
         console.error("Error fetching flash sale products:", err.message);
       } finally {
@@ -87,14 +89,14 @@ const FlashSale = () => {
               ⚡ FLASH SALE
               <span className="hot-badge">HOT</span>
             </h1>
-            <p className="page-subtitle">Giảm giá sốc - Số lượng có hạn!</p>
+            <p className="page-subtitle">Shocking discounts - Limited quantity!</p>
 
             {/* Countdown Timer */}
             <div className="countdown-container">
               <div className="countdown-timer">
                 <div className="timer-label">
                   <i className="fas fa-clock"></i>
-                  <span>Kết thúc trong:</span>
+                  <span>Ends in:</span>
                 </div>
                 <div className="timer-digits">
                   <div className="timer-digit">{String(timeLeft.hours).padStart(2, "0")}</div>
@@ -114,13 +116,13 @@ const FlashSale = () => {
         <div className="products-section">
           <div className="products-grid">
             {loading ? (
-              <p>Đang tải sản phẩm...</p>
+              <p>Loading products...</p>
             ) : flashSaleProducts.length > 0 ? (
               flashSaleProducts.map((product, index) => (
                 <RenderProduct key={product.id || index} product={product} />
               ))
             ) : (
-              <p>Không có sản phẩm flash sale.</p>
+              <p>No flash sale products available.</p>
             )}
           </div>
 
@@ -128,7 +130,7 @@ const FlashSale = () => {
           <div className="load-more-section">
             <button className="load-more-btn">
               <i className="fas fa-plus"></i>
-              Xem Thêm Sản Phẩm
+              View More Products
             </button>
           </div>
         </div>

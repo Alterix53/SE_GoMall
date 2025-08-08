@@ -23,7 +23,7 @@ const SignUpPage = () => {
     const { username, email, password, confirm } = form;
 
     if (password !== confirm) {
-      alert('Mật khẩu không khớp!');
+      alert('Passwords do not match!');
       return;
     }
 
@@ -31,7 +31,7 @@ const SignUpPage = () => {
 
     const existing = users.find(u => u.username === username);
     if (existing) {
-      alert('Tên đăng nhập đã tồn tại!');
+      alert('Username already exists!');
       return;
     }
 
@@ -46,7 +46,7 @@ const SignUpPage = () => {
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
-    alert('Đăng ký thành công!');
+    alert('Registration successful!');
     navigate('/login');
   };
 
@@ -54,10 +54,10 @@ const SignUpPage = () => {
     <>
       <Navbar />
       <div className="signup-container">
-        <h2>Đăng ký</h2>
+        <h2>Sign Up</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Tên đăng nhập</label>
+            <label className="form-label">Username</label>
             <input name="username" type="text" className="form-control" value={form.username} onChange={handleChange} required />
           </div>
           <div className="mb-3">
@@ -65,16 +65,16 @@ const SignUpPage = () => {
             <input name="email" type="email" className="form-control" value={form.email} onChange={handleChange} required />
           </div>
           <div className="mb-3">
-            <label className="form-label">Mật khẩu</label>
+            <label className="form-label">Password</label>
             <input name="password" type="password" className="form-control" value={form.password} onChange={handleChange} required />
           </div>
           <div className="mb-3">
-            <label className="form-label">Nhập lại mật khẩu</label>
+            <label className="form-label">Confirm Password</label>
             <input name="confirm" type="password" className="form-control" value={form.confirm} onChange={handleChange} required />
           </div>
-          <button type="submit" className="btn btn-success">Đăng ký</button>
+          <button type="submit" className="btn btn-success">Sign Up</button>
         </form>
-        <p className="mt-3">Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
+        <p className="mt-3">Already have an account? <a href="/login">Login</a></p>
       </div>
       <Footer />
     </>

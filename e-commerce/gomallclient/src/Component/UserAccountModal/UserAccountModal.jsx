@@ -37,14 +37,14 @@ const UserAccountModal = ({ isOpen, onClose, position }) => {
               onClick={() => handleNavigate('/signin')}
             >
               <i className="fas fa-sign-in-alt"></i>
-              Đăng nhập
+              Login
             </button>
             <button 
               className="dropdown-btn"
               onClick={() => handleNavigate('/signup')}
             >
               <i className="fas fa-user-plus"></i>
-              Đăng ký
+              Sign Up
             </button>
           </div>
         ) : (
@@ -65,32 +65,32 @@ const UserAccountModal = ({ isOpen, onClose, position }) => {
               onClick={() => handleNavigate('/user')}
             >
               <i className="fas fa-user"></i>
-              Tài khoản
+              Account
             </button>
             
             <button className="dropdown-btn" onClick={() => handleNavigate('/cart')}>
               <i className="fas fa-shopping-cart"></i>
-              Giỏ hàng
+              Cart
             </button>
             
             <button className="dropdown-btn">
               <i className="fas fa-heart"></i>
-              Yêu thích
+              Wishlist
             </button>
             
             <button className="dropdown-btn">
               <i className="fas fa-box"></i>
-              Đơn hàng
+              Orders
             </button>
             
             <button className="dropdown-btn" onClick = {() => handleNavigate('/user/settings')}>
               <i className="fas fa-cog"></i>
-              Cài đặt
+              Settings
             </button>
             
             <button className="dropdown-btn">
               <i className="fas fa-question-circle"></i>
-              Trợ giúp
+              Help
             </button>
             
             <div className="dropdown-divider"></div>
@@ -100,7 +100,7 @@ const UserAccountModal = ({ isOpen, onClose, position }) => {
               onClick={handleLogout}
             >
               <i className="fas fa-sign-out-alt"></i>
-              Đăng xuất
+              Logout
             </button>
           </div>
         )}

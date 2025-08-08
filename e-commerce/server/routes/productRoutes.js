@@ -4,6 +4,7 @@ import {
     getFlashSaleProducts,
     getTopProducts,
     getProductStats,
+    searchProducts,
     getProductById,
     createProduct,
     updateProduct,
@@ -11,8 +12,7 @@ import {
     getProductsBySeller,
     handleProductImageUpload
 } from '../controllers/productController.js';
-import { authenticateToken } from '../middleware/auth.js';
-import { checkRole } from '../middleware/auth.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -21,15 +21,16 @@ router.get('/', getAllProducts);
 router.get('/flash-sale', getFlashSaleProducts);
 router.get('/top-products', getTopProducts);
 router.get('/stats', getProductStats);
+router.get('/search', searchProducts);
 router.get('/:id', getProductById);
 
 // Protected routes (require authentication)
 router.use(authenticateToken);
 
 // Seller routes (require seller role)
-router.get('/seller/my-products', checkRole(['seller']), getProductsBySeller);
-router.post('/', checkRole(['seller']), handleProductImageUpload, createProduct);
-router.put('/:id', checkRole(['seller']), handleProductImageUpload, updateProduct);
-router.delete('/:id', checkRole(['seller']), deleteProduct);
+router.get('/seller/my-products', requireRole(['seller']), getProductsBySeller);
+router.post('/', requireRole(['seller']), handleProductImageUpload, createProduct);
+router.put('/:id', requireRole(['seller']), handleProductImageUpload, updateProduct);
+router.delete('/:id', requireRole(['seller']), deleteProduct);
 
 export default router;

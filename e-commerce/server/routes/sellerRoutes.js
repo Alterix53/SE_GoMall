@@ -1,16 +1,29 @@
 import express from 'express';
 import {
-  registerSeller,
-  getAllSellers,
-  approveSeller,
-  rejectSeller
-} from '../controllers/sellerController.js';
+    getAllSellers,
+    getSellerById,
+    approveSeller,
+    rejectSeller,
+    updateSeller,
+    deleteSeller,
+    getSellerByUserId
+} from '../controllers/sellerControllers.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/register', registerSeller);
-router.get('/', getAllSellers);
-router.patch('/approve/:id', approveSeller);
-router.patch('/reject/:id', rejectSeller);
+// Public routes (if any)
+router.get('/user/:userId', getSellerByUserId);
+
+// Protected routes - require authentication
+router.use(authenticateToken);
+
+// Admin only routes
+router.get('/', requireRole(['admin']), getAllSellers);
+router.get('/:id', requireRole(['admin']), getSellerById);
+router.patch('/:id/approve', requireRole(['admin']), approveSeller);
+router.patch('/:id/reject', requireRole(['admin']), rejectSeller);
+router.patch('/:id', requireRole(['admin']), updateSeller);
+router.delete('/:id', requireRole(['admin']), deleteSeller);
 
 export default router;

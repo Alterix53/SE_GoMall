@@ -38,17 +38,17 @@ class AdminService {
         const admin = await Admin.findOne({ username });
 
         if (!admin) {
-            throw new Error("Tên đăng nhập không tồn tại");
+            throw new Error("Username not found");
         }
 
         if (!admin.isActive) {
-            throw new Error("Tài khoản admin đã bị khóa");
+            throw new Error("Admin account is locked");
         }
 
         const isPasswordValid = await this.comparePassword(password, admin.password);
 
         if (!isPasswordValid) {
-            throw new Error("Mật khẩu không đúng");
+            throw new Error("Incorrect password");
         }
 
         // Generate token
@@ -284,7 +284,7 @@ class AdminService {
         });
 
         if (existingUser) {
-            throw new Error("Tên đăng nhập hoặc email đã tồn tại");
+            throw new Error("Username or email already exists");
         }
 
         // Hash password
@@ -314,7 +314,7 @@ class AdminService {
         const user = await User.findById(userId);
 
         if (!user) {
-            throw new Error("Người dùng không tồn tại");
+            throw new Error("User not found");
         }
 
         // Remove sensitive fields from update
@@ -336,12 +336,12 @@ class AdminService {
         const user = await User.findById(userId);
 
         if (!user) {
-            throw new Error("Người dùng không tồn tại");
+            throw new Error("User not found");
         }
 
         await User.findByIdAndDelete(userId);
 
-        return { message: "Xóa người dùng thành công" };
+        return { message: "User deleted successfully" };
     }
 
     // User Management Services
