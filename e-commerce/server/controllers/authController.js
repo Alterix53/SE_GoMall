@@ -218,17 +218,11 @@ export const login = async (req, res) => {
         }
 
         const { email, username, password } = req.body;
-
-        // Ưu tiên: nếu cả email và username đều được gửi thì thử khớp theo CẢ HAI; nếu chỉ có một thì dùng một
-        let findQuery = null;
-        if (email && username) {
-            findQuery = { $or: [{ email }, { username }] };
-        } else if (email) {
-            findQuery = { email };
-        } else if (username) {
-            findQuery = { username };
-        }
-        const user = await User.findOne(findQuery);
+        const identifier = (email || username || '').trim();
+      
+        const user = await User.findOne({
+          $or: [{ email: identifier }, { username: identifier }]
+        });
         if (!user) {
             return res.status(401).json({
                 success: false,

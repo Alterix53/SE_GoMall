@@ -20,7 +20,7 @@ function ManageUserPage() {
       setLoading(true);
       setError(null);
       try {
-        const adminToken = localStorage.getItem('adminToken');
+        const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!adminToken) throw new Error('Admin token not found');
         const params = {
           page: currentPage,

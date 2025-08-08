@@ -84,6 +84,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(userData));
         // Giữ tương thích với các chỗ legacy đang kiểm tra khóa này
         localStorage.setItem('isLoggedIn', 'true');
+        // Nếu trước đó có adminToken (đăng nhập admin), xóa đi để tránh gây nhiễu
+        localStorage.removeItem('adminToken');
         
         // Cập nhật state
         setToken(newToken);
@@ -109,10 +111,46 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Đăng nhập ADMIN
+  const loginAdmin = async (username, password) => {
+    try {
+      // Admin API chỉ chấp nhận username + password
+      const resp = await apiService.post('/admin/login', { username, password });
+      if (resp?.data?.data) {
+        const { token: newToken, admin } = resp.data.data;
+        const adminUser = {
+          id: admin?._id || admin?.id,
+          username: admin?.username,
+          email: admin?.email,
+          role: 'admin',
+        };
+
+        // Lưu token và user (dùng chung key để ProtectedRoute hoạt động thống nhất)
+        localStorage.setItem('token', newToken);
+        // Lưu thêm adminToken cho các màn admin đang dùng key riêng
+        localStorage.setItem('adminToken', newToken);
+        localStorage.setItem('user', JSON.stringify(adminUser));
+        localStorage.setItem('isLoggedIn', 'true');
+
+        setToken(newToken);
+        setUser(adminUser);
+
+        return { success: true, user: adminUser };
+      }
+
+      const message = resp?.data?.message || 'Đăng nhập admin thất bại';
+      return { success: false, message };
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Đăng nhập admin thất bại';
+      return { success: false, message };
+    }
+  };
+
   // Đăng xuất
   const logout = () => {
     // Xóa token và user khỏi localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('adminToken');
     localStorage.removeItem('user');
     localStorage.removeItem('isLoggedIn');
     
@@ -152,6 +190,7 @@ export const AuthProvider = ({ children }) => {
     token,
     loading,
     login,
+    loginAdmin,
     logout,
     isAuthenticated,
     getToken,

@@ -117,7 +117,7 @@ npm run dev
 - **Username**: admin
 - **Password**: admin123
 - **Email**: admin@gomall.com
-- **Role**: super_admin
+- **Role**: admin
 
 ### 3. Sử dụng API
 ```javascript

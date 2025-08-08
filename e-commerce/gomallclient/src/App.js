@@ -27,6 +27,7 @@ import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
 import HeaderNavAdmin from "./Component/Admin/HeaderNavAdmin";
+import AdminLogin from './Component/Admin/AdminLogin';
 
 // Import các component Auth
 import LoginPage from './Component/Login/login';
@@ -50,12 +51,12 @@ import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
-  const hideLayout = ['/login', '/signup'].includes(location.pathname);
+  const hideLayout = ['/login', '/signup', '/admin/login'].includes(location.pathname);
   return (
     <>
-      <Navbar />
+      {!hideLayout && <Navbar />}
       {children}
-      <Footer />
+      {!hideLayout && <Footer />}
     </>
   );
 };
@@ -103,6 +104,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signin" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
                 
@@ -139,7 +141,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/flash-sale" element={<FlashSale />} />
                 <Route path="/top-products" element={<TopProduct />} />
-                <Route path="/register-seller" element={<RegisterSeller />} />
+                <Route path="/registerSeller" element={<RegisterSeller />} />
                 
                 {/* Category routes - sử dụng Navbar và Footer */}
                 <Route path="/category/*" element={<CategoryList />} />

@@ -45,30 +45,27 @@ const Navbar = () => {
         {/* Main Navbar */}
         <div className="navbar-main">
           <div className="container">
-            <div className="navbar-content">
+            <div className="navbar-content d-flex align-items-center justify-content-between">
               {/* Logo */}
               <Link to="/" className="logo">
                 <div className="logo-icon">G</div>
                 <span className="logo-text">GoMall</span>
               </Link>
-              {/* Search Bar */} 
-                {/* <form className="search-form" onSubmit={handleSearch}>
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm sản phẩm, thương hiệu..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
-                  />
-                  <button type="submit" className="search-btn">
-                    <i className="fas fa-search"></i>
-                  </button>
-                </form> */}
-                {/* Minh comment */}
-              <SearchBar />  
-                {/* Minh bổ sung */}
+              
+              {/* Shipping Info - moved to right of logo */}
+              <div className="shipping-info">
+                <span>Free shipping for orders over 150k</span>
+                <span>•</span>
+                <span>24/7 Support</span>
+              </div>
+              
+              {/* Search Bar - centered and longer */}
+              <div className="search-container">
+                <SearchBar /> {/* Minh bổ sung */}
+              </div>
+              
               {/* Navigation Icons */}
-              <div className="nav-icons">
+              <div className="nav-icons justify-content-end">
                 <div className="nav-icon">
                   <img
                       src="/images/bell.png"
@@ -97,7 +94,7 @@ const Navbar = () => {
                   <span>Become a Seller</span>
                 </div>
                 <Link to={isAuthenticated() ? "/cart" : "/signin" }>
-                <div className="nav-icon">
+                <div className="nav-icon justify-content-end">
                   <img
                       src="/images/cart.png"
                       alt="Cart"
@@ -113,7 +110,7 @@ const Navbar = () => {
                 </Link>
               
                 <div 
-                  className="nav-icon" 
+                  className="nav-icon justify-content-end" 
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     setModalPosition({
@@ -145,33 +142,6 @@ const Navbar = () => {
                 <i className="fas fa-bars"></i>
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="navbar-links">
-          <div className="container">
-            <nav className="nav-menu">
-              <Link
-                  to="/"
-                  className={`nav-link ${isActive("/") ? "active" : ""}`}
-              >
-                Home
-              </Link>
-              <Link
-                  to="/flash-sale"
-                  className={`nav-link ${isActive("/flash-sale") ? "active" : ""}`}
-              >
-                Flash Sale
-              </Link>
-              <Link
-                  to="/top-products"
-                  className={`nav-link ${isActive("/top-products") ? "active" : ""}`}
-              >
-                Top Products
-              </Link>
-              
-            </nav>
           </div>
         </div>
 

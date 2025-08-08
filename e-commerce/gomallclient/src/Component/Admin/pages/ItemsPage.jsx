@@ -50,7 +50,7 @@ function ItemsPage() {
       setError(null);
       console.log('[Product API] Bắt đầu fetch danh sách sản phẩm...', { status: activeFilter, search: searchTerm, page: currentPage });
       try {
-        const adminToken = localStorage.getItem('adminToken');
+        const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!adminToken) throw new Error('Admin token not found');
         const params = {
           page: currentPage,

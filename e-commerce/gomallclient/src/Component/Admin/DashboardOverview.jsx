@@ -31,7 +31,7 @@ function DashboardOverview() {
                 setError(null);
 
                 // Get admin token from localStorage or context
-                const adminToken = localStorage.getItem('adminToken');
+                const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
                 if (!adminToken) {
                     throw new Error('Admin token not found');
                 }

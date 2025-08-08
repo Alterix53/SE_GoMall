@@ -11,6 +11,7 @@ import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import './models/User.js';
@@ -132,6 +133,7 @@ app.use("/api/cart", cartRoutes);  // Thêm prefix /api/cart
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
 
 // app.use("/api/auth", userRoutes); // Mount auth routes trước
 

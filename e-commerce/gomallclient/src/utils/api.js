@@ -27,13 +27,27 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
+      const url = error.config?.url || '';
+      // Đừng redirect nếu là gọi login user
+      if (url.includes('/auth/login')) {
+        return Promise.reject(error);
+      }
       // Token không hợp lệ hoặc hết hạn
+      let currentUser = null;
+      try {
+        currentUser = JSON.parse(localStorage.getItem('user'));
+      } catch {}
+
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('isLoggedIn');
-      
-      // Redirect về trang login
-      window.location.href = '/login';
+
+      // Redirect phù hợp theo role trước đó
+      if (currentUser?.role === 'admin') {
+        window.location.href = '/admin/login';
+      } else {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
@@ -105,7 +119,8 @@ export const getUserFromToken = (token) => {
 };
 
 // Admin API functions - sử dụng fetch API
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Đồng bộ base URL với server hiện tại (8080) để tránh 404 do sai cổng
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 export const adminAPI = {
     // Admin authentication

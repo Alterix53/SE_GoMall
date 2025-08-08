@@ -32,7 +32,7 @@ async function createDefaultAdmin() {
             password: hashedPassword,
             fullName: 'System Administrator',
             phoneNumber: '0123456789',
-            role: 'super_admin',
+            role: 'admin',
             isActive: true,
             permissions: [
                 'user_management',

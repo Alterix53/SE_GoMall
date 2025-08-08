@@ -33,8 +33,7 @@ const adminSchema = new mongoose.Schema({
     },
     role: { 
         type: String, 
-        default: 'admin',
-        enum: ['admin', 'super_admin']
+        default: 'admin'
     },
     isActive: { 
         type: Boolean, 
@@ -79,7 +78,8 @@ adminSchema.pre('save', function(next) {
 
 // Method to check if admin has specific permission
 adminSchema.methods.hasPermission = function(permission) {
-    return this.permissions.includes(permission) || this.role === 'super_admin';
+    // Single admin role has full permissions
+    return true;
 };
 
 // Method to get admin info without password

@@ -26,7 +26,7 @@ function ManageSellerPage() {
       setError(null);
       console.log('[Seller API] Bắt đầu fetch danh sách seller...', { status: activeFilter, search: searchTerm });
       try {
-        const adminToken = localStorage.getItem('adminToken');
+        const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!adminToken) throw new Error('Admin token not found');
         const params = {
           status: activeFilter !== 'all' ? activeFilter : '',

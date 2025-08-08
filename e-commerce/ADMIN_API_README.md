@@ -58,7 +58,7 @@ Response:
       "username": "admin",
       "email": "admin@gomall.com",
       "fullName": "System Administrator",
-      "role": "super_admin",
+      "role": "admin",
       "permissions": [...]
     },
     "token": "jwt-token-here"

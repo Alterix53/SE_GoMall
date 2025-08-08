@@ -18,8 +18,10 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from API when user is authenticated
   const loadCartFromAPI = async () => {
-    if (!isAuthenticated()) {
-      // Fallback to localStorage for non-authenticated users
+    const currentUser = getCurrentUser();
+    if (!isAuthenticated() || currentUser?.role === 'admin') {
+      // Skip API call for guest or admin accounts
+      // Fallback to localStorage for guest users
       const saved = localStorage.getItem("cartItems");
       setCartItems(saved ? JSON.parse(saved) : []);
       return;
@@ -56,8 +58,9 @@ export const CartProvider = ({ children }) => {
 
   // Save cart to API
   const saveCartToAPI = async (items) => {
-    if (!isAuthenticated()) {
-      // Save to localStorage for non-authenticated users
+    const currentUser = getCurrentUser();
+    if (!isAuthenticated() || currentUser?.role === 'admin') {
+      // Save to localStorage for guest users or ignore for admin
       localStorage.setItem("cartItems", JSON.stringify(items));
       return;
     }
