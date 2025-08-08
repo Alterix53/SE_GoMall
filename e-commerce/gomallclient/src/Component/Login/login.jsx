@@ -6,47 +6,50 @@ import Footer from '../Footer/Footer';
 import '../Login/login.css';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+    setFieldErrors({});
 
-    // Lấy danh sách người dùng từ localStorage
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const result = await login(usernameOrEmail, password);
+    setLoading(false);
 
-    // Tìm user có thông tin trùng khớp
-    const account = users.find(
-      (user) => user.username === username && user.password === password
-    );
-
-    if (!account) {
-      alert('Wrong username or password!');
+    if (!result.success) {
+      setError(result.message || 'Wrong username or password!');
+      // Parse field-specific errors
+      const fe = {};
+      (result.errors || []).forEach((e) => {
+        if (e.path) {
+          // Map chung cho trường hợp oneOf trả message tổng quát
+          const key = ['email','username'].includes(e.path) ? (usernameOrEmail.includes('@') ? 'email' : 'username') : e.path;
+          fe[key] = e.msg || e.message || 'Invalid value';
+        }
+      });
+      setFieldErrors(fe);
       return;
     }
 
-    // Lưu trạng thái đăng nhập
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('username', account.username);
-    localStorage.setItem('userRole', account.role);
-
-    // Điều hướng theo vai trò
-    if (account.role === 'seller') {
-      if (account.sellerStatus === 'approved') {
-        navigate('/seller-dashboard');
+    const account = result.user;
+    if (account?.role === 'seller' || account?.sellerInfo) {
+      if (account?.sellerInfo?.status === 'approved' || account?.sellerStatus === 'approved') {
+        navigate('/seller');
       } else {
         alert('Your seller account has not been approved yet.');
         return;
       }
     } else {
-      // buyer mặc định
-      navigate('/home'); // hoặc /marketplace tùy hệ thống
+      navigate('/');
     }
   };
 
@@ -63,14 +66,20 @@ const LoginPage = () => {
         
         <form onSubmit={handleLogin}>
           <div className="mb-3">
-            <label className="form-label">Username</label>
+            <label className="form-label">Username or Email</label>
             <input
               type="text"
               className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={usernameOrEmail}
+              onChange={(e) => setUsernameOrEmail(e.target.value)}
               required
             />
+            {fieldErrors.username && (
+              <div className="text-danger mt-1 small">{fieldErrors.username}</div>
+            )}
+            {fieldErrors.email && (
+              <div className="text-danger mt-1 small">{fieldErrors.email}</div>
+            )}
           </div>
 
           <div className="mb-3">
@@ -82,6 +91,9 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {fieldErrors.password && (
+              <div className="text-danger mt-1 small">{fieldErrors.password}</div>
+            )}
           </div>
 
           <button 

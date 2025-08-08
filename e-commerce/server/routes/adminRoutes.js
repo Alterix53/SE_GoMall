@@ -1,16 +1,5 @@
 import express from "express";
 import * as adminController from "../controllers/adminController.js";
-<<<<<<< HEAD
-
-const router = express.Router();
-
-router.get("/users", adminController.getAllUsers);
-router.post("/users", adminController.createUser);
-router.put("/users/:id", adminController.updateUser);
-router.delete("/users/:id", adminController.deleteUser);
-
-
-=======
 import { authenticateAdmin, adminRateLimit } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -72,6 +61,5 @@ router.delete("/categories/:id", authenticateAdmin, adminController.deleteCatego
 router.get("/system/logs", authenticateAdmin, adminController.getSystemLogs);
 router.get("/system/backup", authenticateAdmin, adminController.createBackup);
 router.post("/system/maintenance", authenticateAdmin, adminController.toggleMaintenanceMode);
->>>>>>> Admin_Dashboard
 
 export default router;

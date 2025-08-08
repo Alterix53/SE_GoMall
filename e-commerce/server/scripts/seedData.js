@@ -1,274 +1,204 @@
+// <DOCUMENT filename="seedData.js">
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Import models
-import Category from '../models/Category.js';
-import Product from '../models/Product.js';
-import User from '../models/User.js';
-import Seller from '../models/Seller.js';
-import '../models/Order.js';
-import '../models/Cart.js';
-import '../models/Review.js';
-import '../models/Payment.js';
-
-const MONGODB_URI = "mongodb://localhost:27017/GoMall";
-
 const connectDB = async () => {
     try {
-        console.log("🔌 Connecting to MongoDB...");
+        console.log("Attempting to connect with MONGODB_URI:", MONGODB_URI);
         await mongoose.connect(MONGODB_URI);
-        console.log("✅ MongoDB Connected successfully");
+        console.log("MongoDB Connected for seeding");
     } catch (error) {
-        console.error("❌ Database connection failed:", error);
+        console.error("Database connection failed:", error);
         process.exit(1);
     }
 };
 
 const readJSON = (fileName) => {
     const filePath = path.join(__dirname, '../../data/', fileName);
-    console.log(`📁 Reading file: ${filePath}`);
-    
+    console.log(`Debug: Looking for file at: ${filePath}`);
     if (!fs.existsSync(filePath)) {
-        console.error(`❌ File not found: ${filePath}`);
+        console.error(`Debug: File not found at: ${filePath}`);
         return [];
     }
-    
     try {
         const jsonData = fs.readFileSync(filePath, 'utf8');
         return JSON.parse(jsonData);
     } catch (error) {
-        console.error(`❌ Error reading ${fileName}:`, error);
+        console.error(`Error reading ${fileName}:`, error);
         return [];
     }
 };
 
+const processImageUrl = async (url, filename) => {
+    if (!url) {
+        console.log("No URL provided, using fallback image");
+        return 'https://source.unsplash.com/random/400x300';
+    }
+    if (url.includes('amazon.de') || url.includes('mlb.com') || url.includes('comsenz.com') || url.includes('naver.com') || url.includes('ebay.co.uk') || url.includes('huffingtonpost.com')) {
+        console.log(`Replaced fake URL with fallback: https://source.unsplash.com/random/400x300`);
+        return 'https://source.unsplash.com/random/400x300';
+    }
+    return url;
+};
+
 const seedCategories = async () => {
-    console.log("📂 Seeding categories...");
     const categoriesData = readJSON('Categories.json');
-    
+    console.log("Raw categories data:", categoriesData);
     if (!categoriesData.length) {
-        console.warn("⚠️ No categories data found in Categories.json");
+        console.warn("No categories data found in Categories.json");
         return [];
     }
 
-    // Clear existing categories
+    const mappedCategories = await Promise.all(categoriesData.map(async cat => {
+        const imagePath = cat.image ? await processImageUrl(cat.image, `category_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`) : 'https://source.unsplash.com/random/400x300';
+        return {
+            categoryName: cat.categoryName || 'Default Category',
+            slug: cat.slug || `default-slug-${Math.random().toString(36).slice(2)}`,
+            description: cat.description || '',
+            image: imagePath,
+            icon: cat.icon || 'fas fa-default-icon',
+            parentID: null
+        };
+    }));
+
     await Category.deleteMany({});
-    
-    // Create categories
-    const createdCategories = await Category.insertMany(categoriesData);
-    console.log(`✅ Created ${createdCategories.length} categories`);
-    
-    // Log category names
-    createdCategories.forEach(cat => {
-        console.log(`   - ${cat.categoryName}`);
-    });
-    
+    const createdCategories = await Category.insertMany(mappedCategories);
+
+    for (let i = 0; i < categoriesData.length; i++) {
+        if (categoriesData[i].parentID) {
+            const parentIndex = categoriesData[i].parentID - 1;
+            if (parentIndex >= 0 && parentIndex < createdCategories.length) {
+                await Category.updateOne(
+                    { _id: createdCategories[i]._id },
+                    { parentID: createdCategories[parentIndex]._id }
+                );
+            }
+        }
+    }
+
+    console.log("Categories seeded successfully:", createdCategories.map(c => ({ categoryName: c.categoryName, slug: c.slug, _id: c._id })));
     return createdCategories;
 };
 
 const seedUsers = async () => {
-    console.log("👥 Seeding users...");
     const usersData = readJSON('users.json');
-    
+    console.log("Raw users data:", usersData);
     if (!usersData.length) {
-        console.warn("⚠️ No users data found in users.json, creating default users");
-        
-        // Create default users if no data exists
-        const defaultUsers = [
-            {
-                username: 'admin',
-                password: 'admin123',
-                email: 'admin@gomall.com',
-                role: 'admin',
-                fullName: 'Admin User',
-                isActive: true
-            },
-            {
-                username: 'user1',
-                password: 'user123',
-                email: 'user1@gomall.com',
-                role: 'user',
-                fullName: 'Regular User',
-                isActive: true
-            }
-        ];
-        
-        await User.deleteMany({});
-        const createdUsers = await User.insertMany(defaultUsers);
-        console.log(`✅ Created ${createdUsers.length} default users`);
-        return { allUsers: createdUsers, sellers: [] };
+        console.warn("No users data found in users.json");
+        return { allUsers: [], sellers: [] };
     }
 
-    // Clear existing users
+    const mappedUsers = usersData.map(user => ({
+        username: user.username || `default_user_${Math.random().toString(36).slice(2)}`,
+        password: user.password || 'defaultpassword123',
+        email: user.email || `default_${Math.random().toString(36).slice(2)}@example.com`,
+        role: user.role || 'user',
+        fullName: user.fullName || '',
+        phoneNumber: user.phoneNumber || '',
+        address: user.address || '',
+        shop: user.role.includes('seller') ? {
+            shopID: user.shop?.shopID || new mongoose.Types.ObjectId(),
+            name: user.shop?.name || 'Default Shop',
+            address: user.shop?.address || '',
+            isActive: user.shop?.isActive !== false
+        } : null,
+        isActive: user.isActive !== false,
+        profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300'
+    }));
+
     await User.deleteMany({});
-    
-    // Filter out sellers from users data
-    const regularUsers = usersData.filter(u => !u.role.includes('seller'));
-    const sellerUsers = usersData.filter(u => u.role.includes('seller'));
-    
-    // Create regular users
-    const createdUsers = await User.insertMany(regularUsers);
-    console.log(`✅ Created ${createdUsers.length} regular users`);
-    
-    // Create seller users and seller profiles
-    const createdSellers = [];
-    for (const sellerData of sellerUsers) {
-        // Create user account for seller
-        const userData = { ...sellerData };
-        delete userData.shop; // Remove shop data from user
-        userData.role = 'user'; // Set role as user
-        
-        const sellerUser = await User.create(userData);
-        
-        // Create seller profile
-        const sellerProfile = await Seller.create({
-            userID: sellerUser._id,
-            businessName: sellerData.shop?.name || 'Unknown Store',
-            businessAddress: sellerData.shop?.address || '',
-            businessPhone: sellerData.phoneNumber || '',
-            businessEmail: sellerData.email,
-            status: 'approved'
-        });
-        
-        createdSellers.push(sellerProfile);
-    }
-    
-    console.log(`✅ Created ${createdSellers.length} seller profiles`);
-    return { allUsers: [...createdUsers, ...sellerUsers.map(s => ({ ...s, role: 'user' }))], sellers: createdSellers };
+    const createdUsers = await User.insertMany(mappedUsers);
+    const createdSellers = createdUsers.filter(u => u.role.includes('seller'));
+    console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role, _id: u._id, shop: u.shop })));
+    console.log("Sellers extracted:", createdSellers.map(s => ({ username: s.username, _id: s._id, shop: s.shop })));
+    return { allUsers: createdUsers, sellers: createdSellers };
 };
 
 const seedProducts = async (createdCategories, createdSellers) => {
-    console.log("📦 Seeding products...");
     const productsData = readJSON('products.json');
-    
+    console.log("Raw products data:", productsData);
     if (!productsData.length) {
-        console.warn("⚠️ No products data found in products.json");
+        console.warn("No products data found in products.json");
         return [];
     }
 
-    // Clear existing products
-    await Product.deleteMany({});
-    
-    // Create category maps
-    const categoryMap = {};
-    const categoryNameMap = {};
-    createdCategories.forEach((cat, index) => {
-        categoryMap[index + 1] = cat._id;
-        categoryNameMap[cat.categoryName] = cat._id;
-    });
-
-    // Transform products data
-    console.log("🔄 Transforming products data...");
-    const transformedProducts = productsData.map((product, index) => {
-        // Try to find category by name first, then by ID, then fallback to first category
-        const categoryID = 
-            (product.categoryName && categoryNameMap[product.categoryName]) ||
-            categoryMap[product.categoryID] ||
-            createdCategories[0]?._id ||
-            new mongoose.Types.ObjectId();
-        
-        // Log if category not found by ID
-        if (!categoryMap[product.categoryID] && product.categoryID) {
-            console.log(`⚠️ Category ID ${product.categoryID} not found for product "${product.name}", using fallback category`);
-        }
-        const sellerID = createdSellers.length > 0 
-            ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id 
+    const mappedProducts = await Promise.all(productsData.map(async product => {
+        console.log("Processing product:", product);
+        const imagePaths = product.images_url ? await Promise.all(product.images_url.split(',').map(async (url, index) => ({
+            url: await processImageUrl(url, `product_${product.name}_${index}_${Date.now()}_${Math.random().toString(36).substring(2)}.jpg`),
+            alt: product.images_alt || 'Product Image',
+            isPrimary: index === 0
+        }))) : [{ url: 'https://source.unsplash.com/random/400x300', alt: 'Default', isPrimary: true }];
+        const categoryIndex = product.categoryID - 1;
+        const categoryID = createdCategories.length > 0 && categoryIndex >= 0 && categoryIndex < createdCategories.length 
+            ? createdCategories[categoryIndex]._id 
             : new mongoose.Types.ObjectId();
-
+        const sellerID = createdSellers.length > 0 ? createdSellers[Math.floor(Math.random() * createdSellers.length)]._id : new mongoose.Types.ObjectId();
         return {
-            name: product.name,
-            slug: product.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + `-${index + 1}`,
-            sku: `SKU-${String(index + 1).padStart(6, '0')}`,
-            price: {
-                original: product.price_original || 0,
-                sale: product.price_sale || product.price_original || 0
-            },
-            description: product.description || `${product.name} - High quality product`,
+            name: product.name || 'Default Product Name',
+            slug: product.slug || `default-slug-${Math.random().toString(36).slice(2)}`,
+            description: product.description || '',
+            shortDescription: product.shortDescription || '',
+            sku: product.sku || `SKU-${Math.random().toString(36).slice(2).toUpperCase()}`,
+            brand: product.brand || '',
             categoryID: categoryID,
             sellerID: sellerID,
-            images: [{
-                url: product.images_url || `/images/default-product.jpg`,
-                alt: product.name,
-                isPrimary: true
-            }],
-            inventory: {
-                quantity: product.inventory_quantity || 100,
-                lowStockThreshold: product.inventory_lowStockThreshold || 10
-            },
-            tags: product.tags ? product.tags.split(', ').map(tag => tag.trim()) : [],
-            brand: product.brand || product.name.split(' ')[0], // Extract brand from product name if not provided
-            rating: {
-                average: Math.floor(Math.random() * 2) + 4, // 4-5 stars
-                count: product.rating_count || 0
-            },
-            sold: product.sold || 0,
-            views: product.views || 0,
+            images: imagePaths,
+            price: { original: Number(product.price_original || 0), sale: Number(product.price_sale || 0) },
+            inventory: { quantity: Number(product.inventory_quantity || 0), lowStockThreshold: Number(product.inventory_lowStockThreshold || 10) },
+            specifications: product.specifications || [],
+            tags: product.tags ? product.tags.split(',') : [],
+            rating: { average: Number(product.rating_average || 0), count: Number(product.rating_count || 0) },
+            sold: Number(product.sold || 0),
+            views: Number(product.views || 0),
             isActive: product.isActive !== false,
             isFeatured: product.isFeatured || false,
             isFlashSale: product.isFlashSale || false,
-            flashSalePrice: product.flashSalePrice || null,
-            flashSaleEndDate: product.flashSaleEndDate ? new Date(product.flashSaleEndDate) : null
+            flashSalePrice: Number(product.flashSalePrice || (product.price_sale * 0.9) || 0),
+            flashSaleEndDate: new Date(product.flashSaleEndDate) || new Date('2025-07-30'), // Đảm bảo parse Date
+            createdAt: new Date()
         };
-    });
-
-    // Create products in batches
-    console.log("📦 Creating products...");
-    const batchSize = 100;
-    let createdProducts = 0;
-
-    for (let i = 0; i < transformedProducts.length; i += batchSize) {
-        const batch = transformedProducts.slice(i, i + batchSize);
-        await Product.insertMany(batch);
-        createdProducts += batch.length;
-        console.log(`✅ Created ${createdProducts}/${transformedProducts.length} products`);
-    }
-
-    console.log(`✅ Created ${createdProducts} products successfully`);
+    }));
+    console.log("Mapped products:", mappedProducts.map(p => ({
+        name: p.name,
+        categoryID: p.categoryID,
+        isFlashSale: p.isFlashSale,
+        flashSaleEndDate: p.flashSaleEndDate
+    })));
+    const validProducts = mappedProducts;
+    console.log("Valid products after filter:", validProducts);
+    await Product.deleteMany({});
+    const createdProducts = await Product.insertMany(validProducts);
+    console.log("Products seeded successfully:", createdProducts.map(p => ({
+        name: p.name,
+        _id: p._id,
+        isFlashSale: p.isFlashSale,
+        flashSaleEndDate: p.flashSaleEndDate ? p.flashSaleEndDate.toISOString() : null
+    })));
     return createdProducts;
 };
 
 const seedData = async () => {
     try {
-        console.log("🚀 Starting database seeding...");
-        
-        // Connect to database
         await connectDB();
 
-        // Seed categories
+        console.log("Seeding categories from JSON...");
         const createdCategories = await seedCategories();
 
-        // Seed users
+        console.log("Seeding users (including sellers) from JSON...");
         const { sellers: createdSellers } = await seedUsers();
 
-        // Seed products
-        const createdProducts = await seedProducts(createdCategories, createdSellers);
+        console.log("Seeding products from JSON...");
+        await seedProducts(createdCategories, createdSellers);
 
-        // Show summary
-        console.log("\n🎉 Database seeding completed successfully!");
-        console.log("📊 Summary:");
-        console.log(`   - Categories: ${createdCategories.length}`);
-        console.log(`   - Users: ${createdSellers.length} sellers`);
-        console.log(`   - Products: ${createdProducts}`);
-
-        // Show sample products
-        const sampleProducts = await Product.find().limit(5).populate('categoryID', 'categoryName');
-        console.log('\n📋 Sample products:');
-        sampleProducts.forEach(product => {
-            console.log(`   - ${product.name} (${product.categoryID?.categoryName || 'Unknown'}) - ${product.price.original.toLocaleString()}₫`);
-        });
-
-        console.log("\n✅ All data seeded successfully!");
+        console.log("Data seeded successfully!");
         process.exit(0);
     } catch (error) {
-        console.error("❌ Error seeding data:", error);
+        console.error("Error seeding data:", error.stack);
         process.exit(1);
     }
 };
 
-// Run the seeding process
 seedData();
+// </DOCUMENT>
