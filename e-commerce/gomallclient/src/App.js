@@ -4,7 +4,7 @@ import './App.css';
 
 import Cart from './Component/Cart/Cart';
 import CategoryList from './Component/Category/CategoryList';
-//import Navbar from './Component/Navbar/Navbar'; bị dư rồi
+import Navbar from './Component/Navbar/Navbar'; // bị dư rồi
 import SearchResult from "./SearchResult";    // Minh
 import SearchBar from './Component/SearchBar/SearchBar';    // Minh
 import ProductCard from './Component/ProductCard/ProductCard';    // Minh
@@ -53,7 +53,9 @@ const LayoutWrapper = ({ children }) => {
   const hideLayout = ['/login', '/signup'].includes(location.pathname);
   return (
     <>
+      <Navbar />
       {children}
+      <Footer />
     </>
   );
 };

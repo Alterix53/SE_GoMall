@@ -28,11 +28,14 @@ export const RenderProduct = ({ product }) => {
 
       <div className="product-image">
         <img
-          src={product.image || "/placeholder.svg?height=200&width=200&text=Product"}
+          src={product.image || "/images/default-product.jpg"}
           alt={product.name}
           onError={(e) => {
-            console.error("Image load error for:", product.name)
-            e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image"
+            console.error("Image load error for:", product.name, "falling back to default")
+            // Prevent infinite loop by checking if we're already using default image
+            if (e.target.src !== "/images/default-product.jpg") {
+              e.target.src = "/images/default-product.jpg"
+            }
           }}
         />
       </div>

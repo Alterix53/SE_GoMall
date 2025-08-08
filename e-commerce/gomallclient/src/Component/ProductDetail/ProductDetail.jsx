@@ -81,7 +81,18 @@ const ProductDetail = () => {
         {/* Left: Main image + thumbnails */}
         <div style={{ flex: 1, maxWidth: 400, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <div style={{ border: '1px solid #eee', borderRadius: 8, marginBottom: 16, aspectRatio: '1/1', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', width: '100%' }}>
-            <img src={mainImage || product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: 350, objectFit: 'contain' }} />
+            <img 
+              src={mainImage || product.image} 
+              alt={product.name} 
+              style={{ maxWidth: '100%', maxHeight: 350, objectFit: 'contain' }}
+              onError={(e) => {
+                console.error("Product detail image load error, falling back to default")
+                // Prevent infinite loop by checking if we're already using default image
+                if (e.target.src !== "/images/default-product.jpg") {
+                  e.target.src = "/images/default-product.jpg"
+                }
+              }}
+            />
           </div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 16 }}>
             {product.images.slice(0, 5).map((img, idx) => (
@@ -91,6 +102,13 @@ const ProductDetail = () => {
                 alt={`thumb-${idx}`}
                 style={{ width: 60, height: 60, objectFit: 'cover', border: (mainImage || product.image) === img ? '2px solid #333' : '1px solid #ccc', borderRadius: 6, cursor: 'pointer', background: '#fff' }}
                 onClick={() => setMainImage(img)}
+                onError={(e) => {
+                  console.error("Product detail thumbnail load error, falling back to default")
+                  // Prevent infinite loop by checking if we're already using default image
+                  if (e.target.src !== "/images/default-product.jpg") {
+                    e.target.src = "/images/default-product.jpg"
+                  }
+                }}
               />
             ))}
           </div>

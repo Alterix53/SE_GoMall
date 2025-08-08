@@ -74,7 +74,11 @@ const Navbar = () => {
                       src="/images/bell.png"
                       alt="Notifications"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Notifications</span>
                 </div>
@@ -84,7 +88,11 @@ const Navbar = () => {
                       src="/images/setting.png"
                       alt="Support"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Become a Seller</span>
                 </div>
@@ -94,7 +102,11 @@ const Navbar = () => {
                       src="/images/cart.png"
                       alt="Cart"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Cart</span>
                 </div>
@@ -115,7 +127,11 @@ const Navbar = () => {
                       src="/images/user.png"
                       alt="Account"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>{isAuthenticated() ? getCurrentUser()?.username || 'Account' : 'Account'}</span>
                 </div>
@@ -168,7 +184,11 @@ const Navbar = () => {
                       src="/images/user.png"
                       alt="Tài khoản"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Tài khoản</span>
                 </div>
@@ -177,7 +197,11 @@ const Navbar = () => {
                       src="/images/cart.png"
                       alt="Giỏ hàng"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Giỏ hàng</span>
                 </div>
@@ -186,7 +210,11 @@ const Navbar = () => {
                       src="/images/help.png"
                       alt="Hỗ trợ"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Hỗ trợ</span>
                 </div>
@@ -195,7 +223,11 @@ const Navbar = () => {
                       src="/images/bell.png"
                       alt="Thông báo"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        if (e.target.src !== "/images/default-product.jpg") {
+                          e.target.src = "/images/default-product.jpg"
+                        }
+                      }}
                   />
                   <span>Thông báo</span>
                 </div>
