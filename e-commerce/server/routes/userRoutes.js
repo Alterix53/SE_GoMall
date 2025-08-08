@@ -7,7 +7,7 @@ import {
     getUsersByRole,
     backupUsers
 } from '../controllers/userController.js';
-import { authenticateToken, checkRole } from '../middleware/auth.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -15,9 +15,9 @@ const router = express.Router();
 router.use(authenticateToken);
 
 // Admin routes
-router.get('/', checkRole(['admin']), getAllUsers);
-router.get('/role/:role', checkRole(['admin']), getUsersByRole);
-router.post('/backup', checkRole(['admin']), backupUsers);
+router.get('/', requireRole(['admin']), getAllUsers);
+router.get('/role/:role', requireRole(['admin']), getUsersByRole);
+router.post('/backup', requireRole(['admin']), backupUsers);
 
 // User routes (có thể là admin hoặc chính user đó)
 router.get('/:id', (req, res, next) => {
@@ -45,6 +45,6 @@ router.put('/:id', (req, res, next) => {
 }, updateUser);
 
 // Chỉ admin mới có thể xóa user
-router.delete('/:id', checkRole(['admin']), deleteUser);
+router.delete('/:id', requireRole(['admin']), deleteUser);
 
 export default router;

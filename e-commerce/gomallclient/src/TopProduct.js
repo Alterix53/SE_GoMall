@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
+import Header from "./Component/Header/Header.jsx";
 import "./TopProduct.css";
 
 const TopProduct = () => {
@@ -39,7 +40,7 @@ const TopProduct = () => {
           name: product.name || "Unknown Product",
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
-                        image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
+          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
           rating: product.rating?.average || 0,
           sold: product.sold || 0,
           discount: product.price?.original && product.price?.sale
@@ -52,6 +53,108 @@ const TopProduct = () => {
         setProducts(mappedProducts);
       } catch (err) {
         console.error("Error fetching top products:", err.message);
+        // Thêm dữ liệu mẫu khi API không hoạt động
+        const sampleProducts = {
+          bestseller: [
+            {
+              id: "1",
+              name: "iPhone 15 Pro Max",
+              price: 28794591,
+              originalPrice: 35000000,
+              image: "/images/phone1.jpg",
+              rating: 4.5,
+              sold: 338,
+              rank: 1
+            },
+            {
+              id: "2",
+              name: "MacBook Pro 16-inch M3 Max",
+              price: 49607734,
+              originalPrice: 65000000,
+              image: "/images/laptop1.jpg",
+              rating: 4.8,
+              sold: 1029,
+              rank: 2
+            },
+            {
+              id: "3",
+              name: "Samsung Galaxy S24 Ultra",
+              price: 26270130,
+              originalPrice: 32000000,
+              image: "/images/phone2.jpg",
+              rating: 4.6,
+              sold: 836,
+              rank: 3
+            }
+          ],
+          trending: [
+            {
+              id: "4",
+              name: "Nike Air Jordan 1 Retro High OG",
+              price: 3307175,
+              originalPrice: 4500000,
+              image: "/images/shoes1.jpg",
+              rating: 4.7,
+              sold: 485,
+              rank: 1
+            },
+            {
+              id: "5",
+              name: "Gucci Marmont Small Shoulder Bag",
+              price: 23896051,
+              originalPrice: 28000000,
+              image: "/images/bag1.jpg",
+              rating: 4.9,
+              sold: 623,
+              rank: 2
+            },
+            {
+              id: "6",
+              name: "Adidas Ultraboost 22",
+              price: 3249106,
+              originalPrice: 3800000,
+              image: "/images/shoes2.jpg",
+              rating: 4.4,
+              sold: 705,
+              rank: 3
+            }
+          ],
+          hot: [
+            {
+              id: "7",
+              name: "Dell XPS 15 9530",
+              price: 36419576,
+              originalPrice: 42000000,
+              image: "/images/laptop2.jpg",
+              rating: 4.6,
+              sold: 181,
+              rank: 1
+            },
+            {
+              id: "8",
+              name: "Nike Air Max 270",
+              price: 2477106,
+              originalPrice: 3200000,
+              image: "/images/shoes3.jpg",
+              rating: 4.3,
+              sold: 144,
+              rank: 2
+            },
+            {
+              id: "9",
+              name: "Philips Air Fryer HD9654/90",
+              price: 4014673,
+              originalPrice: 4500000,
+              image: "/images/appliance1.jpg",
+              rating: 4.5,
+              sold: 505,
+              rank: 3
+            }
+          ]
+        };
+        
+        const currentTabProducts = sampleProducts[activeTab] || sampleProducts.bestseller;
+        setProducts(currentTabProducts);
       } finally {
         setLoading(false);
       }
@@ -80,62 +183,63 @@ const TopProduct = () => {
 
   return (
     <div className="top-product-page">
-      {/* Header */}
-      <div className="page-header">
+      {/* GoMall Header */}
+      <Header />
+
+      {/* Top Products Content */}
+      <div className="top-product-content">
         <div className="container">
-          <div className="header-content">
-            <h1 className="page-title">
-              <i className="fas fa-crown"></i>
-              TOP PRODUCTS
-            </h1>
-            <p className="page-subtitle">The best-selling and most loved products</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="container">
-        {/* Tabs */}
-        <div className="tabs-container">
-          <div className="tabs-list">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <i className={tab.icon}></i>
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="tab-content">
-          <div className="section-header">
-            <h2 className="section-title">
-              <i className={tabs.find((t) => t.id === activeTab)?.icon}></i>
-              {getTabTitle().title}
-              <span className="section-badge" style={{ backgroundColor: getTabTitle().color }}>
-                {getTabTitle().badge}
-              </span>
-            </h2>
+          {/* Page Header */}
+          <div className="page-header">
+            <div className="header-content">
+              <h1 className="page-title">
+                <i className="fas fa-crown"></i>
+                TOP PRODUCTS
+              </h1>
+              <p className="page-subtitle">The best-selling and most loved products</p>
+            </div>
           </div>
 
-          <div className="products-grid">
+          {/* Tabs */}
+          <div className="tabs-container">
+            <div className="tabs-list">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <i className={tab.icon}></i>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Products Section */}
+          <div className="products-section">
             {loading ? (
-              <p>Loading products...</p>
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading top products...</p>
+              </div>
             ) : products.length > 0 ? (
-              getProductsByTab().map((product, index) => (
-                <div key={product.id || index} className="product-wrapper">
-                  {activeTab === "bestseller" && product.rank && product.rank <= 3 && (
-                    <div className={`rank-badge rank-${product.rank}`}>#{product.rank}</div>
-                  )}
-                  <RenderProduct product={product} />
-                </div>
-              ))
+              <div className="products-grid">
+                {getProductsByTab().map((product) => (
+                  <div key={product.id} className="product-wrapper">
+                    {product.rank <= 3 && (
+                      <div className="rank-badge" style={{ backgroundColor: getTabTitle().color }}>
+                        #{product.rank}
+                      </div>
+                    )}
+                    <RenderProduct product={product} />
+                  </div>
+                ))}
+              </div>
             ) : (
-              <p>No products to display.</p>
+              <div className="no-products">
+                <p>No top products available at the moment.</p>
+              </div>
             )}
           </div>
         </div>

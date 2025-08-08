@@ -18,6 +18,7 @@ import ProductDetail from './Component/ProductDetail/ProductDetail';
 import Home from './Home';
 import FlashSale from './Flash_sale';
 import TopProduct from './TopProduct';
+import TodaySuggestions from './TodaySuggestions';
 
 // Import các component Admin
 import SidebarNav from './Component/Admin/SidebarNav';
@@ -54,7 +55,6 @@ const LayoutWrapper = ({ children }) => {
   const hideLayout = ['/login', '/signup'].includes(location.pathname);
   return (
     <>
-      {!hideLayout && <Navbar />}
       {children}
       {!hideLayout && <Footer />}
     </>
@@ -136,6 +136,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/flash-sale" element={<FlashSale />} />
                 <Route path="/top-products" element={<TopProduct />} />
+                <Route path="/today-suggestions" element={<TodaySuggestions />} />
                 <Route path="/register-seller" element={<RegisterSeller />} />
                 
                 {/* Category routes - sử dụng Navbar và Footer */}

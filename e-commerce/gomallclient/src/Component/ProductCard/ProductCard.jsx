@@ -44,7 +44,7 @@ export const RenderProduct = ({ product }) => {
           )}
         </div>
         <div className="product-stats">
-          <span className="rating">★ {product.rating || "N/A"}</span>
+          <span className="rating">★ {product.rating?.average || product.rating || "N/A"}</span>
           <span className="sold">Sold {formatSold(product.sold)}</span>
         </div>
       </div>
