@@ -1,3 +1,4 @@
+// SellerDetailModal.jsx
 import React from "react";
 
 function SellerDetailModal({ seller, onClose }) {
