@@ -155,7 +155,17 @@ const Home = () => {
           <div className="hero-text">
             <h1 className="hero-title">Smart Shopping</h1>
             <p className="hero-subtitle">Millions of authentic products at the best prices</p>
-            <Link to="/shop" className="hero-cta">Explore Now</Link>
+            <button 
+              className="hero-cta" 
+              onClick={() => {
+                const flashSaleSection = document.querySelector('.flash-sale-section');
+                if (flashSaleSection) {
+                  flashSaleSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+            >
+              Shop Now
+            </button>
           </div>
           <div className="hero-image">
             <ProductAnimation />
