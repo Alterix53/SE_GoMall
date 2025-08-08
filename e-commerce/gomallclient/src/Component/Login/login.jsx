@@ -29,10 +29,14 @@ const LoginPage = () => {
       setError(result.message || 'Wrong username or password!');
       // Parse field-specific errors
       const fe = {};
+      const isEmailInput = /[^\s@]+@[^\s@]+\.[^\s@]+/.test(usernameOrEmail);
       (result.errors || []).forEach((e) => {
         if (e.path) {
-          // Map chung cho trường hợp oneOf trả message tổng quát
-          const key = ['email','username'].includes(e.path) ? (usernameOrEmail.includes('@') ? 'email' : 'username') : e.path;
+          // Map lỗi về đúng field người dùng đang nhập
+          const key = ['email','username'].includes(e.path) ? (isEmailInput ? 'email' : 'username') : e.path;
+          fe[key] = e.msg || e.message || 'Invalid value';
+        } else if (e.param) {
+          const key = ['email','username'].includes(e.param) ? (isEmailInput ? 'email' : 'username') : e.param;
           fe[key] = e.msg || e.message || 'Invalid value';
         }
       });
@@ -77,7 +81,7 @@ const LoginPage = () => {
             {fieldErrors.username && (
               <div className="text-danger mt-1 small">{fieldErrors.username}</div>
             )}
-            {fieldErrors.email && (
+            {fieldErrors.email && !fieldErrors.username && (
               <div className="text-danger mt-1 small">{fieldErrors.email}</div>
             )}
           </div>

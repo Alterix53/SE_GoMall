@@ -82,7 +82,7 @@ const loginValidation = [
             .bail()
             .isEmail()
             .normalizeEmail()
-            .withMessage('Please provide a valid email address'),
+            .withMessage('Please provide a valid username or email'),
         body('username')
             .exists({ checkFalsy: true })
             .bail()
