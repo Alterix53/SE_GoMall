@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"; // Import cart routes
 import authRoutes from "./routes/authRoutes.js"; // Import auth routes
+import userRoutes from "./routes/userRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import './models/User.js';
@@ -109,6 +110,9 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
 });
 
 app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./ProductCard.css"
 
 export const RenderProduct = ({ product }) => {
@@ -18,9 +19,10 @@ export const RenderProduct = ({ product }) => {
   const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
 
   console.log("Rendering product:", product.name, product)
+  const productId = product.id || product._id
 
   return (
-    <div className="product-card" style={{ minHeight: "300px" }}>
+    <Link to={`/product/${productId}`} className="product-card" style={{ minHeight: "300px", display: "block", color: "inherit", textDecoration: "none" }}>
       {product.discount > 0 && <span className="discount-badge">-{product.discount}%</span>}
       {product.isFlashSale && <span className="flash-sale-badge">Flash Sale</span>}
 
@@ -48,7 +50,7 @@ export const RenderProduct = ({ product }) => {
           <span className="sold">Đã bán {formatSold(product.sold)}</span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
