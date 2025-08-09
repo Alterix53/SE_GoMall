@@ -3,10 +3,25 @@ import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-const connectDB = async () => {
+import dotenv from 'dotenv';
+import Category from '../models/Category.js';
+import User from '../models/User.js';
+import Product from '../models/Product.js';
+import connectDB from '../config/database.js';
+
+// ESM replacements for __filename and __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables (prefer server/.env if present)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+// Resolve Mongo URI with safe fallback
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/GoMall';
+const connectForSeeding = async () => {
     try {
         console.log("Attempting to connect with MONGODB_URI:", MONGODB_URI);
-        await mongoose.connect(MONGODB_URI);
+        await connectDB(MONGODB_URI);
         console.log("MongoDB Connected for seeding");
     } catch (error) {
         console.error("Database connection failed:", error);
@@ -181,7 +196,7 @@ const seedProducts = async (createdCategories, createdSellers) => {
 
 const seedData = async () => {
     try {
-        await connectDB();
+        await connectForSeeding();
 
         console.log("Seeding categories from JSON...");
         const createdCategories = await seedCategories();
