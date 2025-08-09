@@ -73,8 +73,19 @@ function Home() {
         const flashSaleResponse = await fetch('http://localhost:8080/api/products/flash-sale');
         if (flashSaleResponse.ok) {
           const flashSaleData = await flashSaleResponse.json();
-          if (flashSaleData.success && flashSaleData.data) {
-            setFlashSaleProducts(flashSaleData.data.slice(0, 8));
+          if (flashSaleData.success && flashSaleData.data && Array.isArray(flashSaleData.data.products)) {
+            const mappedFlash = flashSaleData.data.products.map((p) => ({
+              _id: p._id,
+              name: p.name,
+              price: p?.price?.sale || p?.price?.original || 0,
+              originalPrice: p?.price?.original || 0,
+              discount:
+                p?.price?.original && p?.price?.sale
+                  ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
+                  : 0,
+              image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
+            }));
+            setFlashSaleProducts(mappedFlash.slice(0, 8));
           } else {
             console.log('No Flash Sale data available');
             setFlashSaleProducts([]);
@@ -90,12 +101,25 @@ function Home() {
 
       // Fetch Featured Products (used by Top Products and Today's Suggestions)
       try {
-        const featuredResponse = await fetch('http://localhost:8080/api/products/top-products');
+        const featuredResponse = await fetch('http://localhost:8080/api/products/top-products?type=bestseller&limit=12');
         if (featuredResponse.ok) {
           const featuredData = await featuredResponse.json();
-          if (featuredData.success && featuredData.data) {
+          if (featuredData.success && featuredData.data && Array.isArray(featuredData.data.products)) {
+            const mappedTop = featuredData.data.products.map((p) => ({
+              _id: p._id,
+              name: p.name,
+              price: p?.price?.sale || p?.price?.original || 0,
+              originalPrice: p?.price?.original || 0,
+              discount:
+                p?.price?.original && p?.price?.sale
+                  ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
+                  : 0,
+              image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
+              rating: p?.rating || { average: 0, count: 0 },
+              sold: p?.sold || 0,
+            }));
             // Ensure we have up to 12 items for Today Suggestions
-            setFeaturedProducts(featuredData.data.slice(0, 12));
+            setFeaturedProducts(mappedTop.slice(0, 12));
           } else {
             console.log('No Featured Products data available');
             setFeaturedProducts([]);
@@ -114,9 +138,9 @@ function Home() {
         const categoryResponse = await fetch('http://localhost:8080/api/products');
         if (categoryResponse.ok) {
           const categoryData = await categoryResponse.json();
-          if (categoryData.success && categoryData.data && categoryData.data.products) {
+          if (categoryData.success && categoryData.data && Array.isArray(categoryData.data.products)) {
             const groupedByCategory = {};
-            categoryData.data.products.forEach(product => {
+            categoryData.data.products.forEach((product) => {
               const categoryName = product.categoryID?.categoryName || 'Other';
               if (!groupedByCategory[categoryName]) {
                 groupedByCategory[categoryName] = [];
