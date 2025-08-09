@@ -1,331 +1,635 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import "./ProductDetail.css";
-import { useCart } from "../../contexts/CartContext";
-import ApiService from "../../utils/apiService";
-import Header from "../Header/Header";
+"use client"
 
-const ABSOLUTE = (url) => {
-  if (!url) return "/images/default-product.jpg";
-  if (url.startsWith("http")) return url;
-  return `http://localhost:8080${url}`;
-};
+import React, { useState, useEffect, useMemo } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import "./ProductDetail.css"
+import {
+  Star,
+  StarHalf,
+  ShoppingCart,
+  Heart,
+  Share2,
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  Store,
+  MessageCircle,
+  Check,
+  Minus,
+  Plus,
+  MapPin,
+  Tag,
+  Loader2,
+  AlertCircle,
+  Clock,
+  Package,
+  Award,
+} from "lucide-react"
 
-const formatVND = (value) => {
-  const num = Number(value) || 0;
+import { Badge } from "../../components/ui/badge"
+import { Button } from "../../components/ui/button"
+import { Card, CardContent } from "../../components/ui/card"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { Progress } from "../../components/ui/progress"
+import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
+import { Separator } from "../../components/ui/separator"
+import { Avatar, AvatarFallback } from "../../components/ui/avatar"
+import { useToast } from "../../hooks/use-toast"
+import { cn } from "../../lib/utils"
+import ApiService from "../../utils/apiService"
+import Header from "../Header/Header"
+import Footer from "../Footer/Footer"
+
+// Star Rating Component
+function StarRating({
+  rating = 0,
+  size = 18,
+  showValue = false,
+}) {
+  const full = Math.floor(rating)
+  const half = rating - full >= 0.5
+  const empty = 5 - full - (half ? 1 : 0)
+  
+  return (
+    <div className="flex items-center gap-1">
+      {[...Array(full)].map((_, i) => (
+        <Star key={"full-" + i} size={size} className="text-yellow-500 fill-yellow-500" />
+      ))}
+      {half && <StarHalf size={size} className="text-yellow-500 fill-yellow-500" />}
+      {[...Array(empty)].map((_, i) => (
+        <Star key={"empty-" + i} size={size} className="text-muted-foreground" />
+      ))}
+      {showValue && <span className="ml-2 text-sm">{rating.toFixed(1)}</span>}
+    </div>
+  )
+}
+
+// Format currency VND
+function formatCurrencyVND(value) {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(num);
-};
+    maximumFractionDigits: 0 
+  }).format(value)
+}
 
-const ProductDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [mainImage, setMainImage] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
-  const [quantity, setQuantity] = useState(1);
+export default function ProductDetail() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { toast } = useToast()
 
-  // Fallback product data
-  const fallbackProduct = {
-    _id: "fallback-id",
-    name: "[MỚI] Dầu Gội Sạch Gàu/Tắm Gội/Sữa Tắm Xmen Amazon Hunt/Vegas Delight 610g/630g/850g - Hương Nước Hoa Phong Trần",
-    price: { sale: 128000, original: 193000 },
-    images: [
-      { url: "/images/xmen-product.jpg" },
-      { url: "/images/xmen-product.jpg" },
-      { url: "/images/xmen-product.jpg" },
-    ],
-    rating: { average: 4.8, count: 2200 },
-    sold: 10000,
-    description:
-      "Dầu gội X-Men với hương thơm phong trần, giúp tóc sạch gàu và thơm mát suốt ngày dài.",
-    specifications: [
-      { name: "Thương hiệu", value: "X-Men" },
-      { name: "Xuất xứ", value: "Việt Nam" },
-      { name: "Dung lượng", value: "610g/630g/850g" },
-      { name: "Loại sản phẩm", value: "Dầu gội/Tắm gội" },
-      { name: "Hương thơm", value: "Phong Trần" },
-      { name: "Tình trạng", value: "Còn hàng" },
-      { name: "Loại bảo hành", value: "Chính hãng" },
-      { name: "Thời gian bảo hành", value: "12 tháng" },
-      { name: "Gửi từ", value: "Hồ Chí Minh" },
-    ],
-    tags: ["Personal Care", "Hair Care"],
-    sizes: ["DG Amz sạch gàu 610g", "Dầu Gội Amazon 630g", "Tắm Gội Vegas 630g", "Sữa Tắm Vegas 850g"],
-  };
+  // State
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeImage, setActiveImage] = useState(0)
+  const [liked, setLiked] = useState(false)
+  const [selectedVariations, setSelectedVariations] = useState({})
+  const [quantity, setQuantity] = useState(1)
+  const [shippingTo, setShippingTo] = useState("Hà Nội")
 
+  // Fetch product data
   useEffect(() => {
-    fetchProductDetail();
-  }, [id]);
-
-  const fetchProductDetail = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      if (!id) {
-        const absImages = fallbackProduct.images.map((i) => ({ url: ABSOLUTE(i.url) }));
-        const normalized = { ...fallbackProduct, images: absImages };
-        setProduct(normalized);
-        setMainImage(normalized.images[0].url);
-        setSelectedSize(normalized.sizes?.[0] || "default");
-        return;
-      }
-
-      const response = await ApiService.getProductById(id);
-      const productData = response?.data?.product;
-      if (productData && productData._id) {
-        const normalized = {
-          ...productData,
-          images: (productData.images || []).map((img) => ({ url: ABSOLUTE(img.url || img) })),
-          price: productData.price || { original: 0, sale: 0 },
-          sizes: productData.sizes || ["default"],
-        };
-        setProduct(normalized);
-        setMainImage(normalized.images?.[0]?.url || ABSOLUTE("/images/default-product.jpg"));
-        setSelectedSize(normalized.sizes?.[0] || "default");
+    const fetchProduct = async () => {
+      try {
+        setLoading(true)
+        const response = await ApiService.getProductById(id)
+        console.log("Product response:", response)
+        
+        if (response.success && response.data && response.data.product) {
+          setProduct(response.data.product)
+          // Set default variations if available
+          if (response.data.product.specifications) {
+            const defaults = {}
+            response.data.product.specifications.forEach(spec => {
+              if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
+                const values = spec.value.split(',').map(v => v.trim())
+                defaults[spec.name] = values[0]
+              }
+            })
+            setSelectedVariations(defaults)
+          }
       } else {
-        const absImages = fallbackProduct.images.map((i) => ({ url: ABSOLUTE(i.url) }));
-        const normalized = { ...fallbackProduct, images: absImages };
-        setProduct(normalized);
-        setMainImage(normalized.images[0].url);
-        setSelectedSize(normalized.sizes?.[0] || "default");
+          setError("Không thể tải thông tin sản phẩm")
       }
     } catch (err) {
-      console.error("Error fetching product detail:", err);
-      const absImages = fallbackProduct.images.map((i) => ({ url: ABSOLUTE(i.url) }));
-      const normalized = { ...fallbackProduct, images: absImages };
-      setError("Failed to load product");
-      setProduct(normalized);
-      setMainImage(normalized.images[0].url);
-      setSelectedSize(normalized.sizes?.[0] || "default");
+        console.error("Error fetching product:", err)
+        setError("Đã xảy ra lỗi khi tải thông tin sản phẩm")
     } finally {
-      setLoading(false);
+        setLoading(false)
+      }
     }
-  };
 
-  const { addToCart, loading: cartLoading } = useCart();
+    if (id) {
+      fetchProduct()
+    }
+  }, [id])
 
-  const handleAddToCart = async () => {
-    if (!product) return;
+  // Calculate final price and discount
+  const finalPrice = useMemo(() => {
+    if (!product) return 0
+    return product.price?.sale || product.price?.original || 0
+  }, [product])
+
+  const discountPercent = useMemo(() => {
+    if (!product?.price?.sale || !product?.price?.original) return 0
+    return Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+  }, [product])
+
+  // Rating distribution (fallback to design sample if not provided)
+  const ratingDistribution = useMemo(() => {
+    const defaultDist = { 5: 82, 4: 12, 3: 3, 2: 2, 1: 1 }
+    const fromProduct = product?.rating?.distribution
+    if (!fromProduct) return defaultDist
+    // normalize keys as numbers and ensure percentages
+    return {
+      5: Number(fromProduct[5]) || 0,
+      4: Number(fromProduct[4]) || 0,
+      3: Number(fromProduct[3]) || 0,
+      2: Number(fromProduct[2]) || 0,
+      1: Number(fromProduct[1]) || 0,
+    }
+  }, [product])
+
+  const onAddToCart = async () => {
+    if (!product) return
+    
     try {
-      await addToCart({
-        id: product._id || product.id,
-        name: product.name,
-        price: product.price?.sale || product.price?.original || 0,
-        image: product.images?.[0]?.url || ABSOLUTE("/images/default-product.jpg"),
-        size: selectedSize || "default",
-        quantity,
-      });
-      navigate('/cart');
-    } catch (err) {
-      alert("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+      const response = await ApiService.addToCart(product._id, quantity)
+      if (response.success) {
+        toast({
+          title: "Thành công!",
+          description: "Đã thêm sản phẩm vào giỏ hàng",
+        })
+      } else {
+        toast({
+          title: "Lỗi!",
+          description: response.message || "Không thể thêm vào giỏ hàng",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Lỗi!",
+        description: "Đã xảy ra lỗi khi thêm vào giỏ hàng",
+        variant: "destructive",
+      })
     }
-  };
+  }
 
-  if (loading) return (<><Header /><p style={{ padding: 16 }}>Đang tải thông tin sản phẩm...</p></>);
-  if (error && !product) return (<><Header /><p style={{ padding: 16 }}>Không thể tải thông tin sản phẩm.</p></>);
+  const onBuyNow = () => {
+    if (!product) return
+    // Navigate to checkout with this product
+    navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+  }
+
+  const handleVariationChange = (type, value) => {
+    setSelectedVariations(prev => ({
+      ...prev,
+      [type]: value
+    }))
+  }
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <span>Đang tải thông tin sản phẩm...</span>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Không thể tải sản phẩm</h2>
+            <p className="text-muted-foreground mb-4">{error || "Sản phẩm không tồn tại"}</p>
+            <Button onClick={() => navigate("/")}>Về trang chủ</Button>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
 
   return (
     <>
       <Header />
-      <div className="product-detail-page">
-        {/* Breadcrumb */}
-        <div className="breadcrumb">
-          <span>Shopee</span>
-          <span className="breadcrumb-separator">></span>
-          <span>Chăm Sóc Cá Nhân</span>
-          <span className="breadcrumb-separator">></span>
-          <span>Chăm Sóc Tóc</span>
-          <span className="breadcrumb-separator">></span>
-          <span>Dầu Gội</span>
-          <span className="breadcrumb-separator">></span>
-          <span>{product.name}</span>
-        </div>
+      <main className="bg-gray-50 min-h-screen">
 
-        <div className="product-detail-container">
-          {/* Left: Images */}
-          <div className="product-images">
-            <div className="main-image">
-              <img src={mainImage} alt={product.name} />
-            </div>
-            <div className="thumbnail-images">
-              <button className="thumbnail-nav prev">‹</button>
-              {(product.images || []).slice(0, 5).map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img.url || img}
-                  alt={`thumb-${idx}`}
-                  className={mainImage === (img.url || img) ? 'active' : ''}
-                  onClick={() => setMainImage(img.url || img)}
-                />
-              ))}
-              <button className="thumbnail-nav next">›</button>
-            </div>
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Left: Product Images */}
+            <section>
+              {/* Main Image */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border">
+                <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images[activeImage]?.url || product.images[activeImage]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <Package className="w-16 h-16" />
+                    </div>
+                  )}
+                  
+                  {/* Like Button */}
+                  <button
+                    onClick={() => setLiked(!liked)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+                  >
+                    <Heart 
+                      className={cn(
+                        "w-5 h-5",
+                        liked ? "text-red-500 fill-red-500" : "text-gray-600"
+                      )} 
+                    />
+                  </button>
           </div>
 
-          {/* Right: Product Info */}
-          <div className="product-info">
-            {/* Product Header */}
-            <div className="product-header">
-              <div className="product-title-section">
-                <span className="mall-badge">Mall</span>
-                <h1 className="product-title">{product.name}</h1>
+                {/* Thumbnail Images */}
+                {product.images && product.images.length > 1 && (
+                  <div className="mt-4 flex gap-3 overflow-x-auto">
+                    {product.images.map((image, index) => (
+                <button
+                        key={index}
+                        onClick={() => setActiveImage(index)}
+                        className={cn(
+                          "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden",
+                          activeImage === index 
+                            ? "border-primary" 
+                            : "border-gray-200 hover:border-gray-300"
+                        )}
+                >
+                  <img
+                          src={image?.url || image}
+                          alt={`${product.name} - ${index + 1}`}
+                          className="w-full h-full object-cover"
+                  />
+                </button>
+            ))}
+          </div>
+                )}
               </div>
-              <span className="report-link">Tố cáo</span>
-            </div>
-            
-            {/* Rating Section */}
-            <div className="product-rating">
-              <span className="rating-score">{product.rating?.average || 4.8}</span>
-              <div className="stars">★★★★★</div>
-              <span className="rating-sep">|</span>
-              <span className="rating-count">{(product.rating?.count || 2200).toLocaleString()} Đánh Giá</span>
-              <span className="rating-sep">|</span>
-              <span className="sold-count">Đã Bán {(product.sold || 10000).toLocaleString()}+</span>
-            </div>
+            </section>
 
-            {/* Price Section */}
-            <div className="price-section">
-              <span className="current-price">₫{(product.price?.sale || 128000).toLocaleString()} - ₫{(product.price?.sale * 1.3 || 166000).toLocaleString()}</span>
-              {product.price?.original && product.price?.sale && product.price.original > product.price.sale && (
-                <>
-                  <span className="original-price">₫{(product.price.original).toLocaleString()} - ₫{(product.price.original * 1.3).toLocaleString()}</span>
-                  <span className="discount-percent">
-                    -{Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)}%
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Shipping Information */}
-            <div className="shipping-info">
-              <div className="shipping-item">
-                <span className="label">Vận Chuyển</span>
-                <div className="shipping-details">
-                  <div className="shipping-icon">🚚</div>
-                  <div className="shipping-content">
-                    <div className="delivery-date">Cam kết nhận hàng trong 9 Th08 - 11 Th08</div>
-                    <div className="shipping-fee">Phí ship 0₫</div>
-                    <div className="shipping-note">Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên.</div>
+            {/* Right: Product Info & Actions */}
+            <section>
+              <div className="bg-white rounded-xl p-6 shadow-sm border">
+                {/* Product Title */}
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                  {product.name}
+                </h1>
+                
+                {/* Rating & Sales */}
+                <div className="flex items-center gap-6 mb-6">
+                  <div className="flex items-center gap-2">
+                    <StarRating rating={product.rating?.average || 0} size={20} />
+                    <span className="font-semibold text-lg">
+                      {product.rating?.average?.toFixed(1) || "0.0"}
+                    </span>
+                  </div>
+                  <div className="text-gray-600">
+                    {product.rating?.count?.toLocaleString() || 0} Đánh giá
+                  </div>
+                  <div className="text-gray-600">
+                    Đã bán {product.sold?.toLocaleString() || 0}+
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Shopee Guarantee */}
-            <div className="guarantee-section">
-              <span className="guarantee-label">An Tâm Mua Sắm Cùng Shopee</span>
-              <div className="guarantee-details">
-                <div className="guarantee-icon">✓</div>
-                <div className="guarantee-content">
-                  <div className="guarantee-text">Trả hàng miễn phí 15 ngày - Chính hãng 100% - Miễn phí vận chuyển</div>
-                  <div className="guarantee-dropdown">›</div>
+                {/* Price Section */}
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+                  <div className="flex items-baseline gap-3 mb-3">
+                    <span className="text-4xl lg:text-5xl font-bold text-red-600">
+                      {formatCurrencyVND(finalPrice)}
+                    </span>
+                    {product.price?.sale && product.price?.original && product.price.sale < product.price.original && (
+                      <>
+                        <span className="text-xl text-gray-500 line-through">
+                          {formatCurrencyVND(product.price.original)}
+                        </span>
+                        <Badge className="bg-red-600 text-white px-3 py-1 text-sm font-bold rounded-full">
+                          -{discountPercent}%
+                        </Badge>
+                    </>
+                  )}
+                </div>
+
+                  {/* Promotions */}
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                      <Tag className="w-3 h-3 mr-1" />
+                      Giảm 50k cho đơn từ 5tr
+                    </Badge>
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      Voucher 10% tối đa 500k
+                    </Badge>
+                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                      Hoàn xu 5%
+                    </Badge>
+                  </div>
+
+                  {/* Flash Sale */}
+                  {product.isFlashSale && (
+                    <div className="mt-3 flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                      <Clock className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-medium text-orange-800">
+                        Flash Sale - Kết thúc: {product.flashSaleEndDate ? 
+                          new Date(product.flashSaleEndDate).toLocaleDateString('vi-VN') : 
+                          '10/8/2025'
+                        }
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Variations */}
+                {product.specifications && product.specifications.length > 0 && (
+                  <div className="space-y-4 mb-6">
+                    {product.specifications.map((spec, index) => {
+                      if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
+                        const values = spec.value.split(',').map(v => v.trim())
+                        const currentValue = selectedVariations[spec.name] || values[0]
+                        
+                        return (
+                          <div key={index}>
+                                                         <Label htmlFor={`${spec.name}-label`} className="text-base font-medium text-gray-900 mb-3 block">
+                               {spec.name === 'color' ? 'Màu sắc' : 
+                                spec.name === 'storage' ? 'Dung lượng' : 
+                                spec.name === 'size' ? 'Kích thước' : spec.name}
+                             </Label>
+                            <RadioGroup 
+                              value={currentValue} 
+                              onValueChange={(value) => handleVariationChange(spec.name, value)}
+                              className="flex flex-wrap gap-2"
+                            >
+                              {values.map((value) => (
+                                <Label
+                                  key={value}
+                                  htmlFor={`${spec.name}-${value}`}
+                                  className={cn(
+                                    "cursor-pointer border rounded-lg px-4 py-2 text-sm font-medium transition-all min-w-[80px] text-center",
+                                    currentValue === value 
+                                      ? "border-black bg-black text-white" 
+                                      : "border-gray-300 hover:border-gray-400 bg-white text-gray-900"
+                                  )}
+                                >
+                                  <RadioGroupItem id={`${spec.name}-${value}`} value={value} className="sr-only" />
+                                  {value}
+                                </Label>
+                              ))}
+                            </RadioGroup>
+                          </div>
+                        )
+                      }
+                      return null
+                    })}
+                  </div>
+                )}
+
+                {/* Quantity */}
+                <div className="mb-6">
+                                     <Label htmlFor="quantity-input" className="text-base font-medium text-gray-900 mb-3 block">
+                     Số lượng
+                   </Label>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center border border-gray-300 rounded-lg">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="rounded-r-none border-0 hover:bg-gray-100 px-3 py-2"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        disabled={quantity <= 1}
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                                             <Input
+                         id="quantity-input"
+                         inputMode="numeric"
+                         value={quantity}
+                         onChange={(e) => {
+                           const n = Number.parseInt(e.target.value || "1", 10)
+                           if (!Number.isNaN(n)) setQuantity(Math.max(1, n))
+                         }}
+                         className="w-20 text-center border-0 rounded-none focus:ring-0 font-medium"
+                         min="1"
+                         aria-live="polite"
+                       />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="rounded-l-none border-0 hover:bg-gray-100 px-3 py-2"
+                        onClick={() => setQuantity((q) => q + 1)}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    {product.inventory && (
+                      <span className="text-sm text-gray-600">
+                        Còn {product.inventory.quantity} sản phẩm
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Shipping */}
+                <div className="mb-6">
+                                     <Label htmlFor="shipping-select" className="text-base font-medium text-gray-900 mb-3 block">
+                     Vận chuyển
+                   </Label>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Truck className="w-5 h-5 text-gray-600" />
+                      <span className="text-sm text-gray-900 font-medium">Miễn phí vận chuyển</span>
+        </div>
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-gray-600" />
+                      <span className="text-sm text-gray-900">Giao đến</span>
+                      <select 
+                        value={shippingTo} 
+                        onChange={(e) => setShippingTo(e.target.value)}
+                        className="text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                      >
+                        {[
+                          "Hà Nội",
+                          "TP. Hồ Chí Minh", 
+                          "Đà Nẵng",
+                          "Hải Phòng",
+                          "Cần Thơ",
+                        ].map((loc) => (
+                          <option key={loc} value={loc}>{loc}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={onAddToCart}
+                    disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
+                    className="w-full h-14 text-base font-medium border-gray-400 text-gray-900 hover:bg-gray-50"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    {product.inventory?.quantity === 0 ? "Hết hàng" : "Thêm vào giỏ"}
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    onClick={onBuyNow}
+                    disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
+                    className="w-full h-14 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {product.inventory?.quantity === 0 ? "Hết hàng" : "Mua ngay"}
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={() => console.log('Chat ngay clicked')}
+                    className="w-full h-14 text-base font-medium border-gray-400 text-gray-900 hover:bg-gray-50"
+                  >
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Chat ngay
+                  </Button>
+                </div>
+
+                {/* Guarantees */}
+                <div className="mt-6 space-y-3">
+                  <div className="flex items-center gap-3 text-sm">
+                    <ShieldCheck className="w-5 h-5 text-green-600" />
+                    <span className="text-gray-900 font-medium">Hàng chính hãng 100%</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Check className="w-5 h-5 text-green-600" />
+                    <span className="text-gray-900 font-medium">Bảo hành 12 tháng</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <RotateCcw className="w-5 h-5 text-orange-600" />
+                    <span className="text-gray-900 font-medium">7 ngày miễn phí trả hàng</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Truck className="w-5 h-5 text-blue-600" />
+                    <span className="text-gray-900 font-medium">Miễn phí vận chuyển</span>
+                  </div>
+                </div>
+          </div>
+            </section>
+          </div>
+
+          {/* Shop Info Section */}
+          <div className="max-w-6xl mx-auto px-4 mt-8">
+            <div className="bg-white rounded-xl p-6 shadow-sm border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar className="w-12 h-12">
+                    <AvatarFallback className="bg-orange-100 text-orange-600 text-lg font-semibold">
+                      {product.sellerID?.name?.charAt(0) || "A"}
+                    </AvatarFallback>
+                  </Avatar>
+            <div>
+                    <h3 className="font-semibold text-gray-900 text-lg">
+                      {product.sellerID?.name || "Apple Flagship Store"}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Hoạt động 1 giờ trước
+                    </p>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => console.log('Xem shop')} className="px-6">
+                  <Store className="w-4 h-4 mr-2" />
+                  Xem shop
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6 mt-4">
+                <div className="text-center">
+                  <div className="text-xs text-gray-600 mb-1">Đánh giá shop</div>
+                  <div className="flex items-center justify-center gap-1">
+                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                    <span className="font-semibold text-gray-900">
+                      {product.sellerID?.rating?.average?.toFixed(1) || "4.9"}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-gray-600 mb-1">Người theo dõi</div>
+                  <div className="font-semibold text-gray-900">
+                    {product.sellerID?.followers || "1.2M"}
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
 
-            {/* Variants */}
-            <div className="variant-section">
-              <span className="variant-label">Phân Loại</span>
-              <div className="variant-options">
-                {(product.sizes || ["DG Amz sạch gàu 610g", "Dầu Gội Amazon 630g", "Tắm Gội Vegas 630g", "Sữa Tắm Vegas 850g"]).map(size => (
-                  <button
-                    key={size}
-                    className={`variant-option ${selectedSize === size ? 'active' : ''}`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Quantity */}
-            <div className="quantity-section">
-              <span className="quantity-label">Số Lượng</span>
-              <div className="quantity-control">
-                <button 
-                  className="qty-btn" 
-                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                  disabled={quantity <= 1}
-                >
-                  -
-                </button>
-                <input 
-                  type="text" 
-                  value={quantity} 
-                  readOnly 
-                  className="qty-input"
-                />
-                <button 
-                  className="qty-btn" 
-                  onClick={() => setQuantity(quantity + 1)}
-                >
-                  +
-                </button>
-              </div>
-              <span className="stock-info">CÒN HÀNG</span>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="action-buttons">
-              <button 
-                className="add-to-cart-btn"
-                onClick={handleAddToCart}
-                disabled={cartLoading}
-              >
-                <span className="cart-icon">🛒</span>
-                {cartLoading ? "Đang thêm..." : "Thêm Vào Giỏ Hàng"}
-              </button>
-              <button className="buy-now-btn">
-                Mua Ngay
-              </button>
-            </div>
-
-            {/* Share and Like */}
-            <div className="share-section">
-              <span className="share-label">Chia sẻ:</span>
-              <div className="share-icons">
-                <span className="share-icon facebook">f</span>
-                <span className="share-icon pinterest">p</span>
-                <span className="share-icon twitter">t</span>
-              </div>
-              <div className="like-section">
-                <span className="like-icon">❤</span>
-                <span className="like-text">Đã thích (614)</span>
-              </div>
+          {/* Rating Summary Section */}
+          <div className="max-w-6xl mx-auto px-4 mt-8">
+            <div className="bg-white rounded-xl p-6 shadow-sm border">
+              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Đánh giá sản phẩm</h3>
+              <div className="flex items-start gap-8">
+                <div className="text-center">
+                  <div className="text-5xl font-bold text-blue-600 mb-2">
+                    {(product.rating?.average || 4.8).toFixed(1)}
+                  </div>
+                  <StarRating rating={product.rating?.average || 4.8} size={24} />
+                  <div className="text-sm text-gray-600 mt-2">
+                    {product.rating?.count?.toLocaleString() || "12.500"} đánh giá
+                  </div>
+                </div>
+                <div className="flex-1 space-y-2">
+                  {[5, 4, 3, 2, 1].map((star) => (
+                    <div key={star} className="flex items-center gap-3">
+                      <div className="w-8 text-sm text-gray-600">{star} sao</div>
+                      <Progress value={ratingDistribution[star]} className="flex-1 h-3" />
+                      <div className="w-12 text-right text-sm font-medium text-gray-900">
+                        {ratingDistribution[star]}%
             </div>
           </div>
-        </div>
-
-        {/* Product Description */}
-        <div className="product-description">
-          <h3>CHI TIẾT SẢN PHẨM</h3>
-          <div className="description-content">
-            <div className="specs-grid">
-              {(product.specifications || []).map((spec, idx) => (
-                <div key={idx} className="spec-item">
-                  <span className="spec-label">{spec.name}</span>
-                  <span className="spec-value">{spec.value}</span>
-                </div>
-              ))}
-            </div>
-            <div className="description-text">
-              <h4>MÔ TẢ SẢN PHẨM</h4>
-              <p>{product.description || 'Không có mô tả sản phẩm.'}</p>
+                  ))}
             </div>
           </div>
         </div>
       </div>
-    </>
-  );
-};
 
-export default ProductDetail;
+
+
+          {/* Product Details Section */}
+          <div className="max-w-6xl mx-auto px-4 mt-12">
+                        {/* Product Description */}
+            <Card className="shadow-sm border">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Mô tả sản phẩm</h2>
+                <div className="prose prose-sm max-w-none text-gray-700">
+                  {product.description ? (
+                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                  ) : (
+                    <p className="text-gray-500">Chưa có mô tả chi tiết cho sản phẩm này.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+      </div>
+    </div>
+      </main>
+      <Footer />
+    </>
+  )
+}
