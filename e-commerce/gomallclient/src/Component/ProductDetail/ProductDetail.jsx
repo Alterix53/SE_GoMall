@@ -130,78 +130,144 @@ const ProductDetail = () => {
   return (
     <>
       <Header />
-      <div className="container center" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-        <div className="product-detail" style={{ display: 'flex', gap: 40, alignItems: 'flex-start', padding: 32, background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px #eee', width: '100%', maxWidth: 1100 }}>
-          {/* Left: Main image + thumbnails */}
-          <div style={{ flex: 1, maxWidth: 400, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ border: '1px solid #eee', borderRadius: 8, marginBottom: 16, aspectRatio: '1/1', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', width: '100%' }}>
-              <img src={mainImage} alt={product.name} style={{ maxWidth: '100%', maxHeight: 350, objectFit: 'contain' }} />
+      <div className="product-detail-page">
+        <div className="product-detail-container">
+          {/* Left: Images */}
+          <div className="product-images">
+            <div className="main-image">
+              <img src={mainImage} alt={product.name} />
             </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 16 }}>
+            <div className="thumbnail-images">
               {(product.images || []).slice(0, 5).map((img, idx) => (
                 <img
                   key={idx}
                   src={img.url || img}
                   alt={`thumb-${idx}`}
-                  style={{ width: 60, height: 60, objectFit: 'cover', border: mainImage === (img.url || img) ? '2px solid #333' : '1px solid #ccc', borderRadius: 6, cursor: 'pointer', background: '#fff' }}
+                  className={mainImage === (img.url || img) ? 'active' : ''}
                   onClick={() => setMainImage(img.url || img)}
                 />
               ))}
             </div>
           </div>
-          {/* Right: Info */}
-          <div style={{ flex: 1, minWidth: 320, maxWidth: 500 }}>
-            <h2 style={{ fontWeight: 600 }}>{product.name}</h2>
-            <div style={{ margin: '8px 0' }}>
-              {(product.tags || []).map((tag, idx) => (
-                <span key={idx} style={{ background: '#e6f4ea', color: '#1a7f37', borderRadius: 4, padding: '2px 8px', fontSize: 14, marginRight: 8 }}>{tag}</span>
-              ))}
+
+          {/* Right: Product Info */}
+          <div className="product-info">
+            <h1 className="product-title">{product.name}</h1>
+            
+            <div className="product-rating">
+              <div className="rating-stars">
+                <span className="rating-score">{product.rating?.average || 4.8}</span>
+                <div className="stars">★★★★★</div>
+              </div>
+              <div className="rating-count">({product.rating?.count || 123})</div>
+              <div className="sold-count">{product.sold || 0} Đã bán</div>
             </div>
-            <div style={{ fontSize: 32, fontWeight: 700, margin: '8px 0', color: '#222' }}>
-              {formatVND(product.price?.sale || product.price?.original || 0)}
+
+            <div className="price-section">
+              {product.price?.original && product.price?.sale && product.price.original > product.price.sale && (
+                <span className="original-price">{formatVND(product.price.original)}</span>
+              )}
+              <span className="current-price">{formatVND(product.price?.sale || product.price?.original || 0)}</span>
+              {product.price?.original && product.price?.sale && product.price.original > product.price.sale && (
+                <span className="discount-percent">
+                  {Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)}% GIẢM
+                </span>
+              )}
             </div>
-            {product.price?.original && product.price?.sale && product.price.original > product.price.sale && (
-              <div style={{ fontSize: 18, color: '#888', textDecoration: 'line-through', marginBottom: 8 }}>
-                {formatVND(product.price.original)}
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: 16, margin: '16px 0' }}>
-              <div>
-                <label style={{ fontWeight: 500 }}>Size</label>
-                <select className="form-select" style={{ width: 120, marginTop: 4 }} value={selectedSize} onChange={e => setSelectedSize(e.target.value)}>
-                  {(product.sizes || ["default"]).map(size => <option key={size} value={size}>{size}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ fontWeight: 500 }}>Quantity</label>
-                <select className="form-select" style={{ width: 80, marginTop: 4 }} value={quantity} onChange={e => setQuantity(Number(e.target.value))}>
-                  {[1,2,3,4,5].map(q => <option key={q} value={q}>{q}</option>)}
-                </select>
+
+            <div className="voucher-section">
+              <span className="voucher-label">Mã Giảm Giá Của Shop</span>
+              <div className="voucher-item">Giảm ₫20k</div>
+              <div className="voucher-item">Giảm ₫50k</div>
+            </div>
+
+            <div className="shipping-info">
+              <div className="shipping-item">
+                <span className="label">Vận Chuyển</span>
+                <div className="shipping-details">
+                  <div className="free-shipping">Miễn Phí Vận Chuyển</div>
+                  <div className="shipping-location">Vận chuyển tới Quận 1, Hồ Chí Minh</div>
+                </div>
               </div>
             </div>
-            <button
-              className="btn btn-dark w-100"
-              style={{ margin: '0 0 16px 0', fontWeight: 600, maxWidth: 300 }}
-              onClick={handleAddToCart}
-              disabled={cartLoading}
-            >
-              {cartLoading ? "Đang thêm..." : "Add to Cart"}
-            </button>
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontWeight: 500, marginBottom: 4 }}>Other info</div>
-              <div style={{ border: '1px solid #eee', borderRadius: 8, background: '#fafafa', padding: 12 }}>
-                <ul style={{ marginTop: 8 }}>
-                  {(product.specifications || []).map((spec, idx) => (
-                    <li key={idx}>{spec.name}: {spec.value}</li>
-                  ))}
-                </ul>
+
+            {/* Variants */}
+            <div className="variant-section">
+              <span className="variant-label">Phân Loại Hàng</span>
+              <div className="variant-options">
+                {(product.sizes || ["default"]).map(size => (
+                  <button
+                    key={size}
+                    className={`variant-option ${selectedSize === size ? 'active' : ''}`}
+                    onClick={() => setSelectedSize(size)}
+                  >
+                    {size}
+                  </button>
+                ))}
               </div>
+            </div>
+
+            {/* Quantity */}
+            <div className="quantity-section">
+              <span className="quantity-label">Số Lượng</span>
+              <div className="quantity-control">
+                <button 
+                  className="qty-btn" 
+                  onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                  disabled={quantity <= 1}
+                >
+                  -
+                </button>
+                <input 
+                  type="text" 
+                  value={quantity} 
+                  readOnly 
+                  className="qty-input"
+                />
+                <button 
+                  className="qty-btn" 
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  +
+                </button>
+              </div>
+              <span className="stock-info">999 sản phẩm có sẵn</span>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="action-buttons">
+              <button 
+                className="add-to-cart-btn"
+                onClick={handleAddToCart}
+                disabled={cartLoading}
+              >
+                <span className="cart-icon">🛒</span>
+                {cartLoading ? "Đang thêm..." : "Thêm Vào Giỏ Hàng"}
+              </button>
+              <button className="buy-now-btn">
+                Mua Ngay
+              </button>
             </div>
           </div>
         </div>
-        <div style={{ width: '100%', maxWidth: 1100, marginTop: 24, background: '#fafafa', borderRadius: 8, padding: 24, color: '#444', fontSize: 16, boxSizing: 'border-box' }}>
-          <div style={{ fontWeight: 500, marginBottom: 8 }}>Description</div>
-          {product.description || 'Không có mô tả sản phẩm.'}
+
+        {/* Product Description */}
+        <div className="product-description">
+          <h3>CHI TIẾT SẢN PHẨM</h3>
+          <div className="description-content">
+            <div className="specs-grid">
+              {(product.specifications || []).map((spec, idx) => (
+                <div key={idx} className="spec-item">
+                  <span className="spec-label">{spec.name}</span>
+                  <span className="spec-value">{spec.value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="description-text">
+              <h4>MÔ TẢ SẢN PHẨM</h4>
+              <p>{product.description || 'Không có mô tả sản phẩm.'}</p>
+            </div>
+          </div>
         </div>
       </div>
     </>
