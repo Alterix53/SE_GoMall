@@ -47,9 +47,9 @@ export default function CategoryList() {
       const response = await fetch('http://localhost:8080/api/categories');
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.data) {
+        if (data.success && data.data && data.data.categories) {
           // Map API categories to include icons
-          const categoriesWithIcons = data.data.map(category => ({
+          const categoriesWithIcons = data.data.categories.map(category => ({
             ...category,
             icon: categoryIconMap[category.categoryName] || '🛒',
             color: '#2196F3'
