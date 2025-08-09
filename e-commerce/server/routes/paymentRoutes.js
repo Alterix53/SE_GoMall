@@ -1,10 +1,6 @@
 import express from 'express';
 import * as paymentController from '../controllers/paymentController.js';
-<<<<<<< HEAD
 import { authenticateToken } from '../middleware/auth.js';
-=======
-import { authenticateToken as requireAuth } from '../middleware/auth.js';
->>>>>>> origin/Develop
 
 const router = express.Router();
 
