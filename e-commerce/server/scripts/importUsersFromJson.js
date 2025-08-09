@@ -63,12 +63,14 @@ async function upsertUserFromJson(jsonUser) {
     if (!existingSeller) {
       const seller = new Seller({
         userID: user._id,
-        storeName: jsonUser.shop?.name || user.fullName || `${user.username}'s Store`,
+        businessName: jsonUser.shop?.name || user.fullName || `${user.username}'s Store`,
         businessLicense: jsonUser.shop?.businessLicense || `IMPORTED_${Date.now()}`,
-        address: jsonUser.shop?.address || user.address || '',
-        phoneNumber: user.phoneNumber || '',
+        businessAddress: jsonUser.shop?.address || user.address || '',
+        businessPhone: user.phoneNumber || '',
+        businessEmail: user.email,
         verificationDocs: [],
         status: 'approved',
+        isActive: true,
       });
       await seller.save();
     }

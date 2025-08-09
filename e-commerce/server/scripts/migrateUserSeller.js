@@ -30,10 +30,11 @@ async function migrateUserSeller() {
             // Create seller record
             const sellerData = {
                 userID: user._id,
-                storeName: user.fullName || `${user.username}'s Store`,
+                businessName: user.fullName || `${user.username}'s Store`,
                 businessLicense: 'MIGRATED_' + Date.now(), // Placeholder
-                address: user.address || 'Address not provided',
-                phoneNumber: user.phoneNumber || 'Phone not provided',
+                businessAddress: user.address || 'Address not provided',
+                businessPhone: user.phoneNumber || 'Phone not provided',
+                businessEmail: user.email,
                 verificationDocs: [],
                 status: 'approved', // Assume approved for existing sellers
                 isActive: true

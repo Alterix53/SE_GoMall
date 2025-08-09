@@ -25,17 +25,21 @@ function UserSetting() {
   // Load user data on component mount
   useEffect(() => {
     const loadUserData = async () => {
-      if (user && user.id) {
+      if (user?.id) {
         try {
           const response = await apiService.getCurrentUserProfile(user.id);
-          if (response.data.success) {
+          console.log("API Response:", response?.data); // Debug log
+          
+          if (response?.data?.success && response?.data?.user) {
             const userData = response.data.user;
+            console.log("User data:", userData); // Debug log
+            
             setForm(prev => ({
               ...prev,
-              fullName: userData.fullName || "",
-              email: userData.email || "",
-              phoneNumber: userData.phoneNumber || "",
-              address: userData.address || "",
+              fullName: userData?.fullName || "",
+              email: userData?.email || "",
+              phoneNumber: userData?.phoneNumber || "",
+              address: userData?.address || "",
             }));
           }
         } catch (error) {
@@ -47,6 +51,17 @@ function UserSetting() {
 
     loadUserData();
   }, [user]);
+
+  // Early return if user is not loaded yet
+  if (!user) {
+    return (
+      <div className="container mt-4 d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

@@ -1,54 +1,87 @@
 import mongoose from 'mongoose';
 
-const sellerSchema = new mongoose.Schema({
-    userID: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: true 
+const sellerSchema = new mongoose.Schema(
+  {
+    userID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+      unique: true,
     },
-    businessName: { 
-        type: String, 
-        required: true 
+    // Canonical naming: businessName/businessAddress/businessPhone/businessEmail
+    businessName: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    businessDescription: { 
-        type: String 
+    businessDescription: {
+      type: String,
+      default: '',
+      trim: true,
     },
-    businessAddress: { 
-        type: String 
+    businessAddress: {
+      type: String,
+      default: '',
+      trim: true,
     },
-    businessPhone: { 
-        type: String 
+    businessPhone: {
+      type: String,
+      default: '',
+      trim: true,
     },
-    businessEmail: { 
-        type: String 
+    businessEmail: {
+      type: String,
+      default: '',
+      trim: true,
+      lowercase: true,
     },
-    taxNumber: { 
-        type: String 
+    // Frequently used fields in controllers/routes
+    businessLicense: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    status: { 
-        type: String, 
-        enum: ['pending', 'approved', 'rejected', 'suspended'], 
-        default: 'pending' 
+    verificationDocs: {
+      type: [String],
+      default: [],
     },
-    approvedAt: { 
-        type: Date 
+    taxNumber: {
+      type: String,
+      default: '',
+      trim: true,
     },
-    approvedBy: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected', 'suspended'],
+      default: 'pending',
+      index: true,
     },
-    rating: { 
-        type: Number, 
-        default: 0 
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true,
     },
-    totalSales: { 
-        type: Number, 
-        default: 0 
+    approvedAt: {
+      type: Date,
     },
-    createdAt: { 
-        type: Date, 
-        default: Date.now 
-    }
-}, { timestamps: true });
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    rating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    totalSales: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+  },
+  { timestamps: true }
+);
 
 export default mongoose.model('Seller', sellerSchema);

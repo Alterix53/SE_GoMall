@@ -99,17 +99,20 @@ export const registerSeller = async (req, res) => {
             });
         }
 
-        const { 
-            username, 
-            email, 
-            password, 
-            fullName, 
-            phoneNumber, 
+        const {
+            username,
+            email,
+            password,
+            fullName,
+            phoneNumber,
             address,
-            storeName,
+            storeName, // legacy from frontend
+            businessName, // preferred
             businessLicense,
-            sellerPhoneNumber,
-            sellerAddress,
+            sellerPhoneNumber, // legacy
+            businessPhone, // preferred
+            sellerAddress, // legacy
+            businessAddress, // preferred
             verificationDocs
         } = req.body;
 
@@ -150,11 +153,12 @@ export const registerSeller = async (req, res) => {
         // Create seller record
         const seller = new Seller({
             userID: user._id,
-            storeName,
+            businessName: (businessName || storeName || fullName || `${username}'s Store`).trim(),
             businessLicense,
-            address: sellerAddress || address,
-            phoneNumber: sellerPhoneNumber || phoneNumber,
-            verificationDocs: verificationDocs || [],
+            businessAddress: (businessAddress || sellerAddress || address || '').trim(),
+            businessPhone: (businessPhone || sellerPhoneNumber || phoneNumber || '').trim(),
+            businessEmail: email,
+            verificationDocs: Array.isArray(verificationDocs) ? verificationDocs : [],
             status: 'pending'
         });
 
@@ -180,7 +184,7 @@ export const registerSeller = async (req, res) => {
             isActive: user.isActive,
             sellerInfo: {
                 _id: seller._id,
-                storeName: seller.storeName,
+                businessName: seller.businessName,
                 status: seller.status
             }
         };
@@ -254,7 +258,7 @@ export const login = async (req, res) => {
             if (seller) {
                 sellerInfo = {
                     _id: seller._id,
-                    storeName: seller.storeName,
+                    businessName: seller.businessName,
                     status: seller.status
                 };
             }
@@ -334,7 +338,7 @@ export const getCurrentUser = async (req, res) => {
             if (seller) {
                 sellerInfo = {
                     _id: seller._id,
-                    storeName: seller.storeName,
+                    businessName: seller.businessName,
                     status: seller.status
                 };
             }

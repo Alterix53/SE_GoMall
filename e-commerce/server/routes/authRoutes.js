@@ -48,23 +48,25 @@ const registerValidation = [
 
 const sellerRegisterValidation = [
     ...registerValidation,
-    body('storeName')
-        .trim()
-        .isLength({ min: 2, max: 100 })
-        .withMessage('Store name must be between 2 and 100 characters'),
+    // Accept businessName or legacy storeName
+    oneOf([
+        body('businessName').exists({ checkFalsy: true }).trim().isLength({ min: 2, max: 100 }),
+        body('storeName').exists({ checkFalsy: true }).trim().isLength({ min: 2, max: 100 })
+    ], 'Business/store name must be between 2 and 100 characters'),
     body('businessLicense')
         .trim()
         .notEmpty()
         .withMessage('Business license is required'),
-    body('sellerPhoneNumber')
-        .optional()
-        .matches(/^[\+]?[1-9][\d]{0,15}$/)
-        .withMessage('Please provide a valid seller phone number'),
-    body('sellerAddress')
-        .optional()
-        .trim()
-        .isLength({ max: 500 })
-        .withMessage('Seller address must not exceed 500 characters'),
+    // Accept businessPhone or legacy sellerPhoneNumber
+    oneOf([
+        body('businessPhone').optional().matches(/^[\+]?[1-9][\d]{0,15}$/),
+        body('sellerPhoneNumber').optional().matches(/^[\+]?[1-9][\d]{0,15}$/)
+    ], 'Please provide a valid seller phone number'),
+    // Accept businessAddress or legacy sellerAddress
+    oneOf([
+        body('businessAddress').optional().trim().isLength({ max: 500 }),
+        body('sellerAddress').optional().trim().isLength({ max: 500 })
+    ], 'Seller address must not exceed 500 characters'),
     body('verificationDocs')
         .optional()
         .isArray()
