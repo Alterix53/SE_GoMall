@@ -59,7 +59,11 @@ const FlashSaleCarousel = memo(({ products }) => {
             src={product.image || "/images/default-product.jpg"}
             alt={product.name}
             onError={(e) => {
-              e.target.src = "/images/default-product.jpg"
+              console.error("Flash sale image load error for:", product.name, "falling back to default")
+              // Prevent infinite loop by checking if we're already using default image
+              if (e.target.src !== "/images/default-product.jpg") {
+                e.target.src = "/images/default-product.jpg"
+              }
             }}
           />
         </div>

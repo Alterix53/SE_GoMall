@@ -217,10 +217,12 @@ export const login = async (req, res) => {
             });
         }
 
-        const { email, password } = req.body;
-
-        // Find user by email
-        const user = await User.findOne({ email });
+        const { email, username, password } = req.body;
+        const identifier = (email || username || '').trim();
+      
+        const user = await User.findOne({
+          $or: [{ email: identifier }, { username: identifier }]
+        });
         if (!user) {
             return res.status(401).json({
                 success: false,

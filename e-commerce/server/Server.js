@@ -7,9 +7,11 @@ import { fileURLToPath } from "url";
 import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"; // Import cart routes
 import authRoutes from "./routes/authRoutes.js"; // Import auth routes
+import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import './models/User.js';
@@ -17,7 +19,6 @@ import './models/Order.js';
 import './models/Cart.js';
 import './models/Review.js';
 import './models/Payment.js';
-import userRoutes from "./routes/userRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -128,10 +129,15 @@ app.get('/api/categories', async (req, res) => {
 });
 
 app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes); // Thêm prefix /api/cart
-app.use("/api/auth", userRoutes); // Mount auth routes trước
-app.use("/api/orders", orderRoutes);
+app.use("/api/cart", cartRoutes);  // Thêm prefix /api/cart
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/admin", adminRoutes);
+
+// app.use("/api/auth", userRoutes); // Mount auth routes trước
+
+
 
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);

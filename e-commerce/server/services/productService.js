@@ -70,6 +70,34 @@ class ProductService {
         }));
     }
 
+    // Search products
+    async searchProducts(query, options = {}) {
+        const { page = 1, limit = 12, sortBy = 'createdAt' } = options;
+        
+        // Build sort object
+        const sort = {};
+        sort[sortBy] = -1;
+        
+        const products = await Product.find(query)
+            .populate("categoryID", "categoryName slug")
+            .sort(sort)
+            .limit(Number(limit))
+            .skip((Number(page) - 1) * Number(limit))
+            .lean();
+
+        const total = await Product.countDocuments(query);
+
+        return {
+            products: this.addDiscountToProducts(products),
+            pagination: {
+                current: Number(page),
+                pages: Math.ceil(total / Number(limit)),
+                total,
+                limit: Number(limit),
+            },
+        };
+    }
+
     // Get all products with filtering and pagination
     async getAllProducts(query) {
         const { page = 1, limit = 12 } = query;

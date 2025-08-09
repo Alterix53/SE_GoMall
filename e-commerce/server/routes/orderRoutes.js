@@ -1,6 +1,10 @@
 import express from 'express';
 import * as orderController from '../controllers/orderController.js';
+<<<<<<< HEAD
 import { authenticateToken } from '../middleware/auth.js';
+=======
+import { authenticateToken as requireAuth } from '../middleware/auth.js';
+>>>>>>> origin/Develop
 
 const router = express.Router();
 

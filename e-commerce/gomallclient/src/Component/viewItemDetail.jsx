@@ -11,10 +11,10 @@ export default function ViewItemDetail() {
   const [activeTab, setActiveTab] = useState("description")
 
   const productImages = [
-    "/placeholder.svg?height=500&width=500",
-    "/placeholder.svg?height=500&width=500",
-    "/placeholder.svg?height=500&width=500",
-    "/placeholder.svg?height=500&width=500",
+    "/images/default-product.jpg",
+    "/images/default-product.jpg",
+    "/images/default-product.jpg",
+    "/images/default-product.jpg",
   ]
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"]
@@ -26,10 +26,10 @@ export default function ViewItemDetail() {
   ]
 
   const relatedProducts = [
-    { id: 1, name: "Similar Product 1", price: 89.99, image: "/placeholder.svg?height=200&width=200" },
-    { id: 2, name: "Similar Product 2", price: 129.99, image: "/placeholder.svg?height=200&width=200" },
-    { id: 3, name: "Similar Product 3", price: 99.99, image: "/placeholder.svg?height=200&width=200" },
-    { id: 4, name: "Similar Product 4", price: 149.99, image: "/placeholder.svg?height=200&width=200" },
+    { id: 1, name: "Similar Product 1", price: 89.99, image: "/images/default-product.jpg" },
+    { id: 2, name: "Similar Product 2", price: 129.99, image: "/images/default-product.jpg" },
+    { id: 3, name: "Similar Product 3", price: 99.99, image: "/images/default-product.jpg" },
+    { id: 4, name: "Similar Product 4", price: 149.99, image: "/images/default-product.jpg" },
   ]
 
   const reviews = [

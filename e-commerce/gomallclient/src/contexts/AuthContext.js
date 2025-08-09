@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiService } from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -61,29 +62,87 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Đăng nhập
-  const login = async (username, password) => {
+  const login = async (identifier, password) => {
     try {
-      // Giả lập API call
-      const response = await mockLoginAPI(username, password);
-      
-      if (response.success) {
-        const { token: newToken, user: userData } = response;
+      // Cho phép đăng nhập bằng username hoặc email: dùng regex email thay vì chỉ kiểm tra '@'
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isEmail = typeof identifier === 'string' && emailRegex.test(identifier);
+      const payload = isEmail ? { email: identifier, password } : { username: identifier, password };
+      const resp = await apiService.post('/auth/login', payload);
+      if (resp?.data?.success) {
+        const { token: newToken, user: rawUser } = resp.data.data;
+        const userData = {
+          id: rawUser._id || rawUser.id,
+          username: rawUser.username,
+          email: rawUser.email,
+          role: Array.isArray(rawUser.role) ? rawUser.role[0] : rawUser.role,
+          sellerInfo: rawUser.sellerInfo || null,
+        };
         
         // Lưu token và user vào localStorage
         localStorage.setItem('token', newToken);
         localStorage.setItem('user', JSON.stringify(userData));
+        // Giữ tương thích với các chỗ legacy đang kiểm tra khóa này
+        localStorage.setItem('isLoggedIn', 'true');
+        // Nếu trước đó có adminToken (đăng nhập admin), xóa đi để tránh gây nhiễu
+        localStorage.removeItem('adminToken');
         
         // Cập nhật state
         setToken(newToken);
         setUser(userData);
         
-        return { success: true };
+        return { success: true, user: userData };
       } else {
-        return { success: false, message: response.message };
+        const serverMsg = resp?.data?.message;
+        const serverErrors = resp?.data?.errors;
+        const combined = Array.isArray(serverErrors) && serverErrors.length
+          ? serverErrors.map(e => e.msg || e.message).join('\n')
+          : serverMsg || 'Đăng nhập thất bại';
+        return { success: false, message: combined, errors: serverErrors || [] };
       }
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, message: 'Đăng nhập thất bại' };
+      // Fallback: thông báo lỗi rõ ràng
+      const serverErrors = error?.response?.data?.errors;
+      const message = Array.isArray(serverErrors) && serverErrors.length
+        ? serverErrors.map(e => e.msg || e.message).join('\n')
+        : (error?.response?.data?.message || 'Đăng nhập thất bại');
+      return { success: false, message, errors: serverErrors || [] };
+    }
+  };
+
+  // Đăng nhập ADMIN
+  const loginAdmin = async (username, password) => {
+    try {
+      // Admin API chỉ chấp nhận username + password
+      const resp = await apiService.post('/admin/login', { username, password });
+      if (resp?.data?.data) {
+        const { token: newToken, admin } = resp.data.data;
+        const adminUser = {
+          id: admin?._id || admin?.id,
+          username: admin?.username,
+          email: admin?.email,
+          role: 'admin',
+        };
+
+        // Lưu token và user (dùng chung key để ProtectedRoute hoạt động thống nhất)
+        localStorage.setItem('token', newToken);
+        // Lưu thêm adminToken cho các màn admin đang dùng key riêng
+        localStorage.setItem('adminToken', newToken);
+        localStorage.setItem('user', JSON.stringify(adminUser));
+        localStorage.setItem('isLoggedIn', 'true');
+
+        setToken(newToken);
+        setUser(adminUser);
+
+        return { success: true, user: adminUser };
+      }
+
+      const message = resp?.data?.message || 'Đăng nhập admin thất bại';
+      return { success: false, message };
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Đăng nhập admin thất bại';
+      return { success: false, message };
     }
   };
 
@@ -91,6 +150,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Xóa token và user khỏi localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('adminToken');
     localStorage.removeItem('user');
     localStorage.removeItem('isLoggedIn');
     
@@ -114,43 +174,7 @@ export const AuthProvider = ({ children }) => {
     return user;
   };
 
-  // Mock API cho demo
-  const mockLoginAPI = async (username, password) => {
-    // Giả lập delay network
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Kiểm tra thông tin đăng nhập từ localStorage (như code cũ)
-    const storedAccount = JSON.parse(localStorage.getItem('account'));
-    
-    if (storedAccount && 
-        storedAccount.username === username && 
-        storedAccount.password === password) {
-      
-      // Tạo mock token (JWT format)
-      const mockToken = createMockJWT({
-        userId: Date.now(),
-        username: username,
-        role: 'user',
-        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 giờ
-      });
-      
-      return {
-        success: true,
-        token: mockToken,
-        user: {
-          id: Date.now(),
-          username: username,
-          email: storedAccount.email,
-          role: 'user'
-        }
-      };
-    } else {
-      return {
-        success: false,
-        message: 'Sai tài khoản hoặc mật khẩu!'
-      };
-    }
-  };
+  // (Giữ sẵn) Tạo mock JWT token – dùng cho môi trường demo khác nếu cần
 
   // Tạo mock JWT token
   const createMockJWT = (payload) => {
@@ -166,6 +190,7 @@ export const AuthProvider = ({ children }) => {
     token,
     loading,
     login,
+    loginAdmin,
     logout,
     isAuthenticated,
     getToken,

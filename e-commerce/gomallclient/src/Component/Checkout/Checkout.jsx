@@ -6,14 +6,14 @@ const INITIAL_CART_ITEMS = [
     name: "Wireless Bluetooth Headphones",
     price: 79.99,
     quantity: 1,
-    image: "/placeholder.svg?height=60&width=60",
+    image: "/images/default-product.jpg",
   },
   {
     id: "2",
     name: "Smart Watch Series 5",
     price: 299.99,
     quantity: 2,
-    image: "/placeholder.svg?height=60&width=60",
+    image: "/images/default-product.jpg",
   },
 ];
 

@@ -60,7 +60,11 @@ const ProductAnimation = () => {
             alt={currentProduct.name}
             className="product-image"
             onError={(e) => {
-              e.target.src = "/images/default-product.jpg";
+              console.error("Product animation image load error, falling back to default")
+              // Prevent infinite loop by checking if we're already using default image
+              if (e.target.src !== "/images/default-product.jpg") {
+                e.target.src = "/images/default-product.jpg";
+              }
             }}
           />
           <div className="floating-elements">

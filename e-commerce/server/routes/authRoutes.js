@@ -1,5 +1,5 @@
 import express from 'express';
-import { body } from 'express-validator';
+import { body, oneOf } from 'express-validator';
 import {
     register,
     registerSeller,
@@ -71,13 +71,25 @@ const sellerRegisterValidation = [
 ];
 
 const loginValidation = [
-    body('email')
-        .isEmail()
-        .normalizeEmail()
-        .withMessage('Please provide a valid email address'),
+    // Yêu cầu password
     body('password')
         .notEmpty()
-        .withMessage('Password is required')
+        .withMessage('Password is required'),
+    // Bắt buộc CÓ email hợp lệ HOẶC username hợp lệ
+    oneOf([
+        body('email')
+            .exists({ checkFalsy: true })
+            .bail()
+            .isEmail()
+            .normalizeEmail()
+            .withMessage('Please provide a valid username or email'),
+        body('username')
+            .exists({ checkFalsy: true })
+            .bail()
+            .trim()
+            .isLength({ min: 3, max: 30 })
+            .withMessage('Username must be between 3 and 30 characters'),
+    ], 'Please provide a valid username or email')
 ];
 
 const refreshTokenValidation = [

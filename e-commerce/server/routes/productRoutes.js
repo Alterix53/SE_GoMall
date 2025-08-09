@@ -4,6 +4,7 @@ import {
     getFlashSaleProducts,
     getTopProducts,
     getProductStats,
+    searchProducts,
     getProductById,
     createProduct,
     updateProduct,
@@ -20,6 +21,7 @@ router.get('/', getAllProducts);
 router.get('/flash-sale', getFlashSaleProducts);
 router.get('/top-products', getTopProducts);
 router.get('/stats', getProductStats);
+router.get('/search', searchProducts);
 router.get('/:id', getProductById);
 
 // Protected routes (require authentication)

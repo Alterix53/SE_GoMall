@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import Seller from "../models/Seller.js";
+import Category from "../models/Category.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -341,6 +342,486 @@ class AdminService {
         await User.findByIdAndDelete(userId);
 
         return { message: "User deleted successfully" };
+    }
+
+    // User Management Services
+    async getAllUsers({ page = 1, limit = 10, search = '', status = '' }) {
+        const skip = (page - 1) * limit;
+        const query = {};
+
+        if (search) {
+            query.$or = [
+                { username: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { fullName: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (status) {
+            query.isActive = status === 'active';
+        }
+
+        const [users, total] = await Promise.all([
+            User.find(query)
+                .select('-password')
+                .skip(skip)
+                .limit(limit)
+                .sort({ createdAt: -1 }),
+            User.countDocuments(query)
+        ]);
+
+        return {
+            users,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    async getUserById(userId) {
+        const user = await User.findById(userId).select('-password');
+        
+        if (!user) {
+            throw new Error("Người dùng không tồn tại");
+        }
+
+        return user;
+    }
+
+    async updateUserStatus(userId, status) {
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            throw new Error("Người dùng không tồn tại");
+        }
+
+        user.isActive = status === 'active';
+        await user.save();
+
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
+        return userResponse;
+    }
+
+    // Seller Management Services
+    async getAllSellers({ page = 1, limit = 10, search = '', status = '' }) {
+        const skip = (page - 1) * limit;
+        const query = {};
+
+        if (search) {
+            query.$or = [
+                { username: { $regex: search, $options: 'i' } },
+                { businessName: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (status) {
+            query.isActive = status === 'active';
+        }
+
+        const [sellers, total] = await Promise.all([
+            Seller.find(query)
+                .skip(skip)
+                .limit(limit)
+                .sort({ createdAt: -1 }),
+            Seller.countDocuments(query)
+        ]);
+
+        return {
+            sellers,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    async getSellerById(sellerId) {
+        const seller = await Seller.findById(sellerId);
+        
+        if (!seller) {
+            throw new Error("Người bán không tồn tại");
+        }
+
+        return seller;
+    }
+
+    async createSeller(sellerData) {
+        const { username, email, password, businessName, phoneNumber, address } = sellerData;
+
+        // Check if seller already exists
+        const existingSeller = await Seller.findOne({
+            $or: [{ username }, { email }]
+        });
+
+        if (existingSeller) {
+            throw new Error("Tên đăng nhập hoặc email đã tồn tại");
+        }
+
+        // Hash password
+        const hashedPassword = await this.hashPassword(password);
+
+        // Create seller
+        const seller = new Seller({
+            username,
+            email,
+            password: hashedPassword,
+            businessName,
+            phoneNumber,
+            address,
+            isActive: false, // Pending approval
+            isApproved: false
+        });
+
+        await seller.save();
+
+        // Return seller without password
+        const sellerResponse = seller.toObject();
+        delete sellerResponse.password;
+
+        return sellerResponse;
+    }
+
+    async updateSeller(sellerId, updateData) {
+        const seller = await Seller.findById(sellerId);
+        
+        if (!seller) {
+            throw new Error("Người bán không tồn tại");
+        }
+
+        // Remove sensitive fields from update
+        const { password, username, email, ...safeUpdateData } = updateData;
+
+        // Update seller
+        Object.assign(seller, safeUpdateData);
+        await seller.save();
+
+        // Return seller without password
+        const sellerResponse = seller.toObject();
+        delete sellerResponse.password;
+
+        return sellerResponse;
+    }
+
+    async deleteSeller(sellerId) {
+        const seller = await Seller.findById(sellerId);
+        
+        if (!seller) {
+            throw new Error("Người bán không tồn tại");
+        }
+
+        await Seller.findByIdAndDelete(sellerId);
+
+        return { message: "Xóa người bán thành công" };
+    }
+
+    async updateSellerStatus(sellerId, status) {
+        const seller = await Seller.findById(sellerId);
+        
+        if (!seller) {
+            throw new Error("Người bán không tồn tại");
+        }
+
+        seller.isActive = status === 'active';
+        await seller.save();
+
+        const sellerResponse = seller.toObject();
+        delete sellerResponse.password;
+
+        return sellerResponse;
+    }
+
+    async approveSeller(sellerId) {
+        const seller = await Seller.findById(sellerId);
+        
+        if (!seller) {
+            throw new Error("Người bán không tồn tại");
+        }
+
+        seller.isApproved = true;
+        seller.isActive = true;
+        await seller.save();
+
+        const sellerResponse = seller.toObject();
+        delete sellerResponse.password;
+
+        return sellerResponse;
+    }
+
+    // Product Management Services
+    async getAllProducts({ page = 1, limit = 10, search = '', category = '', status = '' }) {
+        const skip = (page - 1) * limit;
+        const query = {};
+
+        if (search) {
+            query.name = { $regex: search, $options: 'i' };
+        }
+
+        if (category) {
+            query.categoryID = category;
+        }
+
+        if (status) {
+            query.isActive = status === 'active';
+        }
+
+        const [products, total] = await Promise.all([
+            Product.find(query)
+                .populate('categoryID', 'categoryName')
+                .populate('sellerID', 'businessName')
+                .skip(skip)
+                .limit(limit)
+                .sort({ createdAt: -1 }),
+            Product.countDocuments(query)
+        ]);
+
+        return {
+            products,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    async getProductById(productId) {
+        const product = await Product.findById(productId)
+            .populate('categoryID', 'categoryName')
+            .populate('sellerID', 'businessName');
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        return product;
+    }
+
+    async createProduct(productData) {
+        const product = new Product(productData);
+        await product.save();
+
+        return product;
+    }
+
+    async updateProduct(productId, updateData) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        Object.assign(product, updateData);
+        await product.save();
+
+        return product;
+    }
+
+    async deleteProduct(productId) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        await Product.findByIdAndDelete(productId);
+
+        return { message: "Xóa sản phẩm thành công" };
+    }
+
+    async updateProductStatus(productId, status) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        product.isActive = status === 'active';
+        await product.save();
+
+        return product;
+    }
+
+    async toggleProductFeature(productId) {
+        const product = await Product.findById(productId);
+        
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
+        product.isFeatured = !product.isFeatured;
+        await product.save();
+
+        return product;
+    }
+
+    // Order Management Services
+    async getAllOrders({ page = 1, limit = 10, status = '', dateFrom = '', dateTo = '' }) {
+        const skip = (page - 1) * limit;
+        const query = {};
+
+        if (status) {
+            query.status = status;
+        }
+
+        if (dateFrom || dateTo) {
+            query.createdAt = {};
+            if (dateFrom) query.createdAt.$gte = new Date(dateFrom);
+            if (dateTo) query.createdAt.$lte = new Date(dateTo);
+        }
+
+        const [orders, total] = await Promise.all([
+            Order.find(query)
+                .populate('userID', 'username email')
+                .populate('items.productID', 'name price')
+                .skip(skip)
+                .limit(limit)
+                .sort({ createdAt: -1 }),
+            Order.countDocuments(query)
+        ]);
+
+        return {
+            orders,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    async getOrderById(orderId) {
+        const order = await Order.findById(orderId)
+            .populate('userID', 'username email')
+            .populate('items.productID', 'name price');
+        
+        if (!order) {
+            throw new Error("Đơn hàng không tồn tại");
+        }
+
+        return order;
+    }
+
+    async updateOrder(orderId, updateData) {
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+            throw new Error("Đơn hàng không tồn tại");
+        }
+
+        Object.assign(order, updateData);
+        await order.save();
+
+        return order;
+    }
+
+    async updateOrderStatus(orderId, status) {
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+            throw new Error("Đơn hàng không tồn tại");
+        }
+
+        order.status = status;
+        await order.save();
+
+        return order;
+    }
+
+    // Category Management Services
+    async getAllCategories() {
+        const categories = await Category.find().sort({ categoryName: 1 });
+        return categories;
+    }
+
+    async getCategoryById(categoryId) {
+        const category = await Category.findById(categoryId);
+        
+        if (!category) {
+            throw new Error("Danh mục không tồn tại");
+        }
+
+        return category;
+    }
+
+    async createCategory(categoryData) {
+        const category = new Category(categoryData);
+        await category.save();
+
+        return category;
+    }
+
+    async updateCategory(categoryId, updateData) {
+        const category = await Category.findById(categoryId);
+        
+        if (!category) {
+            throw new Error("Danh mục không tồn tại");
+        }
+
+        Object.assign(category, updateData);
+        await category.save();
+
+        return category;
+    }
+
+    async deleteCategory(categoryId) {
+        const category = await Category.findById(categoryId);
+        
+        if (!category) {
+            throw new Error("Danh mục không tồn tại");
+        }
+
+        // Check if category has products
+        const productCount = await Product.countDocuments({ categoryID: categoryId });
+        if (productCount > 0) {
+            throw new Error("Không thể xóa danh mục đang có sản phẩm");
+        }
+
+        await Category.findByIdAndDelete(categoryId);
+
+        return { message: "Xóa danh mục thành công" };
+    }
+
+    // System Management Services
+    async getSystemLogs() {
+        // In a real application, you would implement proper logging
+        // For now, return a mock response
+        return {
+            logs: [
+                { timestamp: new Date(), level: 'INFO', message: 'System started' },
+                { timestamp: new Date(), level: 'INFO', message: 'Admin login successful' }
+            ]
+        };
+    }
+
+    async createBackup() {
+        // In a real application, you would implement database backup
+        // For now, return a mock response
+        return {
+            backupId: Date.now(),
+            timestamp: new Date(),
+            status: 'completed',
+            message: 'Backup created successfully'
+        };
+    }
+
+    async toggleMaintenanceMode(enabled) {
+        // In a real application, you would implement maintenance mode
+        // For now, return a mock response
+        return {
+            maintenanceMode: enabled,
+            timestamp: new Date(),
+            message: `Maintenance mode ${enabled ? 'enabled' : 'disabled'}`
+        };
     }
 }
 
