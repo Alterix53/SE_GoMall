@@ -73,8 +73,9 @@ function Home() {
         const flashSaleResponse = await fetch('http://localhost:8080/api/products/flash-sale');
         if (flashSaleResponse.ok) {
           const flashSaleData = await flashSaleResponse.json();
-          if (flashSaleData.success && flashSaleData.data && Array.isArray(flashSaleData.data.products)) {
-            const mappedFlash = flashSaleData.data.products.map((p) => ({
+          const flashProducts = flashSaleData?.data?.products || flashSaleData?.data?.data?.products || [];
+          if (Array.isArray(flashProducts)) {
+            const mappedFlash = flashProducts.map((p) => ({
               _id: p._id,
               name: p.name,
               price: p?.price?.sale || p?.price?.original || 0,
@@ -104,8 +105,9 @@ function Home() {
         const featuredResponse = await fetch('http://localhost:8080/api/products/top-products?type=bestseller&limit=12');
         if (featuredResponse.ok) {
           const featuredData = await featuredResponse.json();
-          if (featuredData.success && featuredData.data && Array.isArray(featuredData.data.products)) {
-            const mappedTop = featuredData.data.products.map((p) => ({
+          const topProducts = featuredData?.data?.products || featuredData?.data?.data?.products || [];
+          if (Array.isArray(topProducts)) {
+            const mappedTop = topProducts.map((p) => ({
               _id: p._id,
               name: p.name,
               price: p?.price?.sale || p?.price?.original || 0,
@@ -138,9 +140,10 @@ function Home() {
         const categoryResponse = await fetch('http://localhost:8080/api/products');
         if (categoryResponse.ok) {
           const categoryData = await categoryResponse.json();
-          if (categoryData.success && categoryData.data && Array.isArray(categoryData.data.products)) {
+          const allProducts = categoryData?.data?.products || categoryData?.data?.data?.products || [];
+          if (Array.isArray(allProducts)) {
             const groupedByCategory = {};
-            categoryData.data.products.forEach((product) => {
+            allProducts.forEach((product) => {
               const categoryName = product.categoryID?.categoryName || 'Other';
               if (!groupedByCategory[categoryName]) {
                 groupedByCategory[categoryName] = [];

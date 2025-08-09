@@ -30,7 +30,7 @@ const TopProduct = () => {
         }
         const data = await response.json();
         console.log("Top Products API response:", data);
-        const products = data?.data?.products || [];
+        const products = data?.data?.products || data?.data?.data?.products || [];
         if (products.length === 0) {
           console.warn("No top products from API");
           return;

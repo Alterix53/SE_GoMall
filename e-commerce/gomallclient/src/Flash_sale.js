@@ -49,7 +49,7 @@ const FlashSale = () => {
         }
         const data = await response.json();
         console.log("Flash Sale API response:", data);
-        const products = data?.data?.products || [];
+        const products = data?.data?.products || data?.data?.data?.products || [];
         if (products.length === 0) {
           console.warn("No flash sale products from API");
           setFlashSaleProducts([]);
