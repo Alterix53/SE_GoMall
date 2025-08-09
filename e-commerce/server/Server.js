@@ -128,6 +128,14 @@ app.get('/api/categories', async (req, res) => {
     }
 });
 
+// Test route for debugging
+app.post('/api/test-register', express.json(), async (req, res) => {
+    console.log('Test register endpoint hit');
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    res.json({ success: true, message: 'Test endpoint working' });
+});
+
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);  // Thêm prefix /api/cart
 app.use("/api/auth", authRoutes);

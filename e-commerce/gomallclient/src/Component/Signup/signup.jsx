@@ -52,9 +52,13 @@ const SignUpPage = () => {
     try {
       // Đảm bảo không có token cũ can thiệp vào quá trình đăng ký
       const tempToken = localStorage.getItem('token');
-      if (tempToken) {
-        localStorage.removeItem('token');
-      }
+      const tempUser = localStorage.getItem('user');
+      const tempIsLoggedIn = localStorage.getItem('isLoggedIn');
+      
+      // Tạm thời xóa hết thông tin đăng nhập cũ
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('isLoggedIn');
 
       const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
@@ -65,15 +69,17 @@ const SignUpPage = () => {
           username,
           email,
           password,
-          role: 'buyer'  // mặc định là người mua
+          role: 'user'  // mặc định là user theo schema
         }),
       });
 
       const data = await response.json();
       
       // Khôi phục token cũ nếu đăng ký thất bại
-      if (!data.success && tempToken) {
-        localStorage.setItem('token', tempToken);
+      if (!data.success) {
+        if (tempToken) localStorage.setItem('token', tempToken);
+        if (tempUser) localStorage.setItem('user', tempUser);
+        if (tempIsLoggedIn) localStorage.setItem('isLoggedIn', tempIsLoggedIn);
       }
 
       if (data.success) {
