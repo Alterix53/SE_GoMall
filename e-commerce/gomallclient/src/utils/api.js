@@ -78,6 +78,19 @@ export const apiService = {
   // PATCH request
   patch: (url, data = {}, config = {}) => {
     return api.patch(url, data, config);
+  },
+
+  // User management functions
+  updateUserProfile: (userId, userData) => {
+    return api.put(`/users/${userId}`, userData);
+  },
+
+  getCurrentUserProfile: (userId) => {
+    return api.get(`/users/${userId}`);
+  },
+
+  changePassword: (userId, passwordData) => {
+    return api.put(`/auth/change-password`, passwordData);
   }
 };
 

@@ -6,7 +6,8 @@ import {
     login,
     logout,
     getCurrentUser,
-    refreshToken
+    refreshToken,
+    changePassword
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
@@ -98,6 +99,17 @@ const refreshTokenValidation = [
         .withMessage('Refresh token is required')
 ];
 
+const changePasswordValidation = [
+    body('oldPassword')
+        .notEmpty()
+        .withMessage('Current password is required'),
+    body('newPassword')
+        .isLength({ min: 6 })
+        .withMessage('New password must be at least 6 characters long')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .withMessage('New password must contain at least one uppercase letter, one lowercase letter, and one number'),
+];
+
 // Auth routes
 router.post('/register', registerValidation, register);
 router.post('/register-seller', sellerRegisterValidation, registerSeller);
@@ -105,5 +117,6 @@ router.post('/login', loginValidation, login);
 router.post('/logout', authenticateToken, logout);
 router.get('/me', authenticateToken, getCurrentUser);
 router.post('/refresh', refreshTokenValidation, refreshToken);
+router.put('/change-password', authenticateToken, changePasswordValidation, changePassword);
 
 export default router; 
