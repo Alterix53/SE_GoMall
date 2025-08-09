@@ -22,26 +22,18 @@ router.post('/backup', checkRole(['admin']), backupUsers);
 // User routes (có thể là admin hoặc chính user đó)
 router.get('/:id', (req, res, next) => {
     // Cho phép admin hoặc chính user đó xem thông tin
-    if (req.user.role === 'admin' || req.user.id === req.params.id) {
-        next();
-    } else {
-        res.status(403).json({
-            success: false,
-            message: 'Insufficient permissions'
-        });
-    }
+    const isAdmin = Array.isArray(req.user.role) ? req.user.role.includes('admin') : req.user.role === 'admin';
+    const isOwner = req.user?._id?.toString?.() === req.params.id;
+    if (isAdmin || isOwner) return next();
+    res.status(403).json({ success: false, message: 'Insufficient permissions' });
 }, getUserById);
 
 router.put('/:id', (req, res, next) => {
     // Cho phép admin hoặc chính user đó cập nhật thông tin
-    if (req.user.role === 'admin' || req.user.id === req.params.id) {
-        next();
-    } else {
-        res.status(403).json({
-            success: false,
-            message: 'Insufficient permissions'
-        });
-    }
+    const isAdmin = Array.isArray(req.user.role) ? req.user.role.includes('admin') : req.user.role === 'admin';
+    const isOwner = req.user?._id?.toString?.() === req.params.id;
+    if (isAdmin || isOwner) return next();
+    res.status(403).json({ success: false, message: 'Insufficient permissions' });
 }, updateUser);
 
 // Chỉ admin mới có thể xóa user

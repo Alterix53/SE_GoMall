@@ -62,8 +62,13 @@ const seedCategories = async () => {
         };
     }));
 
-    await Category.deleteMany({});
-    const createdCategories = await Category.insertMany(mappedCategories);
+    // Only reset when explicitly enabled
+    if (process.env.SEED_RESET === '1') {
+        await Category.deleteMany({});
+    }
+    const createdCategories = await Category.insertMany(mappedCategories, { ordered: false }).catch(() => {
+        return Category.find({}).sort({ createdAt: 1 });
+    });
 
     for (let i = 0; i < categoriesData.length; i++) {
         if (categoriesData[i].parentID) {
@@ -107,8 +112,10 @@ const seedUsers = async () => {
         profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300'
     }));
 
-    await User.deleteMany({});
-    const createdUsers = await User.insertMany(mappedUsers);
+    if (process.env.SEED_RESET === '1') {
+        await User.deleteMany({});
+    }
+    const createdUsers = await User.insertMany(mappedUsers, { ordered: false }).catch(() => User.find({}));
     const createdSellers = createdUsers.filter(u => u.role.includes('seller'));
     console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role, _id: u._id, shop: u.shop })));
     console.log("Sellers extracted:", createdSellers.map(s => ({ username: s.username, _id: s._id, shop: s.shop })));
@@ -168,8 +175,10 @@ const seedProducts = async (createdCategories, createdSellers) => {
     })));
     const validProducts = mappedProducts;
     console.log("Valid products after filter:", validProducts);
-    await Product.deleteMany({});
-    const createdProducts = await Product.insertMany(validProducts);
+    if (process.env.SEED_RESET === '1') {
+        await Product.deleteMany({});
+    }
+    const createdProducts = await Product.insertMany(validProducts, { ordered: false }).catch(() => Product.find({}));
     console.log("Products seeded successfully:", createdProducts.map(p => ({
         name: p.name,
         _id: p._id,

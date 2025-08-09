@@ -36,7 +36,6 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  justify-content: space-between;
 }
 
 .logo {
@@ -45,7 +44,6 @@
   gap: 8px;
   text-decoration: none;
   color: #ff6b35;
-  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -64,27 +62,6 @@
 .logo-text {
   font-size: 24px;
   font-weight: bold;
-}
-
-/* Shipping info styling */
-.shipping-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #666;
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.shipping-info span {
-  white-space: nowrap;
-}
-
-/* Search container styling */
-.search-container {
-  flex: 1;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .search-form {
@@ -126,8 +103,6 @@
   display: flex;
   gap: 20px;
   align-items: center;
-  flex-shrink: 0;
-  margin-left: auto;
 }
 
 .nav-icon {
@@ -227,6 +202,38 @@
   cursor: pointer;
 }
 
+.navbar-links {
+  background: #f8f8f8;
+  border-top: 1px solid #e0e0e0;
+  padding: 12px 0;
+}
+
+.navbar-links .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 30px;
+  overflow-x: auto;
+}
+
+.nav-link {
+  color: #666;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #ff6b35;
+}
+
 .mobile-menu {
   display: none;
   background: white;
@@ -262,11 +269,7 @@
     display: none;
   }
 
-  .shipping-info {
-    display: none;
-  }
-
-  .search-container {
+  .search-form {
     display: none;
   }
 
@@ -280,6 +283,10 @@
 
   .mobile-menu {
     display: block;
+  }
+
+  .nav-menu {
+    gap: 20px;
   }
 }
 

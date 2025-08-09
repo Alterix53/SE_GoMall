@@ -1,18 +1,12 @@
-import userFileService from '../services/userFileService.js';
+import User from '../models/User.js';
+import Seller from '../models/Seller.js';
 import ResponseHandler from '../utils/responseHandler.js';
 
 // GET /api/users - Get all users (admin only)
 export const getAllUsers = ResponseHandler.asyncHandler(async (req, res) => {
     try {
-        const users = userFileService.getAllUsers();
-        
-        // Remove password from response
-        const safeUsers = users.map(user => {
-            const { password, ...safeUser } = user;
-            return safeUser;
-        });
-
-        ResponseHandler.success(res, { users: safeUsers }, "Lấy danh sách users thành công");
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+        ResponseHandler.success(res, { users }, "Lấy danh sách users thành công");
     } catch (error) {
         console.error('Error getting all users:', error);
         throw error;
@@ -22,16 +16,13 @@ export const getAllUsers = ResponseHandler.asyncHandler(async (req, res) => {
 // GET /api/users/:id - Get user by ID
 export const getUserById = ResponseHandler.asyncHandler(async (req, res) => {
     try {
-        const user = userFileService.findUserById(req.params.id);
-        
+        const user = await User.findById(req.params.id).select('-password');
+
         if (!user) {
             return ResponseHandler.notFound(res, "User không tồn tại");
         }
 
-        // Remove password from response
-        const { password, ...safeUser } = user;
-
-        ResponseHandler.success(res, { user: safeUser }, "Lấy thông tin user thành công");
+        ResponseHandler.success(res, { user }, "Lấy thông tin user thành công");
     } catch (error) {
         console.error('Error getting user by ID:', error);
         throw error;
@@ -44,22 +35,25 @@ export const updateUser = ResponseHandler.asyncHandler(async (req, res) => {
         const userId = req.params.id;
         const updateData = req.body;
 
-        // Không cho phép cập nhật password qua endpoint này
+        // Không cho phép cập nhật các trường nhạy cảm qua endpoint này
         delete updateData.password;
+        delete updateData.email;
+        delete updateData.username;
 
-        const updatedUser = userFileService.updateUser(userId, updateData);
-        
-        // Remove password from response
-        const { password, ...safeUser } = updatedUser;
+        const user = await User.findById(userId);
+        if (!user) {
+            return ResponseHandler.notFound(res, 'User không tồn tại');
+        }
+
+        Object.assign(user, updateData);
+        await user.save();
+
+        const safeUser = user.toObject();
+        delete safeUser.password;
 
         ResponseHandler.success(res, { user: safeUser }, "Cập nhật user thành công");
     } catch (error) {
         console.error('Error updating user:', error);
-        
-        if (error.message.includes('User không tồn tại')) {
-            return ResponseHandler.notFound(res, error.message);
-        }
-        
         throw error;
     }
 });
@@ -68,17 +62,15 @@ export const updateUser = ResponseHandler.asyncHandler(async (req, res) => {
 export const deleteUser = ResponseHandler.asyncHandler(async (req, res) => {
     try {
         const userId = req.params.id;
-        
-        userFileService.deleteUser(userId);
+        const user = await User.findById(userId);
+        if (!user) {
+            return ResponseHandler.notFound(res, 'User không tồn tại');
+        }
 
+        await User.findByIdAndDelete(userId);
         ResponseHandler.success(res, null, "Xóa user thành công");
     } catch (error) {
         console.error('Error deleting user:', error);
-        
-        if (error.message.includes('User không tồn tại')) {
-            return ResponseHandler.notFound(res, error.message);
-        }
-        
         throw error;
     }
 });
@@ -87,15 +79,13 @@ export const deleteUser = ResponseHandler.asyncHandler(async (req, res) => {
 export const getUsersByRole = ResponseHandler.asyncHandler(async (req, res) => {
     try {
         const role = req.params.role;
-        const users = userFileService.getUsersByRole(role);
-        
-        // Remove password from response
-        const safeUsers = users.map(user => {
-            const { password, ...safeUser } = user;
-            return safeUser;
-        });
-
-        ResponseHandler.success(res, { users: safeUsers }, `Lấy danh sách users với role ${role} thành công`);
+        if (role === 'seller') {
+            // Trả về danh sách seller từ collection Seller để tương thích hành vi cũ
+            const sellers = await Seller.find({}).sort({ createdAt: -1 });
+            return ResponseHandler.success(res, { users: sellers }, `Lấy danh sách sellers thành công`);
+        }
+        const users = await User.find({ role: role }).select('-password');
+        ResponseHandler.success(res, { users }, `Lấy danh sách users với role ${role} thành công`);
     } catch (error) {
         console.error('Error getting users by role:', error);
         throw error;
@@ -105,13 +95,9 @@ export const getUsersByRole = ResponseHandler.asyncHandler(async (req, res) => {
 // POST /api/users/backup - Backup users file
 export const backupUsers = ResponseHandler.asyncHandler(async (req, res) => {
     try {
-        const backupPath = userFileService.backupUsers();
-        
-        if (backupPath) {
-            ResponseHandler.success(res, { backupPath }, "Backup users file thành công");
-        } else {
-            throw new Error("Không thể tạo backup");
-        }
+        const users = await User.find({}).lean();
+        const sanitized = users.map(u => { const { password, ...rest } = u; return rest; });
+        ResponseHandler.success(res, { users: sanitized }, "Export users từ DB thành công");
     } catch (error) {
         console.error('Error backing up users:', error);
         throw error;
