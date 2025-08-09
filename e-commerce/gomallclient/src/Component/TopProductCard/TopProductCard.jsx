@@ -12,6 +12,11 @@ const TopProductCard = ({ product }) => {
     }).format(price);
   };
 
+  const formatRating = (rating) => {
+    if (!rating || !rating.average) return "0.0";
+    return rating.average.toFixed(1);
+  };
+
   return (
     <div className="top-product-card">
       {/* Product Image */}
@@ -25,16 +30,18 @@ const TopProductCard = ({ product }) => {
         />
       </div>
       
+      {/* Promotional Labels */}
+      <div className="promo-labels">
+        <div className="promo-label left">8.8</div>
+        <div className="promo-label right">
+          ★ {formatRating(product.rating)}
+        </div>
+      </div>
+      
       {/* Product Info */}
       <div className="product-info">
-        <h3 className="product-name">{product.name}</h3>
-        <div className="price-container">
-          <span className="current-price">{formatPrice(product.price)}</span>
-        </div>
-        <div className="product-stats">
-          <span className="rating">★{product.rating?.average || 0}</span>
-          <span className="sold">Sold {product.sold || 0}</span>
-        </div>
+        <div className="product-price">{formatPrice(product.price)}</div>
+        <button className="selling-fast-btn">ĐANG BÁN CHẠY</button>
       </div>
     </div>
   );

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
-import FlashSaleCard from '../FlashSaleCard/FlashSaleCard';
-import TopProductCard from '../TopProductCard/TopProductCard';
 import './CategoryList.css';
 
 // Category icon mapping for display
@@ -116,8 +114,6 @@ export default function CategoryList() {
             image: product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/default-product.jpg',
             rating: product?.rating || { average: 0, count: 0 },
             sold: product?.sold || 0,
-            isFlashSale: product?.isFlashSale || false,
-            isTopProduct: product?.isTopProduct || false,
           }));
           setCategoryProducts(mappedProducts);
         } else {
@@ -212,16 +208,9 @@ export default function CategoryList() {
                 </div>
               ) : (
                 <div className="products-grid">
-                  {currentProducts.map(product => {
-                    // Determine which card component to use based on product properties
-                    if (product.isFlashSale) {
-                      return <FlashSaleCard key={product._id} product={product} />;
-                    } else if (product.isTopProduct) {
-                      return <TopProductCard key={product._id} product={product} />;
-                    } else {
-                      return <ProductCard key={product._id} product={product} />;
-                    }
-                  })}
+                  {currentProducts.map(product => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
                 </div>
               )}
               
