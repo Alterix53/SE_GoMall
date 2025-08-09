@@ -71,9 +71,12 @@ function Home() {
       // Fetch Flash Sale Products
       try {
         const flashSaleResponse = await fetch('http://localhost:8080/api/products/flash-sale');
+        console.log('Flash Sale Response status:', flashSaleResponse.status);
         if (flashSaleResponse.ok) {
           const flashSaleData = await flashSaleResponse.json();
+          console.log('Flash Sale Raw Data:', flashSaleData);
           const flashProducts = flashSaleData?.data?.products || flashSaleData?.data?.data?.products || [];
+          console.log('Flash Products parsed:', flashProducts);
           if (Array.isArray(flashProducts)) {
             const mappedFlash = flashProducts.map((p) => ({
               _id: p._id,
@@ -86,6 +89,7 @@ function Home() {
                   : 0,
               image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
             }));
+            console.log('Mapped Flash Products:', mappedFlash);
             setFlashSaleProducts(mappedFlash.slice(0, 8));
           } else {
             console.log('No Flash Sale data available');
@@ -103,9 +107,12 @@ function Home() {
       // Fetch Featured Products (used by Top Products and Today's Suggestions)
       try {
         const featuredResponse = await fetch('http://localhost:8080/api/products/top-products?type=bestseller&limit=12');
+        console.log('Featured Response status:', featuredResponse.status);
         if (featuredResponse.ok) {
           const featuredData = await featuredResponse.json();
+          console.log('Featured Raw Data:', featuredData);
           const topProducts = featuredData?.data?.products || featuredData?.data?.data?.products || [];
+          console.log('Top Products parsed:', topProducts);
           if (Array.isArray(topProducts)) {
             const mappedTop = topProducts.map((p) => ({
               _id: p._id,
@@ -120,6 +127,7 @@ function Home() {
               rating: p?.rating || { average: 0, count: 0 },
               sold: p?.sold || 0,
             }));
+            console.log('Mapped Top Products:', mappedTop);
             // Ensure we have up to 12 items for Today Suggestions
             setFeaturedProducts(mappedTop.slice(0, 12));
           } else {
@@ -138,9 +146,12 @@ function Home() {
       // Fetch Category Products
       try {
         const categoryResponse = await fetch('http://localhost:8080/api/products');
+        console.log('Category Response status:', categoryResponse.status);
         if (categoryResponse.ok) {
           const categoryData = await categoryResponse.json();
+          console.log('Category Raw Data:', categoryData);
           const allProducts = categoryData?.data?.products || categoryData?.data?.data?.products || [];
+          console.log('All Products parsed:', allProducts);
           if (Array.isArray(allProducts)) {
             const groupedByCategory = {};
             allProducts.forEach((product) => {
@@ -150,6 +161,7 @@ function Home() {
               }
               groupedByCategory[categoryName].push(product);
             });
+            console.log('Grouped by Category:', groupedByCategory);
             setCategoryProducts(groupedByCategory);
           } else {
             console.log('No Category Products data available');
