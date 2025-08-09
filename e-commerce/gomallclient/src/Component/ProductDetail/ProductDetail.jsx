@@ -159,8 +159,10 @@ const ProductDetail = () => {
                 <span className="rating-score">{product.rating?.average || 4.8}</span>
                 <div className="stars">★★★★★</div>
               </div>
-              <div className="rating-count">({product.rating?.count || 123})</div>
-              <div className="sold-count">{product.sold || 0} Đã bán</div>
+              <span className="rating-sep">|</span>
+              <div className="rating-count">{product.rating?.count || 0} đánh giá</div>
+              <span className="rating-sep">|</span>
+              <div className="sold-count">{product.sold || 0} đã bán</div>
             </div>
 
             <div className="price-section">
