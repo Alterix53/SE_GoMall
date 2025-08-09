@@ -15,38 +15,40 @@ const LoginPage = () => {
   const location = useLocation();
   const { login } = useAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
-    // Lấy danh sách người dùng từ localStorage
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-
-    // Tìm user có thông tin trùng khớp
-    const account = users.find(
-      (user) => user.username === username && user.password === password
-    );
-
-    if (!account) {
-      alert('Wrong username or password!');
-      return;
-    }
-
-    // Lưu trạng thái đăng nhập
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('username', account.username);
-    localStorage.setItem('userRole', account.role);
-
-    // Điều hướng theo vai trò
-    if (account.role === 'seller') {
-      if (account.sellerStatus === 'approved') {
-        navigate('/seller-dashboard');
+    try {
+      const result = await login(username, password);
+      
+      if (result.success) {
+        const user = result.user;
+        
+        // Điều hướng theo vai trò
+        if (user.role === 'seller') {
+          if (user.sellerInfo && user.sellerInfo.status === 'approved') {
+            navigate('/seller-dashboard');
+          } else {
+            setError('Tài khoản seller của bạn chưa được phê duyệt.');
+            return;
+          }
+        } else if (user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          // buyer hoặc role khác - về trang chủ
+          const from = location.state?.from?.pathname || '/';
+          navigate(from);
+        }
       } else {
-        alert('Your seller account has not been approved yet.');
-        return;
+        setError(result.message || 'Đăng nhập thất bại');
       }
-    } else {
-      // buyer mặc định
-      navigate('/');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
     }
   };
 

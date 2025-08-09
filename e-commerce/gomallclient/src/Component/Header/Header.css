@@ -298,6 +298,54 @@
 
 .dropdown-item:hover {
   background: #f8f9fa;
+}
+
+/* User Info Styles */
+.dropdown-item.user-info {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  padding: 16px;
+  cursor: default;
+}
+
+.dropdown-item.user-info:hover {
+  background: #f8f9fa;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.username {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #666;
+  text-transform: capitalize;
+}
+
+/* Logout Button */
+.logout-btn {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: #dc3545;
+}
+
+.logout-btn:hover {
+  background: #f8f9fa;
+  color: #dc3545;
+}
   color: #ff6b35;
 }
 

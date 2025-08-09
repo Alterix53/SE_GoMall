@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import './Header.css';
 
 function Header() {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleAccountDropdown = () => {
     setShowAccountDropdown(!showAccountDropdown);
@@ -11,6 +13,11 @@ function Header() {
 
   const closeAccountDropdown = () => {
     setShowAccountDropdown(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    closeAccountDropdown();
   };
 
   return (
@@ -79,17 +86,59 @@ function Header() {
                 type="button"
               >
                 <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f464.svg" alt="Account" />
-                <span className="nav-text">Account</span>
+                <span className="nav-text">
+                  {isAuthenticated() && user ? user.username : 'Account'}
+                </span>
               </button>
               <div className={`dropdown-menu ${showAccountDropdown ? 'show' : 'hide'}`}>
-                <Link to="/login" className="dropdown-item" onClick={closeAccountDropdown}>
-                  <i className="dropdown-icon">🔑</i>
-                  <span>Login</span>
-                </Link>
-                <Link to="/signup" className="dropdown-item" onClick={closeAccountDropdown}>
-                  <i className="dropdown-icon">📝</i>
-                  <span>Sign Up</span>
-                </Link>
+                {isAuthenticated() && user ? (
+                  // Đã đăng nhập - hiển thị menu user
+                  <>
+                    <div className="dropdown-item user-info">
+                      <i className="dropdown-icon">👤</i>
+                      <div className="user-details">
+                        <span className="username">{user.username}</span>
+                        <span className="user-role">{user.role}</span>
+                      </div>
+                    </div>
+                    <Link to="/profile" className="dropdown-item" onClick={closeAccountDropdown}>
+                      <i className="dropdown-icon">⚙️</i>
+                      <span>Tài khoản của tôi</span>
+                    </Link>
+                    <Link to="/orders" className="dropdown-item" onClick={closeAccountDropdown}>
+                      <i className="dropdown-icon">📦</i>
+                      <span>Đơn mua</span>
+                    </Link>
+                    {user.role === 'seller' && (
+                      <Link to="/seller-dashboard" className="dropdown-item" onClick={closeAccountDropdown}>
+                        <i className="dropdown-icon">🏪</i>
+                        <span>Kênh Người Bán</span>
+                      </Link>
+                    )}
+                    {user.role === 'admin' && (
+                      <Link to="/admin" className="dropdown-item" onClick={closeAccountDropdown}>
+                        <i className="dropdown-icon">🛠️</i>
+                        <span>Quản trị</span>
+                      </Link>
+                    )}
+                    <button className="dropdown-item logout-btn" onClick={handleLogout}>
+                      <i className="dropdown-icon">🚪</i>
+                      <span>Đăng xuất</span>
+                    </button>
+                  </>
+                ) : (
+                  // Chưa đăng nhập - hiển thị login/signup
+                  <>
+                    <Link to="/login" className="dropdown-item" onClick={closeAccountDropdown}>
+                      <i className="dropdown-icon">🔑</i>
+                      <span>Đăng nhập</span>
+                    </Link>
+                    <Link to="/signup" className="dropdown-item" onClick={closeAccountDropdown}>
+                      <i className="dropdown-icon">📝</i>
+                      <span>Đăng ký</span>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

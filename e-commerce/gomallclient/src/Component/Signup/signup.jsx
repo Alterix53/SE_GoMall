@@ -20,37 +20,56 @@ const SignUpPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
     const { username, email, password, confirm } = form;
 
     if (password !== confirm) {
       setError('Mật khẩu xác nhận không khớp!');
+      setLoading(false);
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+    try {
+      const response = await fetch('http://localhost:8080/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          role: 'buyer'  // mặc định là người mua
+        }),
+      });
 
-    const existing = users.find(u => u.username === username);
-    if (existing) {
-      setError('Tên đăng nhập đã tồn tại!');
-      return;
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Đăng ký thành công!');
+        navigate('/login');
+      } else {
+        // Hiển thị lỗi từ server
+        const errorMessage = data.message || 'Đăng ký thất bại';
+        const errors = data.errors;
+        
+        if (Array.isArray(errors) && errors.length > 0) {
+          const errorMessages = errors.map(err => err.msg || err.message).join('\n');
+          setError(errorMessages);
+        } else {
+          setError(errorMessage);
+        }
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
     }
-
-    const newUser = {
-      username,
-      email,
-      password,
-      role: 'buyer',         // mặc định là người mua
-      sellerStatus: null     // chưa đăng ký làm người bán
-    };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-
-    alert('Đăng ký thành công!');
-    navigate('/login');
   };
 
   return (
