@@ -4,66 +4,6 @@ import { Link } from "react-router-dom";
 import "./Footer.css";
 
 export default function Footer() {
-  const fallbackLogoMap = {
-    spay: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='120' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23ff6b35'>S Pay</text>\
-</svg>",
-    spaylater: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='140' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23ff6b35'>SPayLater</text>\
-</svg>",
-    spx: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='120' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23ff6b35'>SPX</text>\
-</svg>",
-    ghn: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='140' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%232c3e50'>GHN</text>\
-</svg>",
-    viettelpost: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='160' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%2300a859'>Viettel Post</text>\
-</svg>",
-    jtexpress: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='160' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23e11'>J%26T Express</text>\
-</svg>",
-    grabexpress: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='160' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%2300b140'>GrabExpress</text>\
-</svg>",
-    ninjavan: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='140' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23800d1a'>Ninja Van</text>\
-</svg>",
-    be: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='80' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23002d72'>be</text>\
-</svg>",
-    ahamove: "data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='120' height='24'>\
- <rect width='100%' height='100%' fill='white'/>\
- <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='14' fill='%23ff6b00'>Ahamove</text>\
-</svg>"
-  };
-
-  const useFallback = (event, key) => {
-    const imageElement = event?.target;
-    if (!imageElement || imageElement.dataset.fallback === "true") return;
-    imageElement.dataset.fallback = "true";
-    const fallbackSrc = fallbackLogoMap[key] || "/images/shopee-logo.png";
-    imageElement.src = fallbackSrc;
-  };
 
   return (
     <footer className="footer">
@@ -108,24 +48,24 @@ export default function Footer() {
             <div className="footer-section">
               <h3 className="footer-title">THANH TOÁN</h3>
               <div className="payment-grid">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="VISA" onError={(e) => useFallback(e, "visa")} />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" onError={(e) => useFallback(e, "mastercard")} />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/JCB_logo.svg/2560px-JCB_logo.svg.png" alt="JCB" onError={(e) => useFallback(e, "jcb")} />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" alt="American Express" onError={(e) => useFallback(e, "amex")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ShopeePay-V-Horizontal.png" alt="S Pay" onError={(e) => useFallback(e, "spay")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ShopeePay-V-Horizontal.png" alt="SPayLater" onError={(e) => useFallback(e, "spaylater")} />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="VISA" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/JCB_logo.svg/2560px-JCB_logo.svg.png" alt="JCB" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" alt="American Express" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/ShopeePay_logo.svg/1200px-ShopeePay_logo.svg.png" alt="S Pay" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/ShopeePay_logo.svg/1200px-ShopeePay_logo.svg.png" alt="SPayLater" />
               </div>
               
               <h4 className="footer-subtitle">ĐƠN VỊ VẬN CHUYỂN</h4>
               <div className="shipping-grid">
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2021/12/Logo-SPX-Express.png" alt="SPX Express" onError={(e) => useFallback(e, "spx")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-VN.png" alt="Giao Hàng Nhanh" onError={(e) => useFallback(e, "ghn")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Viettel-Post.png" alt="Viettel Post" onError={(e) => useFallback(e, "viettelpost")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-J&T-Express.png" alt="J&T Express" onError={(e) => useFallback(e, "jtexpress")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GrabExpress.png" alt="GrabExpress" onError={(e) => useFallback(e, "grabexpress")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Ninja-Van.png" alt="Ninja Van" onError={(e) => useFallback(e, "ninjavan")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Be.png" alt="Be" onError={(e) => useFallback(e, "be")} />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Ahamove.png" alt="Ahamove" onError={(e) => useFallback(e, "ahamove")} />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Shopee_Express_logo.svg/1200px-Shopee_Express_logo.svg.png" alt="SPX Express" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Giao_Hang_Nhanh_logo.svg/1200px-Giao_Hang_Nhanh_logo.svg.png" alt="Giao Hàng Nhanh" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Viettel_Post_logo.svg/1200px-Viettel_Post_logo.svg.png" alt="Viettel Post" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/J%26T_Express_logo.svg/1200px-J%26T_Express_logo.svg.png" alt="J&T Express" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/GrabExpress_logo.svg/1200px-GrabExpress_logo.svg.png" alt="GrabExpress" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Ninja_Van_logo.svg/1200px-Ninja_Van_logo.svg.png" alt="Ninja Van" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Be_logo.svg/1200px-Be_logo.svg.png" alt="Be" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Ahamove_logo.svg/1200px-Ahamove_logo.svg.png" alt="Ahamove" />
               </div>
             </div>
 
@@ -153,7 +93,7 @@ export default function Footer() {
               <h3 className="footer-title">TẢI ỨNG DỤNG GOMALL</h3>
               <div className="app-download">
                 <div className="qr-code">
-                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgZmlsbD0iYmxhY2siLz4KPC9zdmc+" alt="QR Code" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QR Code" />
                 </div>
                 <div className="app-stores">
                   <a href="#" className="app-store-link">
@@ -163,7 +103,7 @@ export default function Footer() {
                     <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" />
                   </a>
                   <a href="#" className="app-store-link">
-                    <img src="https://developer.huawei.com/consumer/en/service/josp/agc/images/appgallery_badge_en.png" alt="AppGallery" />
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Huawei_AppGallery_logo.svg/1200px-Huawei_AppGallery_logo.svg.png" alt="AppGallery" />
                   </a>
                 </div>
               </div>
