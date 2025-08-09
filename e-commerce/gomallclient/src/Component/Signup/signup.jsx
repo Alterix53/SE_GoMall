@@ -33,6 +33,22 @@ const SignUpPage = () => {
       return;
     }
 
+    // Validate username requirements
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (username.length < 3 || username.length > 30 || !usernameRegex.test(username)) {
+      setError('Tên đăng nhập phải từ 3-30 ký tự, chỉ chứa chữ cái, số và dấu gạch dưới!');
+      setLoading(false);
+      return;
+    }
+
+    // Validate password requirements
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường và số!');
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
@@ -138,7 +154,7 @@ const SignUpPage = () => {
                       <input
                         type="text"
                         name="username"
-                        placeholder="Tên đăng nhập"
+                        placeholder="Tên đăng nhập (3-30 ký tự, chỉ chữ cái, số và _)"
                         value={form.username}
                         onChange={handleChange}
                         required
@@ -162,7 +178,7 @@ const SignUpPage = () => {
                       <input
                         type={showPassword ? "text" : "password"}
                         name="password"
-                        placeholder="Mật khẩu"
+                        placeholder="Mật khẩu (ít nhất 6 ký tự, có chữ hoa, chữ thường và số)"
                         value={form.password}
                         onChange={handleChange}
                         required
