@@ -172,11 +172,17 @@ export default function CategoryList() {
             </div>
           ) : (
             <>
-              <div className="products-grid">
-                {currentProducts.map(product => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
-              </div>
+              {categoryProducts.length === 0 ? (
+                <div className="no-products" style={{ textAlign: 'center', padding: '24px', color: '#666' }}>
+                  Chưa có sản phẩm trong danh mục này
+                </div>
+              ) : (
+                <div className="products-grid">
+                  {currentProducts.map(product => (
+                    <ProductCard key={product._id} product={product} />
+                  ))}
+                </div>
+              )}
               
               {/* Pagination Dots */}
               {totalPages > 1 && (
