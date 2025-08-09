@@ -25,12 +25,22 @@ export default function ViewItemDetail() {
     { name: "black", value: "#1F2937" },
   ]
 
-  const relatedProducts = [
-    { id: 1, name: "Similar Product 1", price: 89.99, image: "/images/default-product.jpg" },
-    { id: 2, name: "Similar Product 2", price: 129.99, image: "/images/default-product.jpg" },
-    { id: 3, name: "Similar Product 3", price: 99.99, image: "/images/default-product.jpg" },
-    { id: 4, name: "Similar Product 4", price: 149.99, image: "/images/default-product.jpg" },
-  ]
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products?limit=4');
+        const data = await response.json();
+        setRelatedProducts(data.products || []);
+      } catch (error) {
+        console.error('Error fetching related products:', error);
+        setRelatedProducts([]);
+      }
+    };
+
+    fetchRelatedProducts();
+  }, []);
 
   const reviews = [
     {

@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import Product from '../models/Product.js';
+import connectDB from '../config/database.js';
 
 const addFlashSaleData = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/GoMall');
+    await connectDB('mongodb://127.0.0.1:27017/GoMall');
     console.log('✅ Connected to MongoDB');
 
     // Lấy tất cả sản phẩm
