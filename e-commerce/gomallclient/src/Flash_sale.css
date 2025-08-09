@@ -14,7 +14,7 @@
   padding: 0 20px;
 }
 
-.flash-sale-header {
+.flash-sale-page .flash-sale-header {
   background: linear-gradient(135deg, #dc3545 0%, #ff6b35 100%);
   color: white;
   padding: 40px 0;
@@ -162,7 +162,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .flash-sale-header {
+  .flash-sale-page .flash-sale-header {
     padding: 30px 0;
   }
 

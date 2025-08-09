@@ -61,15 +61,15 @@ function Header() {
           {/* Navigation */}
           <div className="nav-section">
             <Link to="/notifications" className="nav-item">
-              <i className="nav-icon">🔔</i>
+              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f514.svg" alt="Notifications" />
               <span className="nav-text">Notifications</span>
             </Link>
             <Link to="/seller" className="nav-item">
-              <i className="nav-icon">❓</i>
+              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2753.svg" alt="Become a Seller" />
               <span className="nav-text">Become a Seller</span>
             </Link>
             <Link to="/cart" className="nav-item">
-              <i className="nav-icon">🛒</i>
+              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Cart" />
               <span className="nav-text">Cart</span>
             </Link>
             <div className="nav-item account-dropdown">
@@ -78,9 +78,8 @@ function Header() {
                 onClick={toggleAccountDropdown}
                 type="button"
               >
-                <i className="nav-icon">👤</i>
+                <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f464.svg" alt="Account" />
                 <span className="nav-text">Account</span>
-                <i className={`dropdown-arrow ${showAccountDropdown ? 'up' : 'down'}`}>▼</i>
               </button>
               <div className={`dropdown-menu ${showAccountDropdown ? 'show' : 'hide'}`}>
                 <Link to="/login" className="dropdown-item" onClick={closeAccountDropdown}>

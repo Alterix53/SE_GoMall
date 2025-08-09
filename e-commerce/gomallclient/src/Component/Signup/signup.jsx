@@ -62,11 +62,13 @@ const SignUpPage = () => {
           <div className="signup-header">
             <div className="header-left">
               <div className="logo-section">
-                <div className="logo-icon">G</div>
-                <span className="logo-text">
-                  <span className="gomall">GoMall</span>
-                  <span className="dangky"> Đăng ký</span>
-                </span>
+                <Link to="/" className="brand-link" aria-label="Go to Home">
+                  <div className="logo-icon">G</div>
+                  <span className="logo-text">
+                    <span className="gomall">GoMall</span>
+                  </span>
+                </Link>
+                <span className="logo-text dangky"> Đăng ký</span>
               </div>
             </div>
             <div className="header-right">

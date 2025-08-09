@@ -46,7 +46,7 @@ const RegisterSeller = () => {
     localStorage.setItem('users', JSON.stringify(users));
 
     alert('Yêu cầu đăng ký người bán đã được gửi. Vui lòng chờ admin phê duyệt.');
-    navigate('/home'); // hoặc chuyển về dashboard buyer
+    navigate('/');
   };
 
   return (

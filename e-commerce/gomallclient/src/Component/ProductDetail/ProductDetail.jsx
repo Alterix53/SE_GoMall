@@ -1,81 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-// import axios from "axios";
 import "./ProductDetail.css";
 import { useCart } from "../../contexts/CartContext";
+import ApiService from "../../utils/apiService";
 
 const ProductDetail = () => {
-  // const { id } = useParams(); // Lấy ID từ URL
-  // const [product, setProduct] = useState(null);
-  // const [loading, setLoading] = useState(true);
+  const { id } = useParams(); // Lấy ID từ URL
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [mainImage, setMainImage] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [showFAQ, setShowFAQ] = useState(false);
 
-  // useEffect(() => {
-  //   let retries = 0;
-  //   const maxRetries = 3;
-
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const response = await axios.get(`http://localhost:8080/api/products/${id}`, {
-  //         timeout: 5000,
-  //       });
-  //       console.log("Product Detail API response:", response.data);
-  //       const productData = response.data?.data?.product;
-  //       if (!productData) {
-  //         console.warn("No product found for ID:", id);
-  //         return;
-  //       }
-  //       setProduct({
-  //         id: productData._id,
-  //         name: productData.name || "Unknown Product",
-  //         price: productData.price?.sale || productData.price?.original || 0,
-  //         originalPrice: productData.price?.original || 0,
-  //         image: productData.images?.[0]?.url || "/images/default-product.jpg",
-  //         rating: productData.rating?.average || 0,
-  //         sold: productData.sold || 0,
-  //         discount: productData.price?.original && productData.price?.sale
-  //           ? Math.round(((productData.price.original - productData.price.sale) / productData.price.original) * 100)
-  //           : 0,
-  //         description: productData.description || "Không có mô tả",
-  //         specifications: productData.specifications || [],
-  //       });
-  //     } catch (err) {
-  //       retries++;
-  //       console.error(`Fetch error (attempt ${retries}/${maxRetries}):`, err.message, err.response?.status, err.response?.statusText);
-  //       if (retries < maxRetries) {
-  //         await new Promise(resolve => setTimeout(resolve, 2000 * retries));
-  //         await fetchData();
-  //       } else {
-  //         console.error("Max retries reached, no data available");
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [id]);
-
-  // if (loading) return <p>Đang tải thông tin sản phẩm...</p>;
-  // if (!product) return <p>Sản phẩm không tồn tại.</p>;
-
-  // Hardcoded product data from seedData.js
-  const product = {
-    id: "seeded-id-1",
+  // Fallback product data
+  const fallbackProduct = {
+    _id: "fallback-id",
     name: "iPhone 15 Pro Max 256GB",
-    price: 29990000,
-    originalPrice: 34990000,
-    image: "/images/iphone-15.jpg",
+    price: { sale: 29990000, original: 34990000 },
     images: [
-      "/images/iphone-15.jpg",
-      "/images/iphone-15.jpg",
-      "/images/iphone-15.jpg",
-      "/images/iphone-15.jpg",
-      "/images/iphone-15.jpg",
+      { url: "/images/iphone-15.jpg" },
+      { url: "/images/iphone-15.jpg" },
+      { url: "/images/iphone-15.jpg" },
     ],
-    rating: 4.8,
+    rating: { average: 4.8 },
     sold: 5234,
-    discount: Math.round(((34990000 - 29990000) / 34990000) * 100),
     description: "iPhone 15 Pro Max với chip A17 Pro mạnh mẽ, camera 48MP và màn hình Super Retina XDR 6.7 inch. Đây là dòng sản phẩm cao cấp nhất của Apple năm 2023, mang lại trải nghiệm tuyệt vời cho người dùng với hiệu năng mạnh mẽ, camera chất lượng và thời lượng pin ấn tượng.",
     specifications: [
       { name: "Màn hình", value: "6.7 inch Super Retina XDR" },
@@ -83,8 +33,8 @@ const ProductDetail = () => {
       { name: "Camera", value: "48MP + 12MP + 12MP" },
       { name: "Pin", value: "4441 mAh" },
     ],
-    tags: ["Tag"],
-    sizes: ["S", "M", "L", "XL", "XXL"],
+    tags: ["Technology", "Mobile"],
+    sizes: ["128GB", "256GB", "512GB", "1TB"],
     faqs: [
       {
         title: "Bảo hành thế nào?",
@@ -93,12 +43,49 @@ const ProductDetail = () => {
     ]
   };
 
-  const [mainImage, setMainImage] = useState(product.images[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-  const [quantity, setQuantity] = useState(1);
-  const [showFAQ, setShowFAQ] = useState(false);
+  useEffect(() => {
+    fetchProductDetail();
+  }, [id]);
 
-  const { addToCart, loading, error } = useCart();
+  const fetchProductDetail = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      if (!id) {
+        setProduct(fallbackProduct);
+        setMainImage(fallbackProduct.images[0].url);
+        setSelectedSize(fallbackProduct.sizes[0]);
+        return;
+      }
+
+      const response = await ApiService.getProductById(id);
+      if (response.success && response.data) {
+        const productData = response.data;
+        setProduct(productData);
+        setMainImage(productData.images?.[0]?.url || fallbackProduct.images[0].url);
+        setSelectedSize(productData.sizes?.[0] || fallbackProduct.sizes[0]);
+      } else {
+        console.log('Using fallback product data');
+        setProduct(fallbackProduct);
+        setMainImage(fallbackProduct.images[0].url);
+        setSelectedSize(fallbackProduct.sizes[0]);
+      }
+    } catch (error) {
+      console.error('Error fetching product detail:', error);
+      setError('Failed to load product');
+      setProduct(fallbackProduct);
+      setMainImage(fallbackProduct.images[0].url);
+      setSelectedSize(fallbackProduct.sizes[0]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <p>Đang tải thông tin sản phẩm...</p>;
+  if (error && !product) return <p>Không thể tải thông tin sản phẩm.</p>;
+
+  const { addToCart, loading: cartLoading, error: cartError } = useCart();
 
   const handleAddToCart = async () => {
     try {
@@ -128,10 +115,10 @@ const ProductDetail = () => {
             {product.images.slice(0, 5).map((img, idx) => (
               <img
                 key={idx}
-                src={img}
+                src={img.url || img}
                 alt={`thumb-${idx}`}
-                style={{ width: 60, height: 60, objectFit: 'cover', border: mainImage === img ? '2px solid #333' : '1px solid #ccc', borderRadius: 6, cursor: 'pointer', background: '#fff' }}
-                onClick={() => setMainImage(img)}
+                style={{ width: 60, height: 60, objectFit: 'cover', border: mainImage === (img.url || img) ? '2px solid #333' : '1px solid #ccc', borderRadius: 6, cursor: 'pointer', background: '#fff' }}
+                onClick={() => setMainImage(img.url || img)}
               />
             ))}
           </div>
@@ -140,18 +127,23 @@ const ProductDetail = () => {
         <div style={{ flex: 1, minWidth: 320, maxWidth: 500 }}>
           <h2 style={{ fontWeight: 600 }}>{product.name}</h2>
           <div style={{ margin: '8px 0' }}>
-            {product.tags.map((tag, idx) => (
+            {(product.tags || []).map((tag, idx) => (
               <span key={idx} style={{ background: '#e6f4ea', color: '#1a7f37', borderRadius: 4, padding: '2px 8px', fontSize: 14, marginRight: 8 }}>{tag}</span>
             ))}
           </div>
           <div style={{ fontSize: 32, fontWeight: 700, margin: '8px 0', color: '#222' }}>
-            ${Math.round(product.price / 1000)}
+            {Math.round((product.price?.sale || product.price?.original || 0) / 1000).toLocaleString('vi-VN')}₫
           </div>
+          {product.price?.original && product.price?.sale && product.price.original > product.price.sale && (
+            <div style={{ fontSize: 18, color: '#888', textDecoration: 'line-through', marginBottom: 8 }}>
+              {Math.round(product.price.original / 1000).toLocaleString('vi-VN')}₫
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 16, margin: '16px 0' }}>
             <div>
               <label style={{ fontWeight: 500 }}>Size</label>
               <select className="form-select" style={{ width: 120, marginTop: 4 }} value={selectedSize} onChange={e => setSelectedSize(e.target.value)}>
-                {product.sizes.map(size => <option key={size} value={size}>{size}</option>)}
+                {(product.sizes || []).map(size => <option key={size} value={size}>{size}</option>)}
               </select>
             </div>
             <div>
@@ -166,15 +158,15 @@ const ProductDetail = () => {
             className="btn btn-dark w-100"
             style={{ margin: '0 0 16px 0', fontWeight: 600, maxWidth: 300 }}
             onClick={handleAddToCart}
-            disabled={loading}
+            disabled={cartLoading}
           >
-            {loading ? "Đang thêm..." : "Add to Cart"}
+            {cartLoading ? "Đang thêm..." : "Add to Cart"}
           </button>
           <div style={{ marginTop: 16 }}>
             <div style={{ fontWeight: 500, marginBottom: 4 }}>Other info</div>
             <div style={{ border: '1px solid #eee', borderRadius: 8, background: '#fafafa', padding: 12 }}>
               <ul style={{ marginTop: 8 }}>
-                {product.specifications.map((spec, idx) => (
+                {(product.specifications || []).map((spec, idx) => (
                   <li key={idx}>{spec.name}: {spec.value}</li>
                 ))}
               </ul>
@@ -185,7 +177,7 @@ const ProductDetail = () => {
       {/* Description full width below both columns */}
       <div style={{ width: '100%', maxWidth: 1100, marginTop: 24, background: '#fafafa', borderRadius: 8, padding: 24, color: '#444', fontSize: 16, boxSizing: 'border-box' }}>
         <div style={{ fontWeight: 500, marginBottom: 8 }}>Description</div>
-        {product.description}
+        {product.description || 'Không có mô tả sản phẩm.'}
       </div>
     </div>
   );

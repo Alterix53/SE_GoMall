@@ -134,6 +134,7 @@ function App() {
                 
                 {/* Main routes - sử dụng Navbar và Footer */}
                 <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/flash-sale" element={<FlashSale />} />
                 <Route path="/top-products" element={<TopProduct />} />
                 <Route path="/today-suggestions" element={<TodaySuggestions />} />

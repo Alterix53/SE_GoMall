@@ -44,24 +44,141 @@
   background: #e55a2b;
 }
 
-/* Section Styles */
+/* Flash Sale Section */
 .flash-sale-section {
   margin: 40px auto;
   max-width: 1200px;
   padding: 0 20px;
 }
 
-.flash-sale-section .section-header {
+.flash-sale-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.home-flash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 10px;
+  background: transparent;
+  width: 100%;
+}
+
+.flash-sale-title-with-timer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.flash-sale-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff4444;
+  margin: 0;
+  text-align: left;
+}
+
+.flash-sale-timer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff3e0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ffcc80;
+}
+
+.timer-number {
+  background: #ff6b35;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  min-width: 32px;
   text-align: center;
-  margin-bottom: 30px;
 }
 
-.flash-sale-section .section-header h2 {
-  margin-bottom: 10px;
+.timer-separator {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff6b35;
 }
 
-.flash-sale-section .section-header p {
-  margin-bottom: 15px;
+.view-all-link {
+  color: #ff6b35;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: color 0.3s;
+  text-align: right;
+}
+
+.view-all-link:hover {
+  color: #e55a2b;
+  text-decoration: underline;
+}
+
+.flash-sale-products {
+  position: relative;
+  overflow: hidden;
+  padding: 0 50px; /* Tạo khoảng trống cho mũi tên */
+  min-height: 300px;
+}
+
+.flash-sale-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  gap: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+}
+
+.flash-sale-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #007bff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.scroll-arrow:hover {
+  background: #0056b3;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.scroll-arrow.right {
+  right: 0;
+}
+
+.scroll-arrow.left {
+  left: 0;
 }
 
 .featured-section,
@@ -133,63 +250,92 @@
   text-decoration: none;
 }
 
-.flash-sale-timer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin: 15px auto;
-  padding: 10px 15px;
-  background: #fff3e0;
+/* Top Products Section (match Flash Sale) */
+.top-products-section {
+  margin: 40px auto;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.top-products-container {
+  background: white;
   border-radius: 8px;
-  border: 1px solid #ffcc80;
-  max-width: 400px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border: 1px solid #e0e0e0;
 }
 
-.timer-label {
-  font-size: 14px;
-  color: #e65100;
-  font-weight: 500;
-}
-
-.timer-display {
+.home-top-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 5px;
+  margin-bottom: 16px;
+  padding: 0 10px;
+  background: transparent;
+  width: 100%;
 }
 
-.timer-unit {
+.top-products-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+.top-products-products {
+  position: relative;
+  overflow: hidden;
+  padding: 0 50px; /* space for arrows */
+  min-height: 300px;
+}
+
+.top-products-scroll {
   display: flex;
-  flex-direction: column;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  gap: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: space-evenly;
   align-items: center;
-  background: #ff6b35;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  min-width: 50px;
+  width: 100%;
 }
 
-.timer-number {
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 1;
-}
-
-.timer-unit .timer-label {
-  font-size: 10px;
-  color: white;
-  margin-top: 2px;
-}
-
-.timer-separator {
-  font-size: 20px;
-  font-weight: bold;
-  color: #ff6b35;
-  margin: 0 5px;
+.top-products-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .flash-sale-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .flash-sale-title {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .flash-sale-title h2 {
+    font-size: 20px;
+  }
+  
+  .timer-number {
+    font-size: 14px;
+    min-width: 28px;
+  }
+  
+  .scroll-arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+  
   .flash-sale-section,
   .featured-section,
   .category-section {
@@ -224,4 +370,61 @@
   .section-header p {
     font-size: 12px;
   }
+}
+
+/* Today Suggestions Section - carousel layout like Flash Sale */
+.today-suggestions-section {
+  margin: 40px auto;
+  max-width: 1200px;
+  padding: 0 20px;
+}
+
+.today-suggestions-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.home-today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 10px;
+  background: transparent;
+  width: 100%;
+}
+
+.today-suggestions-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  text-align: left;
+}
+
+.today-suggestions-products {
+  position: relative;
+  overflow: hidden;
+  padding: 0 50px; /* space for arrows */
+  min-height: 300px;
+}
+
+.today-suggestions-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  gap: 15px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+}
+
+.today-suggestions-scroll::-webkit-scrollbar {
+  display: none;
 }

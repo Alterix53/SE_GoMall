@@ -46,7 +46,7 @@ const LoginPage = () => {
       }
     } else {
       // buyer mặc định
-      navigate('/home'); // hoặc /marketplace tùy hệ thống
+      navigate('/');
     }
   };
 
@@ -59,11 +59,13 @@ const LoginPage = () => {
           <div className="login-header">
             <div className="header-left">
               <div className="logo-section">
-                <div className="logo-icon">G</div>
-                <span className="logo-text">
-                  <span className="gomall">GoMall</span>
-                  <span className="dangnhap"> Đăng nhập</span>
-                </span>
+                <Link to="/" className="brand-link" aria-label="Go to Home">
+                  <div className="logo-icon">G</div>
+                  <span className="logo-text">
+                    <span className="gomall">GoMall</span>
+                  </span>
+                </Link>
+                <span className="logo-text dangnhap"> Đăng nhập</span>
               </div>
             </div>
             <div className="header-right">
@@ -100,10 +102,7 @@ const LoginPage = () => {
               <div className="login-form-container">
                 <div className="login-form">
                   <div className="form-header">
-                    <button className="qr-login-btn">
-                      <span>Đăng nhập với mã QR</span>
-                      <i className="qr-icon">📱</i>
-                    </button>
+                    <h2>Đăng nhập</h2>
                   </div>
 
                   {error && (

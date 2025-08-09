@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from './Component/Header/Header';
 import CategoryList from './Component/Category/CategoryList';
 import ProductCard from './Component/ProductCard/ProductCard';
+import FlashSaleCard from './Component/FlashSaleCard/FlashSaleCard';
+import TopProductCard from './Component/TopProductCard/TopProductCard';
 import './Home.css';
 import { Link } from 'react-router-dom'; // Added Link import
 
@@ -291,6 +293,10 @@ function Home() {
     ]
   };
 
+  const flashScrollRef = useRef(null);
+  const topScrollRef = useRef(null);
+  const todayScrollRef = useRef(null); // Added todayScrollRef
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -305,7 +311,12 @@ function Home() {
         const flashSaleResponse = await fetch('http://localhost:8080/api/products/flash-sale');
         if (flashSaleResponse.ok) {
           const flashSaleData = await flashSaleResponse.json();
-          setFlashSaleProducts(flashSaleData.slice(0, 8));
+          if (flashSaleData.success && flashSaleData.data) {
+            setFlashSaleProducts(flashSaleData.data.slice(0, 8));
+          } else {
+            console.log('Using fallback data for Flash Sale');
+            setFlashSaleProducts(sampleFlashSale);
+          }
         } else {
           console.log('Using fallback data for Flash Sale');
           setFlashSaleProducts(sampleFlashSale);
@@ -315,19 +326,30 @@ function Home() {
         setFlashSaleProducts(sampleFlashSale);
       }
 
-      // Fetch Featured Products
+      // Fetch Featured Products (used by Top Products and Today's Suggestions)
       try {
         const featuredResponse = await fetch('http://localhost:8080/api/products/top-products');
         if (featuredResponse.ok) {
           const featuredData = await featuredResponse.json();
-          setFeaturedProducts(featuredData.slice(0, 8));
+          if (featuredData.success && featuredData.data) {
+            // Ensure we have up to 12 items for Today Suggestions
+            setFeaturedProducts(featuredData.data.slice(0, 12));
+          } else {
+            console.log('Using fallback data for Featured Products');
+            // Build a fallback list up to 12 items by combining sampleFeatured with category samples
+            const extendedFallback = [...sampleFeatured, ...Object.values(sampleCategoryProducts).flat()].slice(0, 12);
+            setFeaturedProducts(extendedFallback);
+          }
         } else {
           console.log('Using fallback data for Featured Products');
-          setFeaturedProducts(sampleFeatured);
+          // Build a fallback list up to 12 items by combining sampleFeatured with category samples
+          const extendedFallback = [...sampleFeatured, ...Object.values(sampleCategoryProducts).flat()].slice(0, 12);
+          setFeaturedProducts(extendedFallback);
         }
       } catch (error) {
         console.log('Featured Products API error, using fallback data:', error.message);
-        setFeaturedProducts(sampleFeatured);
+        const extendedFallback = [...sampleFeatured, ...Object.values(sampleCategoryProducts).flat()].slice(0, 12);
+        setFeaturedProducts(extendedFallback);
       }
 
       // Fetch Category Products
@@ -335,14 +357,20 @@ function Home() {
         const categoryResponse = await fetch('http://localhost:8080/api/products');
         if (categoryResponse.ok) {
           const categoryData = await categoryResponse.json();
-          const groupedByCategory = {};
-          categoryData.forEach(product => {
-            if (!groupedByCategory[product.category]) {
-              groupedByCategory[product.category] = [];
-            }
-            groupedByCategory[product.category].push(product);
-          });
-          setCategoryProducts(groupedByCategory);
+          if (categoryData.success && categoryData.data && categoryData.data.products) {
+            const groupedByCategory = {};
+            categoryData.data.products.forEach(product => {
+              const categoryName = product.categoryID?.categoryName || 'Other';
+              if (!groupedByCategory[categoryName]) {
+                groupedByCategory[categoryName] = [];
+              }
+              groupedByCategory[categoryName].push(product);
+            });
+            setCategoryProducts(groupedByCategory);
+          } else {
+            console.log('Using fallback data for Category Products');
+            setCategoryProducts(sampleCategoryProducts);
+          }
         } else {
           console.log('Using fallback data for Category Products');
           setCategoryProducts(sampleCategoryProducts);
@@ -386,78 +414,83 @@ function Home() {
       
       {/* Flash Sale Section */}
       <section className="flash-sale-section">
-        <div className="section-header">
-          <h2>⚡ Flash Sale</h2>
-          <p>Limited time offers - Don't miss out!</p>
-          <div className="flash-sale-timer">
-            <span className="timer-label">Kết thúc sau:</span>
-            <div className="timer-display">
-              <span className="timer-unit">
+        <div className="flash-sale-container">
+          <div className="home-flash-header">
+            <div className="flash-sale-title-with-timer">
+              <h2 className="flash-sale-title">⚡ FLASH SALE</h2>
+              <div className="flash-sale-timer">
                 <span className="timer-number">{timeLeft.hours.toString().padStart(2, '0')}</span>
-                <span className="timer-label">Giờ</span>
-              </span>
-              <span className="timer-separator">:</span>
-              <span className="timer-unit">
+                <span className="timer-separator">:</span>
                 <span className="timer-number">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-                <span className="timer-label">Phút</span>
-              </span>
-              <span className="timer-separator">:</span>
-              <span className="timer-unit">
+                <span className="timer-separator">:</span>
                 <span className="timer-number">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-                <span className="timer-label">Giây</span>
-              </span>
+              </div>
             </div>
+            <Link to="/flash-sale" className="view-all-link">Xem thêm</Link>
           </div>
-          <Link to="/flash-sale" className="view-more-btn">Xem thêm →</Link>
-            </div>
-            <div className="products-grid">
-          {flashSaleProducts.length > 0 ? (
-            flashSaleProducts.map(product => (
-              <ProductCard key={product._id} product={product} />
+          <div className="flash-sale-products">
+            <button className="scroll-arrow left" onClick={() => flashScrollRef.current?.scrollBy({left: -300, behavior: 'smooth'})}>←</button>
+            <div className="flash-sale-scroll" ref={flashScrollRef}>
+              {flashSaleProducts.length > 0 ? (
+                flashSaleProducts.map(product => (
+                  <FlashSaleCard key={product._id} product={product} />
                 ))
               ) : (
-            <p className="no-products">No flash sale products available</p>
+                <p className="no-products">No flash sale products available</p>
               )}
             </div>
-          </section>
-
-      {/* Top Products Section */}
-      <section className="featured-section">
-        <div className="section-header">
-          <h2>🌟 Top Products</h2>
-          <p>Our top picks for you</p>
-          <Link to="/top-products" className="view-more-btn">Xem thêm →</Link>
-        </div>
-        <div className="products-grid">
-          {featuredProducts.length > 0 ? (
-            featuredProducts.map(product => (
-              <ProductCard key={product._id} product={product} />
-            ))
-          ) : (
-            <p className="no-products">No featured products available</p>
-          )}
+            <button className="scroll-arrow right" onClick={() => flashScrollRef.current?.scrollBy({left: 300, behavior: 'smooth'})}>→</button>
+          </div>
         </div>
       </section>
 
-      {/* Today's Suggestions Section */}
-      <section className="featured-section">
-        <div className="section-header">
-          <h2>🎯 Gợi ý hôm nay</h2>
-          <p>Khám phá những sản phẩm phù hợp với bạn</p>
-          <Link to="/today-suggestions" className="view-more-btn">Xem thêm →</Link>
-        </div>
-        <div className="products-grid">
-          {featuredProducts.length > 0 ? (
-            featuredProducts.map(product => (
-              <ProductCard key={product._id} product={product} />
-            ))
-          ) : (
-            <p className="no-products">No suggestions available</p>
-          )}
+      {/* Top Products Section - match Flash Sale layout */}
+      <section className="top-products-section">
+        <div className="top-products-container">
+          <div className="home-top-header">
+            <h2 className="top-products-title">🌟 Top Products</h2>
+            <Link to="/top-products" className="view-all-link">Xem thêm</Link>
+          </div>
+          <div className="top-products-products">
+            <button className="scroll-arrow left" onClick={() => topScrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}>←</button>
+            <div className="top-products-scroll" ref={topScrollRef}>
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map(product => (
+                  <TopProductCard key={product._id} product={product} />
+                ))
+              ) : (
+                <p className="no-products">No featured products available</p>
+              )}
+            </div>
+            <button className="scroll-arrow right" onClick={() => topScrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}>→</button>
+          </div>
         </div>
       </section>
-    </div>
-  ); 
-}
+
+      {/* Today's Suggestions Section - carousel layout like Flash Sale */}
+      <section className="today-suggestions-section">
+        <div className="today-suggestions-container">
+          <div className="home-today-header">
+            <h2 className="today-suggestions-title">🎯 Gợi ý hôm nay</h2>
+            <Link to="/today-suggestions" className="view-all-link">Xem thêm</Link>
+          </div>
+          <div className="today-suggestions-products">
+            <button className="scroll-arrow left" onClick={() => todayScrollRef.current?.scrollBy({left: -300, behavior: 'smooth'})}>←</button>
+            <div className="today-suggestions-scroll" ref={todayScrollRef}>
+              {featuredProducts.length > 0 ? (
+                featuredProducts.slice(0, 12).map(product => (
+                  <TopProductCard key={product._id} product={product} />
+                ))
+              ) : (
+                <p className="no-products">No suggestions available</p>
+              )}
+            </div>
+            <button className="scroll-arrow right" onClick={() => todayScrollRef.current?.scrollBy({left: 300, behavior: 'smooth'})}>→</button>
+          </div>
+        </div>
+      </section>
+      </div>
+    ); 
+  }
   
   export default Home;

@@ -44,6 +44,16 @@
 .logo-section {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  display: inline-block;
 }
 
 .logo-icon {
@@ -247,15 +257,19 @@
 }
 
 .form-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .form-header h2 {
   color: #333;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
   margin: 0;
+  width: 100%;
 }
 
 /* Form Inputs */
@@ -345,25 +359,18 @@
   text-align: center;
 }
 
+/* Remove separator line */
 .separator {
-  position: relative;
+  position: static;
   margin: 20px 0;
   text-align: center;
 }
-
 .separator::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: #e0e0e0;
+  content: none !important;
 }
-
 .separator span {
-  background: white;
-  padding: 0 15px;
+  background: transparent;
+  padding: 0;
   color: #666;
   font-size: 13px;
   font-weight: 500;
@@ -505,4 +512,22 @@
     font-size: 16px;
     padding: 10px 20px;
   }
+}
+
+.logo-section a,
+.logo-section .brand-link,
+.logo-text,
+.logo-text .gomall,
+.logo-text .dangky {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.logo-section a:hover,
+.logo-section .brand-link:hover,
+.logo-text:hover,
+.logo-text .gomall:hover,
+.logo-text .dangky:hover {
+  text-decoration: none;
+  border-bottom: none;
 }
