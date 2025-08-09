@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useCart } from "../../contexts/CartContext";
+import Header from '../Header/Header';
 import "./Cart.css";
 
 export default function CartManager() {
@@ -90,38 +91,49 @@ export default function CartManager() {
 
   if (loading) {
     return (
-      <div className="cart-wrapper">
-        <div className="cart-empty-state">Đang tải giỏ hàng...</div>
-      </div>
+      <>
+        <Header />
+        <div className="cart-wrapper">
+          <div className="cart-empty-state">Đang tải giỏ hàng...</div>
+        </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="cart-wrapper">
-        <div className="cart-empty-state">Lỗi: {error}</div>
-      </div>
+      <>
+        <Header />
+        <div className="cart-wrapper">
+          <div className="cart-empty-state">Lỗi: {error}</div>
+        </div>
+      </>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="cart-wrapper">
-        <div className="cart-empty">
-          <div className="empty-icon">🛒</div>
-          <div className="empty-title">Giỏ hàng trống</div>
-          <a href="/" className="btn-orange">Mua sắm ngay</a>
+      <>
+        <Header />
+        <div className="cart-wrapper">
+          <div className="cart-empty">
+            <div className="empty-icon">🛒</div>
+            <div className="empty-title">Giỏ hàng trống</div>
+            <a href="/" className="btn-orange">Mua sắm ngay</a>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   const allSelected = selectedKeys.size === cartItems.length && cartItems.length > 0;
 
   return (
-    <div className="cart-wrapper">
-      {/* Header row */}
-      <div className="cart-table header">
+    <>
+      <Header />
+      <div className="cart-wrapper">
+        {/* Header row */}
+        <div className="cart-table header">
         <div className="cell select">
           <label className="checkbox">
             <input
@@ -242,6 +254,7 @@ export default function CartManager() {
           <button className="btn-buy" disabled={selectedKeys.size === 0}>Mua Hàng</button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
