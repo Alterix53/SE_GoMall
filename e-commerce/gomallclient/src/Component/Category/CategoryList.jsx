@@ -45,27 +45,48 @@ export default function CategoryList() {
     try {
       setLoading(true);
       const response = await fetch('http://localhost:8080/api/categories');
+      let serverCategories = [];
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data && data.data.categories) {
-          // Map API categories to include icons
-          const categoriesWithIcons = data.data.categories.map(category => ({
-            ...category,
-            icon: categoryIconMap[category.categoryName] || '🛒',
-            color: '#2196F3'
-          }));
-          setCategories(categoriesWithIcons);
-        } else {
-          console.log('No categories data available');
-          setCategories([]);
+          serverCategories = data.data.categories;
         }
-      } else {
-        console.log('Categories API not available');
-        setCategories([]);
       }
+
+      // Merge: ensure ALL categories defined in categoryIconMap are displayed
+      const nameToServerCategory = new Map(
+        (serverCategories || []).map((c) => [c.categoryName, c])
+      );
+
+      const mergedCategories = Object.keys(categoryIconMap).map((categoryName) => {
+        const fromServer = nameToServerCategory.get(categoryName) || null;
+        const base = fromServer || {
+          _id: `placeholder-${categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`,
+          categoryName,
+          slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-'),
+          description: '',
+        };
+        return {
+          ...base,
+          icon: categoryIconMap[categoryName] || '🛒',
+          color: '#2196F3',
+          __placeholder: !fromServer,
+        };
+      });
+
+      setCategories(mergedCategories);
     } catch (error) {
       console.log('Categories API error:', error.message);
-      setCategories([]);
+      // Still show full list from icon map as placeholders so UI is complete
+      const mergedCategories = Object.keys(categoryIconMap).map((categoryName) => ({
+        _id: `placeholder-${categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`,
+        categoryName,
+        slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-'),
+        icon: categoryIconMap[categoryName] || '🛒',
+        color: '#2196F3',
+        __placeholder: true,
+      }));
+      setCategories(mergedCategories);
     } finally {
       setLoading(false);
     }
@@ -111,6 +132,11 @@ export default function CategoryList() {
     setSelectedCategory(category);
     setShowProducts(true);
     setCurrentPage(1);
+    if (category.__placeholder) {
+      setCategoryProducts([]);
+      setLoadingProducts(false);
+      return;
+    }
     fetchCategoryProducts(category._id, category.categoryName);
   };
 
