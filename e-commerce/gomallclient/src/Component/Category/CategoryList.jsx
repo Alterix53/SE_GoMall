@@ -21,7 +21,11 @@ const categoryIconMap = {
   'Gaming': '🎮',
   'Auto': '🛵',
   'Baby': '👶',
-  'Other': '🛒'
+  'Jewelry': '💎',
+  'Music': '🎵',
+  'Toys': '🧸',
+  'Pet Supplies': '🐕',
+  'Vehicles': '🚗'
 };
 
 
