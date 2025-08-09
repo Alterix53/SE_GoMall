@@ -8,7 +8,7 @@ function SellerDetailModal({ seller, onClose }) {
         <div className="modal-content">
 
           <div className="modal-header">
-            <h5 className="modal-title">Thông tin người bán</h5>
+            <h5 className="modal-title">Seller Information</h5>
             <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
           </div>
 
@@ -18,24 +18,24 @@ function SellerDetailModal({ seller, onClose }) {
               <div className="col-md-3 text-center">
                 <img
                   src={seller.avatarUrl || "/default-avatar.png"}
-                  alt="Ảnh người bán"
+                  alt="Seller avatar"
                   className="img-fluid rounded-circle"
                   style={{ width: "100px", height: "100px", objectFit: "cover" }}
                 />
               </div>
               {/* Thông tin cơ bản */}
               <div className="col-md-9">
-                <h4>Tên đăng nhập: {seller.username}</h4>
-                <p className="mb-1"><strong>Tên ĐKKD:</strong> {seller.businessName}</p>
+                <h4>Username: {seller?.username}</h4>
+                <p className="mb-1"><strong>Business Name:</strong> {seller?.businessName || seller?.storeName}</p>
               </div>
             </div>
             {/* Thông tin chi tiết */}
             <div className="row">
               <div className="col-12">
-                <p><strong>Email:</strong> {seller.email}</p>
-                <p><strong>Số điện thoại:</strong> {seller.phone}</p>
-                <p><strong>Địa chỉ:</strong> {seller.address}</p>
-                <p><strong>Trạng thái:</strong> {seller.status}</p>
+                <p><strong>Email:</strong> {seller?.businessEmail || seller?.email}</p>
+                <p><strong>Phone:</strong> {seller?.businessPhone || seller?.phone}</p>
+                <p><strong>Address:</strong> {seller?.businessAddress || seller?.address}</p>
+                <p><strong>Status:</strong> {seller?.status}</p>
                 {/* Thêm các thông tin khác nếu cần */}
               </div>
             </div>

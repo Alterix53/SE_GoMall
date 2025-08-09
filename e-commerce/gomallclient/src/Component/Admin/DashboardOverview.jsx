@@ -97,7 +97,7 @@ function DashboardOverview() {
                         <div className="spinner-border text-primary" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
-                        <p className="mt-2">Đang tải dữ liệu dashboard...</p>
+                        <p className="mt-2">Loading dashboard data...</p>
                     </div>
                 </div>
             </div>
@@ -110,12 +110,10 @@ function DashboardOverview() {
                 <div className="row">
                     <div className="col-12">
                         <div className="alert alert-danger" role="alert">
-                            <h4 className="alert-heading">Lỗi!</h4>
+                            <h4 className="alert-heading">Error</h4>
                             <p>{error}</p>
                             <hr />
-                            <p className="mb-0">
-                                Vui lòng kiểm tra kết nối mạng và thử lại.
-                            </p>
+                            <p className="mb-0">Please check your network connection and try again.</p>
                         </div>
                     </div>
                 </div>

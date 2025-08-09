@@ -1,6 +1,57 @@
 import Seller from '../models/Seller.js';
 import User from '../models/User.js';
 
+// [POST] User apply to become seller (authenticated user)
+export const applyForSeller = async (req, res) => {
+    try {
+        const authUser = req.user; // from authenticateToken
+        const {
+            businessName,
+            businessLicense,
+            businessAddress,
+            businessPhone,
+            verificationDocs
+        } = req.body;
+
+        if (!businessName || !businessLicense) {
+            return res.status(400).json({
+                success: false,
+                message: 'businessName và businessLicense là bắt buộc'
+            });
+        }
+
+        // Prevent duplicate active/pending applications
+        const existing = await Seller.findOne({ userID: authUser._id, status: { $in: ['pending', 'approved', 'suspended'] } });
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: 'You already have an active or pending seller application'
+            });
+        }
+
+        const seller = await Seller.create({
+            userID: authUser._id,
+            businessName: businessName.trim(),
+            businessLicense: String(businessLicense).trim(),
+            businessAddress: (businessAddress || authUser.address || '').trim(),
+            businessPhone: (businessPhone || authUser.phoneNumber || '').trim(),
+            businessEmail: authUser.email,
+            verificationDocs: Array.isArray(verificationDocs) ? verificationDocs : [],
+            status: 'pending',
+            isActive: true
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: 'Đã nộp hồ sơ seller, vui lòng chờ duyệt',
+            data: seller
+        });
+    } catch (error) {
+        console.error('Apply seller error:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 // [GET] Lấy tất cả seller với thông tin user
 export const getAllSellers = async (req, res) => {
     try {

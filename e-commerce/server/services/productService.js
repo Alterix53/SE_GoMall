@@ -6,28 +6,46 @@ class ProductService {
     buildFilter(query) {
         const filter = { isActive: true };
 
-        if (query.category) {
+        // Category by ID or list of IDs
+        if (query.categoryID) {
+            if (Array.isArray(query.categoryID)) {
+                filter.categoryID = { $in: query.categoryID };
+            } else {
+                filter.categoryID = query.categoryID;
+            }
+        }
+        // Legacy support: category (single id)
+        if (query.category && !filter.categoryID) {
             filter.categoryID = query.category;
         }
+        // Brand: support CSV or single, case-insensitive
         if (query.brand) {
-            filter.brand = new RegExp(query.brand, "i");
+            const brandStr = String(query.brand);
+            if (brandStr.includes(',')) {
+                const brands = brandStr.split(',').map(s => s.trim()).filter(Boolean);
+                filter.brand = { $in: brands };
+            } else {
+                filter.brand = new RegExp(brandStr, "i");
+            }
         }
+        // Price boundaries using nested fields, fallback when sale not present
         if (query.minPrice || query.maxPrice) {
-            filter.$or = [
-                { 
-                    "price.sale": { 
-                        ...(query.minPrice && { $gte: Number(query.minPrice) }), 
-                        ...(query.maxPrice && { $lte: Number(query.maxPrice) }) 
-                    } 
-                },
-                { 
-                    "price.original": { 
-                        ...(query.minPrice && { $gte: Number(query.minPrice) }), 
-                        ...(query.maxPrice && { $lte: Number(query.maxPrice) }) 
-                    }, 
-                    "price.sale": { $exists: false } 
-                },
-            ];
+            const orConds = [];
+            const min = query.minPrice !== undefined ? Number(query.minPrice) : undefined;
+            const max = query.maxPrice !== undefined ? Number(query.maxPrice) : undefined;
+            const saleCond = {};
+            const origCond = {};
+            if (min !== undefined) { saleCond.$gte = min; origCond.$gte = min; }
+            if (max !== undefined) { saleCond.$lte = max; origCond.$lte = max; }
+            if (Object.keys(saleCond).length) {
+                orConds.push({ "price.sale": saleCond });
+            }
+            if (Object.keys(origCond).length) {
+                orConds.push({ "price.original": origCond, "price.sale": { $exists: false } });
+            }
+            if (orConds.length) {
+                filter.$or = (filter.$or || []).concat(orConds);
+            }
         }
         if (query.rating) {
             filter["rating.average"] = { $gte: Number(query.rating) };
@@ -73,16 +91,46 @@ class ProductService {
     // Search products
     async searchProducts(query, options = {}) {
         const { page = 1, limit = 12, sortBy = 'createdAt' } = options;
-        
-        // Build sort object
+        const numericPage = Number(page);
+        const numericLimit = Number(limit);
+
+        // Special handling for price sort using computed effectivePrice
+        if (sortBy === 'price' || sortBy === '-price') {
+            const order = sortBy === 'price' ? 1 : -1;
+            const pipeline = [
+                { $match: query },
+                { $addFields: { effectivePrice: { $ifNull: ["$price.sale", "$price.original"] } } },
+                { $sort: { effectivePrice: order } },
+                { $skip: (numericPage - 1) * numericLimit },
+                { $limit: numericLimit },
+                // Optionally project to remove effectivePrice from output
+            ];
+            const [products, totalArr] = await Promise.all([
+                Product.aggregate(pipeline),
+                Product.aggregate([{ $match: query }, { $count: 'total' }])
+            ]);
+            const total = totalArr[0]?.total || 0;
+            // Populate category refs post-aggregation
+            const populated = await Product.populate(products, { path: 'categoryID', select: 'categoryName slug' });
+            return {
+                products: this.addDiscountToProducts(populated),
+                pagination: {
+                    current: numericPage,
+                    pages: Math.ceil(total / numericLimit),
+                    total,
+                    limit: numericLimit,
+                },
+            };
+        }
+
+        // Default: simple find with sort
         const sort = {};
         sort[sortBy] = -1;
-        
         const products = await Product.find(query)
             .populate("categoryID", "categoryName slug")
             .sort(sort)
-            .limit(Number(limit))
-            .skip((Number(page) - 1) * Number(limit))
+            .limit(numericLimit)
+            .skip((numericPage - 1) * numericLimit)
             .lean();
 
         const total = await Product.countDocuments(query);
@@ -90,10 +138,10 @@ class ProductService {
         return {
             products: this.addDiscountToProducts(products),
             pagination: {
-                current: Number(page),
-                pages: Math.ceil(total / Number(limit)),
+                current: numericPage,
+                pages: Math.ceil(total / numericLimit),
                 total,
-                limit: Number(limit),
+                limit: numericLimit,
             },
         };
     }

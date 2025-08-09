@@ -91,6 +91,10 @@ export const apiService = {
 
   changePassword: (userId, passwordData) => {
     return api.put(`/auth/change-password`, passwordData);
+  },
+  // Seller application
+  applyForSeller: (data) => {
+    return api.post(`/sellers/apply`, data);
   }
 };
 

@@ -128,12 +128,13 @@ export const registerSeller = async (req, res) => {
             });
         }
 
-        // Check if seller already exists for this user
-        const existingSeller = await Seller.findOne({ userID: existingUser?._id });
+        // Note: multiple seller applications could be allowed across time if previous was rejected.
+        // We only block if a PENDING/APPROVED/ACTIVE record exists.
+        const existingSeller = await Seller.findOne({ userID: existingUser?._id, status: { $in: ['pending', 'approved', 'suspended'] } });
         if (existingSeller) {
             return res.status(400).json({
                 success: false,
-                message: 'Seller account already exists for this user'
+                message: 'A seller application already exists for this user'
             });
         }
 

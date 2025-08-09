@@ -7,7 +7,6 @@ const sellerSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
       index: true,
-      unique: true,
     },
     // Canonical naming: businessName/businessAddress/businessPhone/businessEmail
     businessName: {

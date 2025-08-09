@@ -14,7 +14,7 @@ function ManageUserPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch users từ API
+  // Fetch users from API
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
@@ -34,10 +34,10 @@ function ManageUserPage() {
         } else {
           setUsers([]);
           setTotalPages(1);
-          setError(res.message || 'Lỗi khi lấy danh sách user');
+          setError(res.message || 'Failed to fetch users');
         }
       } catch (err) {
-        setError(err.message || 'Lỗi khi lấy danh sách user');
+        setError(err.message || 'Failed to fetch users');
         setUsers([]);
         setTotalPages(1);
       } finally {
@@ -109,7 +109,7 @@ function ManageUserPage() {
           )}
         </div>
       </div>
-      {/* Modal chi tiết thành viên */}
+      {/* User detail modal */}
       {selectedUser && (
         <div className="modal show d-block" tabIndex="-1">
           <UserDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />

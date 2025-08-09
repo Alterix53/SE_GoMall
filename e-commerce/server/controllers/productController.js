@@ -1,4 +1,5 @@
 import productService from "../services/productService.js";
+import Category from "../models/Category.js";
 import ResponseHandler from "../utils/responseHandler.js";
 import { uploadProductImages, handleUploadError } from "../middleware/upload.js";
 
@@ -46,7 +47,7 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to search products:", req.query);
     
     try {
-        const { keyword, category, minPrice, maxPrice, sortBy, page = 1, limit = 12 } = req.query;
+        const { keyword, category, minPrice, maxPrice, sortBy, brand, page = 1, limit = 12 } = req.query;
         
         // Build search query
         let query = { isActive: true };
@@ -68,17 +69,29 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
             console.log('Search query:', JSON.stringify(query));
         }
         
-        // Category filter
+        // Category filter: accept CSV of names/slugs/ids and map to ObjectIds
         if (category) {
-            query.categoryID = category;
+            const values = String(category).split(',').map(s => s.trim()).filter(Boolean);
+            if (values.length) {
+                const categories = await Category.find({
+                    $or: [
+                        { _id: { $in: values } },
+                        { categoryName: { $in: values } },
+                        { slug: { $in: values } }
+                    ]
+                }).distinct('_id');
+                if (categories.length) {
+                    query.categoryID = { $in: categories };
+                }
+            }
         }
         
-        // Price filter
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = parseInt(minPrice);
-            if (maxPrice) query.price.$lte = parseInt(maxPrice);
-        }
+        // Price filter handled in service via nested fields (price.sale/original)
+        if (minPrice) query.minPrice = Number(minPrice);
+        if (maxPrice) query.maxPrice = Number(maxPrice);
+
+        // Brand filter (CSV or single)
+        if (brand) query.brand = brand;
         
         // Execute search
         const products = await productService.searchProducts(query, {

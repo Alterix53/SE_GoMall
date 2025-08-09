@@ -4,11 +4,11 @@ import UserSellerListItem from "../UserSellerListItem";
 import { adminAPI } from '../../../utils/api';
 
 const FILTERS = [
-  { key: "all", label: "Tất cả" },
-  { key: "pending", label: "Chờ duyệt" },
-  { key: "active", label: "Đang hoạt động" },
-  { key: "banned", label: "Bị khóa" },
-  { key: "reported", label: "Bị báo cáo" },
+  { key: "all", label: "All" },
+  { key: "pending", label: "Pending" },
+  { key: "active", label: "Active" },
+  { key: "banned", label: "Banned" },
+  { key: "reported", label: "Reported" },
 ];
 
 function ManageSellerPage() {
@@ -19,12 +19,12 @@ function ManageSellerPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch sellers từ API
+  // Fetch sellers from API
   React.useEffect(() => {
     const fetchSellers = async () => {
       setLoading(true);
       setError(null);
-      console.log('[Seller API] Bắt đầu fetch danh sách seller...', { status: activeFilter, search: searchTerm });
+      console.log('[Seller API] Fetch seller list start...', { status: activeFilter, search: searchTerm });
       try {
         const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!adminToken) throw new Error('Admin token not found');
@@ -35,16 +35,16 @@ function ManageSellerPage() {
         const res = await adminAPI.getAllSellers(adminToken, params);
         if (res.success) {
           setSellers(res.data.sellers || res.data || []);
-          console.log(`[Seller API] Lấy danh sách seller thành công. Số lượng: ${res.data.sellers?.length ?? (res.data?.length ?? 0)}`);
+          console.log(`[Seller API] Fetched sellers successfully. Count: ${res.data.sellers?.length ?? (res.data?.length ?? 0)}`);
         } else {
           setSellers([]);
-          setError(res.message || 'Lỗi khi lấy danh sách seller');
-          console.error('[Seller API] Lỗi khi lấy danh sách seller:', res.message);
+          setError(res.message || 'Failed to fetch sellers');
+          console.error('[Seller API] Failed to fetch sellers:', res.message);
         }
       } catch (err) {
-        setError(err.message || 'Lỗi khi lấy danh sách seller');
+        setError(err.message || 'Failed to fetch sellers');
         setSellers([]);
-        console.error('[Seller API] Lỗi khi fetch seller:', err);
+        console.error('[Seller API] Error fetching sellers:', err);
       } finally {
         setLoading(false);
       }
@@ -56,7 +56,7 @@ function ManageSellerPage() {
 
   return (
     <div className="container-fluid">
-      <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý người bán</h2>
+      <h2 className="row text-center" style={{ minWidth: 180 }}>Manage Sellers</h2>
       <div className="d-flex gap-2 mb-3 align-items-center">
         {FILTERS.map((filter) => (
           <button
@@ -72,7 +72,7 @@ function ManageSellerPage() {
           type="text"
           className="form-control ms-3"
           style={{ maxWidth: 250 }}
-          placeholder="Tìm kiếm người bán..."
+          placeholder="Search sellers..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
@@ -81,7 +81,7 @@ function ManageSellerPage() {
       {error && <div className="text-danger py-2">{error}</div>}
       <ul className="list-group">
         {!loading && filteredSellers.length === 0 && (
-          <li className="list-group-item text-muted">Không có người bán nào.</li>
+          <li className="list-group-item text-muted">No sellers found.</li>
         )}
         {filteredSellers.map((seller) => (
           <UserSellerListItem
@@ -91,7 +91,7 @@ function ManageSellerPage() {
           />
         ))}
       </ul>
-      {/* Modal chi tiết người bán */}
+      {/* Seller detail modal */}
       {selectedSeller && (
         <div className="modal show d-block" tabIndex="-1">
           <SellerDetailModal seller={selectedSeller} onClose={() => setSelectedSeller(null)} />

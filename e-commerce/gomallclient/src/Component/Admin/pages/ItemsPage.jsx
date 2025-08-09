@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { adminAPI } from '../../../utils/api';
 
 const FILTERS = [
-  { key: "all", label: "Tất cả" },
-  { key: "new", label: "Sản phẩm mới lên sàn" },
-  { key: "hot", label: "Sản phẩm hot" },
-  { key: "reported", label: "Sản phẩm bị báo cáo" },
+  { key: "all", label: "All" },
+  { key: "new", label: "New Products" },
+  { key: "hot", label: "Hot Products" },
+  { key: "reported", label: "Reported Products" },
 ];
 
 // Dữ liệu mẫu, bạn có thể thay bằng dữ liệu thực tế
@@ -43,12 +43,12 @@ function ItemsPage() {
   const [error, setError] = useState(null);
   const itemsPerPage = 12;
 
-  // Fetch products từ API
+  // Fetch products from API
   React.useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       setError(null);
-      console.log('[Product API] Bắt đầu fetch danh sách sản phẩm...', { status: activeFilter, search: searchTerm, page: currentPage });
+      console.log('[Product API] Start fetching products...', { status: activeFilter, search: searchTerm, page: currentPage });
       try {
         const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
         if (!adminToken) throw new Error('Admin token not found');
@@ -62,18 +62,18 @@ function ItemsPage() {
         if (res.success) {
           setProducts(res.data.products || res.data || []);
           setTotalPages(res.data.totalPages || 1);
-          console.log(`[Product API] Lấy danh sách sản phẩm thành công. Số lượng: ${res.data.products?.length ?? (res.data?.length ?? 0)}`);
+          console.log(`[Product API] Fetched products successfully. Count: ${res.data.products?.length ?? (res.data?.length ?? 0)}`);
         } else {
           setProducts([]);
           setTotalPages(1);
-          setError(res.message || 'Lỗi khi lấy danh sách sản phẩm');
-          console.error('[Product API] Lỗi khi lấy danh sách sản phẩm:', res.message);
+          setError(res.message || 'Failed to fetch products');
+          console.error('[Product API] Failed to fetch products:', res.message);
         }
       } catch (err) {
-        setError(err.message || 'Lỗi khi lấy danh sách sản phẩm');
+        setError(err.message || 'Failed to fetch products');
         setProducts([]);
         setTotalPages(1);
-        console.error('[Product API] Lỗi khi fetch sản phẩm:', err);
+        console.error('[Product API] Error fetching products:', err);
       } finally {
         setLoading(false);
       }
@@ -92,9 +92,9 @@ function ItemsPage() {
 
   return (
     <div className="container-fluid">
-      <h2 className="row text-center" style={{ minWidth: 180 }}> Quản lý sản phẩm</h2>
+      <h2 className="row text-center" style={{ minWidth: 180 }}>Manage Products</h2>
       <div className="row">
-        {/* Filter buttons và thanh tìm kiếm cùng hàng */}
+        {/* Filter buttons and search input on the same row */}
         <div className="col-12 py-4">
           <div className="d-flex gap-2 mb-3 align-items-center">
             {FILTERS.map((filter) => (
@@ -111,7 +111,7 @@ function ItemsPage() {
               type="text"
               className="form-control ms-3"
               style={{ maxWidth: 250 }}
-              placeholder="Tìm kiếm sản phẩm..."
+              placeholder="Search products..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -121,14 +121,14 @@ function ItemsPage() {
           {error && <div className="text-danger py-2">{error}</div>}
           <ul className="list-group">
             {!loading && products.length === 0 && (
-              <li className="list-group-item text-muted">Không có sản phẩm nào.</li>
+              <li className="list-group-item text-muted">No products found.</li>
             )}
             {products.map((product) => (
               <li className="list-group-item d-flex justify-content-between align-items-center" key={product._id || product.id}>
                 <span>{product.name}</span>
                 <span className="text-end">
                   <div className="fw-bold">{product.manufacturer}</div>
-                  <div className="text-secondary">Đã bán: {product.sold}</div>
+                  <div className="text-secondary">Sold: {product.sold}</div>
                 </span>
               </li>
             ))}

@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+    applyForSeller,
     getAllSellers,
     getSellerById,
     approveSeller,
@@ -8,22 +9,22 @@ import {
     deleteSeller,
     getSellerByUserId
 } from '../controllers/sellerControllers.js';
-import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { authenticateToken, authenticateAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Public routes (if any)
 router.get('/user/:userId', getSellerByUserId);
 
-// Protected routes - require authentication
-router.use(authenticateToken);
+// Protected routes - user auth for applying
+router.post('/apply', authenticateToken, applyForSeller);
 
-// Admin only routes
-router.get('/', requireRole(['admin']), getAllSellers);
-router.get('/:id', requireRole(['admin']), getSellerById);
-router.patch('/:id/approve', requireRole(['admin']), approveSeller);
-router.patch('/:id/reject', requireRole(['admin']), rejectSeller);
-router.patch('/:id', requireRole(['admin']), updateSeller);
-router.delete('/:id', requireRole(['admin']), deleteSeller);
+// Admin only routes (use admin token)
+router.get('/', authenticateAdmin, getAllSellers);
+router.get('/:id', authenticateAdmin, getSellerById);
+router.patch('/:id/approve', authenticateAdmin, approveSeller);
+router.patch('/:id/reject', authenticateAdmin, rejectSeller);
+router.patch('/:id', authenticateAdmin, updateSeller);
+router.delete('/:id', authenticateAdmin, deleteSeller);
 
 export default router;

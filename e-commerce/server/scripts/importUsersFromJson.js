@@ -28,8 +28,8 @@ async function upsertUserFromJson(jsonUser) {
     : (roleFromJson ? [roleFromJson] : ['user']);
 
   const hasSellerRole = rolesArray.includes('seller');
-  const normalizedRoles = rolesArray
-    .filter(r => r === 'user' || r === 'admin');
+  // User model no longer supports 'admin' as a role; keep only 'user'
+  const normalizedRoles = rolesArray.filter(r => r === 'user');
   const finalRoles = normalizedRoles.length ? normalizedRoles : ['user'];
 
   const passwordToStore = isBcryptHash(rawPassword)

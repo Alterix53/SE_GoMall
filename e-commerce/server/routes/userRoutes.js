@@ -7,36 +7,34 @@ import {
     getUsersByRole,
     backupUsers
 } from '../controllers/userController.js';
-import { authenticateToken, requireRole as checkRole } from '../middleware/auth.js';
+import { authenticateToken, authenticateAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Tất cả routes đều yêu cầu authentication
 router.use(authenticateToken);
 
-// Admin routes
-router.get('/', checkRole(['admin']), getAllUsers);
-router.get('/role/:role', checkRole(['admin']), getUsersByRole);
-router.post('/backup', checkRole(['admin']), backupUsers);
+// Admin routes (admin token required)
+router.get('/', authenticateAdmin, getAllUsers);
+router.get('/role/:role', authenticateAdmin, getUsersByRole);
+router.post('/backup', authenticateAdmin, backupUsers);
 
 // User routes (có thể là admin hoặc chính user đó)
 router.get('/:id', (req, res, next) => {
-    // Cho phép admin hoặc chính user đó xem thông tin
-    const isAdmin = Array.isArray(req.user.role) ? req.user.role.includes('admin') : req.user.role === 'admin';
+    // Allow owner; admins handled via separate admin token routes
     const isOwner = req.user?._id?.toString?.() === req.params.id;
-    if (isAdmin || isOwner) return next();
+    if (isOwner) return next();
     res.status(403).json({ success: false, message: 'Insufficient permissions' });
 }, getUserById);
 
 router.put('/:id', (req, res, next) => {
-    // Cho phép admin hoặc chính user đó cập nhật thông tin
-    const isAdmin = Array.isArray(req.user.role) ? req.user.role.includes('admin') : req.user.role === 'admin';
+    // Allow owner only; admins handled via separate admin token routes
     const isOwner = req.user?._id?.toString?.() === req.params.id;
-    if (isAdmin || isOwner) return next();
+    if (isOwner) return next();
     res.status(403).json({ success: false, message: 'Insufficient permissions' });
 }, updateUser);
 
-// Chỉ admin mới có thể xóa user
-router.delete('/:id', checkRole(['admin']), deleteUser);
+// Delete user: admin-only via admin token
+router.delete('/:id', authenticateAdmin, deleteUser);
 
 export default router;
