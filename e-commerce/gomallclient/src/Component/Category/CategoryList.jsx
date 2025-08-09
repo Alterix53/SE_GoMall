@@ -24,33 +24,7 @@ const categoryIconMap = {
   'Other': '🛒'
 };
 
-// Fallback categories in case API fails
-const fallbackCategories = [
-  // Row 1 (7 categories)
-  { _id: 'cat1', categoryName: 'Fashion', icon: '👔', color: '#2196F3' },
-  { _id: 'cat2', categoryName: 'Phones', icon: '📱', color: '#2196F3' },
-  { _id: 'cat3', categoryName: 'Electronics', icon: '📺', color: '#2196F3' },
-  { _id: 'cat4', categoryName: 'Laptops', icon: '💻', color: '#2196F3' },
-  { _id: 'cat5', categoryName: 'Cameras', icon: '📷', color: '#2196F3' },
-  { _id: 'cat6', categoryName: 'Watches', icon: '⌚', color: '#2196F3' },
-  { _id: 'cat7', categoryName: 'Shoes', icon: '👞', color: '#2196F3' },
-  // Row 2 (7 categories)
-  { _id: 'cat8', categoryName: 'Home & Garden', icon: '🏠', color: '#2196F3' },
-  { _id: 'cat9', categoryName: 'Beauty & Cosmetics', icon: '💄', color: '#2196F3' },
-  { _id: 'cat10', categoryName: 'Sports', icon: '⚽', color: '#2196F3' },
-  { _id: 'cat11', categoryName: 'Books', icon: '📚', color: '#2196F3' },
-  { _id: 'cat12', categoryName: 'Health', icon: '🏥', color: '#2196F3' },
-  { _id: 'cat13', categoryName: 'Accessories', icon: '💍', color: '#2196F3' },
-  { _id: 'cat14', categoryName: 'Gaming', icon: '🎮', color: '#2196F3' },
-  // Row 3 (7 categories)
-  { _id: 'cat15', categoryName: 'Auto', icon: '🛵', color: '#2196F3' },
-  { _id: 'cat16', categoryName: 'Baby', icon: '👶', color: '#2196F3' },
-  { _id: 'cat17', categoryName: 'Jewelry', icon: '💎', color: '#2196F3' },
-  { _id: 'cat18', categoryName: 'Music', icon: '🎵', color: '#2196F3' },
-  { _id: 'cat19', categoryName: 'Toys', icon: '🧸', color: '#2196F3' },
-  { _id: 'cat20', categoryName: 'Pet Supplies', icon: '🐕', color: '#2196F3' },
-  { _id: 'cat21', categoryName: 'Office', icon: '🏢', color: '#2196F3' },
-];
+
 
 export default function CategoryList() {
   const [categories, setCategories] = useState([]);
@@ -82,16 +56,16 @@ export default function CategoryList() {
           }));
           setCategories(categoriesWithIcons);
         } else {
-          console.log('Using fallback categories');
-          setCategories(fallbackCategories);
+          console.log('No categories data available');
+          setCategories([]);
         }
       } else {
-        console.log('Using fallback categories');
-        setCategories(fallbackCategories);
+        console.log('Categories API not available');
+        setCategories([]);
       }
     } catch (error) {
-      console.log('Categories API error, using fallback data:', error.message);
-      setCategories(fallbackCategories);
+      console.log('Categories API error:', error.message);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -100,47 +74,34 @@ export default function CategoryList() {
   const fetchCategoryProducts = async (categoryId, categoryName) => {
     try {
       setLoadingProducts(true);
-      const response = await fetch(`http://localhost:8080/api/categories/${categoryId}/products`);
+      const response = await fetch(`http://localhost:8080/api/products/category/${encodeURIComponent(categoryName)}`);
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.data) {
-          setCategoryProducts(data.data);
-        } else {
-          // Generate fallback products for the category
-          const fallbackProducts = Array.from({ length: 8 }, (_, index) => ({
-            _id: `${categoryId}_${index + 1}`,
-            name: `Sample ${categoryName} Product ${index + 1}`,
-            price: { sale: Math.floor(Math.random() * 1000000) + 100000 },
-            images: [{ url: `https://via.placeholder.com/200x200?text=${categoryName}+${index + 1}` }],
-            rating: { average: (Math.random() * 2 + 3).toFixed(1) },
-            sold: Math.floor(Math.random() * 500) + 10
+        if (data.success && data.data && Array.isArray(data.data.products)) {
+          const mappedProducts = data.data.products.map(product => ({
+            _id: product._id,
+            name: product.name,
+            price: product?.price?.sale || product?.price?.original || 0,
+            originalPrice: product?.price?.original || 0,
+            discount: product?.price?.original && product?.price?.sale
+              ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+              : 0,
+            image: product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/default-product.jpg',
+            rating: product?.rating || { average: 0, count: 0 },
+            sold: product?.sold || 0,
           }));
-          setCategoryProducts(fallbackProducts);
+          setCategoryProducts(mappedProducts);
+        } else {
+          console.log('No category products data available');
+          setCategoryProducts([]);
         }
       } else {
-        // Generate fallback products for the category
-        const fallbackProducts = Array.from({ length: 8 }, (_, index) => ({
-          _id: `${categoryId}_${index + 1}`,
-          name: `Sample ${categoryName} Product ${index + 1}`,
-          price: { sale: Math.floor(Math.random() * 1000000) + 100000 },
-          images: [{ url: `https://via.placeholder.com/200x200?text=${categoryName}+${index + 1}` }],
-          rating: { average: (Math.random() * 2 + 3).toFixed(1) },
-          sold: Math.floor(Math.random() * 500) + 10
-        }));
-        setCategoryProducts(fallbackProducts);
+        console.log('Category products API not available');
+        setCategoryProducts([]);
       }
     } catch (error) {
-      console.log('Category products API error, using fallback data:', error.message);
-      // Generate fallback products for the category
-      const fallbackProducts = Array.from({ length: 8 }, (_, index) => ({
-        _id: `${categoryId}_${index + 1}`,
-        name: `Sample ${categoryName} Product ${index + 1}`,
-        price: { sale: Math.floor(Math.random() * 1000000) + 100000 },
-        images: [{ url: `https://via.placeholder.com/200x200?text=${categoryName}+${index + 1}` }],
-        rating: { average: (Math.random() * 2 + 3).toFixed(1) },
-        sold: Math.floor(Math.random() * 500) + 10
-      }));
-      setCategoryProducts(fallbackProducts);
+      console.log('Category products API error:', error.message);
+      setCategoryProducts([]);
     } finally {
       setLoadingProducts(false);
     }
