@@ -118,7 +118,8 @@ const ProductDetail = () => {
         size: selectedSize || "default",
         quantity,
       });
-      alert("Đã thêm vào giỏ hàng!");
+      // Navigate to cart page after successfully adding to cart
+      navigate('/cart');
     } catch (err) {
       alert("Có lỗi xảy ra khi thêm vào giỏ hàng!");
     }
