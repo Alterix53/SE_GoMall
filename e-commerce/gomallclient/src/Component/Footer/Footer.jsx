@@ -52,20 +52,20 @@ export default function Footer() {
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" />
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/JCB_logo.svg/2560px-JCB_logo.svg.png" alt="JCB" />
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" alt="American Express" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/ShopeePay_logo.svg/1200px-ShopeePay_logo.svg.png" alt="S Pay" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/ShopeePay_logo.svg/1200px-ShopeePay_logo.svg.png" alt="SPayLater" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ShopeePay-V-Horizontal.png" alt="S Pay" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPay-V-Horizontal.png" alt="VNPay" />
               </div>
               
               <h4 className="footer-subtitle">ĐƠN VỊ VẬN CHUYỂN</h4>
               <div className="shipping-grid">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Shopee_Express_logo.svg/1200px-Shopee_Express_logo.svg.png" alt="SPX Express" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Giao_Hang_Nhanh_logo.svg/1200px-Giao_Hang_Nhanh_logo.svg.png" alt="Giao Hàng Nhanh" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Viettel_Post_logo.svg/1200px-Viettel_Post_logo.svg.png" alt="Viettel Post" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/J%26T_Express_logo.svg/1200px-J%26T_Express_logo.svg.png" alt="J&T Express" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/GrabExpress_logo.svg/1200px-GrabExpress_logo.svg.png" alt="GrabExpress" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Ninja_Van_logo.svg/1200px-Ninja_Van_logo.svg.png" alt="Ninja Van" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Be_logo.svg/1200px-Be_logo.svg.png" alt="Be" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Ahamove_logo.svg/1200px-Ahamove_logo.svg.png" alt="Ahamove" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2021/12/Logo-SPX-Express.png" alt="SPX Express" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-VN.png" alt="Giao Hàng Nhanh" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Viettel-Post.png" alt="Viettel Post" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-J&T-Express.png" alt="J&T Express" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GrabExpress.png" alt="GrabExpress" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Ninja-Van.png" alt="Ninja Van" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Be.png" alt="Be" />
+                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Ahamove.png" alt="Ahamove" />
               </div>
             </div>
 
@@ -103,7 +103,7 @@ export default function Footer() {
                     <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" />
                   </a>
                   <a href="#" className="app-store-link">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Huawei_AppGallery_logo.svg/1200px-Huawei_AppGallery_logo.svg.png" alt="AppGallery" />
+                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Huawei-AppGallery.png" alt="AppGallery" />
                   </a>
                 </div>
               </div>
