@@ -1,12 +1,85 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useCart } from "../../contexts/CartContext";
 import Header from '../Header/Header';
+import { Link, useNavigate } from 'react-router-dom';
 import "./Cart.css";
 
 export default function CartManager() {
   const { cartItems, updateQuantity, removeFromCart, loading, error } = useCart();
+  const navigate = useNavigate();
 
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
+  const [suggestedProducts, setSuggestedProducts] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  // Handle checkout navigation
+  const handleCheckout = () => {
+    const hasSelection = selectedKeys.size > 0;
+
+    // Determine items to checkout: use selected items if any, otherwise all items
+    const selectedItems = hasSelection
+      ? Array.from(selectedKeys)
+          .map((key) => cartItems.find((item) => `${item.id}-${item.size}` === key))
+          .filter(Boolean)
+      : cartItems;
+
+    if (!selectedItems || selectedItems.length === 0) return;
+
+    const totalAmount = hasSelection ? totals.selectedTotal : totals.allTotal;
+    const totalCount = hasSelection ? totals.selectedCount : totals.allCount;
+
+    // Navigate to checkout with items and totals
+    navigate('/checkout', {
+      state: {
+        selectedItems,
+        total: totalAmount,
+        count: totalCount,
+      },
+    });
+  };
+
+  // Fetch suggested products on mount (visible both for empty and non-empty carts)
+  useEffect(() => {
+    fetchSuggestedProducts();
+  }, []);
+
+  const fetchSuggestedProducts = async () => {
+    setLoadingSuggestions(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/products?limit=12');
+      const data = await response.json();
+      
+      if (data.success && data.data && data.data.products) {
+        // Transform data for display
+        const products = data.data.products.map(product => ({
+          id: product._id,
+          name: product.name,
+          image: product.images?.[0]?.url || '/images/placeholder-product.jpg',
+          price: product.price?.sale || product.price?.original || 0,
+          originalPrice: product.price?.original || 0,
+          discount: product.discount || 0,
+          rating: product.rating?.average || 0,
+          sold: product.sold || 0,
+          isFlashSale: product.isFlashSale || false
+        }));
+        setSuggestedProducts(products);
+      }
+    } catch (error) {
+      console.error('Error fetching suggested products:', error);
+      setSuggestedProducts([]);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  const formatVND = (price) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   const currencyVND = (value) =>
     new Intl.NumberFormat("vi-VN", {
@@ -39,7 +112,8 @@ export default function CartManager() {
 
   const handleRemoveSelected = async () => {
     const itemsByKey = new Map(cartItems.map((i) => [makeKey(i), i]));
-    for (const key of selectedKeys) {
+    const keysArray = Array.from(selectedKeys);
+    for (const key of keysArray) {
       const item = itemsByKey.get(key);
       if (item) {
         // remove by id + size like before
@@ -89,170 +163,295 @@ export default function CartManager() {
     return { selectedTotal, selectedCount, allTotal, allCount };
   }, [cartItems, selectedKeys]);
 
-  if (loading) {
-    return (
-      <>
-        <Header />
-        <div className="cart-wrapper">
-          <div className="cart-empty-state">Đang tải giỏ hàng...</div>
-        </div>
-      </>
-    );
-  }
+  const allSelected = useMemo(
+    () => cartItems.length > 0 && selectedKeys.size === cartItems.length,
+    [cartItems, selectedKeys]
+  );
 
-  if (error) {
+  // Nếu giỏ hàng trống, hiển thị empty state như Shopee
+  if (!cartItems || cartItems.length === 0) {
     return (
-      <>
+      <div className="cart-page cart--empty">
         <Header />
-        <div className="cart-wrapper">
-          <div className="cart-empty-state">Lỗi: {error}</div>
-        </div>
-      </>
-    );
-  }
+        <div className="cart-container">
+          <div className="cart-empty-layout">
+            {/* Cart Header */}
+            <div className="cart-header-table">
+              <div className="cart-table-row cart-table-header">
+                <div className="cart-col-checkbox">
+                  <input type="checkbox" disabled />
+                </div>
+                <div className="cart-col-product">Sản Phẩm</div>
+                <div className="cart-col-price">Đơn Giá</div>
+                <div className="cart-col-quantity">Số Lượng</div>
+                <div className="cart-col-total">Số Tiền</div>
+                <div className="cart-col-actions">Thao Tác</div>
+              </div>
+            </div>
 
-  if (cartItems.length === 0) {
-    return (
-      <>
-        <Header />
-        <div className="cart-wrapper">
-          <div className="cart-empty">
-            <div className="empty-icon">🛒</div>
-            <div className="empty-title">Giỏ hàng trống</div>
-            <a href="/" className="btn-orange">Mua sắm ngay</a>
+            {/* Voucher Section */}
+            <div className="cart-voucher-section">
+              <div className="voucher-item">
+                <div className="voucher-icon">🎫</div>
+                <span className="voucher-text">Shopee Voucher</span>
+                <button className="voucher-select-btn">Chọn hoặc nhập mã</button>
+              </div>
+              <div className="voucher-item">
+                <div className="voucher-icon">💰</div>
+                <span className="voucher-text">Shopee Xu</span>
+                <span className="voucher-unavailable">Bạn chưa chọn sản phẩm</span>
+                <span className="voucher-balance">-₫0</span>
+              </div>
+            </div>
+
+            {/* Selection Controls */}
+            <div className="cart-selection-controls">
+              <div className="select-all-section">
+                <input type="checkbox" id="select-all" disabled />
+                <label htmlFor="select-all">Chọn Tất Cả (1)</label>
+                <button className="delete-btn" disabled>Xóa</button>
+                <button className="save-btn" disabled>Lưu vào mục Đã thích</button>
+              </div>
+              
+              <div className="cart-total-section">
+                <div className="total-info">
+                  <span className="total-label">Tổng cộng (0 Sản phẩm): </span>
+                  <span className="total-amount">₫0</span>
+                </div>
+                <button className="checkout-btn" disabled>Mua Hàng</button>
+              </div>
+            </div>
+
+            {/* Suggested Products Section */}
+            <div className="cart-suggestions-section">
+              <div className="suggestions-header">
+                <h2 className="suggestions-title">CÓ THỂ BẠN CŨNG THÍCH</h2>
+                <Link to="/suggestions" className="view-all-link">Xem Tất Cả &gt;</Link>
+              </div>
+              
+              {loadingSuggestions ? (
+                <div className="suggestions-loading">
+                  <div className="loading-spinner"></div>
+                  <span>Đang tải sản phẩm...</span>
+                </div>
+              ) : (
+                <div className="suggestions-grid">
+                  {suggestedProducts.map((product) => (
+                    <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
+                      <div className="suggestion-image-container">
+                        <img 
+                          src={product.image.startsWith('http') ? product.image : `http://localhost:8080${product.image}`}
+                          alt={product.name}
+                          className="suggestion-image"
+                          onError={(e) => {
+                            if (e.target && e.target['src']) {
+                              e.target['src'] = '/images/placeholder-product.jpg';
+                            }
+                          }}
+                        />
+                        {product.discount > 0 && (
+                          <div className="suggestion-discount">-{product.discount}%</div>
+                        )}
+                      </div>
+                      <div className="suggestion-info">
+                          <h3 className="suggestion-name">{product.name}</h3>
+                          <div className="suggestion-price">
+                            <span className="current-price">{formatVND(product.price)}</span>
+                          {product.originalPrice > product.price && (
+                            <span className="original-price">{formatVND(product.originalPrice)}</span>
+                          )}
+                        </div>
+                        <div className="suggestion-stats">
+                          <div className="rating">
+                            <span className="stars">★★★★★</span>
+                            <span className="rating-value">{product.rating.toFixed(1)}</span>
+                          </div>
+                          <span className="sold-count">Đã bán {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
-
-  const allSelected = selectedKeys.size === cartItems.length && cartItems.length > 0;
 
   return (
     <>
       <Header />
       <div className="cart-wrapper">
-        {/* Header row */}
-        <div className="cart-table header">
-        <div className="cell select">
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              checked={allSelected}
-              onChange={(e) => handleSelectAll(e.target.checked)}
-            />
-            <span>Sản Phẩm</span>
-          </label>
-        </div>
-        <div className="cell unit-price">Đơn Giá</div>
-        <div className="cell quantity">Số Lượng</div>
-        <div className="cell subtotal">Số Tiền</div>
-        <div className="cell actions">Thao Tác</div>
-      </div>
+        {/* New box styled like checkout products-section */}
+        <div className="cart-box products-section">
+          {/* Header */}
+          <div className="products-header">
+            <div className="header-row">
+              <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                />
+                <span>Sản phẩm</span>
+              </div>
+              <div>Đơn giá</div>
+              <div>Số lượng</div>
+              <div>Thành tiền</div>
+              <div>Thao tác</div>
+            </div>
+          </div>
 
-      {/* Items */}
-      {cartItems.map((item) => {
-        const key = makeKey(item);
-        const salePrice = Number(item.price) || 0;
-        const originalPrice = Number(item.originalPrice || item.price) || 0;
-        const subTotal = salePrice * (Number(item.quantity) || 1);
-        return (
-          <div className="cart-table row" key={key}>
-            <div className="cell select">
+          {/* Removed store header per request */}
+
+          {/* Items */}
+          {cartItems.map((item) => {
+            const key = makeKey(item);
+            const salePrice = Number(item.price) || 0;
+            const subTotal = salePrice * (Number(item.quantity) || 1);
+            return (
+              <div className="product-row" key={key}>
+                <div className="product-info">
+                  <input
+                    type="checkbox"
+                    checked={selectedKeys.has(key)}
+                    onChange={(e) => handleSelectItem(item, e.target.checked)}
+                    style={{marginRight:'8px'}}
+                  />
+                  <img 
+                    src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/placeholder-product.jpg'}`} 
+                    alt={item.name}
+                    className="product-image"
+                    onError={(e) => {
+                      if (e.target && e.target['src']) {
+                        e.target['src'] = '/images/placeholder-product.jpg';
+                      }
+                    }}
+                  />
+                  <div className="product-details">
+                    <div className="product-name">{item.name}</div>
+                    <div className="product-variant">Phân loại: {item.size || 'Mặc định'}</div>
+                  </div>
+                </div>
+                <div className="product-price">{currencyVND(salePrice)}</div>
+                <div className="product-quantity">
+                  <div style={{fontSize: '12px', color: '#999', marginBottom: '4px'}}>Số lượng</div>
+                  <div className="qty-control">
+                    <button
+                      className="btn-qty"
+                      onClick={() => handleUpdateQuantity(item.id, item.size, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                    >
+                      -
+                    </button>
+                    <input className="qty-input" type="text" value={item.quantity} readOnly />
+                    <button
+                      className="btn-qty"
+                      onClick={() => handleUpdateQuantity(item.id, item.size, item.quantity + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="product-total">{currencyVND(subTotal)}</div>
+                <div className="product-actions">
+                  <button 
+                    className="link danger"
+                    onClick={() => handleRemoveItem(item.id, item.size)}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Removed insurance and voucher sections per request */}
+
+          {/* Footer */}
+          <div className="cart-footer">
+            <div className="footer-checkbox">
               <label className="checkbox">
                 <input
                   type="checkbox"
-                  checked={selectedKeys.has(key)}
-                  onChange={(e) => handleSelectItem(item, e.target.checked)}
+                  checked={allSelected}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
                 />
-                <div className="product">
-                  <img src={item.image} alt={item.name} />
-                  <div className="info">
-                    <div className="name" title={item.name}>{item.name}</div>
-                    {item.size && item.size !== "default" && (
-                      <div className="variant">Phân loại: {item.size}</div>
-                    )}
-                  </div>
-                </div>
+                <span>Chọn Tất Cả ({selectedKeys.size || 0})</span>
               </label>
             </div>
-
-            <div className="cell unit-price">
-              <div className="price-block">
-                <span className="sale">{currencyVND(salePrice)}</span>
-                {originalPrice > salePrice && (
-                  <span className="original">{currencyVND(originalPrice)}</span>
-                )}
+            <div className="footer-total">
+              <div className="total-summary">
+                <div className="total-line">
+                  <span className="total-label">Tổng cộng ({totals.selectedCount} Sản phẩm):</span>
+                  <span className="total-amount">{currencyVND(totals.selectedTotal)}</span>
+                </div>
               </div>
             </div>
-
-            <div className="cell quantity">
-              <div className="qty-control">
-                <button
-                  className="btn-qty"
-                  onClick={() => handleUpdateQuantity(item.id, item.size, item.quantity - 1)}
-                  disabled={loading}
-                >
-                  −
-                </button>
-                <input className="qty-input" value={item.quantity} readOnly />
-                <button
-                  className="btn-qty"
-                  onClick={() => handleUpdateQuantity(item.id, item.size, item.quantity + 1)}
-                  disabled={loading}
-                >
-                  +
-                </button>
-              </div>
-              <div className="stock-note">Còn hàng</div>
-            </div>
-
-            <div className="cell subtotal">
-              <span className="subtotal-val">{currencyVND(subTotal)}</span>
-            </div>
-
-            <div className="cell actions">
-              <button
-                className="link danger"
-                onClick={() => handleRemoveItem(item.id, item.size)}
-                disabled={loading}
+            <div className="footer-action" style={{textAlign: 'center'}}>
+              <button 
+                className="btn-buy" 
+                disabled={!cartItems || cartItems.length === 0}
+                onClick={handleCheckout}
               >
-                Xóa
+                Mua Hàng
               </button>
             </div>
           </div>
-        );
-      })}
-
-      {/* Voucher row (placeholder) */}
-      <div className="voucher-row">
-        <div className="voucher-title">Shopee Voucher</div>
-        <button className="link">Chọn hoặc nhập mã</button>
-      </div>
-
-      {/* Footer actions */}
-      <div className="cart-footer">
-        <div className="left">
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              checked={allSelected}
-              onChange={(e) => handleSelectAll(e.target.checked)}
-            />
-            <span>Chọn Tất Cả ({selectedKeys.size || 0})</span>
-          </label>
-          <button className="link" onClick={handleRemoveSelected} disabled={selectedKeys.size === 0}>
-            Xóa
-          </button>
-          <button className="link">Lưu vào mục Đã thích</button>
         </div>
-        <div className="right">
-          <div className="total-text">
-            Tổng cộng ({totals.selectedCount} Sản phẩm):
-            <span className="total-val">{currencyVND(totals.selectedTotal)}</span>
+      {/* Suggestions section (always visible) */}
+      <div className="cart-suggestions-section">
+        <div className="suggestions-header">
+          <h2 className="suggestions-title">CÓ THỂ BẠN CŨNG THÍCH</h2>
+          <Link to="/suggestions" className="view-all-link">Xem Tất Cả &gt;</Link>
+        </div>
+
+        {loadingSuggestions ? (
+          <div className="suggestions-loading">
+            <div className="loading-spinner"></div>
+            <span>Đang tải sản phẩm...</span>
           </div>
-          <button className="btn-buy" disabled={selectedKeys.size === 0}>Mua Hàng</button>
-        </div>
+        ) : (
+          <div className="suggestions-grid">
+            {suggestedProducts.map((product) => (
+              <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
+                <div className="suggestion-image-container">
+                  <img
+                    src={product.image && product.image.startsWith('http') ? product.image : `http://localhost:8080${product.image}`}
+                    alt={product.name}
+                    className="suggestion-image"
+                    onError={(e) => {
+                      if (e.target && e.target['src']) {
+                        e.target['src'] = '/images/placeholder-product.jpg';
+                      }
+                    }}
+                  />
+                  {product.discount > 0 && (
+                    <div className="suggestion-discount">-{product.discount}%</div>
+                  )}
+                </div>
+                <div className="suggestion-info">
+                  <h3 className="suggestion-name">{product.name}</h3>
+                  <div className="suggestion-price">
+                    <span className="current-price">{formatVND(product.price)}</span>
+                    {product.originalPrice > product.price && (
+                      <span className="original-price">{formatVND(product.originalPrice)}</span>
+                    )}
+                  </div>
+                  <div className="suggestion-stats">
+                    <div className="rating">
+                      <span className="stars">★★★★★</span>
+                      <span className="rating-value">{Number(product.rating || 0).toFixed(1)}</span>
+                    </div>
+                    <span className="sold-count">Đã bán {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
       </div>
     </>

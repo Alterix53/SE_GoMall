@@ -205,13 +205,29 @@
   color: #ff6b35;
 }
 
-/* Account Dropdown */
-.account-dropdown {
+/* Account Dropdown & Cart Dropdown */
+.account-dropdown,
+.cart-dropdown {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 1002;
+}
+
+.cart-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.cart-link:hover {
+  background-color: #f8f9fa;
 }
 
 .account-button {

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import CartTooltip from '../CartTooltip/CartTooltip';
 import './Header.css';
 
 function Header() {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [showCartTooltip, setShowCartTooltip] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
   const toggleAccountDropdown = () => {
@@ -18,6 +20,18 @@ function Header() {
   const handleLogout = () => {
     logout();
     closeAccountDropdown();
+  };
+
+  const handleCartMouseEnter = () => {
+    setShowCartTooltip(true);
+  };
+
+  const handleCartMouseLeave = () => {
+    setShowCartTooltip(false);
+  };
+
+  const closeCartTooltip = () => {
+    setShowCartTooltip(false);
   };
 
   return (
@@ -75,10 +89,20 @@ function Header() {
               <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2753.svg" alt="Become a Seller" />
               <span className="nav-text">Become a Seller</span>
             </Link>
-            <Link to="/cart" className="nav-item">
-              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Cart" />
-              <span className="nav-text">Cart</span>
-            </Link>
+            <div 
+              className="nav-item cart-dropdown"
+              onMouseEnter={handleCartMouseEnter}
+              onMouseLeave={handleCartMouseLeave}
+            >
+              <Link to="/cart" className="cart-link">
+                <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Cart" />
+                <span className="nav-text">Cart</span>
+              </Link>
+              <CartTooltip 
+                isVisible={showCartTooltip}
+                onClose={closeCartTooltip}
+              />
+            </div>
             <div className="nav-item account-dropdown">
               <button 
                 className="account-button"

@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect, useMemo, useContext } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import "./ProductDetail.css"
+import { useCart } from "../../contexts/CartContext"
 import {
   Star,
   StarHalf,
@@ -79,6 +80,7 @@ export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { addToCart } = useCart()
 
   // State
   const [product, setProduct] = useState(null)
@@ -157,20 +159,23 @@ export default function ProductDetail() {
     if (!product) return
     
     try {
-      const response = await ApiService.addToCart(product._id, quantity)
-      if (response.success) {
-        toast({
-          title: "Thành công!",
-          description: "Đã thêm sản phẩm vào giỏ hàng",
-        })
-      } else {
-        toast({
-          title: "Lỗi!",
-          description: response.message || "Không thể thêm vào giỏ hàng",
-          variant: "destructive",
-        })
+      const cartItem = {
+        id: product._id,
+        name: product.name,
+        price: product.price?.sale || product.price?.original || 0,
+        image: product.images?.[0]?.url || product.images?.[0] || "/images/default-product.jpg",
+        quantity: quantity,
+        size: 'default'
       }
+      
+      await addToCart(cartItem)
+      
+      toast({
+        title: "Thành công!",
+        description: "Đã thêm sản phẩm vào giỏ hàng",
+      })
     } catch (error) {
+      console.error("Error adding to cart:", error)
       toast({
         title: "Lỗi!",
         description: "Đã xảy ra lỗi khi thêm vào giỏ hàng",
@@ -179,10 +184,31 @@ export default function ProductDetail() {
     }
   }
 
-  const onBuyNow = () => {
+  const onBuyNow = async () => {
     if (!product) return
-    // Navigate to checkout with this product
-    navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+    
+    try {
+      const cartItem = {
+        id: product._id,
+        name: product.name,
+        price: product.price?.sale || product.price?.original || 0,
+        image: product.images?.[0]?.url || product.images?.[0] || "/images/default-product.jpg",
+        quantity: quantity,
+        size: 'default'
+      }
+      
+      await addToCart(cartItem)
+      
+      // Navigate to checkout
+      navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+    } catch (error) {
+      console.error("Error buying now:", error)
+      toast({
+        title: "Lỗi!",
+        description: "Đã xảy ra lỗi khi xử lý đơn hàng",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleVariationChange = (type, value) => {

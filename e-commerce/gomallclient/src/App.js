@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import './App.css';
 
 import Cart from './Component/Cart/Cart';
+import Checkout from './Component/Checkout/Checkout';
 import CategoryList from './Component/Category/CategoryList';
 //import Navbar from './Component/Navbar/Navbar'; bị dư rồi
 import SearchResult from "./SearchResult";    // Minh
@@ -48,6 +49,7 @@ import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 import Navbar from './Component/Navbar/Navbar';
+import Suggestions from './Component/Suggestions/Suggestions';
 
 
 const LayoutWrapper = ({ children }) => {
@@ -110,6 +112,7 @@ function App() {
                 
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
                 {/* SELLER ROUTES - có thể có layout riêng */}
                 <Route path="/seller" element={
                   <ProtectedRoute requiredRole="seller">
@@ -138,6 +141,7 @@ function App() {
                 <Route path="/flash-sale" element={<FlashSale />} />
                 <Route path="/top-products" element={<TopProduct />} />
                 <Route path="/today-suggestions" element={<TodaySuggestions />} />
+                <Route path="/suggestions" element={<Suggestions />} />
                 <Route path="/register-seller" element={<RegisterSeller />} />
                 
                 {/* Category routes - sử dụng Navbar và Footer */}

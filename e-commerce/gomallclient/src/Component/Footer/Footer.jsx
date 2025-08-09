@@ -49,23 +49,23 @@ export default function Footer() {
               <h3 className="footer-title">THANH TOÁN</h3>
               <div className="payment-grid">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="VISA" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/JCB_logo.svg/2560px-JCB_logo.svg.png" alt="JCB" />
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/American_Express_logo_%282018%29.svg/1200px-American_Express_logo_%282018%29.svg.png" alt="American Express" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ShopeePay-V-Horizontal.png" alt="S Pay" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPay-V-Horizontal.png" alt="VNPay" />
+                <img src="https://down-vn.img.susercontent.com/file/38fd98e55806c3b2e4535c4e4a6c4c08" alt="Mastercard" />
+                <img src="https://down-vn.img.susercontent.com/file/5e3f0bee86058637ff23cfdf2e14ca09" alt="JCB" />
+                <img src="https://down-vn.img.susercontent.com/file/0217f1d345587aa0a300e69e2195c492" alt="American Express" />
+                <img src="https://down-vn.img.susercontent.com/file/9263fa8c83628f5deff55e2a90758b06" alt="S Pay" />
+                <img src="https://down-vn.img.susercontent.com/file/a0a9062ebe19b45c1ae0506f16af5c16" alt="VNPay" />
               </div>
               
               <h4 className="footer-subtitle">ĐƠN VỊ VẬN CHUYỂN</h4>
               <div className="shipping-grid">
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2021/12/Logo-SPX-Express.png" alt="SPX Express" />
+                <img src="https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-m20rc1wk8926cf" alt="SPX Express" />
                 <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-VN.png" alt="Giao Hàng Nhanh" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Viettel-Post.png" alt="Viettel Post" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-J&T-Express.png" alt="J&T Express" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GrabExpress.png" alt="GrabExpress" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Ninja-Van.png" alt="Ninja Van" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Be.png" alt="Be" />
-                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Ahamove.png" alt="Ahamove" />
+                <img src="https://down-vn.img.susercontent.com/file/59270fb2f3fbb7cbc92fca3877edde3f" alt="Viettel Post" />
+                <img src="https://down-vn.img.susercontent.com/file/957f4eec32b963115f952835c779cd2c" alt="J&T Express" />
+                <img src="https://down-vn.img.susercontent.com/file/0d349e22ca8d4337d11c9b134cf9fe63" alt="GrabExpress" />
+                <img src="https://down-vn.img.susercontent.com/file/3900aefbf52b1c180ba66e5ec91190e5" alt="Ninja Van" />
+                <img src="https://down-vn.img.susercontent.com/file/6e3be504f08f88a15a28a9a447d94d3d" alt="Be" />
+                <img src="https://down-vn.img.susercontent.com/file/vn-50009109-ec3ae587db6309b791b78eb8af6793fd" alt="Ahamove" />
               </div>
             </div>
 
@@ -97,14 +97,12 @@ export default function Footer() {
                 </div>
                 <div className="app-stores">
                   <a href="#" className="app-store-link">
-                    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="App Store" />
+                    <img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store" />
                   </a>
                   <a href="#" className="app-store-link">
-                    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" />
-                  </a>
-                  <a href="#" className="app-store-link">
-                    <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-Huawei-AppGallery.png" alt="AppGallery" />
-                  </a>
+                    <img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play" />
+                  </a>  
+                  
                 </div>
               </div>
             </div>
