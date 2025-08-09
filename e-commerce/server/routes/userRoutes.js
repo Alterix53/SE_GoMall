@@ -7,11 +7,7 @@ import {
     getUsersByRole,
     backupUsers
 } from '../controllers/userController.js';
-<<<<<<< HEAD
 import { authenticateToken, requireRole } from '../middleware/auth.js';
-=======
-import { authenticateToken, requireRole as checkRole } from '../middleware/auth.js';
->>>>>>> origin/Develop
 
 const router = express.Router();
 
