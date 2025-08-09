@@ -27,20 +27,27 @@ const FlashSaleCard = ({ product }) => {
             e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image";
           }}
         />
-      </div>
-      
-      {/* Promotional Labels */}
-      <div className="promo-labels">
-        <div className="promo-label left">8.8</div>
-        <div className="promo-label right">
-          {product.discount ? formatDiscount(product.discount) : ''}
-        </div>
+        {/* Discount Badge */}
+        {product.discount > 0 && (
+          <div className="discount-badge">
+            {formatDiscount(product.discount)}
+          </div>
+        )}
       </div>
       
       {/* Product Info */}
       <div className="product-info">
-        <div className="product-price">{formatPrice(product.price)}</div>
-        <button className="selling-fast-btn">ĐANG BÁN CHẠY</button>
+        <h3 className="product-name">{product.name}</h3>
+        <div className="price-container">
+          <span className="current-price">{formatPrice(product.price)}</span>
+          {product.originalPrice > product.price && (
+            <span className="original-price">{formatPrice(product.originalPrice)}</span>
+          )}
+        </div>
+        <div className="product-stats">
+          <span className="rating">★{product.rating?.average || 0}</span>
+          <span className="sold">Sold {product.sold || 0}</span>
+        </div>
       </div>
     </div>
   );
