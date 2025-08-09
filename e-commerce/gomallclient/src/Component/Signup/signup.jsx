@@ -50,6 +50,12 @@ const SignUpPage = () => {
     }
 
     try {
+      // Đảm bảo không có token cũ can thiệp vào quá trình đăng ký
+      const tempToken = localStorage.getItem('token');
+      if (tempToken) {
+        localStorage.removeItem('token');
+      }
+
       const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
         headers: {
@@ -64,6 +70,11 @@ const SignUpPage = () => {
       });
 
       const data = await response.json();
+      
+      // Khôi phục token cũ nếu đăng ký thất bại
+      if (!data.success && tempToken) {
+        localStorage.setItem('token', tempToken);
+      }
 
       if (data.success) {
         alert('Đăng ký thành công!');
