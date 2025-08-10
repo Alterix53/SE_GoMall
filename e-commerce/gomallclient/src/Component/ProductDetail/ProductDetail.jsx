@@ -2,8 +2,8 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import "../ProductDetail/ProductDetail.css";
-import ShopeeBanner from "../Banner/ShopeeBanner";
+import "./ProductDetail.css";
+import ShopeeBanner from "../Header/Header";
 import { Heart, Truck, Minus, Plus, Clock, Star, StarHalf } from "lucide-react";
 
 /* ---------- helpers ---------- */
@@ -25,50 +25,62 @@ function StarRating({ rating = 0, size = 16 }) {
   );
 }
 
-/* ----- sample fallback (preview) ----- */
+/* ---------- sample fallback (chỉ để UI luôn có dữ liệu) ---------- */
 const sampleProduct = {
   _id: "sample123",
   name: "KAPPA giày sneakers bé gái 361c44w",
   images: [
-    "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=800&fit=crop",
+    "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&h=800&fit=crop",
+    "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&h=800&fit=crop",
+    "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&h=800&fit=crop",
   ],
-  price: { original: 1199000, sale: 194000 },
-  rating: { average: 4.9, count: 97 },
+  price: { original: 1199000, sale: 390000 },
+  rating: { average: 4.9, count: 97000 },
   sold: 338,
   specifications: [
     { name: "color", value: "Đen/Hồng" },
     { name: "size", value: "M112, L96, XL84, XXL76" },
   ],
   description:
-    "Gối cao su Contour LIÊN Á được làm từ 100% cao su thiên nhiên với thiết kế công thái học ôm sát vùng cổ vai gáy...",
+    `Gối cao su Contour LIÊN Á được làm từ 100% cao su thiên nhiên với thiết kế công thái học ôm sát vùng cổ vai gáy...
+- Hình dáng gợn sóng ôm sát đầu và gáy.
+- Kháng khuẩn, chống mốc, an toàn cho người già, trẻ nhỏ.
+- Sản phẩm đạt các chứng nhận quốc tế.`,
   reviews: [
     {
       id: "r1",
       user: { name: "hientran2812", avatar: "" },
       rating: 5,
       createdAt: "2023-11-14T11:15:00Z",
-      variantText: "Phân loại hàng: 44x63cm > 1m7",
-      tags: ["Chất lượng tốt", "Đúng mô tả", "Chất liệu cao su non, mềm"],
+      variantText: "Phân loại hàng: 44x63cm -> 1m7",
+      tags: ["Chất lượng tốt", "Đúng mô tả", "Chất liệu mềm"],
       content:
-        "Gối siêu mềm, êm, đúng với mô tả và ít mùi cao su nha. Mua cho anh xã mà 2 bé thích lắm, sẽ mua thêm nè. Săn deal được giá tốt. Giao hàng nhanh, có nhân viên CSKH gọi hỏi thăm nữa, best services luôn nè.",
+        "Gối siêu êm, đúng mô tả. Mua cho anh xã mà 2 bé thích lắm. Săn deal được giá tốt, giao hàng nhanh, CSKH gọi hỏi thăm nữa.",
       media: [
-        "https://images.unsplash.com/photo-1604335399105-a0b8c19c6091?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?w=300&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1604335399105-a0b8c19c6091?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400&h=400&fit=crop",
       ],
       helpful: 8,
+    },
+    {
+      id: "r2",
+      user: { name: "minhpham", avatar: "" },
+      rating: 4,
+      createdAt: "2023-10-02T09:00:00Z",
+      content: "Ổn trong tầm giá, mùi cao su bay nhanh.",
+      media: [],
+      helpful: 2,
     },
   ],
 };
 
 /* ================== PRESENTATIONAL ================== */
 export function ProductOverview({ product: p }) {
-  const product = p || sampleProduct;
+  // gộp product thật + fallback (không crash khi thiếu field)
+  const product = { ...sampleProduct, ...(p || {}) };
 
-  // Guards
   const specs =
     (Array.isArray(product.specifications) && product.specifications) ||
     (Array.isArray(product.specs) && product.specs) ||
@@ -88,28 +100,24 @@ export function ProductOverview({ product: p }) {
     return fallback.length ? fallback : ["/placeholder.svg?height=600&width=600&text=No+Image"];
   })();
 
-  // Price
+  // Price + rating
   const priceObj = product.price || { sale: product.salePrice, original: product.originalPrice };
   const finalPrice = useMemo(
     () => Number(priceObj?.sale ?? priceObj?.original ?? 0),
     [priceObj]
   );
-
-  // Rating
   const ratingAvg = Number(product?.rating?.average ?? product?.rating ?? 0);
   const ratingCount = Number(product?.rating?.count ?? product?.reviewsCount ?? 0);
 
   // Sizes
   const sizeString = getSpec("size")?.value;
   const sizes = sizeString
-    ? String(sizeString)
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
+    ? String(sizeString).split(",").map((s) => s.trim()).filter(Boolean)
     : Array.isArray(product.sizes)
     ? product.sizes.map(String)
     : [];
 
+  // UI states
   const [activeImage, setActiveImage] = useState(0);
   const [liked, setLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -130,8 +138,10 @@ export function ProductOverview({ product: p }) {
     (descHtml && /(<p|<br|<li|<ul|<ol)/i.test(descHtml)) ||
     (descText && String(descText).length > 400);
 
-  /* ----- Reviews data & filters ----- */
-  const allReviews = Array.isArray(product.reviews) ? product.reviews : [];
+  /* ----- Reviews data & filters (luôn render, fallback sample nếu rỗng) ----- */
+  const rawReviews = Array.isArray(product.reviews) ? product.reviews : [];
+  const allReviews = rawReviews.length ? rawReviews : sampleProduct.reviews;
+
   const countsByStar = allReviews.reduce(
     (acc, r) => {
       const s = Math.max(1, Math.min(5, Math.floor(Number(r.rating) || 0)));
@@ -143,7 +153,7 @@ export function ProductOverview({ product: p }) {
   const countHasText = allReviews.filter((r) => r.content && r.content.trim()).length;
   const countHasMedia = allReviews.filter((r) => Array.isArray(r.media) && r.media.length).length;
 
-  const [filter, setFilter] = useState("all"); // 'all' | '5'...'1' | 'text' | 'media'
+  const [filter, setFilter] = useState("all"); // all | 1..5 | text | media
   const filteredReviews = allReviews.filter((r) => {
     if (filter === "all") return true;
     if (filter === "text") return Boolean(r.content && r.content.trim());
@@ -154,9 +164,10 @@ export function ProductOverview({ product: p }) {
 
   return (
     <>
+      {/* banner cam trên cùng */}
       <ShopeeBanner />
 
-      {/* ========== CARD OVERVIEW (giống Shopee) ========== */}
+      {/* ===== CARD OVERVIEW ===== */}
       <div className="pd-main">
         <div className="pd-container">
           <div className="pd-card">
@@ -169,8 +180,7 @@ export function ProductOverview({ product: p }) {
                     alt={product.name || "product"}
                     className="pd-main-img__img"
                     onError={(e) => {
-                      e.currentTarget.src =
-                        "/placeholder.svg?height=600&width=600&text=No+Image";
+                      e.currentTarget.src = "/placeholder.svg?height=600&width=600&text=No+Image";
                     }}
                   />
                   <button
@@ -183,7 +193,7 @@ export function ProductOverview({ product: p }) {
                   </button>
                 </div>
 
-                {/* Thumbs */}
+                {/* thumbs */}
                 <div className="pd-thumbs">
                   {images.slice(0, 5).map((img, idx) => (
                     <button
@@ -203,7 +213,7 @@ export function ProductOverview({ product: p }) {
                   ))}
                 </div>
 
-                {/* Share row */}
+                {/* share row */}
                 <div className="pd-share-row">
                   <span className="pd-share-label">Chia sẻ:</span>
                   <span className="pd-share-dot" />
@@ -353,16 +363,13 @@ export function ProductOverview({ product: p }) {
             </div>
           </div>
 
-          {/* ========== DESCRIPTION ========== */}
+          {/* ===== DESCRIPTION ===== */}
           <div className="pd-desc-wrap">
             <div className="pd-desc-card">
               <h3 className="pd-desc-title">MÔ TẢ SẢN PHẨM</h3>
               <div className={`pd-desc-content ${expandedDesc ? "is-open" : ""}`}>
                 {descHtml ? (
-                  <div
-                    className="pd-desc-html"
-                    dangerouslySetInnerHTML={{ __html: descHtml }}
-                  />
+                  <div className="pd-desc-html" dangerouslySetInnerHTML={{ __html: descHtml }} />
                 ) : (
                   <pre className="pd-desc-pre">{descText}</pre>
                 )}
@@ -375,79 +382,79 @@ export function ProductOverview({ product: p }) {
             </div>
           </div>
 
-          {/* ========== REVIEWS ========== */}
-          {allReviews.length > 0 && (
-            <div className="pd-rev-wrap">
-              <div className="pd-rev-card">
-                <h3 className="pd-rev-title">ĐÁNH GIÁ SẢN PHẨM</h3>
+          {/* ===== REVIEWS (luôn render) ===== */}
+          <div className="pd-rev-wrap">
+            <div className="pd-rev-card">
+              <h3 className="pd-rev-title">ĐÁNH GIÁ SẢN PHẨM</h3>
 
-                {/* Summary + Filters */}
-                <div className="pd-rev-summary">
-                  <div className="pd-rev-score">
-                    <div className="pd-rev-score-num">
-                      {ratingAvg.toFixed(1)} <span>trên 5</span>
-                    </div>
-                    <div className="pd-rev-stars">
-                      <StarRating rating={ratingAvg} size={18} />
-                    </div>
+              {/* Summary + Filters */}
+              <div className="pd-rev-summary">
+                <div className="pd-rev-score">
+                  <div className="pd-rev-score-num">
+                    {ratingAvg.toFixed(1)} <span>trên 5</span>
                   </div>
-
-                  <div className="pd-rev-filters">
-                    <button
-                      className={`pd-chip ${filter === "all" ? "is-active" : ""}`}
-                      onClick={() => setFilter("all")}
-                    >
-                      Tất Cả
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "5" ? "is-active" : ""}`}
-                      onClick={() => setFilter("5")}
-                    >
-                      5 Sao ({countsByStar[5]})
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "4" ? "is-active" : ""}`}
-                      onClick={() => setFilter("4")}
-                    >
-                      4 Sao ({countsByStar[4]})
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "3" ? "is-active" : ""}`}
-                      onClick={() => setFilter("3")}
-                    >
-                      3 Sao ({countsByStar[3]})
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "2" ? "is-active" : ""}`}
-                      onClick={() => setFilter("2")}
-                    >
-                      2 Sao ({countsByStar[2]})
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "1" ? "is-active" : ""}`}
-                      onClick={() => setFilter("1")}
-                    >
-                      1 Sao ({countsByStar[1]})
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "text" ? "is-active" : ""}`}
-                      onClick={() => setFilter("text")}
-                    >
-                      Có Bình Luận ({countHasText})
-                    </button>
-                    <button
-                      className={`pd-chip ${filter === "media" ? "is-active" : ""}`}
-                      onClick={() => setFilter("media")}
-                    >
-                      Có Hình Ảnh / Video ({countHasMedia})
-                    </button>
+                  <div className="pd-rev-stars">
+                    <StarRating rating={ratingAvg} size={18} />
                   </div>
                 </div>
 
-                {/* List */}
-                <div className="pd-rev-list">
-                  {filteredReviews.map((r) => (
-                    <div key={r.id} className="pd-rev-item">
+                <div className="pd-rev-filters">
+                  <button
+                    className={`pd-chip ${filter === "all" ? "is-active" : ""}`}
+                    onClick={() => setFilter("all")}
+                  >
+                    Tất Cả
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "5" ? "is-active" : ""}`}
+                    onClick={() => setFilter("5")}
+                  >
+                    5 Sao ({countsByStar[5] || 0})
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "4" ? "is-active" : ""}`}
+                    onClick={() => setFilter("4")}
+                  >
+                    4 Sao ({countsByStar[4] || 0})
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "3" ? "is-active" : ""}`}
+                    onClick={() => setFilter("3")}
+                  >
+                    3 Sao ({countsByStar[3] || 0})
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "2" ? "is-active" : ""}`}
+                    onClick={() => setFilter("2")}
+                  >
+                    2 Sao ({countsByStar[2] || 0})
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "1" ? "is-active" : ""}`}
+                    onClick={() => setFilter("1")}
+                  >
+                    1 Sao ({countsByStar[1] || 0})
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "text" ? "is-active" : ""}`}
+                    onClick={() => setFilter("text")}
+                  >
+                    Có Bình Luận ({countHasText || 0})
+                  </button>
+                  <button
+                    className={`pd-chip ${filter === "media" ? "is-active" : ""}`}
+                    onClick={() => setFilter("media")}
+                  >
+                    Có Hình Ảnh / Video ({countHasMedia || 0})
+                  </button>
+                </div>
+              </div>
+
+              {/* List */}
+              <div className="pd-rev-list">
+                {filteredReviews.length > 0 ? (
+                  filteredReviews.map((r) => (
+                    <div key={r.id || Math.random()} className="pd-rev-item">
                       <div className="pd-rev-avatar">{(r.user?.name || "?")[0]}</div>
                       <div className="pd-rev-body">
                         <div className="pd-rev-head">
@@ -462,7 +469,6 @@ export function ProductOverview({ product: p }) {
                           {r.variantText && <span> | {r.variantText}</span>}
                         </div>
 
-                        {/* Optional tags row */}
                         {Array.isArray(r.tags) && r.tags.length > 0 && (
                           <div className="pd-rev-tags">
                             {r.tags.map((t, i) => (
@@ -475,7 +481,6 @@ export function ProductOverview({ product: p }) {
 
                         {r.content && <div className="pd-rev-text">{r.content}</div>}
 
-                        {/* Media grid */}
                         {Array.isArray(r.media) && r.media.length > 0 && (
                           <div className="pd-rev-media">
                             {r.media.slice(0, 6).map((m, i) => (
@@ -498,15 +503,13 @@ export function ProductOverview({ product: p }) {
                         </div>
                       </div>
                     </div>
-                  ))}
-
-                  {filteredReviews.length === 0 && (
-                    <div className="pd-rev-empty">Chưa có đánh giá phù hợp bộ lọc.</div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="pd-rev-empty">Chưa có đánh giá nào cho sản phẩm này.</div>
+                )}
               </div>
             </div>
-          )}
+          </div>
           {/* /REVIEWS */}
         </div>
       </div>
@@ -514,7 +517,7 @@ export function ProductOverview({ product: p }) {
   );
 }
 
-/* ---------- PAGE WRAPPER: /product/:id ---------- */
+/* ---------- PAGE WRAPPER: /product/:id (giữ nguyên data flow) ---------- */
 function ProductDetailPage({ fetchProductById }) {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
