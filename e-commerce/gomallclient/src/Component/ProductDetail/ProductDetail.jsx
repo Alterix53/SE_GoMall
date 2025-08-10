@@ -3,16 +3,15 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "../ProductDetail/ProductDetail.css";
-import ShopeeBanner from "../Header/Header"; // 🔸 banner cam trên cùng
+import ShopeeBanner from "../Banner/ShopeeBanner";
 import { Heart, Truck, Minus, Plus, Clock, Star, StarHalf } from "lucide-react";
 
-/* ---------- Small helpers ---------- */
+/* ---------- helpers ---------- */
 function StarRating({ rating = 0, size = 16 }) {
   const r = Number.isFinite(rating) ? rating : 0;
   const full = Math.floor(r);
   const half = r - full >= 0.5;
   const empty = 5 - full - (half ? 1 : 0);
-
   return (
     <span className="flex items-center gap-1" style={{ lineHeight: 1 }}>
       {[...Array(Math.max(0, full))].map((_, i) => (
@@ -26,7 +25,7 @@ function StarRating({ rating = 0, size = 16 }) {
   );
 }
 
-/* ---------- Sample fallback (chỉ để preview khi chưa có API) ---------- */
+/* ----- sample fallback (preview) ----- */
 const sampleProduct = {
   _id: "sample123",
   name: "KAPPA giày sneakers bé gái 361c44w",
@@ -37,19 +36,39 @@ const sampleProduct = {
     "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&h=600&fit=crop",
   ],
   price: { original: 1199000, sale: 194000 },
-  rating: { average: 5.0, count: 87 },
+  rating: { average: 4.9, count: 97 },
   sold: 338,
   specifications: [
     { name: "color", value: "Đen/Hồng" },
     { name: "size", value: "M112, L96, XL84, XXL76" },
   ],
+  description:
+    "Gối cao su Contour LIÊN Á được làm từ 100% cao su thiên nhiên với thiết kế công thái học ôm sát vùng cổ vai gáy...",
+  reviews: [
+    {
+      id: "r1",
+      user: { name: "hientran2812", avatar: "" },
+      rating: 5,
+      createdAt: "2023-11-14T11:15:00Z",
+      variantText: "Phân loại hàng: 44x63cm > 1m7",
+      tags: ["Chất lượng tốt", "Đúng mô tả", "Chất liệu cao su non, mềm"],
+      content:
+        "Gối siêu mềm, êm, đúng với mô tả và ít mùi cao su nha. Mua cho anh xã mà 2 bé thích lắm, sẽ mua thêm nè. Săn deal được giá tốt. Giao hàng nhanh, có nhân viên CSKH gọi hỏi thăm nữa, best services luôn nè.",
+      media: [
+        "https://images.unsplash.com/photo-1604335399105-a0b8c19c6091?w=300&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?w=300&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=300&fit=crop",
+      ],
+      helpful: 8,
+    },
+  ],
 };
 
-/* ---------- PRESENTATIONAL (dùng class pd-*) ---------- */
+/* ================== PRESENTATIONAL ================== */
 export function ProductOverview({ product: p }) {
   const product = p || sampleProduct;
 
-  // Chống crash khi thiếu field
+  // Guards
   const specs =
     (Array.isArray(product.specifications) && product.specifications) ||
     (Array.isArray(product.specs) && product.specs) ||
@@ -103,11 +122,41 @@ export function ProductOverview({ product: p }) {
     (product.colors && product.colors[0]) ??
     "Default";
 
+  /* ----- Description ----- */
+  const descHtml = product?.descriptionHtml || null;
+  const descText = product?.description || "";
+  const [expandedDesc, setExpandedDesc] = useState(false);
+  const shouldToggle =
+    (descHtml && /(<p|<br|<li|<ul|<ol)/i.test(descHtml)) ||
+    (descText && String(descText).length > 400);
+
+  /* ----- Reviews data & filters ----- */
+  const allReviews = Array.isArray(product.reviews) ? product.reviews : [];
+  const countsByStar = allReviews.reduce(
+    (acc, r) => {
+      const s = Math.max(1, Math.min(5, Math.floor(Number(r.rating) || 0)));
+      acc[s] = (acc[s] || 0) + 1;
+      return acc;
+    },
+    { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+  );
+  const countHasText = allReviews.filter((r) => r.content && r.content.trim()).length;
+  const countHasMedia = allReviews.filter((r) => Array.isArray(r.media) && r.media.length).length;
+
+  const [filter, setFilter] = useState("all"); // 'all' | '5'...'1' | 'text' | 'media'
+  const filteredReviews = allReviews.filter((r) => {
+    if (filter === "all") return true;
+    if (filter === "text") return Boolean(r.content && r.content.trim());
+    if (filter === "media") return Array.isArray(r.media) && r.media.length > 0;
+    if (/^[1-5]$/.test(filter)) return Math.floor(Number(r.rating) || 0) === Number(filter);
+    return true;
+  });
+
   return (
     <>
-      {/* 🔸 Banner trên cùng */}
       <ShopeeBanner />
 
+      {/* ========== CARD OVERVIEW (giống Shopee) ========== */}
       <div className="pd-main">
         <div className="pd-container">
           <div className="pd-card">
@@ -173,7 +222,6 @@ export function ProductOverview({ product: p }) {
                 <span className="pd-mall-chip">Mall</span>
                 <h1 className="pd-title">{product.name || "Tên sản phẩm"}</h1>
 
-                {/* meta */}
                 <div className="pd-meta">
                   <span className="pd-rating">{ratingAvg.toFixed(1)}</span>
                   <StarRating rating={ratingAvg} size={14} />
@@ -302,16 +350,171 @@ export function ProductOverview({ product: p }) {
                   </button>
                 </div>
               </div>
-              {/* /RIGHT */}
             </div>
           </div>
+
+          {/* ========== DESCRIPTION ========== */}
+          <div className="pd-desc-wrap">
+            <div className="pd-desc-card">
+              <h3 className="pd-desc-title">MÔ TẢ SẢN PHẨM</h3>
+              <div className={`pd-desc-content ${expandedDesc ? "is-open" : ""}`}>
+                {descHtml ? (
+                  <div
+                    className="pd-desc-html"
+                    dangerouslySetInnerHTML={{ __html: descHtml }}
+                  />
+                ) : (
+                  <pre className="pd-desc-pre">{descText}</pre>
+                )}
+              </div>
+              {shouldToggle && (
+                <button className="pd-desc-toggle" onClick={() => setExpandedDesc((v) => !v)}>
+                  {expandedDesc ? "Thu gọn" : "Xem thêm"}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* ========== REVIEWS ========== */}
+          {allReviews.length > 0 && (
+            <div className="pd-rev-wrap">
+              <div className="pd-rev-card">
+                <h3 className="pd-rev-title">ĐÁNH GIÁ SẢN PHẨM</h3>
+
+                {/* Summary + Filters */}
+                <div className="pd-rev-summary">
+                  <div className="pd-rev-score">
+                    <div className="pd-rev-score-num">
+                      {ratingAvg.toFixed(1)} <span>trên 5</span>
+                    </div>
+                    <div className="pd-rev-stars">
+                      <StarRating rating={ratingAvg} size={18} />
+                    </div>
+                  </div>
+
+                  <div className="pd-rev-filters">
+                    <button
+                      className={`pd-chip ${filter === "all" ? "is-active" : ""}`}
+                      onClick={() => setFilter("all")}
+                    >
+                      Tất Cả
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "5" ? "is-active" : ""}`}
+                      onClick={() => setFilter("5")}
+                    >
+                      5 Sao ({countsByStar[5]})
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "4" ? "is-active" : ""}`}
+                      onClick={() => setFilter("4")}
+                    >
+                      4 Sao ({countsByStar[4]})
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "3" ? "is-active" : ""}`}
+                      onClick={() => setFilter("3")}
+                    >
+                      3 Sao ({countsByStar[3]})
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "2" ? "is-active" : ""}`}
+                      onClick={() => setFilter("2")}
+                    >
+                      2 Sao ({countsByStar[2]})
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "1" ? "is-active" : ""}`}
+                      onClick={() => setFilter("1")}
+                    >
+                      1 Sao ({countsByStar[1]})
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "text" ? "is-active" : ""}`}
+                      onClick={() => setFilter("text")}
+                    >
+                      Có Bình Luận ({countHasText})
+                    </button>
+                    <button
+                      className={`pd-chip ${filter === "media" ? "is-active" : ""}`}
+                      onClick={() => setFilter("media")}
+                    >
+                      Có Hình Ảnh / Video ({countHasMedia})
+                    </button>
+                  </div>
+                </div>
+
+                {/* List */}
+                <div className="pd-rev-list">
+                  {filteredReviews.map((r) => (
+                    <div key={r.id} className="pd-rev-item">
+                      <div className="pd-rev-avatar">{(r.user?.name || "?")[0]}</div>
+                      <div className="pd-rev-body">
+                        <div className="pd-rev-head">
+                          <div className="pd-rev-user">{r.user?.name || "Người dùng"}</div>
+                          <StarRating rating={Number(r.rating || 0)} size={14} />
+                        </div>
+
+                        <div className="pd-rev-meta">
+                          {r.createdAt && (
+                            <span>{new Date(r.createdAt).toLocaleDateString("vi-VN")}</span>
+                          )}
+                          {r.variantText && <span> | {r.variantText}</span>}
+                        </div>
+
+                        {/* Optional tags row */}
+                        {Array.isArray(r.tags) && r.tags.length > 0 && (
+                          <div className="pd-rev-tags">
+                            {r.tags.map((t, i) => (
+                              <span className="pd-rev-tag" key={i}>
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {r.content && <div className="pd-rev-text">{r.content}</div>}
+
+                        {/* Media grid */}
+                        {Array.isArray(r.media) && r.media.length > 0 && (
+                          <div className="pd-rev-media">
+                            {r.media.slice(0, 6).map((m, i) => (
+                              <div className="pd-rev-thumb" key={i}>
+                                <img
+                                  src={m}
+                                  alt={`media-${i}`}
+                                  onError={(e) => {
+                                    e.currentTarget.src =
+                                      "/placeholder.svg?height=120&width=120&text=No+Img";
+                                  }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="pd-rev-actions">
+                          <button className="pd-rev-helpful">👍 {r.helpful || 0}</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {filteredReviews.length === 0 && (
+                    <div className="pd-rev-empty">Chưa có đánh giá phù hợp bộ lọc.</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          {/* /REVIEWS */}
         </div>
       </div>
     </>
   );
 }
 
-/* ---------- PAGE WRAPPER: /product/:id (giữ nguyên data flow) ---------- */
+/* ---------- PAGE WRAPPER: /product/:id ---------- */
 function ProductDetailPage({ fetchProductById }) {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
