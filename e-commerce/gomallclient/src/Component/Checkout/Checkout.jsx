@@ -18,7 +18,7 @@ const Checkout = () => {
     phone: '',
     address: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState('card');
   const [shippingMethod, setShippingMethod] = useState('fast');
   const [note, setNote] = useState('');
   const [vouchers, setVouchers] = useState({
@@ -90,19 +90,30 @@ const Checkout = () => {
     setError('');
 
     try {
+      console.log('=== CHECKOUT DEBUG ===');
+      console.log('selectedItems:', selectedItems);
+      console.log('userInfo:', userInfo);
+      console.log('paymentMethod:', paymentMethod);
+      console.log('totalWithShipping:', totalWithShipping);
+      
       // Prepare order data
       const orderData = {
         total: totalWithShipping,
         shippingAddress: `${userInfo.name} - ${userInfo.phone} - ${userInfo.address}`,
         paymentMethod: paymentMethod,
-        items: selectedItems.map(item => ({
-          productID: item.id,
-          quantity: item.quantity,
-          unitPrice: item.price,
-          discount: 0
-        })),
+        items: selectedItems.map(item => {
+          console.log('Processing item:', item);
+          return {
+            productID: item.id,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            discount: 0
+          };
+        }),
         note: note
       };
+      
+      console.log('Final orderData:', orderData);
 
       // Create order
       const orderResponse = await checkoutAPI.createOrder(orderData);
@@ -148,11 +159,9 @@ const Checkout = () => {
       <Header />
       
       <div className="checkout-container">
-        {/* Breadcrumb */}
         <div className="checkout-breadcrumb">
           <span className="page-title">Thanh Toán</span>
         </div>
-
         <div className="checkout-content">
           {/* Delivery Address Section */}
           <div className="checkout-section address-section">
@@ -234,12 +243,7 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Store Header */}
-            <div className="store-header">
-              <span className="store-badge">Mall</span>
-              <span className="store-name">Viettel Store - AAR</span>
-              <span className="chat-btn">💬 Chat ngay</span>
-            </div>
+
 
             {/* Product Items */}
             {selectedItems.map((item, index) => (
@@ -337,12 +341,7 @@ const Checkout = () => {
                 >
                   Thẻ nội địa NAPAS
                 </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'shopeepay' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('shopeepay')}
-                >
-                  Ví GoMallPay
-                </button>
+
                 <button 
                   className={`payment-tab ${paymentMethod === 'installment' ? 'active' : ''}`}
                   onClick={() => setPaymentMethod('installment')}
@@ -354,6 +353,12 @@ const Checkout = () => {
                   onClick={() => setPaymentMethod('bank-transfer')}
                 >
                   Chuyển khoản ngân hàng
+                </button>
+                <button 
+                  className={`payment-tab ${paymentMethod === 'cash' ? 'active' : ''}`}
+                  onClick={() => setPaymentMethod('cash')}
+                >
+                  Tiền mặt
                 </button>
               </div>
               
@@ -369,21 +374,21 @@ const Checkout = () => {
                     <div className="card-option">
                       <input type="radio" name="card-type" id="visa" defaultChecked />
                       <label htmlFor="visa">
-                        <img src="/images/visa-logo.png" alt="Visa" className="card-logo" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="card-logo" />
                         <span>Visa</span>
                       </label>
                     </div>
                     <div className="card-option">
                       <input type="radio" name="card-type" id="mastercard" />
                       <label htmlFor="mastercard">
-                        <img src="/images/mastercard-logo.png" alt="Mastercard" className="card-logo" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" className="card-logo" />
                         <span>Mastercard</span>
                       </label>
                     </div>
                     <div className="card-option">
                       <input type="radio" name="card-type" id="jcb" />
                       <label htmlFor="jcb">
-                        <img src="/images/jcb-logo.png" alt="JCB" className="card-logo" />
+                        <img src="https://down-vn.img.susercontent.com/file/38fd98e55806c3b2e4535c4e4a6c4c08" alt="JCB" className="card-logo" />
                         <span>JCB</span>
                       </label>
                     </div>
@@ -412,49 +417,36 @@ const Checkout = () => {
                     <div className="napas-option">
                       <input type="radio" name="napas-bank" id="vietcombank" defaultChecked />
                       <label htmlFor="vietcombank">
-                        <img src="/images/vietcombank-logo.png" alt="Vietcombank" className="bank-logo" />
+                        <img src="https://www.vietcombank.com.vn/-/media/Project/VCB-Sites/VCB/Home-page/VCB-Logo/Logo-VCB-no-60.png" alt="Vietcombank" className="bank-logo" />
                         <span>Vietcombank</span>
                       </label>
                     </div>
                     <div className="napas-option">
                       <input type="radio" name="napas-bank" id="techcombank" />
                       <label htmlFor="techcombank">
-                        <img src="/images/techcombank-logo.png" alt="Techcombank" className="bank-logo" />
+                        <img src="https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg" alt="Techcombank" className="bank-logo" />
                         <span>Techcombank</span>
                       </label>
                     </div>
                     <div className="napas-option">
                       <input type="radio" name="napas-bank" id="bidv" />
                       <label htmlFor="bidv">
-                        <img src="/images/bidv-logo.png" alt="BIDV" className="bank-logo" />
+                        <img src="https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-cc5c0724-338e-4cf5-bbe7-676f1f36fd7b-p5AGqf.&cache=none" alt="BIDV" className="bank-logo" />
                         <span>BIDV</span>
                       </label>
                     </div>
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="agribank" />
-                      <label htmlFor="agribank">
-                        <img src="/images/agribank-logo.png" alt="Agribank" className="bank-logo" />
-                        <span>Agribank</span>
-                      </label>
-                    </div>
+                                          <div className="napas-option">
+                        <input type="radio" name="napas-bank" id="mbbank" />
+                        <label htmlFor="mbbank">
+                          <img src="https://www.mbbank.com.vn/images/logo.png" alt="Mbbank" className="bank-logo" />
+                          <span>Mbbank</span>
+                        </label>
+                      </div>
                   </div>
                 </div>
               )}
 
-              {paymentMethod === 'shopeepay' && (
-                <div className="payment-options-detail">
-                  <div className="shopeepay-section">
-                    <div className="shopeepay-promo">
-                      <img src="/images/shopeepay-promo.png" alt="Ví GoMallPay" className="promo-image" />
-                    </div>
-                    <div className="shopeepay-balance">
-                      <span className="balance-icon">💰</span>
-                      <span className="balance-text">Số dư Ví GoMallPay</span>
-                      <span className="balance-amount">₫0</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+
 
               {paymentMethod === 'installment' && (
                 <div className="payment-options-detail">
@@ -494,7 +486,7 @@ const Checkout = () => {
                       <div className="bank-option">
                         <input type="radio" name="bank-transfer" id="vietcombank-transfer" defaultChecked />
                         <label htmlFor="vietcombank-transfer">
-                          <img src="/images/vietcombank-logo.png" alt="Vietcombank" className="bank-logo" />
+                          <img src="https://www.vietcombank.com.vn/-/media/Project/VCB-Sites/VCB/Home-page/VCB-Logo/Logo-VCB-no-60.png" alt="Vietcombank" className="bank-logo" />
                           <div className="bank-details">
                             <span className="bank-name">Vietcombank</span>
                             <span className="bank-account">1234567890 - GoMall</span>
@@ -504,7 +496,7 @@ const Checkout = () => {
                       <div className="bank-option">
                         <input type="radio" name="bank-transfer" id="techcombank-transfer" />
                         <label htmlFor="techcombank-transfer">
-                          <img src="/images/techcombank-logo.png" alt="Techcombank" className="bank-logo" />
+                          <img src="https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg" alt="Techcombank" className="bank-logo" />
                           <div className="bank-details">
                             <span className="bank-name">Techcombank</span>
                             <span className="bank-account">0987654321 - GoMall</span>
@@ -514,7 +506,7 @@ const Checkout = () => {
                       <div className="bank-option">
                         <input type="radio" name="bank-transfer" id="bidv-transfer" />
                         <label htmlFor="bidv-transfer">
-                          <img src="/images/bidv-logo.png" alt="BIDV" className="bank-logo" />
+                          <img src="https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-cc5c0724-338e-4cf5-bbe7-676f1f36fd7b-p5AGqf.&cache=none" alt="BIDV" className="bank-logo" />
                           <div className="bank-details">
                             <span className="bank-name">BIDV</span>
                             <span className="bank-account">1122334455 - GoMall</span>
@@ -522,11 +514,11 @@ const Checkout = () => {
                         </label>
                       </div>
                       <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="agribank-transfer" />
-                        <label htmlFor="agribank-transfer">
-                          <img src="/images/agribank-logo.png" alt="Agribank" className="bank-logo" />
+                        <input type="radio" name="bank-transfer" id="mbbank-transfer" />
+                        <label htmlFor="mbbank-transfer">
+                          <img src="https://www.mbbank.com.vn/images/logo.png" alt="Mbbank" className="bank-logo" />
                           <div className="bank-details">
-                            <span className="bank-name">Agribank</span>
+                            <span className="bank-name">Mbbank</span>
                             <span className="bank-account">5544332211 - GoMall</span>
                           </div>
                         </label>
@@ -540,6 +532,24 @@ const Checkout = () => {
                         <li>Nội dung chuyển khoản: Mã đơn hàng</li>
                         <li>Sau khi chuyển khoản, vui lòng chờ xác nhận</li>
                       </ol>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === 'cash' && (
+                <div className="payment-options-detail">
+                  <div className="cash-payment-info">
+                    <div className="cash-payment-description">
+                      <p>💵 Thanh toán bằng tiền mặt khi nhận hàng</p>
+                      <div className="cash-payment-benefits">
+                        <span>✓ Không cần thẻ hay tài khoản ngân hàng</span>
+                        <span>✓ Thanh toán trực tiếp với nhân viên giao hàng</span>
+                        <span>✓ An toàn và tiện lợi</span>
+                      </div>
+                      <div className="cash-payment-note">
+                        <strong>Lưu ý:</strong> Vui lòng chuẩn bị đủ tiền mặt để thanh toán khi nhận hàng.
+                      </div>
                     </div>
                   </div>
                 </div>

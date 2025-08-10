@@ -421,44 +421,7 @@
   font-size: 14px;
 }
 
-.shopeepay-section {
-  margin-top: 15px;
-}
 
-.shopeepay-promo {
-  margin-bottom: 15px;
-}
-
-.promo-image {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  border-radius: 4px;
-}
-
-.shopeepay-balance {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 15px;
-  background: #fafafa;
-  border-radius: 4px;
-}
-
-.balance-icon {
-  font-size: 18px;
-}
-
-.balance-text {
-  flex: 1;
-  color: #333;
-  font-size: 14px;
-}
-
-.balance-amount {
-  color: #333;
-  font-weight: 500;
-}
 
 /* Payment Options Detail */
 .payment-options-detail {
@@ -963,4 +926,44 @@
     padding: 12px;
     font-size: 14px;
   }
+}
+
+/* Cash Payment Styles */
+.cash-payment-info {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.cash-payment-description p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.cash-payment-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.cash-payment-benefits span {
+  color: #28a745;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cash-payment-note {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 12px;
+  color: #856404;
+  font-size: 14px;
+  line-height: 1.4;
 }

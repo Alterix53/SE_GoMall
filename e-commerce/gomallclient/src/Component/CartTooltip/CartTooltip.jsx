@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import './CartTooltip.css';
 
-const CartTooltip = ({ isVisible, onClose }) => {
+const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
   const { isAuthenticated } = useAuth();
   const { cartItems, getTotalPrice } = useCart();
 
@@ -23,7 +23,11 @@ const CartTooltip = ({ isVisible, onClose }) => {
   // Chưa đăng nhập
   if (!isAuthenticated()) {
     return (
-      <div className="cart-tooltip">
+      <div 
+        className="cart-tooltip"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         <div className="cart-tooltip-content">
           <div className="cart-empty-state">
             <div className="empty-cart-icon">
@@ -48,7 +52,11 @@ const CartTooltip = ({ isVisible, onClose }) => {
   // Đã đăng nhập nhưng giỏ hàng trống
   if (!cartItems || cartItems.length === 0) {
     return (
-      <div className="cart-tooltip">
+      <div 
+        className="cart-tooltip"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         <div className="cart-tooltip-content">
           <div className="cart-empty-state">
             <div className="empty-cart-icon">
@@ -70,7 +78,11 @@ const CartTooltip = ({ isVisible, onClose }) => {
   const remainingItems = cartItems.length - 5;
 
   return (
-    <div className="cart-tooltip">
+    <div 
+      className="cart-tooltip"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       <div className="cart-tooltip-content">
         <div className="cart-header">
           <h3>Sản Phẩm Mới Thêm</h3>
@@ -82,10 +94,12 @@ const CartTooltip = ({ isVisible, onClose }) => {
             <div key={`${item.id}-${index}`} className="cart-tooltip-item">
               <div className="item-image">
                 <img 
-                  src={item.image || '/images/placeholder-product.jpg'} 
+                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/default-product.jpg'}`}
                   alt={item.name}
                   onError={(e) => {
-                    e.target.src = '/images/placeholder-product.jpg';
+                    if (e.target && e.target['src']) {
+                      e.target['src'] = '/images/default-product.jpg';
+                    }
                   }}
                 />
               </div>
@@ -107,10 +121,6 @@ const CartTooltip = ({ isVisible, onClose }) => {
         )}
 
         <div className="cart-footer">
-          <div className="cart-total">
-            <span className="total-label">Tổng cộng:</span>
-            <span className="total-price">{formatPrice(getTotalPrice())}</span>
-          </div>
           <div className="cart-actions">
             <Link to="/cart" className="btn-view-cart" onClick={onClose}>
               Xem Giỏ Hàng

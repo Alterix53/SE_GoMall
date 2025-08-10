@@ -399,6 +399,18 @@
   display: block;
   margin-bottom: 6px;
   image-rendering: -webkit-optimize-contrast;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+}
+
+/* Đảm bảo icon user không bị méo */
+.nav-item.account-dropdown .nav-icon-img {
+  aspect-ratio: 1;
+  max-width: 28px;
+  max-height: 28px;
+  min-width: 28px;
+  min-height: 28px;
 }
 
 /* Sub Navigation */
@@ -502,7 +514,21 @@
     gap: 20px;
   }
 
-  .nav-icon-img { width: 22px; height: 22px; margin-bottom: 4px; }
+  .nav-icon-img { 
+    width: 22px; 
+    height: 22px; 
+    margin-bottom: 4px; 
+    object-fit: contain;
+    object-position: center;
+  }
+  
+  .nav-item.account-dropdown .nav-icon-img {
+    aspect-ratio: 1;
+    max-width: 22px;
+    max-height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -553,5 +579,19 @@
     height: 35px; /* Tăng từ 30px lên 35px */
   }
 
-  .nav-icon-img { width: 20px; height: 20px; margin-bottom: 3px; }
+  .nav-icon-img { 
+    width: 20px; 
+    height: 20px; 
+    margin-bottom: 3px; 
+    object-fit: contain;
+    object-position: center;
+  }
+  
+  .nav-item.account-dropdown .nav-icon-img {
+    aspect-ratio: 1;
+    max-width: 20px;
+    max-height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+  }
 }

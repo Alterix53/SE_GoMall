@@ -11,22 +11,36 @@ export default function CartManager() {
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   // Handle checkout navigation
   const handleCheckout = () => {
     const hasSelection = selectedKeys.size > 0;
 
-    // Determine items to checkout: use selected items if any, otherwise all items
-    const selectedItems = hasSelection
-      ? Array.from(selectedKeys)
-          .map((key) => cartItems.find((item) => `${item.id}-${item.size}` === key))
-          .filter(Boolean)
-      : cartItems;
+    // Only allow checkout if there are selected items
+    if (!hasSelection) {
+      setShowErrorModal(true);
+      return;
+    }
 
-    if (!selectedItems || selectedItems.length === 0) return;
+    // Get selected items
+    const selectedItems = Array.from(selectedKeys)
+      .map((key) => cartItems.find((item) => `${item.id}-${item.size}` === key))
+      .filter(Boolean);
 
-    const totalAmount = hasSelection ? totals.selectedTotal : totals.allTotal;
-    const totalCount = hasSelection ? totals.selectedCount : totals.allCount;
+    if (!selectedItems || selectedItems.length === 0) {
+      setShowErrorModal(true);
+      return;
+    }
+
+    const totalAmount = totals.selectedTotal;
+    const totalCount = totals.selectedCount;
+
+    // Check if total amount is greater than 0
+    if (totalAmount <= 0) {
+      setShowErrorModal(true);
+      return;
+    }
 
     // Navigate to checkout with items and totals
     navigate('/checkout', {
@@ -283,6 +297,9 @@ export default function CartManager() {
   return (
     <>
       <Header />
+      <div className="cart-container">
+        <span className="page-title">Giỏ Hàng</span>
+      </div>
       <div className="cart-wrapper">
         {/* New box styled like checkout products-section */}
         <div className="cart-box products-section">
@@ -454,6 +471,23 @@ export default function CartManager() {
         )}
       </div>
       </div>
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="error-modal-overlay">
+          <div className="error-modal">
+            <div className="error-message">
+              Bạn vẫn chưa chọn sản phẩm nào để mua.
+            </div>
+            <button 
+              className="error-modal-btn"
+              onClick={() => setShowErrorModal(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

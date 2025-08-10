@@ -11,6 +11,22 @@
   background-color: #f5f5f5;
 }
 
+/* Page title styling - same as checkout */
+.page-title {
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  display: block;
+  text-align: left !important;
+  vertical-align: top;
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+}
+
 .cart-wrapper {
   max-width: 1200px;
   margin: 16px auto 32px;
@@ -957,4 +973,52 @@
 .cart-page.cart--empty + footer,
 .cart-page.cart--empty ~ footer {
   margin-top: 0;
+}
+
+/* Error Modal Styles */
+.error-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.error-modal {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.error-message {
+  color: #333;
+  font-size: 16px;
+  margin-bottom: 25px;
+  line-height: 1.4;
+}
+
+.error-modal-btn {
+  background: #ee4d2d;
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.error-modal-btn:hover {
+  background: #d63d1d;
 }
