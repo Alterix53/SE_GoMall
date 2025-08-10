@@ -13,7 +13,7 @@ function StarRating({ rating = 0, size = 16 }) {
   const empty = 5 - full - (half ? 1 : 0);
 
   return (
-    <div className="flex items-center gap-1">
+    <span className="flex items-center gap-1" style={{ lineHeight: 1 }}>
       {[...Array(Math.max(0, full))].map((_, i) => (
         <Star key={"f-" + i} size={size} className="text-yellow-500 fill-yellow-500" />
       ))}
@@ -21,7 +21,7 @@ function StarRating({ rating = 0, size = 16 }) {
       {[...Array(Math.max(0, empty))].map((_, i) => (
         <Star key={"e-" + i} size={size} className="text-muted-foreground" />
       ))}
-    </div>
+    </span>
   );
 }
 
@@ -44,11 +44,11 @@ const sampleProduct = {
   ],
 };
 
-/* ---------- PRESENTATIONAL ---------- */
+/* ---------- PRESENTATIONAL (đổi class sang pd-*) ---------- */
 export function ProductOverview({ product: p }) {
   const product = p || sampleProduct;
 
-  // Robust guards for various backend shapes
+  // Guards cho nhiều dạng backend
   const specs =
     (Array.isArray(product.specifications) && product.specifications) ||
     (Array.isArray(product.specs) && product.specs) ||
@@ -61,7 +61,7 @@ export function ProductOverview({ product: p }) {
     );
   };
 
-  // Images: accept images[] | image | thumbnail
+  // Images
   const images = (() => {
     if (Array.isArray(product.images) && product.images.length) return product.images;
     const fallback = [product.image, product.thumbnail, product.thumbnailUrl].filter(Boolean);
@@ -79,7 +79,7 @@ export function ProductOverview({ product: p }) {
   const ratingAvg = Number(product?.rating?.average ?? product?.rating ?? 0);
   const ratingCount = Number(product?.rating?.count ?? product?.reviewsCount ?? 0);
 
-  // Sizes (support: specifications.size OR product.sizes[])
+  // Sizes
   const sizeString = getSpec("size")?.value;
   const sizes = sizeString
     ? String(sizeString)
@@ -104,211 +104,196 @@ export function ProductOverview({ product: p }) {
     "Default";
 
   return (
-    <div className="product-overview-section">
-      <div className="product-main-grid">
-        {/* LEFT: Images */}
-        <div className="product-images">
-          <div className="main-image-wrapper">
-            <img
-              src={images[activeImage] || images[0]}
-              alt={product.name || "product"}
-              className="main-product-image"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.svg?height=600&width=600&text=No+Image";
-              }}
-            />
-            <button
-              className={`like-button ${liked ? "liked" : ""}`}
-              onClick={() => setLiked((v) => !v)}
-              aria-label="Thích sản phẩm"
-              title={liked ? "Đã thích" : "Thích"}
-            >
-              <Heart size={20} />
-            </button>
-          </div>
-
-          <div className="thumbnail-grid">
-            {images.slice(0, 5).map((img, idx) => (
-              <button
-                key={idx}
-                className={`thumbnail-item ${activeImage === idx ? "active" : ""}`}
-                onClick={() => setActiveImage(idx)}
-              >
+    <div className="pd-main">
+      <div className="pd-container">
+        <div className="pd-card">
+          <div className="pd-grid">
+            {/* LEFT */}
+            <div className="pd-left">
+              <div className="pd-main-img">
                 <img
-                  src={img}
-                  alt={`thumb-${idx + 1}`}
+                  src={images[activeImage] || images[0]}
+                  alt={product.name || "product"}
+                  className="pd-main-img__img"
                   onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg?height=120&width=120&text=No+Img";
+                    e.currentTarget.src = "/placeholder.svg?height=600&width=600&text=No+Image";
                   }}
                 />
-                {idx === 1 && <div className="thumbnail-discount">-50%</div>}
-              </button>
-            ))}
-          </div>
-
-          <div className="social-share-section">
-            <span className="share-label">Chia sẻ:</span>
-            <div className="social-buttons">
-              <button className="social-btn messenger" />
-              <button className="social-btn facebook" />
-              <button className="social-btn pinterest" />
-              <button className="social-btn twitter" />
-            </div>
-            <div className="like-count">
-              <Heart size={16} />
-              <span>Đã thích (37)</span>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT: Info */}
-        <div className="product-info">
-          <div className="mall-badge">Mall</div>
-
-          <h1 className="product-title">{product.name || "Tên sản phẩm"}</h1>
-
-          {/* rating | reviews | sold */}
-          <div className="rating-sales-row">
-            <div className="rating-display">
-              <span className="rating-score">{ratingAvg.toFixed(1)}</span>
-              <StarRating rating={ratingAvg} size={16} />
-            </div>
-            <div className="review-count">
-              <span className="review-number">{ratingCount}</span>
-              <span className="review-label">Đánh Giá</span>
-            </div>
-            <div className="review-count">
-              <span className="review-number">{product.sold ? `${product.sold}+` : "0"}</span>
-              <span className="review-label">Đã bán</span>
-            </div>
-            <div className="report-link">Tố cáo</div>
-          </div>
-
-          {/* flash sale */}
-          <div className="flash-sale-bar">
-            <span className="flash-sale-text">FLASH SALE</span>
-            <div className="countdown-section">
-              <Clock size={16} />
-              <span>KẾT THÚC TRONG</span>
-              <div className="countdown-timer">
-                <span className="time-digit">00</span>
-                <span className="time-digit">00</span>
-                <span className="time-digit">00</span>
+                <button
+                  className={`pd-like ${liked ? "is-liked" : ""}`}
+                  onClick={() => setLiked((v) => !v)}
+                  aria-label="Thích sản phẩm"
+                  title={liked ? "Đã thích" : "Thích"}
+                >
+                  ♥
+                </button>
               </div>
-            </div>
-          </div>
 
-          {/* price */}
-          <div className="price-display">
-            <div className="current-price">
-              <span className="currency-symbol">₫</span>
-              <span className="price-value">
-                {new Intl.NumberFormat("vi-VN").format(finalPrice)}
-              </span>
-              {priceObj?.original && priceObj.original !== finalPrice && (
-                <span className="original-price">
-                  ₫{new Intl.NumberFormat("vi-VN").format(priceObj.original)}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* vouchers */}
-          <div className="voucher-row">
-            <span className="voucher-label">Voucher Của Shop</span>
-            <div className="voucher-badges">
-              <span className="voucher-badge">Giảm ₫5k</span>
-              <span className="voucher-badge">Giảm 10%</span>
-            </div>
-          </div>
-
-          {/* shipping */}
-          <div className="shipping-info">
-            <span className="shipping-label">Vận Chuyển</span>
-            <div className="shipping-details">
-              <Truck size={16} className="shipping-icon" />
-              <span className="shipping-text">Nhận từ 11 Th08 - 15 Th08, phí giao ₫0</span>
-              <span className="arrow">›</span>
-            </div>
-            <div className="shipping-bonus">
-              Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên.
-            </div>
-          </div>
-
-          {/* guarantees */}
-          <div className="service-guarantees">
-            <span className="service-label">An Tâm Mua Sắm Cùng Shopee</span>
-            <div className="service-list">
-              <span className="service-item">🛡️ Trả hàng miễn phí 15 ngày</span>
-              <span className="service-item">Chính hãng 100%</span>
-              <span className="service-item">Miễn phí vận chuyển</span>
-              <span className="service-item">Bảo hành chính hãng</span>
-              <span className="arrow">›</span>
-            </div>
-          </div>
-
-          {/* color */}
-          <div className="option-group">
-            <label className="option-label">Màu Sắc</label>
-            <div className="color-options">
-              <button className="color-option selected">
-                <span className="color-display">{color}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* size */}
-          {sizes.length > 0 && (
-            <div className="option-group">
-              <label className="option-label">Size</label>
-              <div className="size-options">
-                {sizes.map((sz) => (
+              {/* Thumbnails */}
+              <div className="pd-thumbs">
+                {images.slice(0, 5).map((img, idx) => (
                   <button
-                    key={sz}
-                    className={`size-option ${selectedSize === sz ? "selected" : ""}`}
-                    onClick={() => setSelectedSize(sz)}
+                    key={idx}
+                    className={`pd-thumb ${activeImage === idx ? "is-active" : ""}`}
+                    onClick={() => setActiveImage(idx)}
                   >
-                    {sz}
+                    <img
+                      src={img}
+                      alt={`thumb-${idx + 1}`}
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "/placeholder.svg?height=120&width=120&text=No+Img";
+                      }}
+                    />
                   </button>
                 ))}
               </div>
-              <div className="size-guide-link">Bảng Quy Đổi Kích Cỡ ›</div>
-            </div>
-          )}
 
-          {/* quantity */}
-          <div className="quantity-group">
-            <label className="quantity-label">Số Lượng</label>
-            <div className="quantity-stepper">
-              <button className="qty-btn" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
-                <Minus size={16} />
-              </button>
-              <input
-                type="text"
-                className="qty-input"
-                value={String(quantity)}
-                onChange={(e) => {
-                  const n = parseInt(e.target.value || "1", 10);
-                  isNaN(n) ? setQuantity(1) : setQuantity(Math.max(1, n));
-                }}
-              />
-              <button className="qty-btn" onClick={() => setQuantity((q) => q + 1)}>
-                <Plus size={16} />
-              </button>
+              {/* Share row */}
+              <div className="pd-share-row">
+                <span className="pd-share-label">Chia sẻ:</span>
+                <span className="pd-share-dot" />
+                <span className="pd-share-dot" />
+                <span className="pd-share-dot" />
+                <span className="pd-share-dot" />
+                <div className="pd-liked">
+                  <span className="pd-heart">♥</span>
+                  <span>Đã thích (4,9k)</span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* actions */}
-          <div className="action-buttons">
-            <button className="btn-add-cart" onClick={() => alert("Đã thêm vào giỏ!")}>
-              Thêm Vào Giỏ Hàng
-            </button>
-            <button className="btn-buy-now" onClick={() => alert("Mua ngay!")}>
-              <span>Mua ngay</span>
-              <span className="buy-price">
-                ₫{new Intl.NumberFormat("vi-VN").format(finalPrice)}
-              </span>
-            </button>
+            {/* RIGHT */}
+            <div className="pd-right">
+              <span className="pd-mall-chip">Mall</span>
+              <h1 className="pd-title">{product.name || "Tên sản phẩm"}</h1>
+
+              {/* meta: rating | reviews | sold */}
+              <div className="pd-meta">
+                <span className="pd-rating">{ratingAvg.toFixed(1)}</span>
+                <StarRating rating={ratingAvg} size={14} />
+                <span className="pd-dot">|</span>
+                <span>{ratingCount} Đánh Giá</span>
+                <span className="pd-dot">|</span>
+                <span>{product.sold ? `${product.sold}+` : "0"} Đã bán</span>
+                <span className="pd-dot">|</span>
+                <span style={{ cursor: "pointer" }}>Tố cáo</span>
+              </div>
+
+              {/* flash sale bar (chỉ hiển thị dải màu & timer) */}
+              <div className="pd-vouchers" style={{ marginTop: 4 }}>
+                <span className="pd-v-label" style={{ minWidth: 100 }}>
+                  <b>FLASH SALE</b>
+                </span>
+                <div className="pd-v-tags" style={{ alignItems: "center" }}>
+                  <Clock size={14} />
+                  <span>KẾT THÚC TRONG</span>
+                  <span className="pd-tag">00</span>
+                  <span className="pd-tag">00</span>
+                  <span className="pd-tag">00</span>
+                </div>
+              </div>
+
+              {/* price */}
+              <div className="pd-price-box">
+                <div className="pd-price">
+                  <span className="pd-price__sale">
+                    ₫{new Intl.NumberFormat("vi-VN").format(finalPrice)}
+                  </span>
+                  {priceObj?.original && priceObj.original !== finalPrice && (
+                    <span className="pd-price__orig">
+                      ₫{new Intl.NumberFormat("vi-VN").format(priceObj.original)}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* vouchers line */}
+              <div className="pd-vouchers">
+                <span className="pd-v-label">Voucher Của Shop</span>
+                <div className="pd-v-tags">
+                  <span className="pd-tag">Giảm ₫15k</span>
+                  <span className="pd-tag">Giảm 8%</span>
+                  <span className="pd-tag">Giảm 9%</span>
+                </div>
+              </div>
+
+              {/* shipping block (giống ảnh – một dòng) */}
+              <div className="pd-vouchers">
+                <span className="pd-v-label">Vận Chuyển</span>
+                <div className="pd-v-tags" style={{ color: "#166534" }}>
+                  <Truck size={16} />
+                  <span>Nhận từ 13 Th08 - 15 Th08, phí giao ₫0</span>
+                </div>
+              </div>
+
+              {/* guarantees (an tâm mua sắm) */}
+              <div className="pd-promises">
+                <span>🛡️ Xử lý đơn hàng bởi Shopee</span>
+                <span>Trả hàng miễn phí 15 ngày</span>
+                <span>Chính hãng 100%</span>
+              </div>
+
+              {/* màu sắc */}
+              <div className="pd-row" style={{ marginTop: 6 }}>
+                <span className="pd-row-label">Màu sắc</span>
+                <div className="pd-size-list">
+                  <button className="pd-size is-selected">{String(color)}</button>
+                </div>
+              </div>
+
+              {/* phân loại/size */}
+              {sizes.length > 0 && (
+                <div className="pd-row" style={{ marginTop: 6 }}>
+                  <span className="pd-row-label">Phân Loại</span>
+                  <div className="pd-size-list">
+                    {sizes.map((sz) => (
+                      <button
+                        key={sz}
+                        className={`pd-size ${selectedSize === sz ? "is-selected" : ""}`}
+                        onClick={() => setSelectedSize(sz)}
+                      >
+                        {sz}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* quantity */}
+              <div className="pd-qty-row" style={{ marginTop: 6 }}>
+                <span className="pd-row-label">Số Lượng</span>
+                <div className="pd-stepper">
+                  <button className="pd-step" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
+                    -
+                  </button>
+                  <input
+                    id="pd-qty-input"
+                    value={String(quantity)}
+                    onChange={(e) => {
+                      const n = parseInt(e.target.value || "1", 10);
+                      isNaN(n) ? setQuantity(1) : setQuantity(Math.max(1, n));
+                    }}
+                  />
+                  <button className="pd-step" onClick={() => setQuantity((q) => q + 1)}>
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* actions */}
+              <div className="pd-actions" style={{ marginTop: 8 }}>
+                <button className="pd-btn-outline" onClick={() => alert("Đã thêm vào giỏ!")}>
+                  Thêm Vào Giỏ Hàng
+                </button>
+                <button className="pd-btn" onClick={() => alert("Mua ngay!")}>
+                  Mua Với Voucher
+                  <div style={{ fontWeight: 800 }}>
+                    ₫{new Intl.NumberFormat("vi-VN").format(finalPrice)}
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -316,7 +301,7 @@ export function ProductOverview({ product: p }) {
   );
 }
 
-/* ---------- PAGE WRAPPER: /product/:id ---------- */
+/* ---------- PAGE WRAPPER: /product/:id (giữ nguyên cấu trúc lấy data) ---------- */
 function ProductDetailPage({ fetchProductById }) {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -346,8 +331,13 @@ function ProductDetailPage({ fetchProductById }) {
     };
   }, [id, fetchProductById]);
 
-  if (loading) return <div className="p-6">Đang tải sản phẩm…</div>;
-  if (error) return <div className="p-6 text-red-600">{error}</div>;
+  if (loading) return <div className="pd-loading">Đang tải sản phẩm…</div>;
+  if (error) return (
+    <div className="pd-error">
+      <div className="pd-error-title">Lỗi</div>
+      <div className="pd-error-desc">{error}</div>
+    </div>
+  );
 
   return <ProductOverview product={product || undefined} />;
 }
