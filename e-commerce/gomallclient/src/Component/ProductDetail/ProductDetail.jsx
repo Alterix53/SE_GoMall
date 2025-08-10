@@ -1,635 +1,322 @@
-"use client"
-
-import React, { useState, useEffect, useMemo } from "react"
+// src/Component/ProductDetail/ProductDetail.jsx
+import React, { useEffect, useMemo, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import "./ProductDetail.css"
-import {
-  Star,
-  StarHalf,
-  ShoppingCart,
-  Heart,
-  Share2,
-  ShieldCheck,
-  Truck,
-  RotateCcw,
-  Store,
-  MessageCircle,
-  Check,
-  Minus,
-  Plus,
-  MapPin,
-  Tag,
-  Loader2,
-  AlertCircle,
-  Clock,
-  Package,
-  Award,
-} from "lucide-react"
+import "./ProductDetail.css" // nếu chưa có thì tạo file rỗng để không lỗi import
 
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import { Card, CardContent } from "../../components/ui/card"
-import { Input } from "../../components/ui/input"
-import { Label } from "../../components/ui/label"
-import { Progress } from "../../components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Separator } from "../../components/ui/separator"
-import { Avatar, AvatarFallback } from "../../components/ui/avatar"
-import { useToast } from "../../hooks/use-toast"
-import { cn } from "../../lib/utils"
-import ApiService from "../../utils/apiService"
-import Header from "../Header/Header"
-import Footer from "../Footer/Footer"
-
-// Star Rating Component
-function StarRating({
-  rating = 0,
-  size = 18,
-  showValue = false,
-}) {
-  const full = Math.floor(rating)
-  const half = rating - full >= 0.5
-  const empty = 5 - full - (half ? 1 : 0)
-  
-  return (
-    <div className="flex items-center gap-1">
-      {[...Array(full)].map((_, i) => (
-        <Star key={"full-" + i} size={size} className="text-yellow-500 fill-yellow-500" />
-      ))}
-      {half && <StarHalf size={size} className="text-yellow-500 fill-yellow-500" />}
-      {[...Array(empty)].map((_, i) => (
-        <Star key={"empty-" + i} size={size} className="text-muted-foreground" />
-      ))}
-      {showValue && <span className="ml-2 text-sm">{rating.toFixed(1)}</span>}
-    </div>
-  )
-}
-
-// Format currency VND
-function formatCurrencyVND(value) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0 
-  }).format(value)
+function vnd(n) {
+  if (n == null) return "₫0"
+  return `₫${new Intl.NumberFormat("vi-VN").format(Math.round(Number(n)))}`
 }
 
 export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { toast } = useToast()
 
-  // State
-  const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState("")
+  const [product, setProduct] = useState(null)
+
   const [activeImage, setActiveImage] = useState(0)
   const [liked, setLiked] = useState(false)
-  const [selectedVariations, setSelectedVariations] = useState({})
   const [quantity, setQuantity] = useState(1)
-  const [shippingTo, setShippingTo] = useState("Hà Nội")
+  const [selectedSize, setSelectedSize] = useState("")
+  const [shippingTo, setShippingTo] = useState("TP. Hồ Chí Minh")
 
-  // Fetch product data
+  // ---- Fetch từ API giống Flash Sale (không dùng file json tĩnh) ----
   useEffect(() => {
-    const fetchProduct = async () => {
+    let alive = true
+
+    ;(async () => {
       try {
         setLoading(true)
-        const response = await ApiService.getProductById(id)
-        console.log("Product response:", response)
-        
-        if (response.success && response.data && response.data.product) {
-          setProduct(response.data.product)
-          // Set default variations if available
-          if (response.data.product.specifications) {
-            const defaults = {}
-            response.data.product.specifications.forEach(spec => {
-              if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
-                const values = spec.value.split(',').map(v => v.trim())
-                defaults[spec.name] = values[0]
-              }
-            })
-            setSelectedVariations(defaults)
-          }
-      } else {
-          setError("Không thể tải thông tin sản phẩm")
-      }
-    } catch (err) {
-        console.error("Error fetching product:", err)
-        setError("Đã xảy ra lỗi khi tải thông tin sản phẩm")
-    } finally {
-        setLoading(false)
-      }
-    }
+        setError("")
 
-    if (id) {
-      fetchProduct()
+        // Gọi API backend: GET /api/products/:id
+        const res = await fetch(`/api/products/${id}`, { cache: "no-store" })
+        if (!res.ok) {
+          throw new Error(`Không tìm thấy sản phẩm (HTTP ${res.status})`)
+        }
+        const raw = await res.json()
+
+        if (!alive) return
+
+        // ---- Normalize để UI dễ dùng (tùy backend, bạn sửa map cho khớp) ----
+        // chấp nhận 2 dạng: _id hoặc id
+        const normalized = {
+          id: raw._id || raw.id,
+          name: raw.name || raw.productName || "Sản phẩm",
+          // nếu có flashSalePrice thì dùng; nếu không dùng price_sale hoặc price_original
+          price: {
+            original:
+              raw.price_original ??
+              raw.price?.original ??
+              raw.priceOriginal ??
+              raw.originalPrice ??
+              0,
+            sale:
+              raw.flashSalePrice ??
+              raw.price_sale ??
+              raw.price?.sale ??
+              raw.salePrice ??
+              undefined,
+          },
+          description: raw.description || "",
+          // chấp nhận 1 ảnh (images_url) hoặc mảng images
+          images:
+            (Array.isArray(raw.images) && raw.images.length > 0
+              ? raw.images
+              : [raw.images_url].filter(Boolean)) || [],
+          rating: {
+            average:
+              raw.rating?.average ??
+              raw.rating_avg ??
+              raw.ratingAverage ??
+              0,
+            count:
+              raw.rating?.count ??
+              raw.rating_count ??
+              raw.reviewsCount ??
+              0,
+          },
+          sold: raw.sold ?? raw.totalSold ?? 0,
+          inventory: { quantity: raw.inventory_quantity ?? raw.stock ?? 0 },
+          sizes: raw.sizes || [],
+
+          isFlashSale: !!raw.isFlashSale,
+          flashSaleEndDate: raw.flashSaleEndDate || null,
+        }
+
+        setProduct(normalized)
+        if (normalized.sizes.length > 0) {
+          setSelectedSize(normalized.sizes[0])
+        }
+      } catch (e) {
+        if (alive) setError(e.message || "Lỗi tải dữ liệu")
+      } finally {
+        if (alive) setLoading(false)
+      }
+    })()
+
+    return () => {
+      alive = false
     }
   }, [id])
 
-  // Calculate final price and discount
   const finalPrice = useMemo(() => {
     if (!product) return 0
     return product.price?.sale || product.price?.original || 0
   }, [product])
 
-  const discountPercent = useMemo(() => {
-    if (!product?.price?.sale || !product?.price?.original) return 0
-    return Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-  }, [product])
+  const hasSize = Boolean(product?.sizes?.length)
 
-  // Rating distribution (fallback to design sample if not provided)
-  const ratingDistribution = useMemo(() => {
-    const defaultDist = { 5: 82, 4: 12, 3: 3, 2: 2, 1: 1 }
-    const fromProduct = product?.rating?.distribution
-    if (!fromProduct) return defaultDist
-    // normalize keys as numbers and ensure percentages
-    return {
-      5: Number(fromProduct[5]) || 0,
-      4: Number(fromProduct[4]) || 0,
-      3: Number(fromProduct[3]) || 0,
-      2: Number(fromProduct[2]) || 0,
-      1: Number(fromProduct[1]) || 0,
-    }
-  }, [product])
+  const addToCart = () => {
+    // TODO: gọi API giỏ hàng của bạn (POST /api/cart)
+    alert("Đã thêm vào giỏ!")
+  }
 
-  const onAddToCart = async () => {
+  const buyNow = () => {
     if (!product) return
-    
-    try {
-      const response = await ApiService.addToCart(product._id, quantity)
-      if (response.success) {
-        toast({
-          title: "Thành công!",
-          description: "Đã thêm sản phẩm vào giỏ hàng",
-        })
-      } else {
-        toast({
-          title: "Lỗi!",
-          description: response.message || "Không thể thêm vào giỏ hàng",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      toast({
-        title: "Lỗi!",
-        description: "Đã xảy ra lỗi khi thêm vào giỏ hàng",
-        variant: "destructive",
-      })
-    }
+    navigate(`/checkout?product=${product.id}&quantity=${quantity}`)
   }
 
-  const onBuyNow = () => {
-    if (!product) return
-    // Navigate to checkout with this product
-    navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
-  }
-
-  const handleVariationChange = (type, value) => {
-    setSelectedVariations(prev => ({
-      ...prev,
-      [type]: value
-    }))
-  }
-
+  // ---- UI ----
   if (loading) {
     return (
-      <>
-        <Header />
-        <main className="min-h-screen flex items-center justify-center">
-          <div className="flex items-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin" />
-            <span>Đang tải thông tin sản phẩm...</span>
-          </div>
-        </main>
-        <Footer />
-      </>
+      <main className="pd-main">
+        <div className="pd-loading">Đang tải thông tin sản phẩm...</div>
+      </main>
     )
   }
 
   if (error || !product) {
     return (
-      <>
-        <Header />
-        <main className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Không thể tải sản phẩm</h2>
-            <p className="text-muted-foreground mb-4">{error || "Sản phẩm không tồn tại"}</p>
-            <Button onClick={() => navigate("/")}>Về trang chủ</Button>
-          </div>
-        </main>
-        <Footer />
-      </>
+      <main className="pd-main">
+        <div className="pd-error">
+          <div className="pd-error-title">Không thể tải sản phẩm</div>
+          <div className="pd-error-desc">{error || "Sản phẩm không tồn tại"}</div>
+          <button className="pd-btn" onClick={() => navigate("/")}>
+            Về trang chủ
+          </button>
+        </div>
+      </main>
     )
   }
 
   return (
-    <>
-      <Header />
-      <main className="bg-gray-50 min-h-screen">
+    <main className="pd-main">
+      <div className="pd-container">
+        <div className="pd-grid">
+          {/* LEFT: Ảnh */}
+          <section className="pd-left">
+            <div className="pd-main-img">
+              <img
+                src={product.images[activeImage] || "/placeholder.svg?height=480&width=480"}
+                alt={product.name}
+                className="pd-main-img__img"
+                onError={(e) => (e.currentTarget.src = "/placeholder.svg?height=480&width=480")}
+              />
+              <button
+                className={`pd-like ${liked ? "is-liked" : ""}`}
+                onClick={() => setLiked((v) => !v)}
+                aria-label="like"
+              >
+                ♥
+              </button>
+            </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Left: Product Images */}
-            <section>
-              {/* Main Image */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border">
-                <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
-                  {product.images && product.images.length > 0 ? (
-                    <img
-                      src={product.images[activeImage]?.url || product.images[activeImage]}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      <Package className="w-16 h-16" />
-                    </div>
-                  )}
-                  
-                  {/* Like Button */}
+            {product.images.length > 1 && (
+              <div className="pd-thumbs">
+                {product.images.map((img, idx) => (
                   <button
-                    onClick={() => setLiked(!liked)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+                    key={idx}
+                    className={`pd-thumb ${idx === activeImage ? "is-active" : ""}`}
+                    onClick={() => setActiveImage(idx)}
                   >
-                    <Heart 
-                      className={cn(
-                        "w-5 h-5",
-                        liked ? "text-red-500 fill-red-500" : "text-gray-600"
-                      )} 
+                    <img
+                      src={img}
+                      alt={`thumb-${idx}`}
+                      onError={(e) => (e.currentTarget.src = "/placeholder.svg?height=96&width=96")}
                     />
                   </button>
-          </div>
-
-                {/* Thumbnail Images */}
-                {product.images && product.images.length > 1 && (
-                  <div className="mt-4 flex gap-3 overflow-x-auto">
-                    {product.images.map((image, index) => (
-                <button
-                        key={index}
-                        onClick={() => setActiveImage(index)}
-                        className={cn(
-                          "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden",
-                          activeImage === index 
-                            ? "border-primary" 
-                            : "border-gray-200 hover:border-gray-300"
-                        )}
-                >
-                  <img
-                          src={image?.url || image}
-                          alt={`${product.name} - ${index + 1}`}
-                          className="w-full h-full object-cover"
-                  />
-                </button>
-            ))}
-          </div>
-                )}
+                ))}
               </div>
-            </section>
+            )}
 
-            {/* Right: Product Info & Actions */}
-            <section>
-              <div className="bg-white rounded-xl p-6 shadow-sm border">
-                {/* Product Title */}
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
-                  {product.name}
-                </h1>
-                
-                {/* Rating & Sales */}
-                <div className="flex items-center gap-6 mb-6">
-                  <div className="flex items-center gap-2">
-                    <StarRating rating={product.rating?.average || 0} size={20} />
-                    <span className="font-semibold text-lg">
-                      {product.rating?.average?.toFixed(1) || "0.0"}
-                    </span>
-                  </div>
-                  <div className="text-gray-600">
-                    {product.rating?.count?.toLocaleString() || 0} Đánh giá
-                  </div>
-                  <div className="text-gray-600">
-                    Đã bán {product.sold?.toLocaleString() || 0}+
-                  </div>
-                </div>
-
-                {/* Price Section */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
-                  <div className="flex items-baseline gap-3 mb-3">
-                    <span className="text-4xl lg:text-5xl font-bold text-red-600">
-                      {formatCurrencyVND(finalPrice)}
-                    </span>
-                    {product.price?.sale && product.price?.original && product.price.sale < product.price.original && (
-                      <>
-                        <span className="text-xl text-gray-500 line-through">
-                          {formatCurrencyVND(product.price.original)}
-                        </span>
-                        <Badge className="bg-red-600 text-white px-3 py-1 text-sm font-bold rounded-full">
-                          -{discountPercent}%
-                        </Badge>
-                    </>
-                  )}
-                </div>
-
-                  {/* Promotions */}
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      <Tag className="w-3 h-3 mr-1" />
-                      Giảm 50k cho đơn từ 5tr
-                    </Badge>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      Voucher 10% tối đa 500k
-                    </Badge>
-                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                      Hoàn xu 5%
-                    </Badge>
-                  </div>
-
-                  {/* Flash Sale */}
-                  {product.isFlashSale && (
-                    <div className="mt-3 flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                      <Clock className="w-4 h-4 text-orange-600" />
-                      <span className="text-sm font-medium text-orange-800">
-                        Flash Sale - Kết thúc: {product.flashSaleEndDate ? 
-                          new Date(product.flashSaleEndDate).toLocaleDateString('vi-VN') : 
-                          '10/8/2025'
-                        }
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Variations */}
-                {product.specifications && product.specifications.length > 0 && (
-                  <div className="space-y-4 mb-6">
-                    {product.specifications.map((spec, index) => {
-                      if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
-                        const values = spec.value.split(',').map(v => v.trim())
-                        const currentValue = selectedVariations[spec.name] || values[0]
-                        
-                        return (
-                          <div key={index}>
-                                                         <Label htmlFor={`${spec.name}-label`} className="text-base font-medium text-gray-900 mb-3 block">
-                               {spec.name === 'color' ? 'Màu sắc' : 
-                                spec.name === 'storage' ? 'Dung lượng' : 
-                                spec.name === 'size' ? 'Kích thước' : spec.name}
-                             </Label>
-                            <RadioGroup 
-                              value={currentValue} 
-                              onValueChange={(value) => handleVariationChange(spec.name, value)}
-                              className="flex flex-wrap gap-2"
-                            >
-                              {values.map((value) => (
-                                <Label
-                                  key={value}
-                                  htmlFor={`${spec.name}-${value}`}
-                                  className={cn(
-                                    "cursor-pointer border rounded-lg px-4 py-2 text-sm font-medium transition-all min-w-[80px] text-center",
-                                    currentValue === value 
-                                      ? "border-black bg-black text-white" 
-                                      : "border-gray-300 hover:border-gray-400 bg-white text-gray-900"
-                                  )}
-                                >
-                                  <RadioGroupItem id={`${spec.name}-${value}`} value={value} className="sr-only" />
-                                  {value}
-                                </Label>
-                              ))}
-                            </RadioGroup>
-                          </div>
-                        )
-                      }
-                      return null
-                    })}
-                  </div>
-                )}
-
-                {/* Quantity */}
-                <div className="mb-6">
-                                     <Label htmlFor="quantity-input" className="text-base font-medium text-gray-900 mb-3 block">
-                     Số lượng
-                   </Label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center border border-gray-300 rounded-lg">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="rounded-r-none border-0 hover:bg-gray-100 px-3 py-2"
-                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                        disabled={quantity <= 1}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                                             <Input
-                         id="quantity-input"
-                         inputMode="numeric"
-                         value={quantity}
-                         onChange={(e) => {
-                           const n = Number.parseInt(e.target.value || "1", 10)
-                           if (!Number.isNaN(n)) setQuantity(Math.max(1, n))
-                         }}
-                         className="w-20 text-center border-0 rounded-none focus:ring-0 font-medium"
-                         min="1"
-                         aria-live="polite"
-                       />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="rounded-l-none border-0 hover:bg-gray-100 px-3 py-2"
-                        onClick={() => setQuantity((q) => q + 1)}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    {product.inventory && (
-                      <span className="text-sm text-gray-600">
-                        Còn {product.inventory.quantity} sản phẩm
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Shipping */}
-                <div className="mb-6">
-                                     <Label htmlFor="shipping-select" className="text-base font-medium text-gray-900 mb-3 block">
-                     Vận chuyển
-                   </Label>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <Truck className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm text-gray-900 font-medium">Miễn phí vận chuyển</span>
-        </div>
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm text-gray-900">Giao đến</span>
-                      <select 
-                        value={shippingTo} 
-                        onChange={(e) => setShippingTo(e.target.value)}
-                        className="text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
-                      >
-                        {[
-                          "Hà Nội",
-                          "TP. Hồ Chí Minh", 
-                          "Đà Nẵng",
-                          "Hải Phòng",
-                          "Cần Thơ",
-                        ].map((loc) => (
-                          <option key={loc} value={loc}>{loc}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    onClick={onAddToCart}
-                    disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
-                    className="w-full h-14 text-base font-medium border-gray-400 text-gray-900 hover:bg-gray-50"
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    {product.inventory?.quantity === 0 ? "Hết hàng" : "Thêm vào giỏ"}
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    onClick={onBuyNow}
-                    disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
-                    className="w-full h-14 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    {product.inventory?.quantity === 0 ? "Hết hàng" : "Mua ngay"}
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    onClick={() => console.log('Chat ngay clicked')}
-                    className="w-full h-14 text-base font-medium border-gray-400 text-gray-900 hover:bg-gray-50"
-                  >
-                    <MessageCircle className="w-5 h-5 mr-2" />
-                    Chat ngay
-                  </Button>
-                </div>
-
-                {/* Guarantees */}
-                <div className="mt-6 space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <ShieldCheck className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-900 font-medium">Hàng chính hãng 100%</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-900 font-medium">Bảo hành 12 tháng</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <RotateCcw className="w-5 h-5 text-orange-600" />
-                    <span className="text-gray-900 font-medium">7 ngày miễn phí trả hàng</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Truck className="w-5 h-5 text-blue-600" />
-                    <span className="text-gray-900 font-medium">Miễn phí vận chuyển</span>
-                  </div>
-                </div>
-          </div>
-            </section>
-          </div>
-
-          {/* Shop Info Section */}
-          <div className="max-w-6xl mx-auto px-4 mt-8">
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarFallback className="bg-orange-100 text-orange-600 text-lg font-semibold">
-                      {product.sellerID?.name?.charAt(0) || "A"}
-                    </AvatarFallback>
-                  </Avatar>
-            <div>
-                    <h3 className="font-semibold text-gray-900 text-lg">
-                      {product.sellerID?.name || "Apple Flagship Store"}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Hoạt động 1 giờ trước
-                    </p>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" onClick={() => console.log('Xem shop')} className="px-6">
-                  <Store className="w-4 h-4 mr-2" />
-                  Xem shop
-                </Button>
+            <div className="pd-share-row">
+              <span className="pd-share-label">Chia sẻ: </span>
+              <button className="pd-share-dot" aria-label="share-fb" />
+              <button className="pd-share-dot" aria-label="share-mes" />
+              <button className="pd-share-dot" aria-label="share-pin" />
+              <button className="pd-share-dot" aria-label="share-x" />
+              <div className="pd-liked">
+                <span className="pd-heart">♡</span> Đã thích
               </div>
-              
-              <div className="grid grid-cols-2 gap-6 mt-4">
-                <div className="text-center">
-                  <div className="text-xs text-gray-600 mb-1">Đánh giá shop</div>
-                  <div className="flex items-center justify-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="font-semibold text-gray-900">
-                      {product.sellerID?.rating?.average?.toFixed(1) || "4.9"}
-                    </span>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-gray-600 mb-1">Người theo dõi</div>
-                  <div className="font-semibold text-gray-900">
-                    {product.sellerID?.followers || "1.2M"}
-                  </div>
-                </div>
-                </div>
+            </div>
+          </section>
+
+          {/* RIGHT: Thông tin */}
+          <section className="pd-right">
+            <span className="pd-mall-chip">MALL</span>
+            <h1 className="pd-title">{product.name}</h1>
+
+            {/* điểm | đánh giá | đã bán */}
+            <div className="pd-meta">
+              <span className="pd-rating">
+                {(product.rating.average || 0).toFixed(1)}
+              </span>
+              <span className="pd-dot">|</span>
+              <span className="pd-reviews">{product.rating.count} Đánh giá</span>
+              <span className="pd-dot">|</span>
+              <span className="pd-sold">{product.sold}+ Đã bán</span>
+            </div>
+
+            {/* Giá */}
+            <div className="pd-price-box">
+              <div className="pd-price">
+                <span className="pd-price__sale">{vnd(finalPrice)}</span>
+                {product.price?.original &&
+                  product.price.original !== finalPrice && (
+                    <span className="pd-price__orig">{vnd(product.price.original)}</span>
+                  )}
               </div>
             </div>
 
-          {/* Rating Summary Section */}
-          <div className="max-w-6xl mx-auto px-4 mt-8">
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
-              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Đánh giá sản phẩm</h3>
-              <div className="flex items-start gap-8">
-                <div className="text-center">
-                  <div className="text-5xl font-bold text-blue-600 mb-2">
-                    {(product.rating?.average || 4.8).toFixed(1)}
-                  </div>
-                  <StarRating rating={product.rating?.average || 4.8} size={24} />
-                  <div className="text-sm text-gray-600 mt-2">
-                    {product.rating?.count?.toLocaleString() || "12.500"} đánh giá
-                  </div>
-                </div>
-                <div className="flex-1 space-y-2">
-                  {[5, 4, 3, 2, 1].map((star) => (
-                    <div key={star} className="flex items-center gap-3">
-                      <div className="w-8 text-sm text-gray-600">{star} sao</div>
-                      <Progress value={ratingDistribution[star]} className="flex-1 h-3" />
-                      <div className="w-12 text-right text-sm font-medium text-gray-900">
-                        {ratingDistribution[star]}%
+            {/* Voucher minh họa */}
+            <div className="pd-vouchers">
+              <span className="pd-v-label">Voucher của shop</span>
+              <div className="pd-v-tags">
+                <span className="pd-tag">Giảm 5k</span>
+                <span className="pd-tag">Giảm 10%</span>
+              </div>
             </div>
-          </div>
+
+            {/* Size hoặc Vận chuyển */}
+            {hasSize ? (
+              <div className="pd-row">
+                <span className="pd-row-label">Size</span>
+                <div className="pd-size-list">
+                  {product.sizes.map((s) => (
+                    <button
+                      key={s}
+                      className={`pd-size ${selectedSize === s ? "is-selected" : ""}`}
+                      onClick={() => setSelectedSize(s)}
+                    >
+                      {s}
+                    </button>
                   ))}
+                </div>
+              </div>
+            ) : (
+              <div className="pd-ship">
+                <div className="pd-ship-top">Miễn phí vận chuyển</div>
+                <div className="pd-ship-row">
+                  <span>Giao đến</span>
+                  <select
+                    value={shippingTo}
+                    onChange={(e) => setShippingTo(e.target.value)}
+                  >
+                    {[
+                      "TP. Hồ Chí Minh",
+                      "Hà Nội",
+                      "Đà Nẵng",
+                      "Hải Phòng",
+                      "Cần Thơ",
+                    ].map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {/* Số lượng */}
+            <div className="pd-qty-row">
+              <span className="pd-row-label">Số lượng</span>
+              <div className="pd-stepper">
+                <button
+                  className="pd-step"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={quantity <= 1}
+                >
+                  −
+                </button>
+                <input
+                  id="pd-qty-input"
+                  type="text"
+                  inputMode="numeric"
+                  value={String(quantity)}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value || "1", 10)
+                    setQuantity(Number.isNaN(v) ? 1 : Math.max(1, v))
+                  }}
+                />
+                <button className="pd-step" onClick={() => setQuantity((q) => q + 1)}>
+                  +
+                </button>
+              </div>
             </div>
-          </div>
+
+            {/* Nút hành động */}
+            <div className="pd-actions">
+              <button className="pd-btn-outline" onClick={addToCart}>
+                Thêm vào giỏ hàng
+              </button>
+              <button className="pd-btn" onClick={buyNow}>
+                Buy now
+              </button>
+            </div>
+
+            {/* Cam kết */}
+            <div className="pd-promises">
+              <span>Chính hãng 100%</span>
+              <span>7 ngày miễn phí trả hàng</span>
+              <span>Miễn phí vận chuyển</span>
+            </div>
+          </section>
         </div>
       </div>
-
-
-
-          {/* Product Details Section */}
-          <div className="max-w-6xl mx-auto px-4 mt-12">
-                        {/* Product Description */}
-            <Card className="shadow-sm border">
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Mô tả sản phẩm</h2>
-                <div className="prose prose-sm max-w-none text-gray-700">
-                  {product.description ? (
-                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
-                  ) : (
-                    <p className="text-gray-500">Chưa có mô tả chi tiết cho sản phẩm này.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-      </div>
-    </div>
-      </main>
-      <Footer />
-    </>
+    </main>
   )
 }
