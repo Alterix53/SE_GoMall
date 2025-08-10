@@ -2,25 +2,26 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 
+// Components (User)
 import Cart from './Component/Cart/Cart';
 import CategoryList from './Component/Category/CategoryList';
-//import Navbar from './Component/Navbar/Navbar'; bị dư rồi
-import SearchResult from "./SearchResult";    // Minh
-import SearchBar from './Component/SearchBar/SearchBar';    // Minh
-import ProductCard from './Component/ProductCard/ProductCard';    // Minh
+import SearchResult from './SearchResult';                 // Minh
+import SearchBar from './Component/SearchBar/SearchBar';   // Minh (nếu dùng ở nơi khác)
+import ProductCard from './Component/ProductCard/ProductCard'; // Minh (nếu dùng ở nơi khác)
 import Footer from './Component/Footer/Footer';
 import UserSettings from './Component/UserPage/UserSetting';
-// view item detail
 import ViewItemDetail from './Component/viewItemDetail';
-import ProductDetail from './Component/ProductDetail/ProductDetail';
 
-// Import các component chính
+// ✅ Product detail: default export là ProductDetailPage
+import ProductDetailPage from './Component/ProductDetail/ProductDetail';
+
+// Pages
 import Home from './Home';
 import FlashSale from './Flash_sale';
 import TopProduct from './TopProduct';
 import TodaySuggestions from './TodaySuggestions';
 
-// Import các component Admin
+// Admin
 import SidebarNav from './Component/Admin/SidebarNav';
 import Breadcrumbs from './Component/Admin/Breadcrumbs';
 import DashboardPage from './Component/Admin/pages/DashboardPage';
@@ -28,31 +29,41 @@ import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
 
-// Import các component Auth
+// Auth
 import LoginPage from './Component/Login/login';
 import SignUpPage from './Component/Signup/signup';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
 
-// 
+// User
 import UserPage from './Component/UserPage/UserPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import UnauthorizedPage from './components/UnauthorizedPage';
 
-// Import AuthContext
+// Contexts
 import { AuthProvider } from './contexts/AuthContext';
-import { CartProvider } from "./contexts/CartContext";
+import { CartProvider } from './contexts/CartContext';
 
-// seller
+// Seller pages
 import Statistics from './Component/Sellerdashboard/Statistics';
 import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 import Navbar from './Component/Navbar/Navbar';
 
+// ✅ API service để gọi sản phẩm theo id
+import ApiService from './utils/api';
 
+// Adapter gọi API sản phẩm theo id (tuỳ ApiService của bạn)
+async function fetchProductById(id) {
+  const res = await ApiService.get(`/products/${id}`);
+  // Nếu ApiService dùng axios, dữ liệu nằm trong res.data
+  return res?.data ?? res;
+}
+
+// ------------- Layouts -------------
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
-  const hideLayout = ['/login', '/signup'].includes(location.pathname);
+  const hideLayout = ['/login', '/signup', '/signin'].includes(location.pathname);
   return (
     <>
       {children}
@@ -80,6 +91,7 @@ function AdminLayout() {
   );
 }
 
+// ------------- App -------------
 function App() {
   return (
     <AuthProvider>
@@ -87,63 +99,82 @@ function App() {
         <Router>
           <LayoutWrapper>
             <div className="App">
-              {/* Sử dụng Navbar mới cho các trang chính */}
               <Routes>
-                {/* Admin routes - sử dụng layout riêng */}
-                <Route path="/Admin/*" element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminLayout />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Auth routes - không có navbar */}
+                {/* Admin routes */}
+                <Route
+                  path="/Admin/*"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Auth routes */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signin" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
-                
-                
-                {/* User routes - có navbar và footer */}
+
+                {/* User routes */}
                 <Route path="/user" element={<UserPage />} />
                 <Route path="/user/settings" element={<UserSettings />} />
-                <Route path="/search" element={<SearchResult />} /> {/* Route cho tìm kiếm */}  {/* Minh */}
-                
-                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/search" element={<SearchResult />} />
+
+                {/* ✅ Product detail route (truyền fetchProductById) */}
+                <Route
+                  path="/product/:id"
+                  element={<ProductDetailPage fetchProductById={fetchProductById} />}
+                />
+
                 <Route path="/cart" element={<Cart />} />
-                {/* SELLER ROUTES - có thể có layout riêng */}
-                <Route path="/seller" element={
-                  <ProtectedRoute requiredRole="seller">
-                    <SellerDashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/seller/statistics" element={
-                  <ProtectedRoute requiredRole="seller">
-                    <Statistics />
-                  </ProtectedRoute>
-                } />
-                <Route path="/seller/orders" element={
-                  <ProtectedRoute requiredRole="seller">
-                    <ShippingStatus />
-                  </ProtectedRoute>
-                } />
-                <Route path="/seller/orders/:id" element={
-                  <ProtectedRoute requiredRole="seller">
-                    <OrderDetail />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Main routes - sử dụng Navbar và Footer */}
+
+                {/* Seller routes */}
+                <Route
+                  path="/seller"
+                  element={
+                    <ProtectedRoute requiredRole="seller">
+                      <SellerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/seller/statistics"
+                  element={
+                    <ProtectedRoute requiredRole="seller">
+                      <Statistics />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/seller/orders"
+                  element={
+                    <ProtectedRoute requiredRole="seller">
+                      <ShippingStatus />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/seller/orders/:id"
+                  element={
+                    <ProtectedRoute requiredRole="seller">
+                      <OrderDetail />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Main routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/flash-sale" element={<FlashSale />} />
                 <Route path="/top-products" element={<TopProduct />} />
                 <Route path="/today-suggestions" element={<TodaySuggestions />} />
                 <Route path="/register-seller" element={<RegisterSeller />} />
-                
-                {/* Category routes - sử dụng Navbar và Footer */}
+
+                {/* Category */}
                 <Route path="/category/*" element={<CategoryList />} />
-                
-                {/* Fallback route */}
+
+                {/* Fallback */}
                 <Route path="*" element={<Home />} />
               </Routes>
             </div>
@@ -151,7 +182,6 @@ function App() {
         </Router>
       </CartProvider>
     </AuthProvider>
-
   );
 }
 
