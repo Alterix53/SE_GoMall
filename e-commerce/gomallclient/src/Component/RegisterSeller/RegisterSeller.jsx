@@ -43,26 +43,6 @@ const RegisterSeller = () => {
     } catch (err) {
       alert(err?.response?.data?.message || 'Failed to submit seller application');
     }
-<<<<<<< HEAD
-=======
-
-    // Cập nhật thông tin đăng ký seller
-    users[userIndex] = {
-      ...users[userIndex],
-      role: 'seller',
-      sellerStatus: 'pending',
-      storeName,
-      address,
-      email,
-      phone,
-      documentName: document.name,
-    };
-
-    localStorage.setItem('users', JSON.stringify(users));
-
-    alert('Yêu cầu đăng ký người bán đã được gửi. Vui lòng chờ admin phê duyệt.');
-    navigate('/');
->>>>>>> testUI
   };
 
   return (

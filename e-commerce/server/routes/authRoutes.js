@@ -6,13 +6,8 @@ import {
     login,
     logout,
     getCurrentUser,
-<<<<<<< HEAD
     refreshToken,
     changePassword
-=======
-    updateCurrentUser,
-    refreshToken
->>>>>>> testUI
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
