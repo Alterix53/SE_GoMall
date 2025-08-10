@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import Footer from '../Footer/Footer';
 import '../Login/login.css';
 
 const LoginPage = () => {
@@ -184,8 +183,7 @@ const LoginPage = () => {
         </div>
       </div>
       
-      {/* Phần dưới - Footer */}
-      <Footer />
+      {/* Footer is injected by App.js for auth pages */}
     </div>
   );
 };

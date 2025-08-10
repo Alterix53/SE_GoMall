@@ -40,7 +40,9 @@ import { Avatar, AvatarFallback } from "../../components/ui/avatar"
 import { useToast } from "../../hooks/use-toast"
 import { cn } from "../../lib/utils"
 import ApiService from "../../utils/apiService"
-import Header from "../Header/Header"
+// Header is globally handled in App.js
+import OptimizedImage from "../../utils/OptimizedImage"
+import { createPlaceholderUrl } from "../../utils/imageUtils"
 import Footer from "../Footer/Footer"
 
 // Star Rating Component
@@ -221,14 +223,12 @@ export default function ProductDetail() {
   if (loading) {
     return (
       <>
-        <Header />
         <main className="min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-3">
             <Loader2 className="w-6 h-6 animate-spin" />
             <span>Đang tải thông tin sản phẩm...</span>
           </div>
         </main>
-        <Footer />
       </>
     )
   }
@@ -236,7 +236,6 @@ export default function ProductDetail() {
   if (error || !product) {
     return (
       <>
-        <Header />
         <main className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
@@ -245,14 +244,12 @@ export default function ProductDetail() {
             <Button onClick={() => navigate("/")}>Về trang chủ</Button>
           </div>
         </main>
-        <Footer />
       </>
     )
   }
 
   return (
     <>
-      <Header />
       <main className="bg-gray-50 min-h-screen">
 
         <div className="max-w-6xl mx-auto px-4 py-8">
@@ -263,10 +260,13 @@ export default function ProductDetail() {
               <div className="bg-white rounded-xl p-6 shadow-sm border">
                 <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
                   {product.images && product.images.length > 0 ? (
-                    <img
+                    <OptimizedImage
                       src={product.images[activeImage]?.url || product.images[activeImage]}
                       alt={product.name}
                       className="w-full h-full object-cover"
+                      fallbackUrl={createPlaceholderUrl(600,600,'')}
+                      onLoad={() => {}}
+                      onError={() => {}}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -302,10 +302,13 @@ export default function ProductDetail() {
                             : "border-gray-200 hover:border-gray-300"
                         )}
                 >
-                  <img
+                  <OptimizedImage
                           src={image?.url || image}
                           alt={`${product.name} - ${index + 1}`}
                           className="w-full h-full object-cover"
+                          fallbackUrl={createPlaceholderUrl(80,80,'')}
+                          onLoad={() => {}}
+                          onError={() => {}}
                   />
                 </button>
             ))}
@@ -655,7 +658,6 @@ export default function ProductDetail() {
       </div>
     </div>
       </main>
-      <Footer />
     </>
   )
 }

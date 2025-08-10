@@ -4,7 +4,9 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import UserAccountModal from "../UserAccountModal/UserAccountModal";
 import SearchBar from "../SearchBar/SearchBar";
-import "./navbar.css";
+import OptimizedImage from "../../utils/OptimizedImage";
+import { createPlaceholderUrl } from "../../utils/imageUtils";
+import "./Navbar.css";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -70,75 +72,69 @@ const Navbar = () => {
               {/* Navigation Icons */}
               <div className="nav-icons">
                 <div className="nav-icon">
-                  <img
+                  <OptimizedImage
                       src="/images/bell.png"
                       alt="Notifications"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
+                      lazy={false}
+                      fallbackUrl={createPlaceholderUrl(20,20,'')}
+                      onLoad={() => {}}
+                      onError={() => {}}
                   />
                   <span>Notifications</span>
                 </div>
-
+                <Link to="/register-seller">
                 <div className="nav-icon">
-                  <img
+                  <OptimizedImage
                       src="/images/setting.png"
                       alt="Support"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
+                      lazy={false}
+                      fallbackUrl={createPlaceholderUrl(20,20,'')}
+                      onLoad={() => {}}
+                      onError={() => {}}
                   />
                   <span>Become a Seller</span>
                 </div>
+                </Link>
+
                 <Link to={isAuthenticated() ? "/cart" : "/signin" }>
                 <div className="nav-icon">
-                  <img
+                  <OptimizedImage
                       src="/images/cart.png"
                       alt="Cart"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
+                      lazy={false}
+                      fallbackUrl={createPlaceholderUrl(20,20,'')}
+                      onLoad={() => {}}
+                      onError={() => {}}
                   />
                   <span>Cart</span>
                 </div>
                 </Link>
               
-                <div 
-                  className="nav-icon" 
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    setModalPosition({
-                      top: rect.bottom + 5,
-                      right: window.innerWidth - rect.right
-                    });
-                    setIsAccountModalOpen(true);
-                  }}
-                >
-                  <img
-                      src="/images/user.png"
-                      alt="Account"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>{isAuthenticated() ? getCurrentUser()?.username || 'Account' : 'Account'}</span>
-                </div>
+                                 <div 
+                   className="nav-icon" 
+                   onClick={(e) => {
+                     const rect = e.currentTarget.getBoundingClientRect();
+                     setModalPosition({
+                       top: rect.bottom + 5,
+                       right: window.innerWidth - rect.right
+                     });
+                     setIsAccountModalOpen(true);
+                   }}
+                 >
+                    <OptimizedImage
+                       src="/images/user.png"
+                       alt="Account"
+                       style={{ width: "20px", height: "20px" }}
+                       lazy={false}
+                        fallbackUrl={createPlaceholderUrl(20,20,'')}
+                       onLoad={() => {}}
+                       onError={() => {}}
+                   />
+                   <span>{isAuthenticated() ? getCurrentUser()?.username || 'Account' : 'Account'}</span>
+                 </div>
               </div>
 
               {/* Mobile Menu Toggle */}
@@ -183,62 +179,54 @@ const Navbar = () => {
         {isMenuOpen && (
             <div className="mobile-menu">
               <div className="mobile-menu-content">
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/user.png"
-                      alt="Tài khoản"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Tài khoản</span>
-                </div>
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/cart.png"
-                      alt="Giỏ hàng"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Giỏ hàng</span>
-                </div>
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/help.png"
-                      alt="Hỗ trợ"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Hỗ trợ</span>
-                </div>
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/bell.png"
-                      alt="Thông báo"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => { 
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Thông báo</span>
-                </div>
+                                 <div className="mobile-menu-item">
+                    <OptimizedImage
+                       src="/images/user.png"
+                       alt="Tài khoản"
+                       style={{ width: "20px", height: "20px" }}
+                       lazy={false}
+                        fallbackUrl={createPlaceholderUrl(20,20,'')}
+                       onLoad={() => {}}
+                       onError={() => {}}
+                   />
+                   <span>Tài khoản</span>
+                 </div>
+                                 <div className="mobile-menu-item">
+                    <OptimizedImage
+                       src="/images/cart.png"
+                       alt="Giỏ hàng"
+                       style={{ width: "20px", height: "20px" }}
+                       lazy={false}
+                        fallbackUrl={createPlaceholderUrl(20,20,'')}
+                       onLoad={() => {}}
+                       onError={() => {}}
+                   />
+                   <span>Giỏ hàng</span>
+                 </div>
+                                 <div className="mobile-menu-item">
+                    <OptimizedImage
+                       src="/images/help.png"
+                       alt="Hỗ trợ"
+                       style={{ width: "20px", height: "20px" }}
+                       lazy={false}
+                        fallbackUrl={createPlaceholderUrl(20,20,'')}
+                       onLoad={() => {}}
+                       onError={() => {}}
+                   />
+                   <span>Hỗ trợ</span>
+                 </div>
+                                 <div className="mobile-menu-item">
+                    <OptimizedImage
+                       src="/images/bell.png"
+                       alt="Thông báo"
+                       style={{ width: "20px", height: "20px" }}
+                       lazy={false}
+                        fallbackUrl={createPlaceholderUrl(20,20,'')}
+                       onLoad={() => {}}
+                       onError={() => {}}
+                   />
+                   <span>Thông báo</span>
+                 </div>
               </div>
             </div>
         )}

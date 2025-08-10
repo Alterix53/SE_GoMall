@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+import './utils/imageOptimization.css';
+import { useImageOptimization } from './hooks/useImageOptimization';
 
 import Cart from './Component/Cart/Cart';
 import Checkout from './Component/Checkout/Checkout';
@@ -28,6 +30,7 @@ import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
+import AdminLogin from './Component/Admin/AdminLogin';
 
 // Import các component Auth
 import LoginPage from './Component/Login/login';
@@ -48,17 +51,30 @@ import Statistics from './Component/Sellerdashboard/Statistics';
 import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
-import Navbar from './Component/Navbar/Navbar';
+import Header from './Component/Header/Header';
 import Suggestions from './Component/Suggestions/Suggestions';
 
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
-  const hideLayout = ['/login', '/signup'].includes(location.pathname);
+  const path = location.pathname.toLowerCase();
+
+  const isAdminRoute = path.startsWith('/admin');
+  const isSellerRoute = path.startsWith('/seller');
+  const isAuthRoute = ['/login', '/signin', '/signup', '/admin/login'].includes(path);
+
+  // Visibility rules
+  // - Admin & Seller: no Header, no Footer
+  // - Auth (login/signin/signup): no Header, Footer visible
+  // - Others: show both
+  const showHeader = !isAdminRoute && !isSellerRoute && !isAuthRoute;
+  const showFooter = !isAdminRoute && !isSellerRoute; // includes auth pages
+
   return (
     <>
+      {showHeader && <Header />}
       {children}
-      {!hideLayout && <Footer />}
+      {showFooter && <Footer />}
     </>
   );
 };
@@ -66,7 +82,6 @@ const LayoutWrapper = ({ children }) => {
 function AdminLayout() {
   return (
     <div className="d-flex">
-      <Navbar />
       <SidebarNav />
       <div className="flex-grow-1 p-3">
         <Breadcrumbs />
@@ -83,6 +98,9 @@ function AdminLayout() {
 }
 
 function App() {
+  // Khởi tạo tối ưu hóa hình ảnh
+  useImageOptimization();
+
   return (
     <AuthProvider>
       <CartProvider>
@@ -102,6 +120,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signin" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
                 

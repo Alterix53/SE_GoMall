@@ -1,5 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './TopProductCard.css';
+import OptimizedImage from '../../utils/OptimizedImage';
 
 const TopProductCard = ({ product }) => {
   const formatPrice = (price) => {
@@ -17,16 +19,33 @@ const TopProductCard = ({ product }) => {
     return rating.average.toFixed(1);
   };
 
+  const navigate = useNavigate();
+
+  const productId = product?.id || product?._id;
+
+  const goToDetail = () => {
+    if (!productId) return;
+    navigate(`/product/${productId}`);
+  };
+
   return (
     <div className="top-product-card">
       {/* Product Image */}
       <div className="product-image">
-        <img
-          src={product.image || "/placeholder.svg?height=200&width=200&text=Product"}
+        <OptimizedImage
+          src={product.image}
           alt={product.name}
-          onError={(e) => {
-            e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image";
-          }}
+          lazy={true}
+          fallbackUrl={
+            'data:image/svg+xml;base64,' + btoa(
+              `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100%" height="100%" fill="#f0f0f0"/>
+                <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="14" fill="#999" text-anchor="middle" dy=".3em">No Image</text>
+              </svg>`
+            )
+          }
+          onLoad={() => {}}
+          onError={() => {}}
         />
       </div>
       
@@ -41,7 +60,15 @@ const TopProductCard = ({ product }) => {
       {/* Product Info */}
       <div className="product-info">
         <div className="product-price">{formatPrice(product.price)}</div>
-        <button className="selling-fast-btn">ĐANG BÁN CHẠY</button>
+        <button
+          type="button"
+          className="selling-fast-btn"
+          onClick={goToDetail}
+          disabled={!productId}
+          aria-label="Xem chi tiết sản phẩm"
+        >
+          ĐANG BÁN CHẠY
+        </button>
       </div>
     </div>
   );

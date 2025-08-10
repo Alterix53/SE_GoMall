@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
-import Footer from '../Footer/Footer';
 import mockProducts from './product.json'; 
 import './Sellerdashboard'; 
 
@@ -37,7 +35,6 @@ const Statistics = () => {
   return (
     <div className="container mt-4">
       <h2>Thống kê doanh thu</h2>
-      <Navbar data={data} />
 
       <h4 className="mt-5">Sản phẩm bán chạy</h4>
       <ul className="list-group">

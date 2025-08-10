@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Header from './Component/Header/Header';
+// Header is globally rendered in App.js
 import CategoryList from './Component/Category/CategoryList';
 import ProductCard from './Component/ProductCard/ProductCard';
 import FlashSaleCard from './Component/FlashSaleCard/FlashSaleCard';
@@ -190,7 +190,6 @@ function Home() {
   if (loading) {
     return (
       <div className="home">
-        <Header />
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading products...</p>
@@ -201,7 +200,6 @@ function Home() {
 
   return (
     <div className="home">
-      <Header />
       
       {/* Promotional Banners */}
       

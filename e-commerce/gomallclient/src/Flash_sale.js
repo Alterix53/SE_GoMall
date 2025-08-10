@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
-import Header from "./Component/Header/Header.jsx";
+// Header is globally rendered in App.js
 import "./Flash_sale.css";
 
 const FlashSale = () => {
@@ -82,9 +82,6 @@ const FlashSale = () => {
 
   return (
     <div className="flash-sale-page">
-      {/* GoMall Header */}
-      <Header />
-
       {/* Flash Sale Content */}
       <div className="flash-sale-content">
         <div className="container">

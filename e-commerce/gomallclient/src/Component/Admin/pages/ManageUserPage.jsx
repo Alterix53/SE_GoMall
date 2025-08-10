@@ -28,9 +28,12 @@ function ManageUserPage() {
           search: search.trim(),
         };
         const res = await adminAPI.getAllUsers(adminToken, params);
-        if (res.success) {
-          setUsers(res.data.users || res.data || []);
-          setTotalPages(res.data.totalPages || 1);
+        if (res?.success) {
+          const payload = res.data || {};
+          const list = Array.isArray(payload.users) ? payload.users : [];
+          const pages = payload.pagination?.pages || 1;
+          setUsers(list);
+          setTotalPages(pages);
         } else {
           setUsers([]);
           setTotalPages(1);
@@ -111,7 +114,7 @@ function ManageUserPage() {
       </div>
       {/* User detail modal */}
       {selectedUser && (
-        <div className="modal show d-block" tabIndex="-1">
+        <div className="modal show d-block" tabIndex={-1}>
           <UserDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />
         </div>
       )}

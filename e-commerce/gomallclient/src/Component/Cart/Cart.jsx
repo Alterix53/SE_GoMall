@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useCart } from "../../contexts/CartContext";
-import Header from '../Header/Header';
 import { Link, useNavigate } from 'react-router-dom';
 import "./Cart.css";
+import OptimizedImage from "../../utils/OptimizedImage";
+import { createPlaceholderUrl } from "../../utils/imageUtils";
 
 export default function CartManager() {
   const { cartItems, updateQuantity, removeFromCart, loading, error } = useCart();
@@ -186,7 +187,6 @@ export default function CartManager() {
   if (!cartItems || cartItems.length === 0) {
     return (
       <div className="cart-page cart--empty">
-        <Header />
         <div className="cart-container">
           <div className="cart-empty-layout">
             {/* Cart Header */}
@@ -253,15 +253,13 @@ export default function CartManager() {
                   {suggestedProducts.map((product) => (
                     <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
                       <div className="suggestion-image-container">
-                        <img 
-                          src={product.image.startsWith('http') ? product.image : `http://localhost:8080${product.image}`}
+                        <OptimizedImage
+                          src={product.image}
                           alt={product.name}
                           className="suggestion-image"
-                          onError={(e) => {
-                            if (e.target && e.target['src']) {
-                              e.target['src'] = '/images/placeholder-product.jpg';
-                            }
-                          }}
+                          fallbackUrl={createPlaceholderUrl(160,160,'')}
+                          onLoad={() => {}}
+                          onError={() => {}}
                         />
                         {product.discount > 0 && (
                           <div className="suggestion-discount">-{product.discount}%</div>
@@ -296,7 +294,6 @@ export default function CartManager() {
 
   return (
     <>
-      <Header />
       <div className="cart-container">
         <span className="page-title">Giỏ Hàng</span>
       </div>
@@ -337,15 +334,13 @@ export default function CartManager() {
                     onChange={(e) => handleSelectItem(item, e.target.checked)}
                     style={{marginRight:'8px'}}
                   />
-                  <img 
-                    src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/placeholder-product.jpg'}`} 
+                  <OptimizedImage
+                    src={item.image}
                     alt={item.name}
                     className="product-image"
-                    onError={(e) => {
-                      if (e.target && e.target['src']) {
-                        e.target['src'] = '/images/placeholder-product.jpg';
-                      }
-                    }}
+                    fallbackUrl={createPlaceholderUrl(80,80,'')}
+                    onLoad={() => {}}
+                    onError={() => {}}
                   />
                   <div className="product-details">
                     <div className="product-name">{item.name}</div>
@@ -435,15 +430,13 @@ export default function CartManager() {
             {suggestedProducts.map((product) => (
               <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
                 <div className="suggestion-image-container">
-                  <img
-                    src={product.image && product.image.startsWith('http') ? product.image : `http://localhost:8080${product.image}`}
+                  <OptimizedImage
+                    src={product.image}
                     alt={product.name}
                     className="suggestion-image"
-                    onError={(e) => {
-                      if (e.target && e.target['src']) {
-                        e.target['src'] = '/images/placeholder-product.jpg';
-                      }
-                    }}
+                    fallbackUrl={createPlaceholderUrl(160,160,'')}
+                    onLoad={() => {}}
+                    onError={() => {}}
                   />
                   {product.discount > 0 && (
                     <div className="suggestion-discount">-{product.discount}%</div>

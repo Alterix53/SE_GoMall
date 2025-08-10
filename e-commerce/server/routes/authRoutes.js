@@ -6,6 +6,7 @@ import {
     login,
     logout,
     getCurrentUser,
+    updateCurrentUser,
     refreshToken,
     changePassword
 } from '../controllers/authController.js';

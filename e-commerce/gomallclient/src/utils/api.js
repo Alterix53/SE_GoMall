@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Tạo axios instance với base URL cho user API
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080/api',
   timeout: 10000,
 });
 
@@ -28,8 +28,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       const url = error.config?.url || '';
-      // Đừng redirect nếu là gọi login user
-      if (url.includes('/auth/login')) {
+      // Đừng redirect nếu là gọi login user hoặc admin
+      if (url.includes('/auth/login') || url.includes('/admin/login')) {
         return Promise.reject(error);
       }
       // Token không hợp lệ hoặc hết hạn

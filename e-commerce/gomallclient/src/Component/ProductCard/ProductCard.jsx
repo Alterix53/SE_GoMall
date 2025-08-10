@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./ProductCard.css"
+import OptimizedImage from "../../utils/OptimizedImage";
 
 export const RenderProduct = ({ product }) => {
   if (!product || !product.name) {
@@ -27,16 +28,12 @@ export const RenderProduct = ({ product }) => {
       {product.isFlashSale && <span className="flash-sale-badge">Flash Sale</span>}
 
       <div className="product-image">
-        <img
-          src={product.image || "/images/default-product.jpg"}
+        <OptimizedImage
+          src={product.image}
           alt={product.name}
-          onError={(e) => {
-            console.error("Image load error for:", product.name, "falling back to default")
-            // Prevent infinite loop by checking if we're already using default image
-            if (e.target.src !== "/images/default-product.jpg") {
-              e.target.src = "/images/default-product.jpg"
-            }
-          }}
+          className="product-image"
+          lazy={true}
+          fallbackUrl="/images/default-product.jpg"
         />
       </div>
 

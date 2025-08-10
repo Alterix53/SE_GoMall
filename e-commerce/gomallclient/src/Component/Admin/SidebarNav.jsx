@@ -29,7 +29,7 @@ function SidebarNav() {
           </div>
           <ul style={{ listStyle: 'none', paddingLeft: 16, margin: 0 }}>
             <li style={{ marginBottom: 6 }}>
-              <NavLink to="/Admin/viewcustomer" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
+              <NavLink to="/Admin/ManageUser" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
                 View Customers
               </NavLink>
             </li>
@@ -58,7 +58,7 @@ function SidebarNav() {
           </div>
           <ul style={{ listStyle: 'none', paddingLeft: 16, margin: 0 }}>
             <li style={{ marginBottom: 6 }}>
-              <NavLink to="/Admin/viewseller" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
+              <NavLink to="/Admin/ManageSeller" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
                 View Sellers
               </NavLink>
             </li>

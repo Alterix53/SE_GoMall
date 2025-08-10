@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
-import Header from "./Component/Header/Header.jsx";
+// Header is globally rendered in App.js
 import "./TopProduct.css";
 
 const TopProduct = () => {
@@ -82,9 +82,6 @@ const TopProduct = () => {
 
   return (
     <div className="top-product-page">
-      {/* GoMall Header */}
-      <Header />
-
       {/* Top Products Content */}
       <div className="top-product-content">
         <div className="container">

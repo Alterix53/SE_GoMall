@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
-import Footer from '../Footer/Footer';
-import '../Login/login.css';
+import './RegisterSeller.css';
 import { apiService } from '../../utils/api';
 
 const RegisterSeller = () => {
@@ -47,8 +45,7 @@ const RegisterSeller = () => {
 
   return (
     <>
-      <Navbar />
-      <div className="login-container">
+      <div className="register-seller-container">
         <h2 className="mb-4">Register to Become a Seller</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -120,7 +117,6 @@ const RegisterSeller = () => {
           <button type="submit" className="btn btn-primary">Submit Application</button>
         </form>
       </div>
-      <Footer />
     </>
   );
 };

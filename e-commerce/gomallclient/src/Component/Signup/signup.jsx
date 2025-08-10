@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Footer from '../Footer/Footer';
 import '../Signup/signup.css';
 
 const SignUpPage = () => {
@@ -266,8 +265,7 @@ const SignUpPage = () => {
         </div>
       </div>
       
-      {/* Phần dưới - Footer */}
-      <Footer />
+      {/* Footer is injected by App.js for auth pages */}
     </div>
   );
 };

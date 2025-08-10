@@ -1,13 +1,19 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import "./HeaderNavAdmin.css";
 
 function HeaderNavAdmin() {
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // TODO: Thêm logic đăng xuất thực tế nếu cần
+    // Clear all tokens and redirect to admin login
+    logout();
+    localStorage.removeItem('adminToken');
     setShowModal(false);
-    // window.location.href = "/login"; // hoặc chuyển hướng nếu muốn
+    navigate('/admin/login', { replace: true });
   };
 
   return (

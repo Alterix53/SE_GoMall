@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from '../Header/Header';
 import './Suggestions.css';
+import OptimizedImage from '../../utils/OptimizedImage';
+import { createPlaceholderUrl } from '../../utils/imageUtils';
 
 const Suggestions = () => {
   const [suggestedProducts, setSuggestedProducts] = useState([]);
@@ -62,7 +63,6 @@ const Suggestions = () => {
 
   return (
     <div className="suggestions-page">
-      <Header />
       
       {/* Search Suggestions Bar */}
       <div className="search-suggestions-bar">
@@ -91,13 +91,13 @@ const Suggestions = () => {
             {suggestedProducts.map((product) => (
               <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
                 <div className="suggestion-image-container">
-                  <img 
-                    src={product.image.startsWith('http') ? product.image : `http://localhost:8080${product.image}`}
+                  <OptimizedImage
+                    src={product.image}
                     alt={product.name}
                     className="suggestion-image"
-                    onError={(e) => {
-                      e.target.src = '/images/placeholder-product.jpg';
-                    }}
+                    fallbackUrl={createPlaceholderUrl(200,200,'')}
+                    onLoad={() => {}}
+                    onError={() => {}}
                   />
                   {product.discount > 0 && (
                     <div className="suggestion-discount">-{product.discount}%</div>

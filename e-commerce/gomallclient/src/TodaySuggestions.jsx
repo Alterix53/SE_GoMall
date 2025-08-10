@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Header from './Component/Header/Header';
+// Header is globally rendered in App.js
 import ProductCard from './Component/ProductCard/ProductCard';
 import './TodaySuggestions.css';
 
@@ -57,7 +57,6 @@ function TodaySuggestions() {
   if (loading) {
     return (
       <div className="today-suggestions-page">
-        <Header />
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading suggestions...</p>
@@ -68,7 +67,6 @@ function TodaySuggestions() {
 
   return (
     <div className="today-suggestions-page">
-      <Header />
       
       <div className="suggestions-container">
         <div className="suggestions-header">

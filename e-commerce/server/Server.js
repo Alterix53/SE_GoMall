@@ -1,4 +1,5 @@
 // <DOCUMENT filename="Server.js">
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/database.js";
@@ -24,13 +25,14 @@ import './models/Payment.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const MONGODB_URI = "mongodb://localhost:27017/GoMall";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/GoMall";
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
 const PORT = process.env.PORT || 8080;
 
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: CLIENT_URL,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
     credentials: true,

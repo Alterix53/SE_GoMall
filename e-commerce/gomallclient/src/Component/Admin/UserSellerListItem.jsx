@@ -1,10 +1,10 @@
 import React from "react";
 
-function UserSellerListItem({ data, onClick }) {
+function UserSellerListItem({ data, onClick, className = '' }) {
   const displayName = data?.businessName || data?.storeName;
   return (
     <li
-      className="list-group-item d-flex align-items-center"
+      className={`list-group-item d-flex align-items-center ${className}`.trim()}
       style={{ cursor: "pointer" }}
       onClick={onClick}
     >

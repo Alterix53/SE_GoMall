@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Header from '../Header/Header';
 import { checkoutAPI, selfAPI } from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import './Checkout.css';
+import OptimizedImage from '../../utils/OptimizedImage';
+import { createPlaceholderUrl } from '../../utils/imageUtils';
 
 const Checkout = () => {
   const location = useLocation();
@@ -156,7 +157,6 @@ const Checkout = () => {
 
   return (
     <div className="checkout-page">
-      <Header />
       
       <div className="checkout-container">
         <div className="checkout-breadcrumb">
@@ -249,15 +249,13 @@ const Checkout = () => {
             {selectedItems.map((item, index) => (
               <div key={index} className="product-row">
                 <div className="product-info">
-                  <img 
-                    src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/default-product.jpg'}`} 
+                  <OptimizedImage
+                    src={item.image}
                     alt={item.name}
                     className="product-image"
-                    onError={(e) => {
-                      if (e.target && e.target['src']) {
-                        e.target['src'] = '/images/default-product.jpg';
-                      }
-                    }}
+                    fallbackUrl={createPlaceholderUrl(80,80,'')}
+                    onLoad={() => {}}
+                    onError={() => {}}
                   />
                   <div className="product-details">
                     <div className="product-name">{item.name}</div>
