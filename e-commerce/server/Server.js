@@ -14,6 +14,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
+import productService from './services/productService.js';
 import './models/User.js';
 import './models/Order.js';
 import './models/Cart.js';
@@ -43,44 +44,15 @@ app.use(express.static(path.join(__dirname, "public")));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Endpoint Flash Sale
+// Endpoint Flash Sale (delegate to service; use real-time date)
 app.get('/api/products/flash-sale', async (req, res) => {
     try {
-        const currentDate = new Date('2025-07-23T23:59:00+07:00'); // Thời gian hiện tại: 23/07/2025 11:59 PM +07
-        console.log("Current date for flash sale:", currentDate.toISOString());
-        const products = await Product.find({
-            isFlashSale: true,
-            flashSaleEndDate: { $gte: currentDate }
-        }).sort({ createdAt: 1 });
-        console.log("Flash sale products from DB raw:", products.map(p => ({
-            name: p.name,
-            flashSaleEndDate: p.flashSaleEndDate ? p.flashSaleEndDate.toISOString() : null,
-            isActive: p.isActive,
-            _id: p._id
-        })));
-        if (products.length === 0) {
-            console.warn("No flash sale products found, checking DB or date filter");
-            await Product.find().then(all => console.log("All products in DB:", all.map(p => ({
-                name: p.name,
-                isFlashSale: p.isFlashSale,
-                flashSaleEndDate: p.flashSaleEndDate ? p.flashSaleEndDate.toISOString() : null
-            }))));
-        }
-        res.json({
-            success: true,
-            data: {
-                products,
-                pagination: {
-                    current: 1,
-                    pages: Math.ceil(products.length / 12),
-                    total: products.length,
-                    limit: 12
-                }
-            }
-        });
+        // Reuse the same logic as controllers/service to avoid drift
+        const result = await productService.getFlashSaleProducts(req.query);
+        res.json({ success: true, data: result, message: 'Get flash sale list successfully' });
     } catch (error) {
-        console.error("Error fetching flash sale products:", error.stack);
-        res.status(500).json({ success: false, message: "Server error", error: error.message });
+        console.error('Error fetching flash sale products:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 
@@ -132,6 +104,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);  // Thêm prefix /api/cart
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);  // Thêm order routes
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
 

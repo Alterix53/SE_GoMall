@@ -375,6 +375,42 @@ export const getCurrentUser = async (req, res) => {
     }
 };
 
+// PUT /api/auth/me - Update current user profile (MongoDB)
+export const updateCurrentUser = async (req, res) => {
+    try {
+        const user = req.user; // from authenticateToken middleware
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'Authentication required' });
+        }
+
+        const { fullName, phoneNumber, address } = req.body || {};
+
+        if (typeof fullName !== 'undefined') user.fullName = fullName;
+        if (typeof phoneNumber !== 'undefined') user.phoneNumber = phoneNumber;
+        if (typeof address !== 'undefined') user.address = address;
+
+        await user.save();
+
+        const userResponse = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            fullName: user.fullName,
+            phoneNumber: user.phoneNumber,
+            address: user.address,
+            role: user.role,
+            createdAt: user.createdAt,
+            isActive: user.isActive
+        };
+
+        res.json({ success: true, message: 'Cập nhật thông tin thành công', data: { user: userResponse } });
+    } catch (error) {
+        console.error('Update current user error:', error);
+        res.status(500).json({ success: false, message: 'Server error while updating user', error: process.env.NODE_ENV === 'development' ? error.message : {} });
+    }
+};
+
 // POST /api/auth/refresh - Refresh token (optional)
 export const refreshToken = async (req, res) => {
     try {

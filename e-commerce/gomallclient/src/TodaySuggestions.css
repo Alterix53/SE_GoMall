@@ -1,0 +1,112 @@
+/* Today Suggestions Page Styles */
+.today-suggestions-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.suggestions-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.suggestions-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.suggestions-header h1 {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.suggestions-header p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 0;
+}
+
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.no-suggestions {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  grid-column: 1 / -1;
+  padding: 40px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: #f8f9fa;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  font-size: 16px;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .suggestions-container {
+    padding: 20px 15px;
+  }
+  
+  .suggestions-header h1 {
+    font-size: 28px;
+  }
+  
+  .suggestions-header p {
+    font-size: 14px;
+  }
+  
+  .suggestions-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .suggestions-container {
+    padding: 15px 10px;
+  }
+  
+  .suggestions-header h1 {
+    font-size: 24px;
+  }
+  
+  .suggestions-header p {
+    font-size: 13px;
+  }
+  
+  .suggestions-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+} 

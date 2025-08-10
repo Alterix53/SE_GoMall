@@ -1,0 +1,94 @@
+/* Shopee Shortcuts Styles */
+.shopee-shortcuts {
+  background: white;
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.shortcuts-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.shortcut-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  padding: 15px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+  border: 1px solid transparent;
+}
+
+.shortcut-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--shortcut-color);
+}
+
+.shortcut-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--shortcut-color), var(--shortcut-color)dd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.icon-text {
+  font-size: 24px;
+  color: white;
+}
+
+.shortcut-name {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.3;
+  color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .shortcuts-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .shortcut-item {
+    padding: 10px 5px;
+  }
+  
+  .shortcut-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .icon-text {
+    font-size: 20px;
+  }
+  
+  .shortcut-name {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .shortcuts-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+} 

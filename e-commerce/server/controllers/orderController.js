@@ -3,22 +3,37 @@ import Order from '../models/Order.js';
 // Create new order
 export const createOrder = async (req, res) => {
   try {
-    const { total, shippingAddress, paymentMethod, items } = req.body;
+    console.log('=== CREATE ORDER REQUEST ===');
+    console.log('Request body:', req.body);
+    console.log('User:', req.user);
+    
+    const { total, shippingAddress, paymentMethod, items, note } = req.body;
     const userID = req.user._id; // Get from user object in req.user
     
+    console.log('Extracted data:', { total, shippingAddress, paymentMethod, items, note, userID });
+    
     if (!total || !shippingAddress || !items || !Array.isArray(items) || items.length === 0) {
+      console.log('Validation failed: Missing required fields');
       return res.status(400).json({ message: 'Missing required fields' });
     }
     
-    const newOrder = await Order.create({
+    const orderData = {
       userID,
       total,
       shippingAddress,
       paymentMethod,
+      note,
       items
-    });
+    };
+    
+    console.log('Creating order with data:', orderData);
+    
+    const newOrder = await Order.create(orderData);
+    console.log('Order created successfully:', newOrder);
+    
     res.status(201).json({ success: true, order: newOrder });
   } catch (error) {
+    console.error('Error creating order:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

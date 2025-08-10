@@ -1,0 +1,597 @@
+/* GoMall Header Styles */
+.gomall-header {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
+}
+
+/* Header Top Banner - Separate Class */
+.header-top-banner {
+  background: #ff6b35; /* Màu cam riêng cho header */
+  color: white; /* Chữ trắng */
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.banner-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px; /* Tăng gap */
+  flex: 1;
+  justify-content: center;
+}
+
+.banner-text {
+  font-weight: 500;
+  font-size: 14px; /* Tăng từ 12px lên 14px */
+  color: white; /* Chữ trắng trên nền cam */
+  text-align: center;
+  line-height: 1.2;
+  font-family: inherit;
+}
+
+.banner-illustrative-image {
+  font-size: 20px; /* Tăng từ 18px lên 20px */
+  background: rgba(255, 255, 255, 0.2);
+  width: 45px; /* Tăng từ 40px lên 45px */
+  height: 45px; /* Tăng từ 40px lên 45px */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Header */
+.main-header {
+  background: white;
+  padding: 15px 0;
+  position: relative;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 200px 1fr 400px;
+  gap: 30px;
+  align-items: center;
+  position: relative;
+}
+
+/* Logo Section */
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: #ff6b35;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Search Section */
+.search-section {
+  display: flex;
+  justify-content: center;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 50px 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: white;
+  color: #333;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.search-input:focus {
+  border-color: #ff6b35;
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.search-input::placeholder {
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.search-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  background: #ff6b35;
+  border: 2px solid #ff6b35;
+  border-left: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 4px 4px 0;
+  transition: all 0.3s ease;
+  font-size: 16px;
+}
+
+.search-button:hover {
+  background: #e55a2b;
+  border-color: #e55a2b;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.search-icon {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Navigation Section */
+.nav-section {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  position: relative;
+  z-index: 1001;
+  align-items: center;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s;
+  padding: 5px;
+  justify-content: center;
+}
+
+.nav-item:hover {
+  color: #ff6b35;
+}
+
+/* Account Dropdown & Cart Dropdown */
+.account-dropdown,
+.cart-dropdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1002;
+}
+
+.cart-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.cart-link:hover {
+  background-color: #f8f9fa;
+}
+
+.account-button {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #333;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s;
+  font-family: inherit;
+  font-size: inherit;
+  width: 100%;
+  outline: none;
+  justify-content: center;
+}
+
+.account-button:hover {
+  color: #ff6b35;
+}
+
+.account-button:focus {
+  outline: none;
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  margin-top: 2px;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.up {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 150px;
+  z-index: 9999;
+  margin-top: 5px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  display: block;
+}
+
+.dropdown-menu.hide {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  display: none;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #f8f9fa;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: #f8f9fa;
+}
+
+/* User Info Styles */
+.dropdown-item.user-info {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  padding: 16px;
+  cursor: default;
+}
+
+.dropdown-item.user-info:hover {
+  background: #f8f9fa;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.username {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #666;
+  text-transform: capitalize;
+}
+
+/* Logout Button */
+.logout-btn {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: #dc3545;
+}
+
+.logout-btn:hover {
+  background: #f8f9fa;
+  color: #dc3545;
+}
+
+.dropdown-icon {
+  font-size: 16px;
+  width: 16px;
+  text-align: center;
+}
+
+.nav-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: none;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+}
+
+.nav-text {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.nav-icon-img {
+  width: 28px;
+  height: 28px;
+  display: block;
+  margin-bottom: 6px;
+  image-rendering: -webkit-optimize-contrast;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+}
+
+/* Đảm bảo icon user không bị méo */
+.nav-item.account-dropdown .nav-icon-img {
+  aspect-ratio: 1;
+  max-width: 28px;
+  max-height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+}
+
+/* Sub Navigation */
+.sub-nav {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.sub-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center; /* Căn giữa */
+  gap: 30px;
+}
+
+.sub-nav-item {
+  padding: 12px 0;
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  transition: color 0.3s;
+  border-bottom: 2px solid transparent;
+}
+
+.sub-nav-item:hover {
+  color: #ff6b35;
+}
+
+.sub-nav-item.active {
+  color: #ff6b35;
+  border-bottom-color: #ff6b35;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .nav-section {
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .nav-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .dropdown-menu {
+    min-width: 120px;
+    right: -10px;
+  }
+
+  .dropdown-item {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .dropdown-icon {
+    font-size: 14px;
+    width: 14px;
+  }
+  
+  .banner-content {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .banner-item {
+    gap: 4px; /* Tăng từ 3px lên 4px */
+  }
+  
+  .banner-text {
+    font-size: 12px; /* Tăng từ 11px lên 12px */
+  }
+  
+  .banner-illustrative-image {
+    font-size: 18px; /* Tăng từ 16px lên 18px */
+    width: 40px; /* Tăng từ 35px lên 40px */
+    height: 40px; /* Tăng từ 35px lên 40px */
+  }
+  
+  .banner-icon-container {
+    gap: 1px;
+  }
+  
+  .banner-icon {
+    font-size: 14px;
+  }
+  
+  .banner-image {
+    font-size: 10px;
+  }
+  
+  .sub-nav-container {
+    gap: 20px;
+  }
+
+  .nav-icon-img { 
+    width: 22px; 
+    height: 22px; 
+    margin-bottom: 4px; 
+    object-fit: contain;
+    object-position: center;
+  }
+  
+  .nav-item.account-dropdown .nav-icon-img {
+    aspect-ratio: 1;
+    max-width: 22px;
+    max-height: 22px;
+    min-width: 22px;
+    min-height: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-section {
+    gap: 10px;
+  }
+  
+  .nav-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .nav-text {
+    font-size: 11px;
+  }
+
+  .dropdown-menu {
+    min-width: 100px;
+    right: -15px;
+  }
+
+  .dropdown-item {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .dropdown-icon {
+    font-size: 12px;
+    width: 12px;
+  }
+  
+  .banner-content {
+    gap: 3px;
+  }
+  
+  .banner-item {
+    gap: 3px; /* Tăng từ 2px lên 3px */
+  }
+  
+  .banner-text {
+    font-size: 11px; /* Tăng từ 10px lên 11px */
+  }
+  
+  .banner-illustrative-image {
+    font-size: 16px; /* Tăng từ 14px lên 16px */
+    width: 35px; /* Tăng từ 30px lên 35px */
+    height: 35px; /* Tăng từ 30px lên 35px */
+  }
+
+  .nav-icon-img { 
+    width: 20px; 
+    height: 20px; 
+    margin-bottom: 3px; 
+    object-fit: contain;
+    object-position: center;
+  }
+  
+  .nav-item.account-dropdown .nav-icon-img {
+    aspect-ratio: 1;
+    max-width: 20px;
+    max-height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
+import Header from "./Component/Header/Header.jsx";
 import "./Flash_sale.css";
 
 const FlashSale = () => {
@@ -48,7 +49,7 @@ const FlashSale = () => {
         }
         const data = await response.json();
         console.log("Flash Sale API response:", data);
-        const products = data?.data?.products || [];
+        const products = data?.data?.products || data?.data?.data?.products || [];
         if (products.length === 0) {
           console.warn("No flash sale products from API");
           setFlashSaleProducts([]);
@@ -59,7 +60,7 @@ const FlashSale = () => {
           name: product.name || "Unknown Product",
           price: product.flashSalePrice || product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
-                        image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
+          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
           rating: product.rating?.average || 0,
           sold: product.sold || 0,
           discount: product.price?.original && product.flashSalePrice
@@ -81,57 +82,67 @@ const FlashSale = () => {
 
   return (
     <div className="flash-sale-page">
-      {/* Flash Sale Header */}
-      <div className="flash-sale-header">
-        <div className="container">
-          <div className="header-content">
-            <h1 className="page-title">
-              ⚡ FLASH SALE
-              <span className="hot-badge">HOT</span>
-            </h1>
-            <p className="page-subtitle">Shocking discounts - Limited quantity!</p>
+      {/* GoMall Header */}
+      <Header />
 
-            {/* Countdown Timer */}
-            <div className="countdown-container">
-              <div className="countdown-timer">
-                <div className="timer-label">
-                  <i className="fas fa-clock"></i>
-                  <span>Ends in:</span>
-                </div>
-                <div className="timer-digits">
-                  <div className="timer-digit">{String(timeLeft.hours).padStart(2, "0")}</div>
-                  <span className="timer-separator">:</span>
-                  <div className="timer-digit">{String(timeLeft.minutes).padStart(2, "0")}</div>
-                  <span className="timer-separator">:</span>
-                  <div className="timer-digit">{String(timeLeft.seconds).padStart(2, "0")}</div>
+      {/* Flash Sale Content */}
+      <div className="flash-sale-content">
+        <div className="container">
+          {/* Flash Sale Header */}
+          <div className="flash-sale-header">
+            <div className="header-content">
+              <h1 className="page-title">
+                ⚡ FLASH SALE
+                <span className="hot-badge">HOT</span>
+              </h1>
+              <p className="page-subtitle">Shocking discounts - Limited quantity!</p>
+
+              {/* Countdown Timer */}
+              <div className="countdown-container">
+                <div className="countdown-timer">
+                  <div className="timer-label">
+                    <i className="fas fa-clock"></i>
+                    <span>Ends in:</span>
+                  </div>
+                  <div className="timer-display">
+                    <div className="time-unit">
+                      <span className="time-value">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                      <span className="time-label">Hours</span>
+                    </div>
+                    <div className="time-separator">:</div>
+                    <div className="time-unit">
+                      <span className="time-value">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                      <span className="time-label">Minutes</span>
+                    </div>
+                    <div className="time-separator">:</div>
+                    <div className="time-unit">
+                      <span className="time-value">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                      <span className="time-label">Seconds</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="container">
-        {/* Flash Sale Products */}
-        <div className="products-section">
-          <div className="products-grid">
+          {/* Flash Sale Products */}
+          <div className="flash-sale-products">
             {loading ? (
-              <p>Loading products...</p>
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading flash sale products...</p>
+              </div>
             ) : flashSaleProducts.length > 0 ? (
-              flashSaleProducts.map((product, index) => (
-                <RenderProduct key={product.id || index} product={product} />
-              ))
+              <div className="products-grid">
+                {flashSaleProducts.map((product) => (
+                  <RenderProduct key={product.id} product={product} />
+                ))}
+              </div>
             ) : (
-              <p>No flash sale products available.</p>
+              <div className="no-products">
+                <p>No flash sale products available at the moment.</p>
+              </div>
             )}
-          </div>
-
-          {/* Load More */}
-          <div className="load-more-section">
-            <button className="load-more-btn">
-              <i className="fas fa-plus"></i>
-              View More Products
-            </button>
           </div>
         </div>
       </div>

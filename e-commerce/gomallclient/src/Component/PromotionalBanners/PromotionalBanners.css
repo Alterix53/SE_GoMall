@@ -1,0 +1,339 @@
+/*PromotianlBanners*/
+.promotional-section {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
+  background: white; /* Nền trắng */
+}
+
+.promotional-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+  min-height: 200px;
+}
+
+/* Main Carousel */
+.main-carousel {
+  position: relative;
+  background: white; /* Nền trắng */
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  min-height: 200px;
+}
+
+.carousel-container {
+  position: relative;
+  height: 100%;
+  min-height: 200px;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  min-height: 200px;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+}
+
+.slide-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.slide-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slide-image {
+  font-size: 40px;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.slide-center {
+  flex: 2;
+  text-align: center;
+  color: #333; /* Chữ đen */
+}
+
+.slide-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #333; /* Chữ đen */
+}
+
+.slide-subtitle {
+  font-size: 10px;
+  opacity: 0.8;
+  color: #333; /* Chữ đen */
+}
+
+.slide-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slide-badge {
+  background: #ff6b35; /* Khung cam quy định */
+  color: white; /* Chữ trắng trên khung cam */
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 11px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.3); /* Chấm xám */
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.dot.active {
+  background: #ff6b35; /* Màu cam quy định cho dot active */
+}
+
+/* Right Side Banners */
+.right-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%;
+  min-height: 200px;
+}
+
+.top-banner, .bottom-banner {
+  background: white; /* Nền trắng */
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  min-height: 90px;
+}
+
+/* Promotional Banners - Separate Color Classes */
+.top-banner {
+  background: #ff4444; /* Màu đỏ riêng cho promotional */
+  color: white; /* Chữ trắng trên đỏ */
+}
+
+.bottom-banner {
+  background: #2196F3; /* Màu xanh riêng cho promotional */
+  color: white; /* Chữ trắng trên xanh */
+}
+
+.banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  height: 100%;
+}
+
+.banner-left {
+  flex: 1;
+}
+
+.banner-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: white; /* Chữ trắng */
+}
+
+.banner-subtitle {
+  font-size: 9px;
+  opacity: 0.9;
+  margin-bottom: 4px;
+  color: white; /* Chữ trắng */
+}
+
+.banner-text {
+  font-size: 7px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+  color: white; /* Chữ trắng */
+}
+
+.banner-offer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.banner-offer span {
+  font-size: 7px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 4px;
+  color: white; /* Chữ trắng */
+}
+
+.banner-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-image {
+  font-size: 25px;
+}
+
+.banner-number {
+  font-size: 20px;
+  font-weight: bold;
+  color: white; /* Chữ trắng */
+}
+
+.banner-percent {
+  font-size: 9px;
+  background: white; /* Nền trắng */
+  color: #ff6b35; /* Chữ cam */
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
+.banner-dates {
+  font-size: 6px;
+  opacity: 0.8;
+  text-align: center;
+  color: white; /* Chữ trắng */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .promotional-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    min-height: 150px;
+  }
+  
+  .carousel-container {
+    min-height: 150px;
+  }
+  
+  .carousel-slide {
+    min-height: 150px;
+    padding: 10px;
+  }
+  
+  .slide-title {
+    font-size: 12px;
+  }
+  
+  .slide-subtitle {
+    font-size: 8px;
+  }
+  
+  .slide-image {
+    font-size: 25px;
+  }
+  
+  .right-banners {
+    min-height: 150px;
+  }
+  
+  .top-banner, .bottom-banner {
+    min-height: 70px;
+    padding: 8px;
+  }
+  
+  .banner-title {
+    font-size: 14px;
+  }
+  
+  .banner-subtitle {
+    font-size: 7px;
+  }
+  
+  .banner-image {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-container {
+    min-height: 125px;
+  }
+  
+  .carousel-slide {
+    min-height: 125px;
+    padding: 8px;
+  }
+  
+  .slide-title {
+    font-size: 10px;
+  }
+  
+  .slide-subtitle {
+    font-size: 7px;
+  }
+  
+  .slide-image {
+    font-size: 20px;
+  }
+  
+  .right-banners {
+    min-height: 125px;
+  }
+  
+  .top-banner, .bottom-banner {
+    min-height: 60px;
+    padding: 6px;
+  }
+  
+  .banner-title {
+    font-size: 12px;
+  }
+  
+  .banner-subtitle {
+    font-size: 6px;
+  }
+  
+  .banner-image {
+    font-size: 15px;
+  }
+} 

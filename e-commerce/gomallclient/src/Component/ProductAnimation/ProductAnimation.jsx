@@ -5,37 +5,33 @@ const ProductAnimation = () => {
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Sample products for animation
-  const animatedProducts = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro",
-      price: "$999",
-      image: "/images/iphone-15.jpg",
-      discount: "20% OFF"
-    },
-    {
-      id: 2,
-      name: "MacBook Air M2",
-      price: "$1,199",
-      image: "/images/macbook-air.jpg",
-      discount: "15% OFF"
-    },
-    {
-      id: 3,
-      name: "Nike Air Max",
-      price: "$129",
-      image: "/images/sneaker.jpg",
-      discount: "30% OFF"
-    },
-    {
-      id: 4,
-      name: "Samsung S24",
-      price: "$899",
-      image: "/images/samsung-s24.jpg",
-      discount: "25% OFF"
-    }
-  ];
+  const [animatedProducts, setAnimatedProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchAnimatedProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products?limit=4');
+        const data = await response.json();
+        const products = data.products || [];
+        
+        // Transform products for animation display
+        const transformedProducts = products.map(product => ({
+          id: product._id,
+          name: product.name,
+          price: `${product.price?.sale?.toLocaleString() || 0}₫`,
+          image: product.images?.[0]?.url || "/images/default-product.jpg",
+          discount: product.isFlashSale ? "FLASH SALE" : ""
+        }));
+        
+        setAnimatedProducts(transformedProducts);
+      } catch (error) {
+        console.error('Error fetching animated products:', error);
+        setAnimatedProducts([]);
+      }
+    };
+
+    fetchAnimatedProducts();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {

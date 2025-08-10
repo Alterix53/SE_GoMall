@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
+import Header from "./Component/Header/Header.jsx";
 import "./TopProduct.css";
 
 const TopProduct = () => {
@@ -29,7 +30,7 @@ const TopProduct = () => {
         }
         const data = await response.json();
         console.log("Top Products API response:", data);
-        const products = data?.data?.products || [];
+        const products = data?.data?.products || data?.data?.data?.products || [];
         if (products.length === 0) {
           console.warn("No top products from API");
           return;
@@ -39,7 +40,7 @@ const TopProduct = () => {
           name: product.name || "Unknown Product",
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
-                        image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
+          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
           rating: product.rating?.average || 0,
           sold: product.sold || 0,
           discount: product.price?.original && product.price?.sale
@@ -52,6 +53,7 @@ const TopProduct = () => {
         setProducts(mappedProducts);
       } catch (err) {
         console.error("Error fetching top products:", err.message);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -80,62 +82,63 @@ const TopProduct = () => {
 
   return (
     <div className="top-product-page">
-      {/* Header */}
-      <div className="page-header">
+      {/* GoMall Header */}
+      <Header />
+
+      {/* Top Products Content */}
+      <div className="top-product-content">
         <div className="container">
-          <div className="header-content">
-            <h1 className="page-title">
-              <i className="fas fa-crown"></i>
-              TOP PRODUCTS
-            </h1>
-            <p className="page-subtitle">The best-selling and most loved products</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="container">
-        {/* Tabs */}
-        <div className="tabs-container">
-          <div className="tabs-list">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <i className={tab.icon}></i>
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="tab-content">
-          <div className="section-header">
-            <h2 className="section-title">
-              <i className={tabs.find((t) => t.id === activeTab)?.icon}></i>
-              {getTabTitle().title}
-              <span className="section-badge" style={{ backgroundColor: getTabTitle().color }}>
-                {getTabTitle().badge}
-              </span>
-            </h2>
+          {/* Page Header */}
+          <div className="page-header">
+            <div className="header-content">
+              <h1 className="page-title">
+                <i className="fas fa-crown"></i>
+                TOP PRODUCTS
+              </h1>
+              <p className="page-subtitle">The best-selling and most loved products</p>
+            </div>
           </div>
 
-          <div className="products-grid">
+          {/* Tabs */}
+          <div className="tabs-container">
+            <div className="tabs-list">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`tab-button ${activeTab === tab.id ? "active" : ""}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <i className={tab.icon}></i>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Products Section */}
+          <div className="products-section">
             {loading ? (
-              <p>Loading products...</p>
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading top products...</p>
+              </div>
             ) : products.length > 0 ? (
-              getProductsByTab().map((product, index) => (
-                <div key={product.id || index} className="product-wrapper">
-                  {activeTab === "bestseller" && product.rank && product.rank <= 3 && (
-                    <div className={`rank-badge rank-${product.rank}`}>#{product.rank}</div>
-                  )}
-                  <RenderProduct product={product} />
-                </div>
-              ))
+              <div className="products-grid">
+                {getProductsByTab().map((product) => (
+                  <div key={product.id} className="product-wrapper">
+                    {product.rank <= 3 && (
+                      <div className="rank-badge" style={{ backgroundColor: getTabTitle().color }}>
+                        #{product.rank}
+                      </div>
+                    )}
+                    <RenderProduct product={product} />
+                  </div>
+                ))}
+              </div>
             ) : (
-              <p>No products to display.</p>
+              <div className="no-products">
+                <p>No top products available at the moment.</p>
+              </div>
             )}
           </div>
         </div>

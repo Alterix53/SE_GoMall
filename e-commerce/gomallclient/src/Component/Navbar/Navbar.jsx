@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import UserAccountModal from "../UserAccountModal/UserAccountModal";
 import SearchBar from "../SearchBar/SearchBar";
-import "./Navbar.css";
+import "./navbar.css";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,35 +45,39 @@ const Navbar = () => {
         {/* Main Navbar */}
         <div className="navbar-main">
           <div className="container">
-            <div className="navbar-content d-flex align-items-center justify-content-between">
+            <div className="navbar-content">
               {/* Logo */}
               <Link to="/" className="logo">
                 <div className="logo-icon">G</div>
                 <span className="logo-text">GoMall</span>
               </Link>
-              
-              {/* Shipping Info - moved to right of logo */}
-              <div className="shipping-info">
-                <span>Free shipping for orders over 150k</span>
-                <span>•</span>
-                <span>24/7 Support</span>
-              </div>
-              
-              {/* Search Bar - centered and longer */}
-              <div className="search-container">
-                <SearchBar /> {/* Minh bổ sung */}
-              </div>
-              
+              {/* Search Bar */} 
+                {/* <form className="search-form" onSubmit={handleSearch}>
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm sản phẩm, thương hiệu..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                  />
+                  <button type="submit" className="search-btn">
+                    <i className="fas fa-search"></i>
+                  </button>
+                </form> */}
+                {/* Minh comment */}
+              <SearchBar />  
+                {/* Minh bổ sung */}
               {/* Navigation Icons */}
-              <div className="nav-icons justify-content-end">
+              <div className="nav-icons">
                 <div className="nav-icon">
                   <img
                       src="/images/bell.png"
                       alt="Notifications"
                       style={{ width: "20px", height: "20px" }}
                       onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
@@ -86,22 +90,24 @@ const Navbar = () => {
                       alt="Support"
                       style={{ width: "20px", height: "20px" }}
                       onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
                   <span>Become a Seller</span>
                 </div>
                 <Link to={isAuthenticated() ? "/cart" : "/signin" }>
-                <div className="nav-icon justify-content-end">
+                <div className="nav-icon">
                   <img
                       src="/images/cart.png"
                       alt="Cart"
                       style={{ width: "20px", height: "20px" }}
                       onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
@@ -110,7 +116,7 @@ const Navbar = () => {
                 </Link>
               
                 <div 
-                  className="nav-icon justify-content-end" 
+                  className="nav-icon" 
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     setModalPosition({
@@ -124,9 +130,10 @@ const Navbar = () => {
                       src="/images/user.png"
                       alt="Account"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
@@ -145,6 +152,33 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Navigation Links */}
+        <div className="navbar-links">
+          <div className="container">
+            <nav className="nav-menu">
+              <Link
+                  to="/"
+                  className={`nav-link ${isActive("/") ? "active" : ""}`}
+              >
+                Home
+              </Link>
+              <Link
+                  to="/flash-sale"
+                  className={`nav-link ${isActive("/flash-sale") ? "active" : ""}`}
+              >
+                Flash Sale
+              </Link>
+              <Link
+                  to="/top-products"
+                  className={`nav-link ${isActive("/top-products") ? "active" : ""}`}
+              >
+                Top Products
+              </Link>
+              
+            </nav>
+          </div>
+        </div>
+
         {/* Mobile Menu */}
         {isMenuOpen && (
             <div className="mobile-menu">
@@ -154,9 +188,10 @@ const Navbar = () => {
                       src="/images/user.png"
                       alt="Tài khoản"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
@@ -167,9 +202,10 @@ const Navbar = () => {
                       src="/images/cart.png"
                       alt="Giỏ hàng"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
@@ -180,9 +216,10 @@ const Navbar = () => {
                       src="/images/help.png"
                       alt="Hỗ trợ"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />
@@ -193,9 +230,10 @@ const Navbar = () => {
                       src="/images/bell.png"
                       alt="Thông báo"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        if (e.target.src !== "/images/default-product.jpg") {
-                          e.target.src = "/images/default-product.jpg"
+                      onError={e => { 
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
                         }
                       }}
                   />

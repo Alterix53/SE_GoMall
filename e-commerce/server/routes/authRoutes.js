@@ -6,8 +6,13 @@ import {
     login,
     logout,
     getCurrentUser,
+<<<<<<< HEAD
     refreshToken,
     changePassword
+=======
+    updateCurrentUser,
+    refreshToken
+>>>>>>> testUI
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
@@ -118,6 +123,7 @@ router.post('/register-seller', sellerRegisterValidation, registerSeller);
 router.post('/login', loginValidation, login);
 router.post('/logout', authenticateToken, logout);
 router.get('/me', authenticateToken, getCurrentUser);
+router.put('/me', authenticateToken, updateCurrentUser);
 router.post('/refresh', refreshTokenValidation, refreshToken);
 router.put('/change-password', authenticateToken, changePasswordValidation, changePassword);
 
