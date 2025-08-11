@@ -10,14 +10,15 @@ import {
     getSellerByUserId
 } from '../controllers/sellerControllers.js';
 import { authenticateToken, authenticateAdmin } from '../middleware/auth.js';
+import { uploadVerificationDocs } from '../middleware/upload.js';
 
 const router = express.Router();
 
 // Public routes (if any)
 router.get('/user/:userId', getSellerByUserId);
 
-// Protected routes - user auth for applying
-router.post('/apply', authenticateToken, applyForSeller);
+// Protected routes - user auth for applying (supports multipart form with verificationDocs[])
+router.post('/apply', authenticateToken, uploadVerificationDocs, applyForSeller);
 
 // Admin only routes (use admin token)
 router.get('/', authenticateAdmin, getAllSellers);

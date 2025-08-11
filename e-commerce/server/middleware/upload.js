@@ -1,16 +1,22 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import streamifier from 'streamifier';
 
 // Tạo thư mục uploads nếu chưa tồn tại
 const uploadDir = path.join(process.cwd(), 'uploads');
 const productImagesDir = path.join(uploadDir, 'products');
+const verificationDir = path.join(uploadDir, 'verification');
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 if (!fs.existsSync(productImagesDir)) {
     fs.mkdirSync(productImagesDir, { recursive: true });
+}
+if (!fs.existsSync(verificationDir)) {
+    fs.mkdirSync(verificationDir, { recursive: true });
 }
 
 // Cấu hình storage cho multer
@@ -55,13 +61,60 @@ export const uploadProductImages = upload.array('images', 10);
 // Middleware upload ảnh đơn
 export const uploadSingleImage = upload.single('image');
 
+// File filter cho tài liệu xác minh: chấp nhận ảnh và pdf
+const verificationFileFilter = (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|pdf/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Chỉ cho phép upload file ảnh hoặc PDF (jpeg, jpg, png, gif, webp, pdf)'), false);
+    }
+};
+
+// Multer instance riêng cho verification docs (memory storage để upload lên Cloudinary)
+const verificationUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10MB cho tài liệu
+        files: 5
+    },
+    fileFilter: verificationFileFilter
+});
+
+// Upload array for verification docs (field: verificationDocs)
+export const uploadVerificationDocs = verificationUpload.array('verificationDocs', 5);
+
+// Helper to upload a buffer/file path to Cloudinary using streams
+export const uploadFileToCloudinary = async (fileBuffer, folder = 'gomall/verification') => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream({ folder }, (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+        });
+        streamifier.createReadStream(fileBuffer).pipe(uploadStream);
+    });
+};
+
+// Fallback: save buffer to local uploads/verification and return public path
+export const saveBufferToLocal = async (file) => {
+    const ext = path.extname(file.originalname) || '.bin';
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const filename = `verification-${unique}${ext}`;
+    const fullPath = path.join(verificationDir, filename);
+    await fs.promises.writeFile(fullPath, file.buffer);
+    return `/uploads/verification/${filename}`;
+};
+
 // Middleware xử lý lỗi upload
 export const handleUploadError = (error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
                 success: false,
-                message: 'File quá lớn. Kích thước tối đa là 5MB'
+                message: 'File quá lớn.'
             });
         }
         if (error.code === 'LIMIT_FILE_COUNT') {
@@ -72,7 +125,7 @@ export const handleUploadError = (error, req, res, next) => {
         }
     }
     
-    if (error.message.includes('Chỉ cho phép upload file ảnh')) {
+    if (error.message.includes('Chỉ cho phép upload file ảnh') || error.message.includes('Chỉ cho phép upload file ảnh hoặc PDF')) {
         return res.status(400).json({
             success: false,
             message: error.message

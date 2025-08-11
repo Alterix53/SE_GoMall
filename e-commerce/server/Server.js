@@ -13,6 +13,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import sellerRoutes from "./routes/sellerRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import productService from './services/productService.js';
@@ -109,6 +110,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);  // Thêm order routes
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/sellers", sellerRoutes);
 
 // app.use("/api/auth", userRoutes); // Mount auth routes trước
 

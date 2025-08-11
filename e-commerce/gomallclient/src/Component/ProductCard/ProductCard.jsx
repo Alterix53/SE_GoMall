@@ -34,6 +34,8 @@ export const RenderProduct = ({ product }) => {
           className="product-image"
           lazy={true}
           fallbackUrl="/images/default-product.jpg"
+          onLoad={() => {}}
+          onError={() => {}}
         />
       </div>
 

@@ -1,5 +1,7 @@
 import Seller from '../models/Seller.js';
 import User from '../models/User.js';
+import cloudinary from '../config/cloudinary.js';
+import { uploadFileToCloudinary, saveBufferToLocal } from '../middleware/upload.js';
 
 // [POST] User apply to become seller (authenticated user)
 export const applyForSeller = async (req, res) => {
@@ -29,6 +31,28 @@ export const applyForSeller = async (req, res) => {
             });
         }
 
+        // Prepare verification document URLs
+        // Priority: files uploaded via multipart -> upload to Cloudinary if configured
+        let verificationDocUrls = [];
+        const hasCloudinary = Boolean(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+
+        if (Array.isArray(req.files) && req.files.length > 0) {
+            if (hasCloudinary) {
+                // Upload each file buffer to Cloudinary
+                const uploads = await Promise.all(
+                    req.files.map((file) => uploadFileToCloudinary(file.buffer, 'gomall/verification'))
+                );
+                verificationDocUrls = uploads.map(u => u.secure_url || u.url).filter(Boolean);
+            } else {
+                // Fallback: save buffer to local verification directory
+                const saved = await Promise.all(req.files.map(async (file) => saveBufferToLocal(file)));
+                verificationDocUrls = saved.filter(Boolean);
+            }
+        } else if (Array.isArray(verificationDocs)) {
+            // Accept existing URLs or strings from body as last resort
+            verificationDocUrls = verificationDocs;
+        }
+
         const seller = await Seller.create({
             userID: authUser._id,
             businessName: businessName.trim(),
@@ -36,7 +60,7 @@ export const applyForSeller = async (req, res) => {
             businessAddress: (businessAddress || authUser.address || '').trim(),
             businessPhone: (businessPhone || authUser.phoneNumber || '').trim(),
             businessEmail: authUser.email,
-            verificationDocs: Array.isArray(verificationDocs) ? verificationDocs : [],
+            verificationDocs: verificationDocUrls,
             status: 'pending',
             isActive: true
         });

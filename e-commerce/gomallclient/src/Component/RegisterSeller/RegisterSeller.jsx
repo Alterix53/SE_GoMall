@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegisterSeller.css';
-import { apiService } from '../../utils/api';
+import api, { apiService } from '../../utils/api';
 
 const RegisterSeller = () => {
   // Chuẩn hóa field: dùng businessName thay cho storeName (giữ tương thích ngược khi lưu)
@@ -24,14 +24,19 @@ const RegisterSeller = () => {
     }
 
     try {
-      const payload = {
-        businessName,
-        businessAddress: address,
-        businessPhone: phone,
-        businessLicense,
-        verificationDocs: document ? [document.name] : [],
-      };
-      const resp = await apiService.applyForSeller(payload);
+      // Use multipart/form-data to send the file actually
+      const formData = new FormData();
+      formData.append('businessName', businessName);
+      formData.append('businessAddress', address);
+      formData.append('businessPhone', phone);
+      formData.append('businessLicense', businessLicense);
+      if (document) {
+        formData.append('verificationDocs', document);
+      }
+
+      const resp = await api.post('/sellers/apply', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       if (resp?.data?.success) {
         alert('Your seller application has been submitted. Please wait for admin approval.');
         navigate('/home');
