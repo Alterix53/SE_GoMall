@@ -1,73 +1,71 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
-import Footer from '../Footer/Footer';
-import '../Login/login.css';
+import './RegisterSeller.css';
+import api, { apiService } from '../../utils/api';
 
 const RegisterSeller = () => {
-  const [storeName, setStoreName] = useState('');
+  // Chuẩn hóa field: dùng businessName thay cho storeName (giữ tương thích ngược khi lưu)
+  const [businessName, setBusinessName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [document, setDocument] = useState(null);
+  const [businessLicense, setBusinessLicense] = useState('');
   const navigate = useNavigate();
 
-  const currentUsername = localStorage.getItem('username');
-  const users = JSON.parse(localStorage.getItem('users')) || [];
+  // Sử dụng API thay vì localStorage
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Kiểm tra các trường bắt buộc
-    if (!storeName || !address || !email || !phone || !document) {
-      alert('Vui lòng điền đầy đủ thông tin và tải lên tài liệu!');
+    if (!businessName || !address || !email || !phone || !businessLicense) {
+      alert('Please fill in all required fields!');
       return;
     }
 
-    // Tìm người dùng hiện tại
-    const userIndex = users.findIndex(u => u.username === currentUsername);
-    if (userIndex === -1) {
-      alert('Không tìm thấy người dùng!');
-      return;
+    try {
+      // Use multipart/form-data to send the file actually
+      const formData = new FormData();
+      formData.append('businessName', businessName);
+      formData.append('businessAddress', address);
+      formData.append('businessPhone', phone);
+      formData.append('businessLicense', businessLicense);
+      if (document) {
+        formData.append('verificationDocs', document);
+      }
+
+      const resp = await api.post('/sellers/apply', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (resp?.data?.success) {
+        alert('Your seller application has been submitted. Please wait for admin approval.');
+        navigate('/home');
+      } else {
+        alert(resp?.data?.message || 'Failed to submit seller application');
+      }
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Failed to submit seller application');
     }
-
-    // Cập nhật thông tin đăng ký seller
-    users[userIndex] = {
-      ...users[userIndex],
-      role: 'seller',
-      sellerStatus: 'pending',
-      storeName,
-      address,
-      email,
-      phone,
-      documentName: document.name,
-    };
-
-    localStorage.setItem('users', JSON.stringify(users));
-
-    alert('Yêu cầu đăng ký người bán đã được gửi. Vui lòng chờ admin phê duyệt.');
-    navigate('/home'); // hoặc chuyển về dashboard buyer
   };
 
   return (
     <>
-      <Navbar />
-      <div className="login-container">
-        <h2 className="mb-4">Đăng ký trở thành người bán</h2>
+      <div className="register-seller-container">
+        <h2 className="mb-4">Register to Become a Seller</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Tên cửa hàng</label>
+            <label className="form-label">Business/Store Name</label>
             <input
               type="text"
               className="form-control"
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
               required
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Địa chỉ kinh doanh</label>
+            <label className="form-label">Business Address</label>
             <input
               type="text"
               className="form-control"
@@ -78,7 +76,7 @@ const RegisterSeller = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Email liên hệ</label>
+            <label className="form-label">Contact Email</label>
             <input
               type="email"
               className="form-control"
@@ -89,7 +87,18 @@ const RegisterSeller = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Số điện thoại</label>
+            <label className="form-label">Business License</label>
+            <input
+              type="text"
+              className="form-control"
+              value={businessLicense}
+              onChange={(e) => setBusinessLicense(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Phone Number</label>
             <input
               type="tel"
               className="form-control"
@@ -100,7 +109,7 @@ const RegisterSeller = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Tài liệu xác minh (giấy phép/CMND)</label>
+            <label className="form-label">Verification Document (License/ID)</label>
             <input
               type="file"
               className="form-control"
@@ -110,10 +119,9 @@ const RegisterSeller = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary">Gửi yêu cầu</button>
+          <button type="submit" className="btn btn-primary">Submit Application</button>
         </form>
       </div>
-      <Footer />
     </>
   );
 };

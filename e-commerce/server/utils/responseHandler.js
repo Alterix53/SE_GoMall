@@ -1,7 +1,7 @@
 class ResponseHandler {
     // Success response
     static success(res, data, message = "Thành công", statusCode = 200) {
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         return res.status(statusCode).json({
             success: true,
             message,
@@ -11,11 +11,11 @@ class ResponseHandler {
 
     // Error response
     static error(res, message = "Có lỗi xảy ra", statusCode = 500, error = null) {
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         return res.status(statusCode).json({
             success: false,
             message,
-            error: process.env.NODE_ENV === "development" ? error : {},
+            error: error || {},
         });
     }
 

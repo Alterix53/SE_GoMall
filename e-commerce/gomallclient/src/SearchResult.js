@@ -6,129 +6,12 @@ import SearchBar from "./Component/SearchBar/SearchBar"
 import ProductCard from "./Component/ProductCard/ProductCard"
 import "./SearchResult.css"
 
-// Mock data với nhiều sản phẩm đa dạng
-const mockSearchResults = [
-  {
-    id: "1",
-    name: "Quần jeans nam cao cấp",
-    price: 450000,
-    originalPrice: 600000,
-    rating: 4.5,
-    reviewCount: 850,
-    sold: 850,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 25,
-    category: "Thời trang",
-    brand: "Uniqlo"
-  },
-  {
-    id: "2", 
-    name: "Quần âu nữ công sở",
-    price: 380000,
-    originalPrice: 500000,
-    rating: 4.7,
-    reviewCount: 620,
-    sold: 620,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 24,
-    category: "Thời trang",
-    brand: "Zara"
-  },
-  {
-    id: "3",
-    name: "Quần short thể thao Nike",
-    price: 650000,
-    originalPrice: 850000,
-    rating: 4.8,
-    reviewCount: 1200,
-    sold: 1200,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 24,
-    category: "Thể thao & Du lịch",
-    brand: "Nike"
-  },
-  {
-    id: "4",
-    name: "Quần legging yoga nữ",
-    price: 280000,
-    originalPrice: 400000,
-    rating: 4.6,
-    reviewCount: 450,
-    sold: 450,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 30,
-    category: "Thể thao & Du lịch",
-    brand: "Adidas"
-  },
-  {
-    id: "5",
-    name: "Quần kaki nam H&M",
-    price: 320000,
-    originalPrice: 450000,
-    rating: 4.4,
-    reviewCount: 680,
-    sold: 680,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 29,
-    category: "Thời trang",
-    brand: "H&M"
-  },
-  {
-    id: "6",
-    name: "Quần tây nữ công sở cao cấp",
-    price: 890000,
-    originalPrice: 1200000,
-    rating: 4.9,
-    reviewCount: 320,
-    sold: 320,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 26,
-    category: "Thời trang",
-    brand: "Zara"
-  },
-  {
-    id: "7",
-    name: "iPhone 15 Pro Max 256GB",
-    price: 29990000,
-    originalPrice: 34990000,
-    rating: 4.8,
-    reviewCount: 1250,
-    sold: 1250,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 14,
-    category: "Điện tử",
-    brand: "Apple"
-  },
-  {
-    id: "8",
-    name: "Nồi cơm điện Panasonic 1.8L",
-    price: 1200000,
-    originalPrice: 1500000,
-    rating: 4.5,
-    reviewCount: 890,
-    sold: 890,
-    image: "/placeholder.svg?height=200&width=200",
-    discount: 20,
-    category: "Gia dụng",
-    brand: "Panasonic"
-  },
-]
-
+// Categories and brands for filters - Updated to match backend data
 const categories = [
-  "Thời trang", 
-  "Điện tử", 
-  "Gia dụng", 
-  "Sách & Văn phòng phẩm", 
-  "Thể thao & Du lịch",
-  "Sức khỏe & Làm đẹp",
-  "Mẹ & Bé",
-  "Nhà cửa & Đời sống"
+  "Phones", "Laptops", "Fashion", "Beauty & Cosmetics", "Home & Garden", "Books", "Sports", "Vehicles", "Accessories", "Electronics"
 ];
-
 const brands = [
-  "Nike", "Adidas", "Uniqlo", "H&M", "Zara",
-  "Apple", "Samsung", "Sony", "LG", "Xiaomi",
-  "Philips", "Panasonic", "Sunhouse"
+  "Apple", "Samsung", "Nike", "Adidas", "Gucci", "Sony", "Dell", "Philips", "iPhone", "MacBook"
 ];
 
 const SearchResult = () => {
@@ -140,66 +23,70 @@ const SearchResult = () => {
   const [sortBy, setSortBy] = useState("relevant")
   const [searchResults, setSearchResults] = useState([])
   const [filteredResults, setFilteredResults] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const searchQuery = searchParams.get("keyword") || ""
 
-  // Filter và search logic
+  // Fetch search results from API
   useEffect(() => {
-    let results = mockSearchResults;
-
-    // 1. Filter theo từ khóa tìm kiếm
-    if (searchQuery.trim()) {
-      results = results.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // 2. Filter theo khoảng giá
-    results = results.filter(
-      (product) => product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // 3. Filter theo danh mục
-    if (selectedCategories.length > 0) {
-      results = results.filter((product) =>
-        selectedCategories.includes(product.category)
-      );
-    }
-
-    // 4. Filter theo thương hiệu
-    if (selectedBrands.length > 0) {
-      results = results.filter((product) =>
-        selectedBrands.includes(product.brand)
-      );
-    }
-
-    // 5. Sắp xếp kết quả
-    switch (sortBy) {
-      case "price-low":
-        results.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        results.sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        results.sort((a, b) => b.rating - a.rating);
-        break;
-      case "newest":
-        results.sort((a, b) => b.sold - a.sold); // Giả sử sold cao = mới
-        break;
-      default:
-        // Relevant: ưu tiên sản phẩm có từ khóa trong tên
-        results.sort((a, b) => {
-          const aRelevant = a.name.toLowerCase().includes(searchQuery.toLowerCase()) ? 1 : 0;
-          const bRelevant = b.name.toLowerCase().includes(searchQuery.toLowerCase()) ? 1 : 0;
-          return bRelevant - aRelevant;
+    const fetchSearchResults = async () => {
+      try {
+        if (!searchQuery.trim()) {
+          setSearchResults([]);
+          setFilteredResults([]);
+          return;
+        }
+        const params = new URLSearchParams({
+          keyword: searchQuery,
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+          sortBy: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? '-price' : 'createdAt'
         });
-        break;
-    }
-
-    setFilteredResults(results);
+        if (selectedCategories.length > 0) {
+          params.append('category', selectedCategories.join(','));
+        }
+        const response = await fetch(`http://localhost:8080/api/products/search?${params}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('API Response:', data);
+        if (data.success && data.data?.products) {
+          console.log('Raw products from API:', data.data.products);
+          const products = data.data.products.map(product => {
+            const mappedProduct = {
+              id: product._id,
+              name: product.name || "Unknown Product",
+              price: product.price?.sale || product.price?.original || 0,
+              originalPrice: product.price?.original || 0,
+              image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
+              rating: product.rating?.average || 0,
+              reviewCount: product.rating?.count || 0,
+              sold: product.sold || 0,
+              discount: product.price?.original && product.price?.sale
+                ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+                : 0,
+              category: product.categoryID?.categoryName || product.category || "Unknown",
+              brand: product.brand || "Unknown"
+            };
+            console.log('Mapped product:', mappedProduct);
+            return mappedProduct;
+          });
+          console.log('Final products array:', products);
+          setSearchResults(products);
+          setFilteredResults(products);
+        } else {
+          console.log('No products found or invalid response structure');
+          setSearchResults([]);
+          setFilteredResults([]);
+        }
+              } catch (error) {
+          console.error('Search error:', error);
+          setSearchResults([]);
+          setFilteredResults([]);
+        }
+    };
+    fetchSearchResults();
   }, [searchQuery, priceRange, selectedCategories, selectedBrands, sortBy]);
 
   // Xử lý thay đổi danh mục
@@ -210,7 +97,6 @@ const SearchResult = () => {
       setSelectedCategories(selectedCategories.filter((c) => c !== category));
     }
   };
-
   // Xử lý thay đổi thương hiệu
   const handleBrandChange = (brand, checked) => {
     if (checked) {
@@ -219,14 +105,12 @@ const SearchResult = () => {
       setSelectedBrands(selectedBrands.filter((b) => b !== brand));
     }
   };
-
   // Xóa tất cả bộ lọc
   const clearFilters = () => {
     setPriceRange([0, 50000000]);
     setSelectedCategories([]);
     setSelectedBrands([]);
   };
-
   // Format số cho hiển thị
   const formatPrice = (price) => {
     if (price >= 1000000) {
@@ -237,6 +121,7 @@ const SearchResult = () => {
     return price.toString();
   };
 
+  console.log('Rendering SearchResult - searchResults:', searchResults.length, 'filteredResults:', filteredResults.length);
   return (
     <div className="search-results-page">
       {/* Breadcrumb */}
@@ -246,7 +131,6 @@ const SearchResult = () => {
           <span className="breadcrumb-current">"{searchQuery}"</span>
         </nav>
       </div>
-
       <div className="search-results-container">
         <div className="search-layout">
           {/* Sidebar Filters */}
@@ -256,7 +140,6 @@ const SearchResult = () => {
                 <span className="filter-icon">⚙</span>
                 Bộ lọc
               </h3>
-
               {/* Price Range */}
               <div className="filter-section">
                 <h4 className="filter-subtitle">Khoảng giá</h4>
@@ -288,7 +171,6 @@ const SearchResult = () => {
                   </div>
                 </div>
               </div>
-
               {/* Categories */}
               <div className="filter-section">
                 <h4 className="filter-subtitle">Danh mục</h4>
@@ -304,14 +186,12 @@ const SearchResult = () => {
                       {category}
                       {/* Hiển thị số lượng sản phẩm trong danh mục */}
                       <span className="category-count">
-                        ({mockSearchResults.filter(p => p.category === category && 
-                          p.name.toLowerCase().includes(searchQuery.toLowerCase())).length})
+                        ({filteredResults.filter(p => p.category === category).length})
                       </span>
                     </label>
                   ))}
                 </div>
               </div>
-
               {/* Brands */}
               <div className="filter-section">
                 <h4 className="filter-subtitle">Thương hiệu</h4>
@@ -327,20 +207,17 @@ const SearchResult = () => {
                       {brand}
                       {/* Hiển thị số lượng sản phẩm của thương hiệu */}
                       <span className="category-count">
-                        ({mockSearchResults.filter(p => p.brand === brand && 
-                          p.name.toLowerCase().includes(searchQuery.toLowerCase())).length})
+                        ({filteredResults.filter(p => p.brand === brand).length})
                       </span>
                     </label>
                   ))}
                 </div>
               </div>
-
               <button onClick={clearFilters} className="clear-filters-btn">
                 Xóa bộ lọc ({selectedCategories.length + selectedBrands.length})
               </button>
             </div>
           </div>
-
           {/* Main Content */}
           <div className="search-content">
             {/* Results Header */}
@@ -353,7 +230,6 @@ const SearchResult = () => {
                   )}
                 </span>
               </div>
-
               <div className="results-controls">
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
                   <option value="relevant">Liên quan nhất</option>
@@ -362,7 +238,6 @@ const SearchResult = () => {
                   <option value="newest">Bán chạy nhất</option>
                   <option value="rating">Đánh giá cao nhất</option>
                 </select>
-
                 <div className="view-toggle">
                   <button
                     className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
@@ -381,13 +256,11 @@ const SearchResult = () => {
                 </div>
               </div>
             </div>
-
             {/* Active Filters Display */}
             {(selectedCategories.length > 0 || selectedBrands.length > 0 || 
               priceRange[0] > 0 || priceRange[1] < 50000000) && (
               <div className="active-filters">
                 <span className="active-filters-label">Bộ lọc đang áp dụng:</span>
-                
                 {selectedCategories.map((category) => (
                   <span key={category} className="filter-tag">
                     {category}
@@ -399,7 +272,6 @@ const SearchResult = () => {
                     </button>
                   </span>
                 ))}
-                
                 {selectedBrands.map((brand) => (
                   <span key={brand} className="filter-tag">
                     {brand}
@@ -411,7 +283,6 @@ const SearchResult = () => {
                     </button>
                   </span>
                 ))}
-                
                 {(priceRange[0] > 0 || priceRange[1] < 50000000) && (
                   <span className="filter-tag">
                     {formatPrice(priceRange[0])}đ - {formatPrice(priceRange[1])}đ
@@ -425,7 +296,6 @@ const SearchResult = () => {
                 )}
               </div>
             )}
-
             {/* Products Grid */}
             {filteredResults.length > 0 ? (
               <div className={`products-grid ${viewMode}`}>
@@ -433,7 +303,7 @@ const SearchResult = () => {
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
-            ) : (
+            ) : searchQuery.trim() ? (
               <div className="empty-results">
                 <h3>Không tìm thấy sản phẩm nào</h3>
                 <p>Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
@@ -441,8 +311,12 @@ const SearchResult = () => {
                   Xóa tất cả bộ lọc
                 </button>
               </div>
+            ) : (
+              <div className="empty-results">
+                <h3>Nhập từ khóa tìm kiếm</h3>
+                <p>Vui lòng nhập từ khóa để tìm kiếm sản phẩm</p>
+              </div>
             )}
-
             {/* Pagination */}
             {filteredResults.length > 0 && (
               <div className="pagination">

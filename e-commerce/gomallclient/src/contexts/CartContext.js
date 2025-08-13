@@ -18,8 +18,10 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from API when user is authenticated
   const loadCartFromAPI = async () => {
-    if (!isAuthenticated()) {
-      // Fallback to localStorage for non-authenticated users
+    const currentUser = getCurrentUser();
+    if (!isAuthenticated() || currentUser?.role === 'admin') {
+      // Skip API call for guest or admin accounts
+      // Fallback to localStorage for guest users
       const saved = localStorage.getItem("cartItems");
       setCartItems(saved ? JSON.parse(saved) : []);
       return;
@@ -56,8 +58,9 @@ export const CartProvider = ({ children }) => {
 
   // Save cart to API
   const saveCartToAPI = async (items) => {
-    if (!isAuthenticated()) {
-      // Save to localStorage for non-authenticated users
+    const currentUser = getCurrentUser();
+    if (!isAuthenticated() || currentUser?.role === 'admin') {
+      // Save to localStorage for guest users or ignore for admin
       localStorage.setItem("cartItems", JSON.stringify(items));
       return;
     }
@@ -82,13 +85,16 @@ export const CartProvider = ({ children }) => {
         const idx = prev.findIndex(
           (p) => p.id === item.id && p.size === item.size
         );
+        let updated;
         if (idx !== -1) {
-          const updated = [...prev];
+          updated = [...prev];
           updated[idx].quantity += item.quantity;
-          return updated;
         } else {
-          return [...prev, item];
+          updated = [...prev, item];
         }
+        // Save to localStorage immediately
+        localStorage.setItem("cartItems", JSON.stringify(updated));
+        return updated;
       });
       return;
     }
@@ -131,7 +137,11 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = async (id, size) => {
     if (!isAuthenticated()) {
       // Use localStorage for non-authenticated users
-      setCartItems((prev) => prev.filter((item) => !(item.id === id && item.size === size)));
+      setCartItems((prev) => {
+        const updated = prev.filter((item) => !(item.id === id && item.size === size));
+        localStorage.setItem("cartItems", JSON.stringify(updated));
+        return updated;
+      });
       return;
     }
 
@@ -163,11 +173,13 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = async (id, size, quantity) => {
     if (!isAuthenticated()) {
       // Use localStorage for non-authenticated users
-      setCartItems((prev) =>
-        prev.map((item) =>
+      setCartItems((prev) => {
+        const updated = prev.map((item) =>
           item.id === id && item.size === size ? { ...item, quantity } : item
-        )
-      );
+        );
+        localStorage.setItem("cartItems", JSON.stringify(updated));
+        return updated;
+      });
       return;
     }
 
@@ -203,6 +215,7 @@ export const CartProvider = ({ children }) => {
     if (!isAuthenticated()) {
       // Use localStorage for non-authenticated users
       setCartItems([]);
+      localStorage.removeItem("cartItems");
       return;
     }
 
@@ -234,6 +247,11 @@ export const CartProvider = ({ children }) => {
     saveCartToAPI(cartItems);
   }, [cartItems]);
 
+  // Calculate total price
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
   return (
     <CartContext.Provider value={{ 
       cartItems, 
@@ -241,6 +259,7 @@ export const CartProvider = ({ children }) => {
       removeFromCart, 
       updateQuantity, 
       clearCart,
+      getTotalPrice,
       loading,
       error
     }}>

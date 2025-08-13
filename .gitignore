@@ -1,22 +1,46 @@
-bootstrap-5.3.7-dist
-node_modules
+# Dependencies
+node_modules/
+bootstrap-5.3.7-dist/
 
-.git
-.vs
-Debug
-./e-commerce/server/.env
-./e-commerce/server/node_modules
-./e-commerce/gomallclient/node_modules
-.DS_Store
-Thumbs.db
-.idea
-.vscode
-*.log
+# Environment variables
+.env
 *.env
+./e-commerce/server/.env
+
+# IDE files
+.vs/
+.idea/
+.vscode/
 *.swp
 *.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
 *.bak
 *.tmp
 *.cache
 ./e-commerce/server/data/dbe-commerce/server/data/db
 /e-commerce/Test
+
+# Database files
+./e-commerce/server/data/db/
+data/db/
+*.db
+*.sqlite
+
+# Images (nếu muốn loại trừ)
+images/
+./e-commerce/server/images/
+./e-commerce/gomallclient/public/images/
+
+# Build files
+dist/
+build/
+*.min.js
+*.min.css
+
+# Temporary files
+temp/
+tmp/

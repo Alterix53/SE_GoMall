@@ -1,51 +1,62 @@
 import React, { useState } from "react";
 import SellerDetailModal from "../SellerDetailModal";
 import UserSellerListItem from "../UserSellerListItem";
+import { adminAPI } from '../../../utils/api';
 
 const FILTERS = [
-  { key: "all", label: "Tất cả" },
-  { key: "pending", label: "Chờ duyệt" },
-  { key: "active", label: "Đang hoạt động" },
-  { key: "banned", label: "Bị khóa" },
-  { key: "reported", label: "Bị báo cáo" },
-];
-
-const SELLERS = [
-  {
-    id: 1,
-    username: "seller1",
-    businessName: "Công ty ABC",
-    email: "seller1@email.com",
-    phone: "0123456789",
-    address: "Hà Nội",
-    status: "active",
-    avatarUrl: "",
-  },
-  // ... thêm dữ liệu mẫu
+  { key: "all", label: "All" },
+  { key: "pending", label: "Pending" },
+  { key: "active", label: "Active" },
+  { key: "banned", label: "Banned" },
+  { key: "reported", label: "Reported" },
 ];
 
 function ManageSellerPage() {
   const [activeFilter, setActiveFilter] = useState(FILTERS[0].key);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSeller, setSelectedSeller] = useState(null);
+  const [sellers, setSellers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  let filteredSellers =
-    activeFilter === "all"
-      ? SELLERS
-      : SELLERS.filter((s) => s.status === activeFilter);
+  // Fetch sellers from API
+  React.useEffect(() => {
+    const fetchSellers = async () => {
+      setLoading(true);
+      setError(null);
+      console.log('[Seller API] Fetch seller list start...', { status: activeFilter, search: searchTerm });
+      try {
+        const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('token');
+        if (!adminToken) throw new Error('Admin token not found');
+        const params = {
+          status: activeFilter !== 'all' ? activeFilter : '',
+          search: searchTerm.trim(),
+        };
+        const res = await adminAPI.getAllSellers(adminToken, params);
+        if (res.success) {
+          setSellers(res.data.sellers || res.data || []);
+          console.log(`[Seller API] Fetched sellers successfully. Count: ${res.data.sellers?.length ?? (res.data?.length ?? 0)}`);
+        } else {
+          setSellers([]);
+          setError(res.message || 'Failed to fetch sellers');
+          console.error('[Seller API] Failed to fetch sellers:', res.message);
+        }
+      } catch (err) {
+        setError(err.message || 'Failed to fetch sellers');
+        setSellers([]);
+        console.error('[Seller API] Error fetching sellers:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSellers();
+  }, [activeFilter, searchTerm]);
 
-  if (searchTerm.trim() !== "") {
-    filteredSellers = filteredSellers.filter(
-      (s) =>
-        s.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.businessName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
+  let filteredSellers = sellers;
 
   return (
     <div className="container-fluid">
-      <h2 className="row text-center" style={{ minWidth: 180 }}>Quản lý người bán</h2>
+      <h2 className="row text-center" style={{ minWidth: 180 }}>Manage Sellers</h2>
       <div className="d-flex gap-2 mb-3 align-items-center">
         {FILTERS.map((filter) => (
           <button
@@ -61,24 +72,26 @@ function ManageSellerPage() {
           type="text"
           className="form-control ms-3"
           style={{ maxWidth: 250 }}
-          placeholder="Tìm kiếm người bán..."
+          placeholder="Search sellers..."
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
       </div>
+      {loading && <div className="text-center py-3">Loading...</div>}
+      {error && <div className="text-danger py-2">{error}</div>}
       <ul className="list-group">
-        {filteredSellers.length === 0 && (
-          <li className="list-group-item text-muted">Không có người bán nào.</li>
+        {!loading && filteredSellers.length === 0 && (
+          <li className="list-group-item text-muted">No sellers found.</li>
         )}
         {filteredSellers.map((seller) => (
           <UserSellerListItem
-            key={seller.id}
+            key={seller._id || seller.id}
             data={seller}
             onClick={() => setSelectedSeller(seller)}
           />
         ))}
       </ul>
-      {/* Modal chi tiết người bán */}
+      {/* Seller detail modal */}
       {selectedSeller && (
         <div className="modal show d-block" tabIndex="-1">
           <SellerDetailModal seller={selectedSeller} onClose={() => setSelectedSeller(null)} />

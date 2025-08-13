@@ -1,102 +1,28 @@
 [
   {
-    "username": "cpaoletti0",
-    "password": "bW7\\Ndx,A)bI$RBJ",
-    "email": "cpaoletti0@shopee.com",
-    "role": "seller",
-    "fullName": "Channa Paoletti",
-    "shopID": "507f1f77bcf86cd799439011", 
-    "isActive": true,
-    "profile_image": "/images/adidas.jpg"
-  },
-  {
-    "username": "xirdale1",
-    "password": "dA4>*A*\"qX",
-    "email": "xirdale1@shopee.com",
-    "role": "admin",
-    "fullName": "Xavier Irdale",
-    "shopID": null, 
-    "isActive": true,
-    "profile_image": "/images/dell-xps.jpg"
-  },
-  {
-    "username": "ashannahan2",
-    "password": "zB3)!F+%x",
-    "email": "ashannahan2@shopee.com",
-    "role": "seller",
-    "fullName": "Aland Shannahan",
-    "shopID": "507f1f77bcf86cd799439012", 
-    "isActive": true,
-    "profile_image": "/images/ao-hoodie.jpg"
-  },
-  {
-    "username": "bpell3",
-    "password": "sJ1\"AM!4g`,+`.W",
-    "email": "bpell3@shopee.com",
-    "role": "admin",
-    "fullName": "Babita Pell",
-    "shopID": null, 
-    "isActive": false,
-    "profile_image": "/images/macbook-air.jpg"
-  },
-  {
-    "username": "fpieterick4",
-    "password": "gP7?&7|DW3yXD/",
-    "email": "fpieterick4@shopee.com",
-    "role": "seller",
-    "fullName": "Frederic Pieterick",
-    "shopID": "507f1f77bcf86cd799439013", 
-    "isActive": true,
-    "profile_image": "/images/kem-cetaphil.jpg"
-  },
-  {
-    "username": "fvowles5",
-    "password": "eK2)dfw#LO6.hQ}t",
-    "email": "fvowles5@shopee.com",
-    "role": "seller",
-    "fullName": "Ferdie Vowles",
-    "shopID": "507f1f77bcf86cd799439014", 
-    "isActive": true,
-    "profile_image": "/images/noi-philips.jpg"
-  },
-  {
-    "username": "ewarlowe6",
-    "password": "iD6%fK,TLO8(m",
-    "email": "ewarlowe6@shopee.com",
-    "role": "admin",
-    "fullName": "Elizabeth Warlowe",
-    "shopID": null, 
-    "isActive": false,
-    "profile_image": "/images/jeans.jpg"
-  },
-  {
-    "username": "kdumbare7",
-    "password": "xP2.QuN@%%3M#",
-    "email": "kdumbare7@shopee.com",
+    "id": "1754538046363",
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "hashedpassword123",
+    "fullName": "Updated Test User",
+    "phoneNumber": "1111111111",
+    "address": "123 Test Street",
     "role": "user",
-    "fullName": "Kasper Dumbare",
-    "shopID": null, 
     "isActive": true,
-    "profile_image": "/images/giay-nike.jpg"
+    "createdAt": "2025-08-07T03:40:46.364Z",
+    "updatedAt": "2025-08-07T03:40:46.389Z"
   },
   {
-    "username": "shuton8",
-    "password": "wD1@|v&CZmgKF",
-    "email": "shuton8@shopee.com",
-    "role": "user",
-    "fullName": "Sibilla Huton",
-    "shopID": null, 
-    "isActive": false,
-    "profile_image": "/images/Gucci.jpg"
-  },
-  {
-    "username": "dtombs9",
-    "password": "yN3\"Y8HX",
-    "email": "dtombs9@shopee.com",
-    "role": "user",
-    "fullName": "Delphinia Tombs",
-    "shopID": null, 
+    "id": "1754538046378",
+    "username": "selleruser",
+    "email": "seller@example.com",
+    "password": "hashedpassword456",
+    "fullName": "Seller User",
+    "phoneNumber": "0987654321",
+    "address": "456 Seller Street",
+    "role": "seller",
     "isActive": true,
-    "profile_image": "/images/may-ep-hurom.jpg"
+    "createdAt": "2025-08-07T03:40:46.378Z",
+    "updatedAt": "2025-08-07T03:40:46.378Z"
   }
 ]

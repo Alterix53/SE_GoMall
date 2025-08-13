@@ -1,5 +1,7 @@
 import productService from "../services/productService.js";
+import Category from "../models/Category.js";
 import ResponseHandler from "../utils/responseHandler.js";
+import { uploadProductImages, handleUploadError } from "../middleware/upload.js";
 
 // Get all products with filtering and pagination
 export const getAllProducts = ResponseHandler.asyncHandler(async (req, res) => {
@@ -8,7 +10,7 @@ export const getAllProducts = ResponseHandler.asyncHandler(async (req, res) => {
     const result = await productService.getAllProducts(req.query);
     
     console.log("Responding with products:", result.products);
-    ResponseHandler.success(res, result, "Lấy danh sách sản phẩm thành công");
+    ResponseHandler.success(res, result, "Get product list successfully");
 });
 
 // Get flash sale products
@@ -18,7 +20,7 @@ export const getFlashSaleProducts = ResponseHandler.asyncHandler(async (req, res
     const result = await productService.getFlashSaleProducts(req.query);
     
     console.log("Responding with flash sale products:", result.products);
-    ResponseHandler.success(res, result, "Lấy danh sách flash sale thành công");
+    ResponseHandler.success(res, result, "Get flash sale list successfully");
 });
 
 // Get top products by type
@@ -28,7 +30,7 @@ export const getTopProducts = ResponseHandler.asyncHandler(async (req, res) => {
     const result = await productService.getTopProducts(req.query);
     
     console.log("Responding with top products:", result.products);
-    ResponseHandler.success(res, result, "Lấy danh sách sản phẩm nổi bật thành công");
+    ResponseHandler.success(res, result, "Get featured products list successfully");
 });
 
 // Get product statistics
@@ -37,7 +39,74 @@ export const getProductStats = ResponseHandler.asyncHandler(async (req, res) => 
     
     const result = await productService.getProductStats();
     
-    ResponseHandler.success(res, result, "Lấy thống kê sản phẩm thành công");
+    ResponseHandler.success(res, result, "Get product statistics successfully");
+});
+
+// Search products
+export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to search products:", req.query);
+    
+    try {
+        const { keyword, category, minPrice, maxPrice, sortBy, brand, page = 1, limit = 12 } = req.query;
+        
+        // Build search query
+        let query = { isActive: true };
+        
+        // Keyword search
+        if (keyword) {
+            console.log('Searching for keyword:', keyword);
+            const words = keyword.trim().split(/\s+/).filter(word => word.length > 0);
+            
+            if (words.length > 0) {
+                query.$and = words.map(word => ({
+                    $or: [
+                        { name: { $regex: word, $options: 'i' } },
+                        { description: { $regex: word, $options: 'i' } },
+                        { brand: { $regex: word, $options: 'i' } }
+                    ]
+                }));
+            }
+            console.log('Search query:', JSON.stringify(query));
+        }
+        
+        // Category filter: accept CSV of names/slugs/ids and map to ObjectIds
+        if (category) {
+            const values = String(category).split(',').map(s => s.trim()).filter(Boolean);
+            if (values.length) {
+                const categories = await Category.find({
+                    $or: [
+                        { _id: { $in: values } },
+                        { categoryName: { $in: values } },
+                        { slug: { $in: values } }
+                    ]
+                }).distinct('_id');
+                if (categories.length) {
+                    query.categoryID = { $in: categories };
+                }
+            }
+        }
+        
+        // Price filter handled in service via nested fields (price.sale/original)
+        if (minPrice) query.minPrice = Number(minPrice);
+        if (maxPrice) query.maxPrice = Number(maxPrice);
+
+        // Brand filter (CSV or single)
+        if (brand) query.brand = brand;
+        
+        // Execute search
+        const products = await productService.searchProducts(query, {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sortBy: sortBy || 'createdAt'
+        });
+        
+        console.log(`Found ${products.products.length} products for keyword: ${keyword}`);
+        ResponseHandler.success(res, products, "Search products successfully");
+        
+    } catch (error) {
+        console.error("Error searching products:", error);
+        throw error;
+    }
 });
 
 // Get product by ID
@@ -45,211 +114,124 @@ export const getProductById = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to get product by ID:", req.params.id);
     
     try {
-<<<<<<< HEAD
         const product = await productService.getProductById(req.params.id);
-        ResponseHandler.success(res, { product }, "Lấy thông tin sản phẩm thành công");
+        ResponseHandler.success(res, { product }, "Get product information successfully");
     } catch (error) {
-        if (error.message === "Sản phẩm không tồn tại") {
+        if (error.message === "Product not found") {
             ResponseHandler.notFound(res, error.message);
         } else {
             throw error;
         }
     }
 });
-=======
-        console.log("Request to /api/products received:", req.query);
-        const { page = 1, limit = 12, ...query } = req.query;
-        const filter = { isActive: true };
 
-        console.log("Initial filter:", JSON.stringify(filter)); // Debug filter ban đầu
-        if (query.category) {
-            filter.categoryID = query.category;
-            console.log("Added category filter:", filter.categoryID);
-        }
-        if (query.brand) {
-            filter.brand = new RegExp(query.brand, "i");
-            console.log("Added brand filter:", filter.brand);
-        }
-        if (query.minPrice || query.maxPrice) {
-            filter.$or = [
-                { "price.sale": { ...(query.minPrice && { $gte: Number(query.minPrice) }), ...(query.maxPrice && { $lte: Number(query.maxPrice) }) } },
-                { "price.original": { ...(query.minPrice && { $gte: Number(query.minPrice) }), ...(query.maxPrice && { $lte: Number(query.maxPrice) }) }, "price.sale": { $exists: false } },
-            ];
-            console.log("Added price filter:", filter.$or);
-        }
-        if (query.rating) {
-            filter["rating.average"] = { $gte: Number(query.rating) };
-            console.log("Added rating filter:", filter["rating.average"]);
-        }
-        if (query.search) {
-            filter.$text = { $search: query.search };
-            console.log("Added search filter:", filter.$text);
-        }
-        if (query.isFlashSale === "true") {
-            filter.isFlashSale = true;
-            filter.flashSaleEndDate = { $gt: new Date() };
-            console.log("Added flashSale filter:", filter.isFlashSale, filter.flashSaleEndDate);
-        }
-        if (query.isFeatured === "true") {
-            filter.isFeatured = true;
-            console.log("Added featured filter:", filter.isFeatured);
-        }
-
-        const sort = {};
-        if (query.search) sort.score = { $meta: "textScore" };
-        sort[query.sortBy || "createdAt"] = query.sortOrder === "desc" ? -1 : 1;
-        console.log("Sort criteria:", sort);
-
-        const products = await Product.find(filter)
-            .populate("categoryID", "categoryName slug")
-            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
-            .sort(sort)
-            .limit(Number(limit))
-            .skip((Number(page) - 1) * Number(limit))
-            .lean();
-
-        console.log("Found products before mapping:", products); // Debug sản phẩm trước khi mapping
-        const total = await Product.countDocuments(filter);
-        console.log("Total products found:", total);
-
-        console.log("Responding with products:", products);
-        res.json({
-            success: true,
-            data: {
-                products: products.map(product => ({
-                    ...product,
-                    discount: product.price.original && product.price.sale
-                        ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-                        : 0,
-                })),
-                pagination: {
-                    current: Number(page),
-                    pages: Math.ceil(total / Number(limit)),
-                    total,
-                    limit: Number(limit),
-                },
-            },
-        });
-    } catch (error) {
-        console.error("Error in getAllProducts:", error.message);
-        res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
-    }
-};
-
-export const getFlashSaleProducts = async (req, res) => {
+// Create new product with image upload
+export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to create product received:", req.body);
+    console.log("Uploaded files:", req.files);
+    
     try {
-        console.log("Request to /api/products/flash-sale received:", req.query);
-        const { page = 1, limit = 12 } = req.query;
-        const filter = {
-            isActive: true,
-            isFlashSale: true,
-            flashSaleEndDate: { $gt: new Date() },
+        // Xử lý upload ảnh
+        const uploadedImages = [];
+        if (req.files && req.files.length > 0) {
+            req.files.forEach((file, index) => {
+                uploadedImages.push({
+                    url: `/uploads/products/${file.filename}`,
+                    alt: req.body.imageAlts?.[index] || `Ảnh sản phẩm ${index + 1}`,
+                    isPrimary: index === 0
+                });
+            });
+        }
+
+        // Tạo dữ liệu sản phẩm
+        const productData = {
+            ...req.body,
+            sellerID: req.user._id, // Lấy từ middleware auth
+            images: uploadedImages.length > 0 ? uploadedImages : [{
+                url: '/images/default-product.jpg',
+                alt: 'Ảnh mặc định',
+                isPrimary: true
+            }]
         };
 
-        const products = await Product.find(filter)
-            .populate("categoryID", "categoryName slug")
-            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
-            .sort({ flashSaleEndDate: 1 })
-            .limit(Number(limit))
-            .skip((Number(page) - 1) * Number(limit))
-            .lean();
-
-        const total = await Product.countDocuments(filter);
-
-        console.log("Responding with flash sale products:", products);
-        res.json({
-            success: true,
-            data: {
-                products: products.map(product => ({
-                    ...product,
-                    discount: product.price.original && product.price.sale
-                        ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-                        : 0,
-                })),
-                pagination: {
-                    current: Number(page),
-                    pages: Math.ceil(total / Number(limit)),
-                    total,
-                    limit: Number(limit),
-                },
-            },
-        });
+        const product = await productService.createProduct(productData);
+        ResponseHandler.success(res, { product }, "Tạo sản phẩm thành công");
+        
     } catch (error) {
-        console.error("Error in getFlashSaleProducts:", error.message);
-        res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
+        console.error("Error creating product:", error);
+        throw error;
     }
-};
+});
 
-export const getTopProducts = async (req, res) => {
+// Update product with image upload
+export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to update product:", req.params.id);
+    console.log("Uploaded files:", req.files);
+    
     try {
-        console.log("Request to /api/products/top-products received:", req.query);
-        const { type = "bestseller", page = 1, limit = 12 } = req.query;
-        let sort = {};
-        switch (type) {
-            case "bestseller":
-                sort = { sold: -1 };
-                break;
-            case "trending":
-                sort = { views: -1, createdAt: -1 };
-                break;
-            case "hot":
-                sort = { "rating.average": -1, sold: -1 };
-                break;
-            default:
-                sort = { sold: -1 };
+        const productId = req.params.id;
+        const updateData = { ...req.body };
+        
+        // Xử lý upload ảnh mới
+        if (req.files && req.files.length > 0) {
+            const newImages = req.files.map((file, index) => ({
+                url: `/uploads/products/${file.filename}`,
+                alt: req.body.imageAlts?.[index] || `Ảnh sản phẩm ${index + 1}`,
+                isPrimary: index === 0
+            }));
+            
+            // Nếu có ảnh cũ, giữ lại và thêm ảnh mới
+            if (req.body.existingImages) {
+                const existingImages = JSON.parse(req.body.existingImages);
+                updateData.images = [...existingImages, ...newImages];
+            } else {
+                updateData.images = newImages;
+            }
         }
 
-        const products = await Product.find({ isActive: true })
-            .populate("categoryID", "categoryName slug")
-            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
-            .sort(sort)
-            .limit(Number(limit))
-            .skip((Number(page) - 1) * Number(limit))
-            .lean();
-
-        const total = await Product.countDocuments({ isActive: true });
-
-        console.log("Responding with top products:", products);
-        res.json({
-            success: true,
-            data: {
-                products: products.map(product => ({
-                    ...product,
-                    discount: product.price.original && product.price.sale
-                        ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-                        : 0,
-                })),
-                pagination: {
-                    current: Number(page),
-                    pages: Math.ceil(total / Number(limit)),
-                    total,
-                    limit: Number(limit),
-                },
-                type,
-            },
-        });
+        const product = await productService.updateProduct(productId, updateData, req.user._id);
+        ResponseHandler.success(res, { product }, "Cập nhật sản phẩm thành công");
+        
     } catch (error) {
-        console.error("Error in getTopProducts:", error.message);
-        res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
+        console.error("Error updating product:", error);
+        throw error;
     }
-};
+});
 
-export const getProductById = async (req, res) => {
+// Delete product
+export const deleteProduct = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to delete product:", req.params.id);
+    
     try {
-        const product = await Product.findById(req.params.id)
-            .populate("categoryID", "categoryName slug")
-            .populate("sellerID", "shopName username") // Thêm populate cho sellerID
-            .lean();
-        if (!product) {
-            return res.status(404).json({ success: false, message: "Sản phẩm không tồn tại" });
-        }
-        res.json({
-            success: true,
-            data: { product },
-        });
+        await productService.deleteProduct(req.params.id, req.user._id);
+        ResponseHandler.success(res, null, "Xóa sản phẩm thành công");
+        
     } catch (error) {
-        console.error("Error in getProductById:", error.message);
-        res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
+        console.error("Error deleting product:", error);
+        throw error;
     }
+});
+
+// Get products by seller
+export const getProductsBySeller = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to get products by seller:", req.user._id);
+    
+    try {
+        const products = await productService.getProductsBySeller(req.user._id, req.query);
+        ResponseHandler.success(res, products, "Lấy danh sách sản phẩm của người bán thành công");
+        
+    } catch (error) {
+        console.error("Error getting seller products:", error);
+        throw error;
+    }
+});
+
+// Middleware để xử lý upload ảnh
+export const handleProductImageUpload = (req, res, next) => {
+    uploadProductImages(req, res, (err) => {
+        if (err) {
+            return handleUploadError(err, req, res, next);
+        }
+        next();
+    });
 };
->>>>>>> Data_Schema

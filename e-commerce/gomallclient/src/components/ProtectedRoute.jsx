@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { isTokenValid, getUserFromToken } from '../utils/api';
 
 const ProtectedRoute = ({ children, requiredRole = null }) => {
   const { isAuthenticated, getCurrentUser, loading } = useAuth();
@@ -19,15 +20,39 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
 
   // Kiểm tra xem người dùng đã đăng nhập chưa
   if (!isAuthenticated()) {
-    // Redirect đến trang login với returnUrl
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Fallback: nếu localStorage có admin token hợp lệ, cho phép tiếp tục
+    let storedUser = null;
+    let storedToken = null;
+    let adminToken = null;
+    try {
+      storedUser = JSON.parse(localStorage.getItem('user'));
+    } catch {}
+    storedToken = localStorage.getItem('token');
+    adminToken = localStorage.getItem('adminToken');
+
+    // Chấp nhận token admin nếu hợp lệ
+    if (storedUser?.role === 'admin' && isTokenValid(adminToken)) {
+      return children;
+    }
+
+    // Redirect đúng trang login theo ngữ cảnh
+    const isAdminPath = location.pathname.toLowerCase().startsWith('/admin');
+    const redirectPath = (storedUser?.role === 'admin' || isAdminPath) ? '/admin/login' : '/login';
+    return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
 
   // Kiểm tra role nếu có yêu cầu
   if (requiredRole) {
-    const currentUser = getCurrentUser();
-    if (currentUser && currentUser.role !== requiredRole) {
-      // Redirect đến trang không có quyền truy cập
+    // Ưu tiên state; fallback localStorage; cuối cùng dùng token payload
+    let currentUser = getCurrentUser();
+    let storedUser = null;
+    try { storedUser = JSON.parse(localStorage.getItem('user')); } catch {}
+    const token = localStorage.getItem('token');
+    const tokenPayload = getUserFromToken(token);
+
+    const effectiveRole = currentUser?.role || storedUser?.role || tokenPayload?.role || null;
+
+    if (effectiveRole !== requiredRole) {
       return <Navigate to="/unauthorized" replace />;
     }
   }

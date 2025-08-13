@@ -1,6 +1,6 @@
 // components/SummaryCard.jsx
 import React from 'react';
-export default function SummaryCard({ title, value, icon }) {
+export default function SummaryCard({ title, value, icon, subtitle }) {
   return (
     <div className="col-lg-3 col-md-6 mb-4">
       <div className="card shadow-sm h-100">
@@ -9,6 +9,9 @@ export default function SummaryCard({ title, value, icon }) {
           <div>
             <h6 className="card-title text-muted">{title}</h6>
             <h3 className="card-text">{value}</h3>
+            {subtitle && (
+              <small className="text-muted">{subtitle}</small>
+            )}
           </div>
         </div>
       </div>

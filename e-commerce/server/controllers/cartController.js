@@ -1,5 +1,4 @@
 import Cart from '../models/Cart.js';
-import CartItem from '../models/CartItem.js';
 import Product from '../models/Product.js';
 
 // Get user's cart
@@ -18,7 +17,7 @@ export const getUserCart = async (req, res) => {
             await cart.save();
         }
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         res.json({
             success: true,
             data: {
@@ -29,10 +28,10 @@ export const getUserCart = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getUserCart:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         res.status(500).json({ 
             success: false, 
-            message: "Lỗi server", 
+            message: "Server error", 
             error: error.message 
         });
     }
@@ -47,10 +46,10 @@ export const addToCart = async (req, res) => {
         // Validate product exists
         const product = await Product.findById(productID);
         if (!product) {
-            res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
             return res.status(404).json({
                 success: false,
-                message: "Sản phẩm không tồn tại"
+                message: "Product not found"
             });
         }
 
@@ -93,7 +92,7 @@ export const addToCart = async (req, res) => {
             select: 'name price images rating sold'
         });
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         res.json({
             success: true,
             message: "Đã thêm vào giỏ hàng",
@@ -121,7 +120,7 @@ export const updateCartItem = async (req, res) => {
         const { productID, quantity, size } = req.body;
 
         if (quantity < 1) {
-            res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
             return res.status(400).json({
                 success: false,
                 message: "Số lượng phải lớn hơn 0"
@@ -130,7 +129,7 @@ export const updateCartItem = async (req, res) => {
 
         const cart = await Cart.findOne({ userID });
         if (!cart) {
-            res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
             return res.status(404).json({
                 success: false,
                 message: "Giỏ hàng không tồn tại"
@@ -165,7 +164,7 @@ export const updateCartItem = async (req, res) => {
             select: 'name price images rating sold'
         });
 
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         res.json({
             success: true,
             message: "Đã cập nhật giỏ hàng",
@@ -177,7 +176,7 @@ export const updateCartItem = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in updateCartItem:", error.message);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         res.status(500).json({ 
             success: false, 
             message: "Lỗi server", 

@@ -3,26 +3,25 @@ import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import axios from 'axios';
+import dotenv from 'dotenv';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
-import '../models/Order.js';
-import '../models/Cart.js';
-import '../models/Review.js';
-import '../models/Payment.js';
+import connectDB from '../config/database.js';
 
+// ESM replacements for __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log("Current script directory:", __dirname);
+// Load environment variables (prefer server/.env if present)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const MONGODB_URI = "mongodb://localhost:27017/GoMall";
-
-const connectDB = async () => {
+// Resolve Mongo URI with safe fallback
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/GoMall';
+const connectForSeeding = async () => {
     try {
         console.log("Attempting to connect with MONGODB_URI:", MONGODB_URI);
-        await mongoose.connect(MONGODB_URI);
+        await connectDB(MONGODB_URI);
         console.log("MongoDB Connected for seeding");
     } catch (error) {
         console.error("Database connection failed:", error);
@@ -78,8 +77,13 @@ const seedCategories = async () => {
         };
     }));
 
-    await Category.deleteMany({});
-    const createdCategories = await Category.insertMany(mappedCategories);
+    // Only reset when explicitly enabled
+    if (process.env.SEED_RESET === '1') {
+        await Category.deleteMany({});
+    }
+    const createdCategories = await Category.insertMany(mappedCategories, { ordered: false }).catch(() => {
+        return Category.find({}).sort({ createdAt: 1 });
+    });
 
     for (let i = 0; i < categoriesData.length; i++) {
         if (categoriesData[i].parentID) {
@@ -123,8 +127,10 @@ const seedUsers = async () => {
         profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300'
     }));
 
-    await User.deleteMany({});
-    const createdUsers = await User.insertMany(mappedUsers);
+    if (process.env.SEED_RESET === '1') {
+        await User.deleteMany({});
+    }
+    const createdUsers = await User.insertMany(mappedUsers, { ordered: false }).catch(() => User.find({}));
     const createdSellers = createdUsers.filter(u => u.role.includes('seller'));
     console.log("Users seeded successfully (including sellers):", createdUsers.map(u => ({ username: u.username, role: u.role, _id: u._id, shop: u.shop })));
     console.log("Sellers extracted:", createdSellers.map(s => ({ username: s.username, _id: s._id, shop: s.shop })));
@@ -184,8 +190,10 @@ const seedProducts = async (createdCategories, createdSellers) => {
     })));
     const validProducts = mappedProducts;
     console.log("Valid products after filter:", validProducts);
-    await Product.deleteMany({});
-    const createdProducts = await Product.insertMany(validProducts);
+    if (process.env.SEED_RESET === '1') {
+        await Product.deleteMany({});
+    }
+    const createdProducts = await Product.insertMany(validProducts, { ordered: false }).catch(() => Product.find({}));
     console.log("Products seeded successfully:", createdProducts.map(p => ({
         name: p.name,
         _id: p._id,
@@ -197,7 +205,7 @@ const seedProducts = async (createdCategories, createdSellers) => {
 
 const seedData = async () => {
     try {
-        await connectDB();
+        await connectForSeeding();
 
         console.log("Seeding categories from JSON...");
         const createdCategories = await seedCategories();

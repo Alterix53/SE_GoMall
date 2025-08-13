@@ -1,258 +1,288 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import FlashSaleCarousel from "./Component/FlashSaleCarousel/FlashSaleCarousel";
-import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
-import { useProductCache } from "./hooks/useProductCache";
-import "./Home.css";
+import React, { useState, useEffect, useRef } from 'react';
+// Header is globally rendered in App.js
+import CategoryList from './Component/Category/CategoryList';
+import ProductCard from './Component/ProductCard/ProductCard';
+import FlashSaleCard from './Component/FlashSaleCard/FlashSaleCard';
+import TopProductCard from './Component/TopProductCard/TopProductCard';
+import './Home.css';
+import { Link } from 'react-router-dom'; // Added Link import
 
-const Home = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categoryProducts, setCategoryProducts] = useState({});
+function Home() {
+  const [flashSaleProducts, setFlashSaleProducts] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [flashSaleProducts, setFlashSaleProducts] = useState([]); // State riêng cho flash sale
+  const [categoryProducts, setCategoryProducts] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 2,
+    minutes: 45,
+    seconds: 30
+  });
 
-  const { getAllProducts, loading, error } = useProductCache();
+  // Countdown timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prevTime => {
+        let { hours, minutes, seconds } = prevTime;
+        
+        if (seconds > 0) {
+          seconds--;
+        } else {
+          seconds = 59;
+          if (minutes > 0) {
+            minutes--;
+          } else {
+            minutes = 59;
+            if (hours > 0) {
+              hours--;
+            } else {
+              // Reset timer when it reaches 0
+              hours = 2;
+              minutes = 45;
+              seconds = 30;
+            }
+          }
+        }
+        
+        return { hours, minutes, seconds };
+      });
+    }, 1000);
 
-  const categories = [
-    { name: "Điện thoại", image: "/images/Phone.png" },
-    { name: "Laptop", image: "/images/Laptop.png" },
-    { name: "Thời trang", image: "/images/Clothes.png" },
-    { name: "Mỹ phẩm", image: "/images/MyPham.png" },
-    { name: "Gia dụng", image: "/images/DoGiaDung.png" },
-    { name: "Sách", image: "/images/Book.png" },
-    { name: "Thể thao", image: "/images/TheThao.png" },
-    { name: "Xe cộ", image: "/images/Xe.png" },
-  ];
+    return () => clearInterval(timer);
+  }, []);
+
+
+
+
+
+  const flashScrollRef = useRef(null);
+  const topScrollRef = useRef(null);
+  const todayScrollRef = useRef(null); // Added todayScrollRef
 
   useEffect(() => {
-    const fetchData = async () => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch Flash Sale Products
       try {
-        // Use custom hook instead of direct cache service
-        const response = await getAllProducts();
-        console.log("API response:", response);
-        const products = response?.data?.products || [];
-        if (products.length === 0) {
-          console.warn("No products from API");
-          return;
-        }
-        const uniqueProducts = Array.from(new Map(products.map(p => [p._id, p])).values());
-        console.log("Unique products:", uniqueProducts.map(p => ({
-          _id: p._id,
-          category: p.categoryID?.categoryName,
-          image: p.images?.[0]?.url,
-        })));
-        const groupedProducts = uniqueProducts.reduce((acc, product) => {
-          const categoryName = product.categoryID?.categoryName || "Chưa phân loại";
-          if (categories.some(cat => cat.name === categoryName) || categoryName === "Chưa phân loại") {
-            if (!acc[categoryName]) acc[categoryName] = [];
-            acc[categoryName].push({
-              id: product._id,
-              name: product.name || "Unknown Product",
-              price: product.price?.sale || product.price?.original || 0,
-              originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
-              rating: product.rating?.average || 0,
-              sold: product.sold || 0,
-              discount: product.price?.original && product.price?.sale
-                ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-                : 0,
-            });
+        const flashSaleResponse = await fetch('http://localhost:8080/api/products/flash-sale');
+        console.log('Flash Sale Response status:', flashSaleResponse.status);
+        if (flashSaleResponse.ok) {
+          const flashSaleData = await flashSaleResponse.json();
+          console.log('Flash Sale Raw Data:', flashSaleData);
+          const flashProducts = flashSaleData?.data?.products || flashSaleData?.data?.data?.products || [];
+          console.log('Flash Products parsed:', flashProducts);
+          if (Array.isArray(flashProducts)) {
+            const mappedFlash = flashProducts.map((p) => ({
+              _id: p._id,
+              name: p.name,
+              price: p?.price?.sale || p?.price?.original || 0,
+              originalPrice: p?.price?.original || 0,
+              discount:
+                p?.price?.original && p?.price?.sale
+                  ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
+                  : 0,
+              image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
+            }));
+            console.log('Mapped Flash Products:', mappedFlash);
+            setFlashSaleProducts(mappedFlash.slice(0, 8));
           } else {
-            console.warn(`Category ${categoryName} not found in predefined categories, skipping`);
+            console.log('No Flash Sale data available');
+            setFlashSaleProducts([]);
           }
-          return acc;
-        }, {});
-        console.log("Grouped products:", groupedProducts);
-        setCategoryProducts(groupedProducts);
-        setFeaturedProducts(
-          uniqueProducts
-            .sort((a, b) => (b.sold || 0) - (a.sold || 0))
-            .slice(0, 6)
-            .map(product => ({
-              id: product._id,
-              name: product.name || "Unknown Product",
-              price: product.price?.sale || product.price?.original || 0,
-              originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
-              rating: product.rating?.average || 0,
-              sold: product.sold || 0,
-              discount: product.price?.original && product.price?.sale
-                ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-                : 0,
-            }))
-        );
-        // Giả sử flash sale là sản phẩm có discount lớn nhất (có thể thay bằng endpoint riêng)
-        setFlashSaleProducts(
-          uniqueProducts
-            .filter(product => product.discount && product.discount > 20) // Ví dụ: discount > 20%
-            .sort((a, b) => (b.discount || 0) - (a.discount || 0))
-            .slice(0, 6)
-            .map(product => ({
-              id: product._id,
-              name: product.name || "Unknown Product",
-              price: product.price?.sale || product.price?.original || 0,
-              originalPrice: product.price?.original || 0,
-              image: product.images?.[0]?.url || "/images/default-product.jpg",
-              rating: product.rating?.average || 0,
-              sold: product.sold || 0,
-              discount: product.discount || 0,
-            }))
-        );
-      } catch (err) {
-        console.error("Error fetching products:", err.message);
-        setCategoryProducts({});
-        setFeaturedProducts([]);
+        } else {
+          console.log('Flash Sale API not available');
+          setFlashSaleProducts([]);
+        }
+      } catch (error) {
+        console.log('Flash Sale API error:', error.message);
         setFlashSaleProducts([]);
       }
-    };
 
-    fetchData();
-  }, [getAllProducts]);
+      // Fetch Featured Products (used by Top Products and Today's Suggestions)
+      try {
+        const featuredResponse = await fetch('http://localhost:8080/api/products/top-products?type=bestseller&limit=12');
+        console.log('Featured Response status:', featuredResponse.status);
+        if (featuredResponse.ok) {
+          const featuredData = await featuredResponse.json();
+          console.log('Featured Raw Data:', featuredData);
+          const topProducts = featuredData?.data?.products || featuredData?.data?.data?.products || [];
+          console.log('Top Products parsed:', topProducts);
+          if (Array.isArray(topProducts)) {
+            const mappedTop = topProducts.map((p) => ({
+              _id: p._id,
+              name: p.name,
+              price: p?.price?.sale || p?.price?.original || 0,
+              originalPrice: p?.price?.original || 0,
+              discount:
+                p?.price?.original && p?.price?.sale
+                  ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
+                  : 0,
+              image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
+              rating: p?.rating || { average: 0, count: 0 },
+              sold: p?.sold || 0,
+            }));
+            console.log('Mapped Top Products:', mappedTop);
+            // Ensure we have up to 12 items for Today Suggestions
+            setFeaturedProducts(mappedTop.slice(0, 12));
+          } else {
+            console.log('No Featured Products data available');
+            setFeaturedProducts([]);
+          }
+        } else {
+          console.log('Featured Products API not available');
+          setFeaturedProducts([]);
+        }
+      } catch (error) {
+        console.log('Featured Products API error:', error.message);
+        setFeaturedProducts([]);
+      }
+
+      // Fetch Category Products
+      try {
+        const categoryResponse = await fetch('http://localhost:8080/api/products');
+        console.log('Category Response status:', categoryResponse.status);
+        if (categoryResponse.ok) {
+          const categoryData = await categoryResponse.json();
+          console.log('Category Raw Data:', categoryData);
+          const allProducts = categoryData?.data?.products || categoryData?.data?.data?.products || [];
+          console.log('All Products parsed:', allProducts);
+          if (Array.isArray(allProducts)) {
+            const groupedByCategory = {};
+            allProducts.forEach((product) => {
+              const categoryName = product.categoryID?.categoryName || 'Other';
+              if (!groupedByCategory[categoryName]) {
+                groupedByCategory[categoryName] = [];
+              }
+              groupedByCategory[categoryName].push(product);
+            });
+            console.log('Grouped by Category:', groupedByCategory);
+            setCategoryProducts(groupedByCategory);
+          } else {
+            console.log('No Category Products data available');
+            setCategoryProducts({});
+          }
+        } else {
+          console.log('Category Products API not available');
+          setCategoryProducts({});
+        }
+      } catch (error) {
+        console.log('Category Products API error:', error.message);
+        setCategoryProducts({});
+      }
+
+    } catch (error) {
+      console.error('General error in fetchProducts:', error);
+      // Set empty data if there's a general error
+      setFlashSaleProducts([]);
+      setFeaturedProducts([]);
+      setCategoryProducts({});
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="home">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="home-page">
-      {/* Hero Banner */}
-      <section className="hero-banner">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1 className="hero-title">Mua Sắm Thông Minh</h1>
-            <p className="hero-subtitle">Hàng triệu sản phẩm chính hãng, giá tốt nhất</p>
-            <Link to="/shop" className="hero-cta">Khám Phá Ngay</Link>
+    <div className="home">
+      
+      {/* Promotional Banners */}
+      
+      {/* Categories */}
+      <CategoryList />
+      
+      {/* Flash Sale Section */}
+      <section className="flash-sale-section">
+        <div className="flash-sale-container">
+          <div className="home-flash-header">
+            <div className="flash-sale-title-with-timer">
+              <h2 className="flash-sale-title">⚡ FLASH SALE</h2>
+              <div className="flash-sale-timer">
+                <span className="timer-number">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                <span className="timer-separator">:</span>
+                <span className="timer-number">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                <span className="timer-separator">:</span>
+                <span className="timer-number">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+              </div>
+            </div>
+            <Link to="/flash-sale" className="view-all-link">Xem thêm</Link>
           </div>
-          <div className="hero-image">
-            <img
-              src="/images/hero-shopping.png"
-              alt="Shopping"
-              onError={(e) => (e.target.src = "/images/default-product.jpg")}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="features-section">
-        <div className="container">
-          <div className="features-grid">
-            <div className="feature-item">
-              <i className="fas fa-truck"></i>
-              <span>Miễn phí vận chuyển</span>
-            </div>
-            <div className="feature-item">
-              <i className="fas fa-shield-alt"></i>
-              <span>Bảo hành chính hãng</span>
-            </div>
-            <div className="feature-item">
-              <i className="fas fa-star"></i>
-              <span>Đánh giá 5 sao</span>
-            </div>
-            <div className="feature-item">
-              <i className="fas fa-headphones"></i>
-              <span>Hỗ trợ 24/7</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="container">
-        {/* Categories */}
-        <section className="categories-section">
-          <div className="section-card">
-            <h2 className="section-title">Danh Mục Nổi Bật</h2>
-            <div className="categories-grid">
-              {categories.map((category, index) => (
-                <div
-                  key={index}
-                  className="category-item"
-                  onClick={() => setSelectedCategory(category.name)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="category-icon">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      onError={(e) => (e.target.src = "/images/default-product.jpg")}
-                    />
-                  </div>
-                  <span className="category-name">{category.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Category Products */}
-        {selectedCategory && (
-          <section className="category-products-section">
-            <div className="section-header">
-              <h2 className="section-title">{selectedCategory}</h2>
-              <Link to="/" className="view-all-btn" onClick={() => setSelectedCategory(null)}>
-                Quay lại
-              </Link>
-            </div>
-            <div className="products-grid">
-              {categoryProducts[selectedCategory] && categoryProducts[selectedCategory].length > 0 ? (
-                categoryProducts[selectedCategory].map((product, index) => (
-                  <RenderProduct key={product.id || product._id || index} product={product} />
+          <div className="flash-sale-products">
+            <button className="scroll-arrow left" onClick={() => flashScrollRef.current?.scrollBy({left: -300, behavior: 'smooth'})}>←</button>
+            <div className="flash-sale-scroll" ref={flashScrollRef}>
+              {flashSaleProducts.length > 0 ? (
+                flashSaleProducts.map(product => (
+                  <FlashSaleCard key={product._id} product={product} />
                 ))
               ) : (
-                <p>Không có sản phẩm cho danh mục này.</p>
+                <p className="no-products">No flash sale products available</p>
               )}
             </div>
-          </section>
-        )}
+            <button className="scroll-arrow right" onClick={() => flashScrollRef.current?.scrollBy({left: 300, behavior: 'smooth'})}>→</button>
+          </div>
+        </div>
+      </section>
 
-        {/* Flash Sale */}
-        <section className="flash-sale-section">
-          <div className="section-header">
-            <div className="section-title-group">
-              <h2 className="section-title flash-sale-title">⚡ FLASH SALE</h2>
-              <span className="hot-badge">HOT</span>
+      {/* Top Products Section - match Flash Sale layout */}
+      <section className="top-products-section">
+        <div className="top-products-container">
+          <div className="home-top-header">
+            <h2 className="top-products-title">🌟 Top Products</h2>
+            <Link to="/top-products" className="view-all-link">Xem thêm</Link>
+          </div>
+          <div className="top-products-products">
+            <button className="scroll-arrow left" onClick={() => topScrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}>←</button>
+            <div className="top-products-scroll" ref={topScrollRef}>
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map(product => (
+                  <TopProductCard key={product._id} product={product} />
+                ))
+              ) : (
+                <p className="no-products">No featured products available</p>
+              )}
             </div>
-            <Link to="/flash-sale" className="view-all-btn animated-link">
-              Xem Tất Cả
-            </Link>
+            <button className="scroll-arrow right" onClick={() => topScrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}>→</button>
           </div>
-          <FlashSaleCarousel products={flashSaleProducts} />
-        </section>
+        </div>
+      </section>
 
-        {/* Featured Products */}
-        <section className="featured-products-section">
-          <div className="section-header">
-            <h2 className="section-title">Sản Phẩm Nổi Bật</h2>
-            <Link to="/top-products" className="view-all-btn">
-              Xem Tất Cả
-            </Link>
+      {/* Today's Suggestions Section - carousel layout like Flash Sale */}
+      <section className="today-suggestions-section">
+        <div className="today-suggestions-container">
+          <div className="home-today-header">
+            <h2 className="today-suggestions-title">🎯 Gợi ý hôm nay</h2>
+            <Link to="/today-suggestions" className="view-all-link">Xem thêm</Link>
           </div>
-          <div className="products-grid">
-            {featuredProducts.length > 0 ? (
-              featuredProducts.map((product, index) => (
-                <RenderProduct key={product.id || product._id || index} product={product} />
-              ))
-            ) : (
-              <p>Không có sản phẩm nổi bật.</p>
-            )}
+          <div className="today-suggestions-products">
+            <button className="scroll-arrow left" onClick={() => todayScrollRef.current?.scrollBy({left: -300, behavior: 'smooth'})}>←</button>
+            <div className="today-suggestions-scroll" ref={todayScrollRef}>
+              {featuredProducts.length > 0 ? (
+                featuredProducts.slice(0, 12).map(product => (
+                  <TopProductCard key={product._id} product={product} />
+                ))
+              ) : (
+                <p className="no-products">No suggestions available</p>
+              )}
+            </div>
+            <button className="scroll-arrow right" onClick={() => todayScrollRef.current?.scrollBy({left: 300, behavior: 'smooth'})}>→</button>
           </div>
-        </section>
-
-        {/* Top Products Preview */}
-        <section className="top-products-section">
-          <div className="section-header">
-            <h2 className="section-title">Top Sản Phẩm Bán Chạy</h2>
-            <Link to="/top-products" className="view-all-btn">
-              Xem Tất Cả
-            </Link>
-          </div>
-          <div className="products-grid">
-            {featuredProducts.length > 0 ? (
-              featuredProducts.slice(0, 6).map((product, index) => (
-                <RenderProduct key={product.id || product._id || index} product={product} />
-              ))
-            ) : (
-              <p>Không có sản phẩm bán chạy.</p>
-            )}
-          </div>
-        </section>
-      </div>
+        </div>
+      </section>
       </div>
     ); 
   }
