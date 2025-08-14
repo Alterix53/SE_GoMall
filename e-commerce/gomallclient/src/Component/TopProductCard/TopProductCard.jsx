@@ -17,30 +17,76 @@ const TopProductCard = ({ product }) => {
     return rating.average.toFixed(1);
   };
 
+  const formatSold = (sold) => {
+    if (!sold) return "0";
+    if (sold >= 1000000) {
+      return `${(sold / 1000000).toFixed(1)}M`;
+    } else if (sold >= 1000) {
+      return `${(sold / 1000).toFixed(1)}k`;
+    }
+    return sold.toString();
+  };
+
   return (
     <div className="top-product-card">
       {/* Product Image */}
       <div className="product-image">
         <img
-          src={product.image || "/placeholder.svg?height=200&width=200&text=Product"}
+          src={product.image || "/images/placeholder-product.svg"}
           alt={product.name}
           onError={(e) => {
-            e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image";
+            if (e.target.src !== "/images/placeholder-product.svg") {
+              e.target.src = "/images/placeholder-product.svg";
+            }
+          }}
+          style={{
+            backgroundColor: '#f8f9fa',
+            objectFit: 'cover',
+            width: '100%',
+            height: '200px'
           }}
         />
-      </div>
-      
-      {/* Promotional Labels */}
-      <div className="promo-labels">
-        <div className="promo-label left">8.8</div>
-        <div className="promo-label right">
+        
+        {/* Rating Badge */}
+        <div className="rating-badge">
           ★ {formatRating(product.rating)}
         </div>
+        
+        {/* Discount Badge */}
+        {product.discount > 0 && (
+          <div className="discount-badge">
+            -{product.discount}%
+          </div>
+        )}
       </div>
       
       {/* Product Info */}
       <div className="product-info">
-        <div className="product-price">{formatPrice(product.price)}</div>
+        {/* Product Name */}
+        <div className="product-name">
+          {product.name || "Sản phẩm"}
+        </div>
+        
+        {/* Price Section */}
+        <div className="price-section">
+          <div className="current-price">{formatPrice(product.price)}</div>
+          {product.originalPrice && product.originalPrice > product.price && (
+            <div className="original-price">{formatPrice(product.originalPrice)}</div>
+          )}
+        </div>
+        
+        {/* Rating and Sold */}
+        <div className="product-stats">
+          <div className="rating">
+            <span className="stars">★★★★★</span>
+            <span className="rating-value">{formatRating(product.rating)}</span>
+          </div>
+          <div className="sold-count">
+            Đã bán {formatSold(product.sold)}
+          </div>
+        </div>
+        
+        {/* Action Button */}
         <button className="selling-fast-btn">ĐANG BÁN CHẠY</button>
       </div>
     </div>

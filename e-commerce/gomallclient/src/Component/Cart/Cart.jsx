@@ -68,7 +68,7 @@ export default function CartManager() {
         const products = data.data.products.map(product => ({
           id: product._id,
           name: product.name,
-          image: product.images?.[0]?.url || '/images/placeholder-product.jpg',
+          image: product.images?.[0]?.url || '/images/placeholder-product.svg',
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
           discount: product.discount || 0,
@@ -188,6 +188,9 @@ export default function CartManager() {
       <div className="cart-page cart--empty">
         <Header />
         <div className="cart-container">
+          <span className="page-title">Giỏ Hàng</span>
+        </div>
+        <div className="cart-wrapper">
           <div className="cart-empty-layout">
             {/* Cart Header */}
             <div className="cart-header-table">
@@ -203,20 +206,22 @@ export default function CartManager() {
               </div>
             </div>
 
-            {/* Voucher Section */}
-            <div className="cart-voucher-section">
-              <div className="voucher-item">
-                <div className="voucher-icon">🎫</div>
-                <span className="voucher-text">Shopee Voucher</span>
-                <button className="voucher-select-btn">Chọn hoặc nhập mã</button>
+            {/* Voucher Section - Only show when cart has items */}
+            {cartItems && cartItems.length > 0 && (
+              <div className="cart-voucher-section">
+                <div className="voucher-item">
+                  <div className="voucher-icon">🎫</div>
+                  <span className="voucher-text">Shopee Voucher</span>
+                  <button className="voucher-select-btn">Chọn hoặc nhập mã</button>
+                </div>
+                <div className="voucher-item">
+                  <div className="voucher-icon">💰</div>
+                  <span className="voucher-text">Shopee Xu</span>
+                  <span className="voucher-unavailable">Bạn chưa chọn sản phẩm</span>
+                  <span className="voucher-balance">-₫0</span>
+                </div>
               </div>
-              <div className="voucher-item">
-                <div className="voucher-icon">💰</div>
-                <span className="voucher-text">Shopee Xu</span>
-                <span className="voucher-unavailable">Bạn chưa chọn sản phẩm</span>
-                <span className="voucher-balance">-₫0</span>
-              </div>
-            </div>
+            )}
 
             {/* Selection Controls */}
             <div className="cart-selection-controls">

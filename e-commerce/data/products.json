@@ -281,7 +281,7 @@
     "views": 4723,
     "isActive": true,
     "isFeatured": false,
-    "isFlashSale": false,
+    "isFlashSale": true,
     "flashSalePrice": 173088514,
     "flashSaleEndDate": null
   },

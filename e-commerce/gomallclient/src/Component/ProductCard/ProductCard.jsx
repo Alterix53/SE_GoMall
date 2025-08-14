@@ -3,7 +3,6 @@ import "./ProductCard.css"
 
 export const RenderProduct = ({ product }) => {
   if (!product || !product.name) {
-    console.warn("Invalid product data:", product)
     return (
       <div className="product-card" style={{ minHeight: "300px", padding: "20px", textAlign: "center" }}>
         <p style={{ color: "#ff4444" }}>Invalid product</p>
@@ -18,7 +17,6 @@ export const RenderProduct = ({ product }) => {
 
   const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
 
-  console.log("Rendering product:", product.name, product)
   const productId = product.id || product._id
 
   return (
@@ -28,14 +26,18 @@ export const RenderProduct = ({ product }) => {
 
       <div className="product-image">
         <img
-          src={product.image || "/images/default-product.jpg"}
+          src={product.image || "/images/placeholder-product.svg"}
           alt={product.name}
           onError={(e) => {
-            console.error("Image load error for:", product.name, "falling back to default")
-            // Prevent infinite loop by checking if we're already using default image
-            if (e.target.src !== "/images/default-product.jpg") {
-              e.target.src = "/images/default-product.jpg"
+            if (e.target && e.target['src'] !== "/images/placeholder-product.svg") {
+              e.target['src'] = "/images/placeholder-product.svg"
             }
+          }}
+          style={{
+            backgroundColor: '#f8f9fa',
+            objectFit: 'cover',
+            width: '100%',
+            height: '200px'
           }}
         />
       </div>

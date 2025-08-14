@@ -111,7 +111,7 @@ export default function CategoryList() {
             discount: product?.price?.original && product?.price?.sale
               ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
               : 0,
-            image: product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/default-product.jpg',
+            image: product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/placeholder-product.svg',
             rating: product?.rating || { average: 0, count: 0 },
             sold: product?.sold || 0,
           }));

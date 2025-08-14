@@ -96,7 +96,10 @@ const Suggestions = () => {
                     alt={product.name}
                     className="suggestion-image"
                     onError={(e) => {
-                      e.target.src = '/images/placeholder-product.jpg';
+                      const target = e.target;
+                      if (target && target instanceof HTMLImageElement) {
+                        target.src = '/images/placeholder-product.jpg';
+                      }
                     }}
                   />
                   {product.discount > 0 && (

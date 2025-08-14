@@ -4,8 +4,6 @@ import { useState, useEffect, memo } from "react"
 import "./FlashSaleCarousel.css"
 
 const FlashSaleCarousel = memo(({ products }) => {
-  console.log("FlashSaleCarousel received:", products)
-
   const [timeLeft, setTimeLeft] = useState({
     hours: 12,
     minutes: 29,
@@ -48,7 +46,6 @@ const FlashSaleCarousel = memo(({ products }) => {
 
   // Render single product
   const renderProduct = (product) => {
-    console.log("Rendering product:", product.name)
     return (
       <div key={product.id} className="product-item">
         {product.discount > 0 && <span className="discount-badge">-{product.discount}%</span>}
@@ -56,11 +53,9 @@ const FlashSaleCarousel = memo(({ products }) => {
 
         <div className="product-image">
           <img
-            src={product.image || "/images/default-product.jpg"}
+            src={product.image || "/images/placeholder-product.svg"}
             alt={product.name}
             onError={(e) => {
-              console.error("Flash sale image load error for:", product.name, "falling back to default")
-              // Prevent infinite loop by checking if we're already using default image
               if (e.target.src !== "/images/default-product.jpg") {
                 e.target.src = "/images/default-product.jpg"
               }

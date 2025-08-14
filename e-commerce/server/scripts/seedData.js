@@ -311,7 +311,7 @@ const seedProducts = async (createdCategories, createdSellers) => {
     console.log("Valid products after filter:", validProducts);
     
     try {
-        console.log("Checking existing products...");
+        console.log("Checking existing products and performing upsert...");
         
         // Ensure connection is ready before querying
         if (mongoose.connection.readyState !== 1) {
@@ -322,41 +322,82 @@ const seedProducts = async (createdCategories, createdSellers) => {
         const db = mongoose.connection.db;
         const collection = db.collection('products');
         
-        const existingProduct = await collection.findOne({});
+        // Get existing products to check what's new
+        const existingProducts = await collection.find({}).toArray();
+        const existingProductNames = existingProducts.map(p => p.name);
         
-        if (existingProduct) {
-            console.log(`Found existing products. Skipping product seeding.`);
-            const existingProducts = await collection.find({}).toArray();
-            return existingProducts;
+        console.log(`Found ${existingProducts.length} existing products`);
+        console.log("Existing product names:", existingProductNames);
+        
+        // Filter out products that already exist
+        const newProducts = validProducts.filter(product => !existingProductNames.includes(product.name));
+        const existingProductsToUpdate = validProducts.filter(product => existingProductNames.includes(product.name));
+        
+        console.log(`Found ${newProducts.length} new products to insert`);
+        console.log(`Found ${existingProductsToUpdate.length} existing products to update`);
+        
+        let createdProducts = [];
+        let updatedProducts = [];
+        
+        // Insert new products
+        if (newProducts.length > 0) {
+            console.log("Inserting new products...");
+            const result = await collection.insertMany(newProducts);
+            
+            // Handle different MongoDB driver versions
+            if (result.ops) {
+                // MongoDB driver v3.x
+                createdProducts = result.ops;
+            } else if (result.insertedIds) {
+                // MongoDB driver v4.x+
+                const insertedIds = Object.values(result.insertedIds);
+                createdProducts = newProducts.map((product, index) => ({
+                    ...product,
+                    _id: insertedIds[index]
+                }));
+            } else {
+                // Fallback
+                createdProducts = newProducts;
+            }
+            
+            console.log("New products inserted successfully:", createdProducts.map(p => ({
+                name: p.name,
+                _id: p._id,
+                isFlashSale: p.isFlashSale
+            })));
         }
         
-        console.log("No existing products found. Inserting new products...");
-        const result = await collection.insertMany(validProducts);
-        
-        // Handle different MongoDB driver versions
-        let createdProducts;
-        if (result.ops) {
-            // MongoDB driver v3.x
-            createdProducts = result.ops;
-        } else if (result.insertedIds) {
-            // MongoDB driver v4.x+
-            const insertedIds = Object.values(result.insertedIds);
-            createdProducts = validProducts.map((product, index) => ({
-                ...product,
-                _id: insertedIds[index]
-            }));
-        } else {
-            // Fallback
-            createdProducts = validProducts;
+        // Update existing products (optional - only if you want to update existing data)
+        if (existingProductsToUpdate.length > 0) {
+            console.log("Updating existing products...");
+            for (const product of existingProductsToUpdate) {
+                const result = await collection.updateOne(
+                    { name: product.name },
+                    { 
+                        $set: {
+                            price: product.price,
+                            inventory: product.inventory,
+                            isFlashSale: product.isFlashSale,
+                            flashSalePrice: product.flashSalePrice,
+                            flashSaleEndDate: product.flashSaleEndDate,
+                            isFeatured: product.isFeatured,
+                            isActive: product.isActive,
+                            updatedAt: new Date()
+                        }
+                    }
+                );
+                if (result.modifiedCount > 0) {
+                    updatedProducts.push(product);
+                }
+            }
+            console.log("Updated products:", updatedProducts.map(p => p.name));
         }
         
-        console.log("Products seeded successfully:", createdProducts.map(p => ({
-            name: p.name,
-            _id: p._id,
-            isFlashSale: p.isFlashSale,
-            flashSaleEndDate: p.flashSaleEndDate ? p.flashSaleEndDate.toISOString() : null
-        })));
-        return createdProducts;
+        // Get final count
+        const finalProductCount = await collection.countDocuments();
+        console.log(`Total products in database: ${finalProductCount}`);
+        
+        return [...createdProducts, ...updatedProducts];
     } catch (error) {
         console.error("Error seeding products:", error);
         throw error;

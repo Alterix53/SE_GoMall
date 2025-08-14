@@ -221,4 +221,3 @@ export const handleProductImageUpload = (req, res, next) => {
         next();
     });
 };
->>>>>>> testUI

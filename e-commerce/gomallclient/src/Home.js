@@ -6,6 +6,7 @@ import FlashSaleCard from './Component/FlashSaleCard/FlashSaleCard';
 import TopProductCard from './Component/TopProductCard/TopProductCard';
 import './Home.css';
 import { Link } from 'react-router-dom'; // Added Link import
+import { apiService } from './utils/api.js';
 
 function Home() {
   const [flashSaleProducts, setFlashSaleProducts] = useState([]);
@@ -51,10 +52,6 @@ function Home() {
     return () => clearInterval(timer);
   }, []);
 
-
-
-
-
   const flashScrollRef = useRef(null);
   const topScrollRef = useRef(null);
   const todayScrollRef = useRef(null); // Added todayScrollRef
@@ -70,105 +67,81 @@ function Home() {
       
       // Fetch Flash Sale Products
       try {
-        const flashSaleResponse = await fetch('http://localhost:8080/api/products/flash-sale');
-        console.log('Flash Sale Response status:', flashSaleResponse.status);
-        if (flashSaleResponse.ok) {
-          const flashSaleData = await flashSaleResponse.json();
-          console.log('Flash Sale Raw Data:', flashSaleData);
-          const flashProducts = flashSaleData?.data?.products || flashSaleData?.data?.data?.products || [];
-          console.log('Flash Products parsed:', flashProducts);
-          if (Array.isArray(flashProducts)) {
-            const mappedFlash = flashProducts.map((p) => ({
-              _id: p._id,
-              name: p.name,
-              price: p?.price?.sale || p?.price?.original || 0,
-              originalPrice: p?.price?.original || 0,
-              discount:
-                p?.price?.original && p?.price?.sale
-                  ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
-                  : 0,
-              image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
-            }));
-            console.log('Mapped Flash Products:', mappedFlash);
-            setFlashSaleProducts(mappedFlash.slice(0, 8));
-          } else {
-            console.log('No Flash Sale data available');
-            setFlashSaleProducts([]);
-          }
+        const flashSaleResponse = await apiService.get('/products/flash-sale');
+        const flashSaleData = flashSaleResponse.data;
+        const flashProducts = flashSaleData?.data?.products || flashSaleData?.products || [];
+        if (Array.isArray(flashProducts)) {
+          const mappedFlash = flashProducts.map((p) => ({
+            _id: p._id,
+            name: p.name,
+            price: p?.price?.sale || p?.price?.original || 0,
+            originalPrice: p?.price?.original || 0,
+            discount:
+              p?.price?.original && p?.price?.sale
+                ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
+                : 0,
+            image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/placeholder-product.svg',
+            rating: p?.rating || { average: 0, count: 0 },
+            sold: p?.sold || 0,
+            isFlashSale: p.isFlashSale || false,
+          }));
+          setFlashSaleProducts(mappedFlash.slice(0, 8));
         } else {
-          console.log('Flash Sale API not available');
           setFlashSaleProducts([]);
         }
       } catch (error) {
-        console.log('Flash Sale API error:', error.message);
         setFlashSaleProducts([]);
       }
 
       // Fetch Featured Products (used by Top Products and Today's Suggestions)
       try {
-        const featuredResponse = await fetch('http://localhost:8080/api/products/top-products?type=bestseller&limit=12');
-        console.log('Featured Response status:', featuredResponse.status);
-        if (featuredResponse.ok) {
-          const featuredData = await featuredResponse.json();
-          console.log('Featured Raw Data:', featuredData);
-          const topProducts = featuredData?.data?.products || featuredData?.data?.data?.products || [];
-          console.log('Top Products parsed:', topProducts);
-          if (Array.isArray(topProducts)) {
-            const mappedTop = topProducts.map((p) => ({
-              _id: p._id,
-              name: p.name,
-              price: p?.price?.sale || p?.price?.original || 0,
-              originalPrice: p?.price?.original || 0,
-              discount:
-                p?.price?.original && p?.price?.sale
-                  ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
-                  : 0,
-              image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/default-product.jpg',
-              rating: p?.rating || { average: 0, count: 0 },
-              sold: p?.sold || 0,
-            }));
-            console.log('Mapped Top Products:', mappedTop);
-            // Ensure we have up to 12 items for Today Suggestions
-            setFeaturedProducts(mappedTop.slice(0, 12));
-          } else {
-            console.log('No Featured Products data available');
-            setFeaturedProducts([]);
-          }
+        const featuredResponse = await apiService.get('/products/top-products?type=bestseller&limit=12');
+        const featuredData = featuredResponse.data;
+        const topProducts = featuredData?.data?.products || featuredData?.products || [];
+        if (Array.isArray(topProducts)) {
+          const mappedTop = topProducts.map((p) => ({
+            _id: p._id,
+            name: p.name,
+            price: p?.price?.sale || p?.price?.original || 0,
+            originalPrice: p?.price?.original || 0,
+            discount:
+              p?.price?.original && p?.price?.sale
+                ? Math.round(((p.price.original - p.price.sale) / p.price.original) * 100)
+                : 0,
+            image: p?.images?.[0]?.url ? `http://localhost:8080${p.images[0].url}` : '/images/placeholder-product.svg',
+            rating: p?.rating || { average: 0, count: 0 },
+            sold: p?.sold || 0,
+            isFeatured: p.isFeatured || false,
+          }));
+          setFeaturedProducts(mappedTop.slice(0, 12));
         } else {
-          console.log('Featured Products API not available');
           setFeaturedProducts([]);
         }
       } catch (error) {
-        console.log('Featured Products API error:', error.message);
         setFeaturedProducts([]);
       }
 
       // Fetch Category Products
       try {
-        const categoryResponse = await fetch('http://localhost:8080/api/products');
-        console.log('Category Response status:', categoryResponse.status);
-        if (categoryResponse.ok) {
-          const categoryData = await categoryResponse.json();
-          console.log('Category Raw Data:', categoryData);
-          const allProducts = categoryData?.data?.products || categoryData?.data?.data?.products || [];
-          console.log('All Products parsed:', allProducts);
-          if (Array.isArray(allProducts)) {
-            const groupedByCategory = {};
-            allProducts.forEach((product) => {
-              const categoryName = product.categoryID?.categoryName || 'Other';
-              if (!groupedByCategory[categoryName]) {
-                groupedByCategory[categoryName] = [];
-              }
-              groupedByCategory[categoryName].push(product);
-            });
-            console.log('Grouped by Category:', groupedByCategory);
-            setCategoryProducts(groupedByCategory);
-          } else {
-            console.log('No Category Products data available');
-            setCategoryProducts({});
-          }
+        const categoryResponse = await apiService.get('/products');
+        console.log('Category Response:', categoryResponse);
+        const categoryData = categoryResponse.data;
+        console.log('Category Raw Data:', categoryData);
+        const allProducts = categoryData?.data?.products || categoryData?.products || [];
+        console.log('All Products parsed:', allProducts);
+        if (Array.isArray(allProducts)) {
+          const groupedByCategory = {};
+          allProducts.forEach((product) => {
+            const categoryName = product.categoryID?.categoryName || 'Other';
+            if (!groupedByCategory[categoryName]) {
+              groupedByCategory[categoryName] = [];
+            }
+            groupedByCategory[categoryName].push(product);
+          });
+          console.log('Grouped by Category:', groupedByCategory);
+          setCategoryProducts(groupedByCategory);
         } else {
-          console.log('Category Products API not available');
+          console.log('No Category Products data available');
           setCategoryProducts({});
         }
       } catch (error) {
@@ -178,6 +151,7 @@ function Home() {
 
     } catch (error) {
       console.error('General error in fetchProducts:', error);
+      setError(error.message);
       // Set empty data if there's a general error
       setFlashSaleProducts([]);
       setFeaturedProducts([]);
@@ -194,6 +168,18 @@ function Home() {
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="home">
+        <Header />
+        <div className="error-container">
+          <p>Error loading products: {error}</p>
+          <button onClick={fetchProducts}>Retry</button>
         </div>
       </div>
     );

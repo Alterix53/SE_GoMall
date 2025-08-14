@@ -163,7 +163,7 @@ export default function ProductDetail() {
         id: product._id,
         name: product.name,
         price: product.price?.sale || product.price?.original || 0,
-        image: product.images?.[0]?.url || product.images?.[0] || "/images/default-product.jpg",
+        image: product.images?.[0]?.url || product.images?.[0] || "/images/placeholder-product.svg",
         quantity: quantity,
         size: 'default'
       }
@@ -192,7 +192,7 @@ export default function ProductDetail() {
         id: product._id,
         name: product.name,
         price: product.price?.sale || product.price?.original || 0,
-        image: product.images?.[0]?.url || product.images?.[0] || "/images/default-product.jpg",
+        image: product.images?.[0]?.url || product.images?.[0] || "/images/placeholder-product.svg",
         quantity: quantity,
         size: 'default'
       }

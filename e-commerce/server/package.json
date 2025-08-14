@@ -8,7 +8,11 @@
     "start": "node Server.js",
     "dev": "nodemon Server.js",
     "create-admin": "node scripts/createAdmin.js",
-    "seed-data": "node scripts/seedData.js"
+    "seed-data": "node scripts/seedData.js",
+    "seed": "npm run seed-data",
+    "reset-reload": "node scripts/resetAndReloadData.js",
+    "setup": "node scripts/runAllScripts.js",
+    "force-reset": "node scripts/resetAndReloadData.js --force"
   },
   "keywords": [
     "ecommerce",

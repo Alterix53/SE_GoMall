@@ -2,42 +2,77 @@
 
 ## 📁 Files Overview
 
-### ✅ **seedData.js** (Unified Seeding Script)
-**Main seeding script** that combines the best features from both old files:
+### ✅ **seedData.js** (Main Seeding Script)
+**Primary seeding script** that handles all database initialization:
 - Seeds categories from `Categories.json`
 - Seeds users from `users.json` (creates default users if no data)
 - Seeds products from `products.json`
 - Handles batch processing for large datasets
 - Provides detailed logging and error handling
 
-### ⚡ **addFlashSaleToProducts.js**
-Adds flash sale data to existing products:
-- Sets `isFlashSale: true`
-- Adds `flashSalePrice` (30% discount)
-- Sets `flashSaleEndDate` (24 hours from now)
+### ✅ **seedDataKeepAlive.js** (Keep-Alive Version)
+Same as `seedData.js` but keeps MongoDB connection alive:
+- Useful for development and testing
+- Prevents disconnection after seeding
+- Same functionality as main script
 
-### 📊 **checkStatus.js**
-Checks database status and shows:
-- Number of categories, users, products
-- Flash sale products count
-- Sample product details
+### ✅ **resetAndReloadData.js** (Data Reset Script)
+Comprehensive script to reset and reload all data:
+- Clears existing data (optional with `--force` flag)
+- Re-seeds categories, users, and products
+- Uses upsert logic to avoid duplicates
+- Perfect for development and testing
+
+### ✅ **autoSetup.js** (Automatic Setup)
+Automatically checks database status and runs setup if needed:
+- Detects missing data
+- Runs setup automatically
+- Can be integrated with server startup
+
+### ✅ **runAllScripts.js** (Master Script)
+Runs all setup scripts in the correct order:
+- Creates admin user
+- Seeds all data
+- Orchestrates the entire setup process
+
+### ✅ **createAdmin.js** (Admin Creation)
+Creates default admin user:
+- Username: admin
+- Password: admin123
+- Full permissions
+
+### ✅ **migrateUserSeller.js** (Migration Script)
+Migrates existing user data to new User/Seller model structure:
+- Separates user and seller data
+- Maintains data integrity
+- One-time migration script
 
 ## 🚀 How to Use
 
-### 1. **Seed All Data**
+### 1. **Quick Setup (Recommended)**
 ```bash
 cd e-commerce/server/scripts
+node runAllScripts.js
+```
+
+### 2. **Seed Data Only**
+```bash
 node seedData.js
 ```
 
-### 2. **Add Flash Sale Data**
+### 3. **Reset and Reload Data**
 ```bash
-node addFlashSaleToProducts.js
+node resetAndReloadData.js
 ```
 
-### 3. **Check Database Status**
+### 4. **Create Admin Only**
 ```bash
-node checkStatus.js
+node createAdmin.js
+```
+
+### 5. **Auto Setup**
+```bash
+node autoSetup.js --force
 ```
 
 ## 📋 What Gets Seeded
@@ -82,40 +117,15 @@ node checkStatus.js
 ## 📊 Expected Output
 
 ```
-🚀 Starting database seeding...
-🔌 Connecting to MongoDB...
-✅ MongoDB Connected successfully
-📂 Seeding categories...
-✅ Created 10 categories
-👥 Seeding users...
-✅ Created 10 users (4 sellers)
-📦 Seeding products...
-✅ Created 20 products successfully
+🚀 Starting Database Setup Process...
+This will run all scripts in the correct order
 
-🎉 Database seeding completed successfully!
-📊 Summary:
-   - Categories: 10
-   - Users: 4 sellers
-   - Products: 20
-```
+STEP 1/2: Creating default admin user
+✅ createAdmin.js completed successfully
 
-## 🎯 **Migration from Old Files**
+STEP 2/2: Seeding categories, users, and products
+✅ seedData.js completed successfully
 
-### **Before** (2 separate files):
-- `seedData.js` - Complex, hard to maintain
-- `seedLargeData.js` - Simple but limited features
-
-### **After** (1 unified file):
-- `seedData.js` - Best of both worlds
-- Clean, maintainable code
-- Better error handling
-- More features
-
-## 📝 **Notes**
-- Always run `addFlashSaleToProducts.js` after seeding if you want flash sale products
-- The script automatically clears existing data before seeding
-- All data files should be in `e-commerce/data/` directory
-- MongoDB connection uses `mongodb://localhost:27017/GoMall`
-
----
-*Updated: August 7, 2025* 
+🎉 All scripts completed successfully in 15s!
+Database is now ready for use.
+``` 

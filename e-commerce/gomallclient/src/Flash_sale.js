@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
+import FlashSaleCard from "./Component/FlashSaleCard/FlashSaleCard.jsx";
 import Header from "./Component/Header/Header.jsx";
 import "./Flash_sale.css";
 
@@ -48,30 +48,27 @@ const FlashSale = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Flash Sale API response:", data);
         const products = data?.data?.products || data?.data?.data?.products || [];
         if (products.length === 0) {
-          console.warn("No flash sale products from API");
           setFlashSaleProducts([]);
           return;
         }
         const mappedProducts = products.map((product, index) => ({
-          id: product._id || `fallback-${index}`,
+          _id: product._id || `fallback-${index}`,
           name: product.name || "Unknown Product",
           price: product.flashSalePrice || product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
-          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
-          rating: product.rating?.average || 0,
+          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/placeholder-product.svg",
+          rating: product.rating || { average: 0, count: 0 },
           sold: product.sold || 0,
           discount: product.price?.original && product.flashSalePrice
             ? Math.round(((product.price.original - product.flashSalePrice) / product.price.original) * 100)
             : 0,
-          flashSale: product.isFlashSale || false,
+          isFlashSale: product.isFlashSale || false,
         }));
-        console.log("Mapped flash sale products:", mappedProducts);
         setFlashSaleProducts(mappedProducts);
       } catch (err) {
-        console.error("Error fetching flash sale products:", err.message);
+        setFlashSaleProducts([]);
       } finally {
         setLoading(false);
       }
@@ -135,7 +132,7 @@ const FlashSale = () => {
             ) : flashSaleProducts.length > 0 ? (
               <div className="products-grid">
                 {flashSaleProducts.map((product) => (
-                  <RenderProduct key={product.id} product={product} />
+                  <FlashSaleCard key={product._id} product={product} />
                 ))}
               </div>
             ) : (
