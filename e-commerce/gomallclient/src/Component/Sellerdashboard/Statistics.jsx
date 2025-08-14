@@ -17,11 +17,22 @@ const Statistics = () => {
     ]
   };
 
-  const topProducts = [
-    { name: 'Áo thun', sold: 100 },
-    { name: 'Giày Nike', sold: 80 },
-    { name: 'Mũ lưỡi trai', sold: 65 }
-  ];
+  const [topProducts, setTopProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchTopProducts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/products?sort=sold&limit=3');
+        const data = await response.json();
+        setTopProducts(data.products || []);
+      } catch (error) {
+        console.error('Error fetching top products:', error);
+        setTopProducts([]);
+      }
+    };
+
+    fetchTopProducts();
+  }, []);
 
   return (
     <div className="container mt-4">
@@ -33,7 +44,7 @@ const Statistics = () => {
         {topProducts.map((p, i) => (
           <li className="list-group-item d-flex justify-content-between" key={i}>
             <span>{p.name}</span>
-            <span>Đã bán: {p.sold}</span>
+            <span>Đã bán: {p.sold || 0}</span>
           </li>
         ))}
       </ul>

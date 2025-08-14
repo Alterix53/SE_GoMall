@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import UserAccountModal from "../UserAccountModal/UserAccountModal";
 import SearchBar from "../SearchBar/SearchBar";
-import "./navbar.css";
+import "./Navbar.css";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,7 +19,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    // Có thể redirect về trang chủ sau khi đăng xuất
+    // Can redirect to home page after logout
     window.location.href = '/';
   };
 
@@ -30,14 +30,14 @@ const Navbar = () => {
         <div className="navbar-top">
           <div className="container">
             <div className="top-left">
-              <span>Miễn phí vận chuyển đơn từ 150k</span>
+              <span>Free shipping for orders over 150k</span>
               <span>•</span>
-              <span>Hỗ trợ 24/7</span>
+              <span>24/7 Support</span>
             </div>
             <div className="top-right">
-              <span>Tải ứng dụng</span>
+              <span>Download App</span>
               <span>•</span>
-              <span>Kết nối</span>
+              <span>Connect</span>
             </div>
           </div>
         </div>
@@ -72,31 +72,46 @@ const Navbar = () => {
                 <div className="nav-icon">
                   <img
                       src="/images/bell.png"
-                      alt="Thông báo"
+                      alt="Notifications"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
-                  <span>Thông báo</span>
+                  <span>Notifications</span>
                 </div>
 
                 <div className="nav-icon">
                   <img
                       src="/images/setting.png"
-                      alt="Hỗ trợ"
+                      alt="Support"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
-                  <span>Trở thành người bán</span>
+                  <span>Become a Seller</span>
                 </div>
                 <Link to={isAuthenticated() ? "/cart" : "/signin" }>
                 <div className="nav-icon">
                   <img
                       src="/images/cart.png"
-                      alt="Giỏ hàng"
+                      alt="Cart"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={(e) => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
-                  <span>Giỏ hàng</span>
+                  <span>Cart</span>
                 </div>
                 </Link>
               
@@ -113,11 +128,16 @@ const Navbar = () => {
                 >
                   <img
                       src="/images/user.png"
-                      alt="Tài khoản"
+                      alt="Account"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
-                  <span>{isAuthenticated() ? getCurrentUser()?.username || 'Tài khoản' : 'Tài khoản'}</span>
+                  <span>{isAuthenticated() ? getCurrentUser()?.username || 'Account' : 'Account'}</span>
                 </div>
               </div>
 
@@ -140,7 +160,7 @@ const Navbar = () => {
                   to="/"
                   className={`nav-link ${isActive("/") ? "active" : ""}`}
               >
-                Trang chủ
+                Home
               </Link>
               <Link
                   to="/flash-sale"
@@ -168,7 +188,12 @@ const Navbar = () => {
                       src="/images/user.png"
                       alt="Tài khoản"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
                   <span>Tài khoản</span>
                 </div>
@@ -177,7 +202,12 @@ const Navbar = () => {
                       src="/images/cart.png"
                       alt="Giỏ hàng"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
                   <span>Giỏ hàng</span>
                 </div>
@@ -186,7 +216,12 @@ const Navbar = () => {
                       src="/images/help.png"
                       alt="Hỗ trợ"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={e => {
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
                   <span>Hỗ trợ</span>
                 </div>
@@ -195,7 +230,12 @@ const Navbar = () => {
                       src="/images/bell.png"
                       alt="Thông báo"
                       style={{ width: "20px", height: "20px" }}
-                      onError={(e) => (e.target.src = "/placeholder.svg?height=20&width=20")}
+                      onError={e => { 
+                        const target = e.target;
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = "/placeholder.svg?height=20&width=20";
+                        }
+                      }}
                   />
                   <span>Thông báo</span>
                 </div>

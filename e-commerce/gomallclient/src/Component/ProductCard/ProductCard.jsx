@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./ProductCard.css"
 
 export const RenderProduct = ({ product }) => {
@@ -5,7 +6,7 @@ export const RenderProduct = ({ product }) => {
     console.warn("Invalid product data:", product)
     return (
       <div className="product-card" style={{ minHeight: "300px", padding: "20px", textAlign: "center" }}>
-        <p style={{ color: "#ff4444" }}>Sản phẩm không hợp lệ</p>
+        <p style={{ color: "#ff4444" }}>Invalid product</p>
       </div>
     )
   }
@@ -18,19 +19,23 @@ export const RenderProduct = ({ product }) => {
   const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
 
   console.log("Rendering product:", product.name, product)
+  const productId = product.id || product._id
 
   return (
-    <div className="product-card" style={{ minHeight: "300px" }}>
+    <Link to={`/product/${productId}`} className="product-card" style={{ minHeight: "300px", display: "block", color: "inherit", textDecoration: "none" }}>
       {product.discount > 0 && <span className="discount-badge">-{product.discount}%</span>}
       {product.isFlashSale && <span className="flash-sale-badge">Flash Sale</span>}
 
       <div className="product-image">
         <img
-          src={product.image || "/placeholder.svg?height=200&width=200&text=Product"}
+          src={product.image || "/images/default-product.jpg"}
           alt={product.name}
           onError={(e) => {
-            console.error("Image load error for:", product.name)
-            e.target.src = "/placeholder.svg?height=200&width=200&text=No+Image"
+            console.error("Image load error for:", product.name, "falling back to default")
+            // Prevent infinite loop by checking if we're already using default image
+            if (e.target.src !== "/images/default-product.jpg") {
+              e.target.src = "/images/default-product.jpg"
+            }
           }}
         />
       </div>
@@ -44,11 +49,11 @@ export const RenderProduct = ({ product }) => {
           )}
         </div>
         <div className="product-stats">
-          <span className="rating">★ {product.rating || "N/A"}</span>
-          <span className="sold">Đã bán {formatSold(product.sold)}</span>
+          <span className="rating">★ {typeof product.rating === 'object' ? product.rating?.average || 0 : product.rating || "N/A"}</span>
+          <span className="sold">Sold {formatSold(product.sold)}</span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 

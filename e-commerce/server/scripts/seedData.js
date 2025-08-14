@@ -3,23 +3,23 @@ import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import axios from 'axios';
+import dotenv from 'dotenv';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
-import '../models/Order.js';
-import '../models/Cart.js';
-import '../models/Review.js';
-import '../models/Payment.js';
+import connectDB from '../config/database.js';
 
+// ESM replacements for __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log("Current script directory:", __dirname);
+// Load environment variables (prefer server/.env if present)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const MONGODB_URI = "mongodb://localhost:27017/GoMall";
+// Resolve Mongo URI with safe fallback - keep Develop's improved connection logic
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/GoMall";
 
-const connectDB = async (retries = 3) => {
+const connectForSeeding = async (retries = 3) => {
     for (let i = 0; i < retries; i++) {
         try {
             console.log(`Attempting to connect with MONGODB_URI (attempt ${i + 1}/${retries}):`, MONGODB_URI);
@@ -365,7 +365,7 @@ const seedProducts = async (createdCategories, createdSellers) => {
 
 const seedData = async () => {
     try {
-        await connectDB();
+        await connectForSeeding();
 
         console.log("Seeding categories from JSON...");
         const createdCategories = await seedCategories();

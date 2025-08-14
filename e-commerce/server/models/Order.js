@@ -7,6 +7,7 @@ const orderSchema = new mongoose.Schema({
     total: { type: Number, required: true },
     shippingAddress: { type: String, required: true },
     paymentMethod: { type: String },
+    note: { type: String },
     items: [{
         productID: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
         quantity: { type: Number, required: true, min: 1 },

@@ -1,77 +1,120 @@
-import userService from "../services/userService.js";
-import ResponseHandler from "../utils/responseHandler.js";
+import userFileService from '../services/userFileService.js';
+import ResponseHandler from '../utils/responseHandler.js';
 
-// Register new user
-export const registerUser = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to register user:", req.body);
-    
-    const userData = req.body;
-    const user = await userService.createUser(userData);
-    
-    ResponseHandler.success(res, { user }, "Đăng ký thành công", 201);
-});
-
-// Login user
-export const loginUser = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to login user:", req.body);
-    
-    const { username, password } = req.body;
-    const result = await userService.authenticateUser(username, password);
-    
-    ResponseHandler.success(res, result, "Đăng nhập thành công");
-});
-
-// Get user profile
-export const getUserProfile = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to get user profile:", req.params.id);
-    
-    const user = await userService.getUserById(req.params.id);
-    ResponseHandler.success(res, { user }, "Lấy thông tin người dùng thành công");
-});
-
-// Update user profile
-export const updateUserProfile = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to update user profile:", req.params.id);
-    
-    const userId = req.params.id;
-    const updateData = req.body;
-    const user = await userService.updateUserProfile(userId, updateData);
-    
-    ResponseHandler.success(res, { user }, "Cập nhật thông tin thành công");
-});
-
-// Change password
-export const changePassword = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to change password:", req.params.id);
-    
-    const userId = req.params.id;
-    const { currentPassword, newPassword } = req.body;
-    const result = await userService.changePassword(userId, currentPassword, newPassword);
-    
-    ResponseHandler.success(res, result, "Đổi mật khẩu thành công");
-});
-
-// Get all users (admin only)
+// GET /api/users - Get all users (admin only)
 export const getAllUsers = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to get all users:", req.query);
-    
-    const result = await userService.getAllUsers(req.query);
-    ResponseHandler.success(res, result, "Lấy danh sách người dùng thành công");
+    try {
+        const users = userFileService.getAllUsers();
+        
+        // Remove password from response
+        const safeUsers = users.map(user => {
+            const { password, ...safeUser } = user;
+            return safeUser;
+        });
+
+        ResponseHandler.success(res, { users: safeUsers }, "Lấy danh sách users thành công");
+    } catch (error) {
+        console.error('Error getting all users:', error);
+        throw error;
+    }
 });
 
-// Deactivate user (admin only)
-export const deactivateUser = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to deactivate user:", req.params.id);
-    
-    const result = await userService.deactivateUser(req.params.id);
-    ResponseHandler.success(res, result, "Khóa tài khoản thành công");
+// GET /api/users/:id - Get user by ID
+export const getUserById = ResponseHandler.asyncHandler(async (req, res) => {
+    try {
+        const user = userFileService.findUserById(req.params.id);
+        
+        if (!user) {
+            return ResponseHandler.notFound(res, "User không tồn tại");
+        }
+
+        // Remove password from response
+        const { password, ...safeUser } = user;
+
+        ResponseHandler.success(res, { user: safeUser }, "Lấy thông tin user thành công");
+    } catch (error) {
+        console.error('Error getting user by ID:', error);
+        throw error;
+    }
 });
 
-// Activate user (admin only)
-export const activateUser = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to activate user:", req.params.id);
-    
-    const result = await userService.activateUser(req.params.id);
-    ResponseHandler.success(res, result, "Mở khóa tài khoản thành công");
+// PUT /api/users/:id - Update user
+export const updateUser = ResponseHandler.asyncHandler(async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const updateData = req.body;
+
+        // Không cho phép cập nhật password qua endpoint này
+        delete updateData.password;
+
+        const updatedUser = userFileService.updateUser(userId, updateData);
+        
+        // Remove password from response
+        const { password, ...safeUser } = updatedUser;
+
+        ResponseHandler.success(res, { user: safeUser }, "Cập nhật user thành công");
+    } catch (error) {
+        console.error('Error updating user:', error);
+        
+        if (error.message.includes('User không tồn tại')) {
+            return ResponseHandler.notFound(res, error.message);
+        }
+        
+        throw error;
+    }
+});
+
+// DELETE /api/users/:id - Delete user
+export const deleteUser = ResponseHandler.asyncHandler(async (req, res) => {
+    try {
+        const userId = req.params.id;
+        
+        userFileService.deleteUser(userId);
+
+        ResponseHandler.success(res, null, "Xóa user thành công");
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        
+        if (error.message.includes('User không tồn tại')) {
+            return ResponseHandler.notFound(res, error.message);
+        }
+        
+        throw error;
+    }
+});
+
+// GET /api/users/role/:role - Get users by role
+export const getUsersByRole = ResponseHandler.asyncHandler(async (req, res) => {
+    try {
+        const role = req.params.role;
+        const users = userFileService.getUsersByRole(role);
+        
+        // Remove password from response
+        const safeUsers = users.map(user => {
+            const { password, ...safeUser } = user;
+            return safeUser;
+        });
+
+        ResponseHandler.success(res, { users: safeUsers }, `Lấy danh sách users với role ${role} thành công`);
+    } catch (error) {
+        console.error('Error getting users by role:', error);
+        throw error;
+    }
+});
+
+// POST /api/users/backup - Backup users file
+export const backupUsers = ResponseHandler.asyncHandler(async (req, res) => {
+    try {
+        const backupPath = userFileService.backupUsers();
+        
+        if (backupPath) {
+            ResponseHandler.success(res, { backupPath }, "Backup users file thành công");
+        } else {
+            throw new Error("Không thể tạo backup");
+        }
+    } catch (error) {
+        console.error('Error backing up users:', error);
+        throw error;
+    }
 });
 

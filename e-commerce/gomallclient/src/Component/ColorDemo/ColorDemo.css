@@ -1,0 +1,239 @@
+.color-demo {
+  padding: 2rem 0;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.color-demo h2 {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.color-demo h3 {
+  color: var(--dark-text);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Color Swatches */
+.color-swatch {
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.color-swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-box {
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  border: 2px solid #e2e8f0;
+}
+
+.color-name {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: var(--dark-text);
+}
+
+.color-code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.25rem;
+}
+
+.color-swatch small {
+  color: var(--secondary-color);
+  font-size: 0.75rem;
+}
+
+/* Button Groups */
+.button-group {
+  margin-bottom: 1rem;
+}
+
+.button-group .btn {
+  margin-bottom: 0.5rem;
+}
+
+/* Badge Groups */
+.badge-group {
+  margin-bottom: 1rem;
+}
+
+.badge-group .badge {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Card Demo */
+.card-ecommerce {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.card-ecommerce:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.product-discount {
+  color: var(--accent-orange);
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Cart Icon Demo */
+.cart-icon {
+  display: inline-block;
+  position: relative;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart-icon i {
+  color: var(--primary-color);
+}
+
+.cart-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--accent-orange);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Form Demo */
+.form-control-ecommerce {
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control-ecommerce:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+/* Alert Demo */
+.alert-ecommerce {
+  border-radius: 8px;
+  border: none;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .color-demo {
+    padding: 1rem 0;
+  }
+  
+  .color-swatch {
+    margin-bottom: 1rem;
+  }
+  
+  .button-group .btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .badge-group .badge {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Animation Effects */
+.color-swatch {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section Animations */
+.color-demo section {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Hover Effects for Interactive Elements */
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+/* Custom Scrollbar */
+.color-demo::-webkit-scrollbar {
+  width: 8px;
+}
+
+.color-demo::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.color-demo::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.color-demo::-webkit-scrollbar-thumb:hover {
+  background: darken(#6366f1, 10%);
+} 
