@@ -12,9 +12,6 @@ const userSchema = new mongoose.Schema({
     shopID: { type: mongoose.Schema.Types.ObjectId, ref: 'Shop' }, 
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
-<<<<<<< HEAD
-    
-=======
 }, { timestamps: true });
 
 // Hash password before saving
@@ -23,7 +20,6 @@ userSchema.pre('save', async function(next) {
         this.password = await bcrypt.hash(this.password, 10);
     }
     next();
->>>>>>> Data_Schema
 });
 
 export default mongoose.model('User', userSchema);
