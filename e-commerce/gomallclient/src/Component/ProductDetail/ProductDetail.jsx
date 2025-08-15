@@ -1,10 +1,39 @@
 "use client";
 
+<<<<<<< HEAD
 import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import "./ProductDetail.css";
 import ShopeeBanner from "../Header/Header";
 import { Heart, Truck, Minus, Plus, Clock, Star, StarHalf } from "lucide-react";
+=======
+import React, { useState, useEffect, useMemo, useContext } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import "./ProductDetail.css"
+import { useCart } from "../../contexts/CartContext"
+import {
+  Star,
+  StarHalf,
+  ShoppingCart,
+  Heart,
+  Share2,
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  Store,
+  MessageCircle,
+  Check,
+  Minus,
+  Plus,
+  MapPin,
+  Tag,
+  Loader2,
+  AlertCircle,
+  Clock,
+  Package,
+  Award,
+} from "lucide-react"
+>>>>>>> 93964b0642fa00cbdfe90d723ad9d0e3f0c834de
 
 /* ---------- helpers ---------- */
 function StarRating({ rating = 0, size = 16 }) {
@@ -76,18 +105,156 @@ const sampleProduct = {
   ],
 };
 
+<<<<<<< HEAD
 /* ================== PRESENTATIONAL ================== */
 export function ProductOverview({ product: p }) {
   // gộp product thật + fallback (không crash khi thiếu field)
   const product = { ...sampleProduct, ...(p || {}) };
+=======
+export default function ProductDetail() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const { toast } = useToast()
+  const { addToCart } = useCart()
+>>>>>>> 93964b0642fa00cbdfe90d723ad9d0e3f0c834de
 
   const specs =
     (Array.isArray(product.specifications) && product.specifications) ||
     (Array.isArray(product.specs) && product.specs) ||
     [];
 
+<<<<<<< HEAD
   const getSpec = (key) => {
     const lower = String(key).toLowerCase();
+=======
+  // Fetch product data
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true)
+        const response = await ApiService.getProductById(id)
+        console.log("Product response:", response)
+        
+        if (response.success && response.data && response.data.product) {
+          setProduct(response.data.product)
+          // Set default variations if available
+          if (response.data.product.specifications) {
+            const defaults = {}
+            response.data.product.specifications.forEach(spec => {
+              if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
+                const values = spec.value.split(',').map(v => v.trim())
+                defaults[spec.name] = values[0]
+              }
+            })
+            setSelectedVariations(defaults)
+          }
+      } else {
+          setError("Không thể tải thông tin sản phẩm")
+      }
+    } catch (err) {
+        console.error("Error fetching product:", err)
+        setError("Đã xảy ra lỗi khi tải thông tin sản phẩm")
+    } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchProduct()
+    }
+  }, [id])
+
+  // Calculate final price and discount
+  const finalPrice = useMemo(() => {
+    if (!product) return 0
+    return product.price?.sale || product.price?.original || 0
+  }, [product])
+
+  const discountPercent = useMemo(() => {
+    if (!product?.price?.sale || !product?.price?.original) return 0
+    return Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+  }, [product])
+
+  // Rating distribution (fallback to design sample if not provided)
+  const ratingDistribution = useMemo(() => {
+    const defaultDist = { 5: 82, 4: 12, 3: 3, 2: 2, 1: 1 }
+    const fromProduct = product?.rating?.distribution
+    if (!fromProduct) return defaultDist
+    // normalize keys as numbers and ensure percentages
+    return {
+      5: Number(fromProduct[5]) || 0,
+      4: Number(fromProduct[4]) || 0,
+      3: Number(fromProduct[3]) || 0,
+      2: Number(fromProduct[2]) || 0,
+      1: Number(fromProduct[1]) || 0,
+    }
+  }, [product])
+
+  const onAddToCart = async () => {
+    if (!product) return
+    
+    try {
+      const cartItem = {
+        id: product._id,
+        name: product.name,
+        price: product.price?.sale || product.price?.original || 0,
+        image: product.images?.[0]?.url || product.images?.[0] || "/images/default-product.jpg",
+        quantity: quantity,
+        size: 'default'
+      }
+      
+      await addToCart(cartItem)
+      
+      toast({
+        title: "Thành công!",
+        description: "Đã thêm sản phẩm vào giỏ hàng",
+      })
+    } catch (error) {
+      console.error("Error adding to cart:", error)
+      toast({
+        title: "Lỗi!",
+        description: "Đã xảy ra lỗi khi thêm vào giỏ hàng",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const onBuyNow = async () => {
+    if (!product) return
+    
+    try {
+      const cartItem = {
+        id: product._id,
+        name: product.name,
+        price: product.price?.sale || product.price?.original || 0,
+        image: product.images?.[0]?.url || product.images?.[0] || "/images/default-product.jpg",
+        quantity: quantity,
+        size: 'default'
+      }
+      
+      await addToCart(cartItem)
+      
+      // Navigate to checkout
+      navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+    } catch (error) {
+      console.error("Error buying now:", error)
+      toast({
+        title: "Lỗi!",
+        description: "Đã xảy ra lỗi khi xử lý đơn hàng",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleVariationChange = (type, value) => {
+    setSelectedVariations(prev => ({
+      ...prev,
+      [type]: value
+    }))
+  }
+
+  if (loading) {
+>>>>>>> 93964b0642fa00cbdfe90d723ad9d0e3f0c834de
     return (
       specs.find((s) => String(s.name ?? s.key ?? s.label).toLowerCase() === lower) || null
     );

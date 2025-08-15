@@ -6,6 +6,7 @@ import {
     login,
     logout,
     getCurrentUser,
+    updateCurrentUser,
     refreshToken
 } from '../controllers/authController.js';
 import { authenticateToken } from '../middleware/auth.js';
@@ -104,6 +105,7 @@ router.post('/register-seller', sellerRegisterValidation, registerSeller);
 router.post('/login', loginValidation, login);
 router.post('/logout', authenticateToken, logout);
 router.get('/me', authenticateToken, getCurrentUser);
+router.put('/me', authenticateToken, updateCurrentUser);
 router.post('/refresh', refreshTokenValidation, refreshToken);
 
 export default router; 

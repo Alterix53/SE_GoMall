@@ -101,6 +101,61 @@ export const isTokenValid = (token) => {
   }
 };
 
+// Checkout and Order APIs
+export const checkoutAPI = {
+  // Create new order
+  createOrder: async (orderData) => {
+    try {
+      const response = await apiService.post('/orders', orderData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Process payment
+  processPayment: async (paymentData) => {
+    try {
+      const response = await apiService.post('/payments/process', paymentData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get user orders
+  getUserOrders: async () => {
+    try {
+      const response = await apiService.get('/orders');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Update order status
+  updateOrderStatus: async (orderId, status) => {
+    try {
+      const response = await apiService.put(`/orders/${orderId}/status`, { status });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
+// Auth/User self-service APIs
+export const selfAPI = {
+  getMe: async () => {
+    const resp = await apiService.get('/auth/me');
+    return resp.data;
+  },
+  updateMe: async (payload) => {
+    const resp = await apiService.put('/auth/me', payload);
+    return resp.data;
+  }
+};
+
 // Lấy thông tin user từ token
 export const getUserFromToken = (token) => {
   try {

@@ -4,6 +4,7 @@ import './App.css';
 
 // Components (User)
 import Cart from './Component/Cart/Cart';
+import Checkout from './Component/Checkout/Checkout';
 import CategoryList from './Component/Category/CategoryList';
 import SearchResult from './SearchResult';                 // Minh
 import SearchBar from './Component/SearchBar/SearchBar';   // Minh (nếu dùng ở nơi khác)
@@ -49,6 +50,7 @@ import ShippingStatus from './Component/Sellerdashboard/ShippingStatus';
 import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 import Navbar from './Component/Navbar/Navbar';
+import Suggestions from './Component/Suggestions/Suggestions';
 
 // ✅ API service để gọi sản phẩm theo id
 import ApiService from './utils/api';
@@ -128,6 +130,7 @@ function App() {
                 />
 
                 <Route path="/cart" element={<Cart />} />
+<<<<<<< HEAD
 
                 {/* Seller routes */}
                 <Route
@@ -164,11 +167,38 @@ function App() {
                 />
 
                 {/* Main routes */}
+=======
+                <Route path="/checkout" element={<Checkout />} />
+                {/* SELLER ROUTES - có thể có layout riêng */}
+                <Route path="/seller" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <SellerDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/seller/statistics" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <Statistics />
+                  </ProtectedRoute>
+                } />
+                <Route path="/seller/orders" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <ShippingStatus />
+                  </ProtectedRoute>
+                } />
+                <Route path="/seller/orders/:id" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <OrderDetail />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Main routes - sử dụng Navbar và Footer */}
+>>>>>>> 93964b0642fa00cbdfe90d723ad9d0e3f0c834de
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/flash-sale" element={<FlashSale />} />
                 <Route path="/top-products" element={<TopProduct />} />
                 <Route path="/today-suggestions" element={<TodaySuggestions />} />
+                <Route path="/suggestions" element={<Suggestions />} />
                 <Route path="/register-seller" element={<RegisterSeller />} />
 
                 {/* Category */}

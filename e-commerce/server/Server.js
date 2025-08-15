@@ -104,6 +104,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);  // Thêm prefix /api/cart
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);  // Thêm order routes
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
 

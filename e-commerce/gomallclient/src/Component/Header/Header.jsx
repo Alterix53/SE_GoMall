@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import CartTooltip from '../CartTooltip/CartTooltip';
 import './Header.css';
 
 function Header() {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+  const [showCartTooltip, setShowCartTooltip] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
   const toggleAccountDropdown = () => {
@@ -18,6 +20,26 @@ function Header() {
   const handleLogout = () => {
     logout();
     closeAccountDropdown();
+  };
+
+  const handleCartMouseEnter = () => {
+    setShowCartTooltip(true);
+  };
+
+  const handleCartMouseLeave = () => {
+    setShowCartTooltip(false);
+  };
+
+  const closeCartTooltip = () => {
+    setShowCartTooltip(false);
+  };
+
+  const handleAccountMouseEnter = () => {
+    setShowAccountDropdown(true);
+  };
+
+  const handleAccountMouseLeave = () => {
+    setShowAccountDropdown(false);
   };
 
   return (
@@ -75,14 +97,29 @@ function Header() {
               <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2753.svg" alt="Become a Seller" />
               <span className="nav-text">Become a Seller</span>
             </Link>
-            <Link to="/cart" className="nav-item">
-              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Cart" />
-              <span className="nav-text">Cart</span>
-            </Link>
-            <div className="nav-item account-dropdown">
+            <div 
+              className="nav-item cart-dropdown"
+              onMouseEnter={handleCartMouseEnter}
+              onMouseLeave={handleCartMouseLeave}
+            >
+              <Link to="/cart" className="cart-link">
+                <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Cart" />
+                <span className="nav-text">Cart</span>
+              </Link>
+              <CartTooltip 
+                isVisible={showCartTooltip}
+                onClose={closeCartTooltip}
+                onMouseEnter={handleCartMouseEnter}
+                onMouseLeave={handleCartMouseLeave}
+              />
+            </div>
+            <div 
+              className="nav-item account-dropdown"
+              onMouseEnter={handleAccountMouseEnter}
+              onMouseLeave={handleAccountMouseLeave}
+            >
               <button 
                 className="account-button"
-                onClick={toggleAccountDropdown}
                 type="button"
               >
                 <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f464.svg" alt="Account" />
@@ -90,7 +127,11 @@ function Header() {
                   {isAuthenticated() && user ? user.username : 'Account'}
                 </span>
               </button>
-              <div className={`dropdown-menu ${showAccountDropdown ? 'show' : 'hide'}`}>
+              <div 
+                className={`dropdown-menu ${showAccountDropdown ? 'show' : 'hide'}`}
+                onMouseEnter={handleAccountMouseEnter}
+                onMouseLeave={handleAccountMouseLeave}
+              >
                 {isAuthenticated() && user ? (
                   // Đã đăng nhập - hiển thị menu user
                   <>
@@ -101,22 +142,22 @@ function Header() {
                         <span className="user-role">{user.role}</span>
                       </div>
                     </div>
-                    <Link to="/profile" className="dropdown-item" onClick={closeAccountDropdown}>
+                    <Link to="/profile" className="dropdown-item">
                       <i className="dropdown-icon">⚙️</i>
                       <span>Tài khoản của tôi</span>
                     </Link>
-                    <Link to="/orders" className="dropdown-item" onClick={closeAccountDropdown}>
+                    <Link to="/orders" className="dropdown-item">
                       <i className="dropdown-icon">📦</i>
                       <span>Đơn mua</span>
                     </Link>
                     {user.role === 'seller' && (
-                      <Link to="/seller-dashboard" className="dropdown-item" onClick={closeAccountDropdown}>
+                      <Link to="/seller-dashboard" className="dropdown-item">
                         <i className="dropdown-icon">🏪</i>
                         <span>Kênh Người Bán</span>
                       </Link>
                     )}
                     {user.role === 'admin' && (
-                      <Link to="/admin" className="dropdown-item" onClick={closeAccountDropdown}>
+                      <Link to="/admin" className="dropdown-item">
                         <i className="dropdown-icon">🛠️</i>
                         <span>Quản trị</span>
                       </Link>
@@ -129,11 +170,11 @@ function Header() {
                 ) : (
                   // Chưa đăng nhập - hiển thị login/signup
                   <>
-                    <Link to="/login" className="dropdown-item" onClick={closeAccountDropdown}>
+                    <Link to="/login" className="dropdown-item">
                       <i className="dropdown-icon">🔑</i>
                       <span>Đăng nhập</span>
                     </Link>
-                    <Link to="/signup" className="dropdown-item" onClick={closeAccountDropdown}>
+                    <Link to="/signup" className="dropdown-item">
                       <i className="dropdown-icon">📝</i>
                       <span>Đăng ký</span>
                     </Link>
