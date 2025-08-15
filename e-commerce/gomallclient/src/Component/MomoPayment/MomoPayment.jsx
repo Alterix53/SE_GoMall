@@ -65,7 +65,15 @@ const MomoPayment = ({ orderData, onBack }) => {
             }
         } catch (error) {
             console.error('Error creating payment:', error);
-            setError('Có lỗi xảy ra khi tạo giao dịch thanh toán');
+            
+            // Kiểm tra lỗi authentication
+            if (error.message && error.message.includes('Access token required')) {
+                setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+            } else if (error.message && error.message.includes('401')) {
+                setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+            } else {
+                setError('Có lỗi xảy ra khi tạo giao dịch thanh toán. Vui lòng thử lại!');
+            }
         } finally {
             setLoading(false);
         }
@@ -187,6 +195,16 @@ const MomoPayment = ({ orderData, onBack }) => {
                     >
                         Quay Lại Checkout
                     </button>
+                    
+                    {error.includes('đăng nhập') && (
+                        <button 
+                            className="momo-btn secondary"
+                            onClick={() => window.location.href = '/login'}
+                            style={{ marginTop: '10px' }}
+                        >
+                            Đăng Nhập Lại
+                        </button>
+                    )}
                 </div>
             </div>
         );

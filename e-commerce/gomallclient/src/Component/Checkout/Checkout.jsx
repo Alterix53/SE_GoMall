@@ -85,6 +85,14 @@ const Checkout = () => {
       return;
     }
 
+    // Kiểm tra token có hợp lệ không
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+      navigate('/login');
+      return;
+    }
+
     if (!userInfo.address || !userInfo.name || !userInfo.phone) {
       setError('Vui lòng điền đầy đủ thông tin địa chỉ giao hàng!');
       return;
