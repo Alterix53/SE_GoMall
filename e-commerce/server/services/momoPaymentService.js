@@ -32,7 +32,7 @@ class MomoPaymentService {
 
             // Tạo request data
             const requestId = `MOMO_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            const orderId = orderID.toString();
+            const orderId = order.orderNumber || orderID.toString();
             const extraData = '';
 
             const requestData = {
@@ -70,15 +70,23 @@ class MomoPaymentService {
 
             await momoPayment.save();
 
-            // Trả về data cho frontend
-            return {
-                success: true,
-                paymentUrl: `${this.config.endpoint}?${new URLSearchParams({
-                    ...requestData,
-                    signature
-                }).toString()}`,
+            const paymentUrl = `${this.config.endpoint}?${new URLSearchParams({
+                ...requestData,
+                signature
+            }).toString()}`;
+
+            console.log('Created MoMo payment:', {
                 requestId,
                 orderId,
+                amount,
+                paymentUrl: paymentUrl.substring(0, 100) + '...'
+            });
+
+            // Trả về data cho frontend
+            return {
+                paymentUrl,
+                requestId,
+                orderId: order._id.toString(),
                 amount,
                 orderInfo
             };

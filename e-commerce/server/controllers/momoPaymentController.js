@@ -1,5 +1,8 @@
 import momoPaymentService from '../services/momoPaymentService.js';
 import ResponseHandler from '../utils/responseHandler.js';
+import Order from '../models/Order.js';
+import mongoose from 'mongoose';
+import MomoPayment from '../models/MomoPayment.js';
 
 // Tạo giao dịch MoMo mới
 export const createMomoPayment = async (req, res) => {
@@ -64,7 +67,7 @@ export const checkPaymentStatus = async (req, res) => {
         const result = await momoPaymentService.checkPaymentStatus(requestId);
         
         // Kiểm tra quyền truy cập
-        if (result.payment.userID.toString() !== userID.toString()) {
+        if (result.payment && result.payment.userID && result.payment.userID.toString() !== userID.toString()) {
             return ResponseHandler.unauthorized(res, 'Access denied');
         }
 
@@ -132,6 +135,103 @@ export const simulateMoMoResponse = async (req, res) => {
 
     } catch (error) {
         console.error('Error in simulateMoMoResponse:', error);
+        return ResponseHandler.serverError(res, error.message);
+    }
+};
+
+    // Tạo giao dịch test (không cần authentication)
+    export const createTestPayment = async (req, res) => {
+        try {
+            const { orderID, amount, orderInfo } = req.body;
+            
+            console.log('🔍 createTestPayment called with:', { orderID, amount, orderInfo });
+
+            // Validation
+            if (!orderID || !amount || !orderInfo) {
+                return ResponseHandler.badRequest(res, 'Missing required fields: orderID, amount, orderInfo');
+            }
+
+            if (amount <= 0) {
+                return ResponseHandler.badRequest(res, 'Amount must be greater than 0');
+            }
+
+        // Tạo payment trực tiếp không cần Order
+        const requestId = `MOMO_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const testOrderId = new mongoose.Types.ObjectId();
+        const testUserId = new mongoose.Types.ObjectId('507f1f77bcf86cd799439011');
+        
+        console.log('🔧 Creating test payment with:', {
+            requestId,
+            testOrderId: testOrderId.toString(),
+            testUserId: testUserId.toString(),
+            amount,
+            orderInfo
+        });
+        
+        try {
+            // Tạo MomoPayment với dữ liệu test
+            const momoPayment = new MomoPayment({
+                orderID: testOrderId, // Sử dụng testOrderId đã tạo, không phải orderID từ request
+                userID: testUserId,
+                amount,
+                partnerCode: 'MOMO',
+                requestId,
+                orderInfo,
+                redirectUrl: 'http://localhost:3000/payment/result',
+                ipnUrl: 'http://localhost:8080/api/momo/ipn',
+                signature: 'test_signature',
+                status: 'PENDING'
+            });
+            
+            console.log('💾 MomoPayment object created:', {
+                orderID: momoPayment.orderID,
+                userID: momoPayment.userID,
+                requestId: momoPayment.requestId
+            });
+            
+            // Lưu vào database
+            await momoPayment.save();
+            console.log('✅ Test payment saved to database successfully');
+
+            // Tạo payment URL giả
+            const paymentUrl = `https://test-payment.momo.vn/v2/gateway/api/create?requestId=${requestId}&amount=${amount}&orderId=${testOrderId}`;
+            
+            const result = {
+                paymentUrl,
+                requestId,
+                orderId: testOrderId.toString(),
+                amount,
+                orderInfo
+            };
+            
+            return ResponseHandler.success(res, 'Test payment created successfully', result);
+        } catch (dbError) {
+            console.error('❌ Database error when saving test payment:', dbError);
+            console.error('📋 Error details:', {
+                name: dbError.name,
+                message: dbError.message,
+                code: dbError.code
+            });
+            
+            // Fallback: trả về mock data nếu database có lỗi
+            // Không cần lưu vào database cho test
+            const paymentUrl = `https://test-payment.momo.vn/v2/gateway/api/create?requestId=${requestId}&amount=${amount}&orderId=${testOrderId}`;
+            
+            const result = {
+                paymentUrl,
+                requestId,
+                orderId: testOrderId.toString(),
+                amount,
+                orderInfo,
+                note: 'Test payment (mock mode - not saved to database)'
+            };
+            
+            console.log('🔄 Fallback to mock mode with result:', result);
+            return ResponseHandler.success(res, 'Test payment created successfully (mock mode)', result);
+        }
+
+    } catch (error) {
+        console.error('Error in createTestPayment:', error);
         return ResponseHandler.serverError(res, error.message);
     }
 };

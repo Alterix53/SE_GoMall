@@ -18,5 +18,6 @@ router.get('/:id', authenticateToken, momoPaymentController.getPaymentById);
 
 // Testing endpoints (có thể remove trong production)
 router.post('/simulate', momoPaymentController.simulateMoMoResponse);
+router.post('/test-create', momoPaymentController.createTestPayment);
 
 export default router;

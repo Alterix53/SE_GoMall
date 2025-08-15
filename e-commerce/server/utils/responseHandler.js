@@ -39,6 +39,11 @@ class ResponseHandler {
         return this.error(res, message, 403);
     }
 
+    // Server error response
+    static serverError(res, message = "Lỗi server", error = null) {
+        return this.error(res, message, 500, error);
+    }
+
     // Handle async controller errors
     static asyncHandler(fn) {
         return async (req, res, next) => {

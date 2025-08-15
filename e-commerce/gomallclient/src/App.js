@@ -56,6 +56,9 @@ import PaymentSuccess from './Component/PaymentResult/PaymentSuccess';
 import PaymentFailed from './Component/PaymentResult/PaymentFailed';
 import PaymentCancelled from './Component/PaymentResult/PaymentCancelled';
 
+// Import Test components
+import QRTest from './Component/MomoPayment/QRTest';
+
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
@@ -123,6 +126,9 @@ function App() {
                 <Route path="/payment/success" element={<PaymentSuccess />} />
                 <Route path="/payment/failed" element={<PaymentFailed />} />
                 <Route path="/payment/cancelled" element={<PaymentCancelled />} />
+                
+                {/* Test Routes */}
+                <Route path="/qr-test" element={<QRTest />} />
                 {/* SELLER ROUTES - có thể có layout riêng */}
                 <Route path="/seller" element={
                   <ProtectedRoute requiredRole="seller">

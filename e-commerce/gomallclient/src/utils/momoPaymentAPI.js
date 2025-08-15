@@ -15,6 +15,19 @@ export const momoPaymentAPI = {
         }
     },
 
+    // Tạo giao dịch test (không cần authentication)
+    createTestPayment: async (orderID, amount, orderInfo) => {
+        try {
+            return await apiService.request('/momo/test-create', {
+                method: 'POST',
+                body: JSON.stringify({ orderID, amount, orderInfo })
+            });
+        } catch (error) {
+            console.error('Error creating test MoMo payment:', error);
+            throw error;
+        }
+    },
+
     // Kiểm tra trạng thái giao dịch
     checkPaymentStatus: async (requestId) => {
         try {
