@@ -10,6 +10,7 @@ import authRoutes from "./routes/authRoutes.js"; // Import auth routes
 import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import momoPaymentRoutes from "./routes/momoPaymentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import Product from './models/Product.js';
@@ -106,6 +107,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);  // Thêm order routes
 app.use("/api/payments", paymentRoutes);
+app.use("/api/momo", momoPaymentRoutes);  // Thêm MoMo payment routes
 app.use("/api/admin", adminRoutes);
 
 // app.use("/api/auth", userRoutes); // Mount auth routes trước

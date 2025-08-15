@@ -1,0 +1,309 @@
+.payment-result-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.payment-result-container.success {
+    background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+}
+
+.payment-result-container.failed {
+    background: linear-gradient(135deg, #f44336 0%, #ff5722 100%);
+}
+
+.payment-result-container.cancelled {
+    background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+}
+
+.payment-result-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.payment-result-container.success .payment-result-card::before {
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+}
+
+.payment-result-container.failed .payment-result-card::before {
+    background: linear-gradient(90deg, #f44336, #ff5722);
+}
+
+.payment-result-container.cancelled .payment-result-card::before {
+    background: linear-gradient(90deg, #ff9800, #ffc107);
+}
+
+.result-icon {
+    margin-bottom: 30px;
+}
+
+.success-icon,
+.failed-icon,
+.cancelled-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.success-icon {
+    animation: bounceIn 0.8s ease-out;
+}
+
+.failed-icon {
+    animation: shake 0.8s ease-out;
+}
+
+.cancelled-icon {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.payment-result-card h1 {
+    color: #333;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    animation: slideInUp 0.8s ease-out 0.2s both;
+}
+
+.result-message {
+    color: #666;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    animation: slideInUp 0.8s ease-out 0.4s both;
+}
+
+@keyframes slideInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.payment-details {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    animation: slideInUp 0.8s ease-out 0.6s both;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row span:first-child {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-row span:last-child {
+    color: #333;
+    font-weight: 600;
+}
+
+.amount {
+    color: #e91e63 !important;
+    font-size: 18px;
+}
+
+.next-steps,
+.troubleshooting,
+.cancellation-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    text-align: left;
+    animation: slideInUp 0.8s ease-out 0.8s both;
+}
+
+.next-steps h3,
+.troubleshooting h3,
+.cancellation-info h3 {
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+}
+
+.next-steps ul,
+.troubleshooting ul,
+.cancellation-info ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.next-steps li,
+.troubleshooting li,
+.cancellation-info li {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
+    animation: slideInUp 0.8s ease-out 1s both;
+}
+
+.result-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 180px;
+}
+
+.result-btn.primary {
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    color: white;
+}
+
+.result-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
+}
+
+.result-btn.secondary {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #dee2e6;
+}
+
+.result-btn.secondary:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.support-info {
+    background: #e3f2fd;
+    border-radius: 8px;
+    padding: 20px;
+    border-left: 4px solid #2196f3;
+    animation: slideInUp 0.8s ease-out 1.2s both;
+}
+
+.support-info p {
+    margin: 0 0 10px 0;
+    color: #1976d2;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.support-info p:last-child {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .payment-result-container {
+        padding: 10px;
+    }
+    
+    .payment-result-card {
+        padding: 30px 20px;
+        border-radius: 15px;
+    }
+    
+    .payment-result-card h1 {
+        font-size: 28px;
+    }
+    
+    .result-message {
+        font-size: 16px;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .result-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-result-card {
+        padding: 20px 15px;
+    }
+    
+    .success-icon,
+    .failed-icon,
+    .cancelled-icon {
+        font-size: 60px;
+    }
+    
+    .payment-result-card h1 {
+        font-size: 24px;
+    }
+    
+    .payment-details,
+    .next-steps,
+    .troubleshooting,
+    .cancellation-info {
+        padding: 20px;
+    }
+    
+    .support-info {
+        padding: 15px;
+    }
+}
