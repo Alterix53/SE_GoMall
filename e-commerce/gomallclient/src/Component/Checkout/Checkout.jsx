@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import { checkoutAPI, selfAPI } from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
+import momoPaymentAPI from '../../utils/momoPaymentAPI';
+import MomoPayment from '../MomoPayment/MomoPayment';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -27,6 +29,8 @@ const Checkout = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showMomoPayment, setShowMomoPayment] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState(null);
 
   // Load user info and redirect if no items selected
   useEffect(() => {
@@ -119,8 +123,24 @@ const Checkout = () => {
       const orderResponse = await checkoutAPI.createOrder(orderData);
       
       if (orderResponse.success) {
-        // Process payment if needed (only for non-COD methods)
-        if (paymentMethod !== 'cod') {
+        // Store order data for MoMo payment
+        setCurrentOrder({
+          orderID: orderResponse.order._id,
+          orderNumber: orderResponse.order.orderNumber || orderResponse.order._id,
+          amount: totalWithShipping,
+          items: selectedItems
+        });
+
+        // Handle different payment methods
+        if (paymentMethod === 'momo') {
+          // Show MoMo payment component
+          setShowMomoPayment(true);
+        } else if (paymentMethod === 'cod') {
+          // Cash on delivery - order completed
+          alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+          navigate('/');
+        } else {
+          // Other payment methods (card, bank transfer, etc.)
           try {
             const paymentData = {
               orderID: orderResponse.order._id,
@@ -129,15 +149,15 @@ const Checkout = () => {
             };
             
             await checkoutAPI.processPayment(paymentData);
+            alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+            navigate('/');
           } catch (paymentError) {
             console.error('Payment processing failed:', paymentError);
             // Payment failure shouldn't stop the order creation
-            // We can handle this differently based on business logic
+            alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+            navigate('/');
           }
         }
-
-        alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-        navigate('/');
       } else {
         setError('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
       }
@@ -152,6 +172,16 @@ const Checkout = () => {
 
   if (!selectedItems || selectedItems.length === 0) {
     return null;
+  }
+
+  // Show MoMo Payment component if payment method is MoMo and order is created
+  if (showMomoPayment && currentOrder) {
+    return (
+      <MomoPayment 
+        orderData={currentOrder}
+        onBack={() => setShowMomoPayment(false)}
+      />
+    );
   }
 
   return (
@@ -360,6 +390,13 @@ const Checkout = () => {
                 >
                   Tiền mặt
                 </button>
+
+                <button 
+                  className={`payment-tab ${paymentMethod === 'momo' ? 'active' : ''}`}
+                  onClick={() => setPaymentMethod('momo')}
+                >
+                  📱 MoMo Wallet
+                </button>
               </div>
               
               {/* Remove the old bank transfer section */}
@@ -549,6 +586,25 @@ const Checkout = () => {
                       </div>
                       <div className="cash-payment-note">
                         <strong>Lưu ý:</strong> Vui lòng chuẩn bị đủ tiền mặt để thanh toán khi nhận hàng.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === 'momo' && (
+                <div className="payment-options-detail">
+                  <div className="momo-payment-info">
+                    <div className="momo-payment-description">
+                      <p>📱 Thanh toán nhanh chóng và an toàn với MoMo Wallet</p>
+                      <div className="momo-payment-benefits">
+                        <span>✓ Quét mã QR để thanh toán</span>
+                        <span>✓ Không cần thẻ hay tài khoản ngân hàng</span>
+                        <span>✓ Xác nhận thanh toán ngay lập tức</span>
+                        <span>✓ Bảo mật thông tin tuyệt đối</span>
+                      </div>
+                      <div className="momo-payment-note">
+                        <strong>Lưu ý:</strong> Vui lòng mở ứng dụng MoMo và quét mã QR để hoàn tất thanh toán.
                       </div>
                     </div>
                   </div>

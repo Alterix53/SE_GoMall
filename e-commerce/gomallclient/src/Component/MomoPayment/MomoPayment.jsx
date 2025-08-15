@@ -3,17 +3,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import momoPaymentAPI from '../../utils/momoPaymentAPI.js';
 import './MomoPayment.css';
 
-const MomoPayment = () => {
+const MomoPayment = ({ orderData, onBack }) => {
     const navigate = useNavigate();
-    const location = useLocation();
     const [loading, setLoading] = useState(false);
     const [paymentData, setPaymentData] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState('pending');
     const [error, setError] = useState(null);
     const [countdown, setCountdown] = useState(300); // 5 minutes countdown
 
-    // Lấy thông tin order từ location state hoặc URL params
-    const orderData = location.state?.orderData || {};
+    // Use orderData from props instead of location state
 
     useEffect(() => {
         if (!orderData.orderID || !orderData.amount) {
@@ -185,9 +183,9 @@ const MomoPayment = () => {
                     <p>{error}</p>
                     <button 
                         className="momo-btn primary"
-                        onClick={() => navigate('/cart')}
+                        onClick={onBack}
                     >
-                        Quay Lại Giỏ Hàng
+                        Quay Lại Checkout
                     </button>
                 </div>
             </div>

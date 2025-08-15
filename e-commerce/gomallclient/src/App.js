@@ -51,6 +51,11 @@ import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 import Navbar from './Component/Navbar/Navbar';
 import Suggestions from './Component/Suggestions/Suggestions';
 
+// Import Payment Result components
+import PaymentSuccess from './Component/PaymentResult/PaymentSuccess';
+import PaymentFailed from './Component/PaymentResult/PaymentFailed';
+import PaymentCancelled from './Component/PaymentResult/PaymentCancelled';
+
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
@@ -113,6 +118,11 @@ function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                
+                {/* Payment Result Routes */}
+                <Route path="/payment/success" element={<PaymentSuccess />} />
+                <Route path="/payment/failed" element={<PaymentFailed />} />
+                <Route path="/payment/cancelled" element={<PaymentCancelled />} />
                 {/* SELLER ROUTES - có thể có layout riêng */}
                 <Route path="/seller" element={
                   <ProtectedRoute requiredRole="seller">
