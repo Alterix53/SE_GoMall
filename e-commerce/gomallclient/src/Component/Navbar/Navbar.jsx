@@ -84,20 +84,22 @@ const Navbar = () => {
                   <span>Notifications</span>
                 </div>
 
-                <div className="nav-icon">
-                  <img
-                      src="/images/setting.png"
-                      alt="Support"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Become a Seller</span>
-                </div>
+                <Link to="/seller" className="seller-link">
+                  <div className="nav-icon seller-icon">
+                    <img
+                        src="/images/setting.png"
+                        alt="Support"
+                        style={{ width: "20px", height: "20px" }}
+                        onError={(e) => {
+                          const target = e.target;
+                          if (target && target instanceof HTMLImageElement) {
+                            target.src = "/placeholder.svg?height=20&width=20";
+                          }
+                        }}
+                    />
+                    <span>Become a Seller</span>
+                  </div>
+                </Link>
                 <Link to={isAuthenticated() ? "/cart" : "/signin" }>
                 <div className="nav-icon">
                   <img
@@ -239,6 +241,22 @@ const Navbar = () => {
                   />
                   <span>Thông báo</span>
                 </div>
+                <Link to="/seller" className="mobile-seller-link">
+                  <div className="mobile-menu-item seller-mobile-item">
+                    <img
+                        src="/images/setting.png"
+                        alt="Become a Seller"
+                        style={{ width: "20px", height: "20px" }}
+                        onError={e => {
+                          const target = e.target;
+                          if (target && target instanceof HTMLImageElement) {
+                            target.src = "/placeholder.svg?height=20&width=20";
+                          }
+                        }}
+                    />
+                    <span>Become a Seller</span>
+                  </div>
+                </Link>
               </div>
             </div>
         )}

@@ -123,6 +123,59 @@
   background-color: #fff5f2;
 }
 
+/* Special styling for Become a Seller */
+.seller-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.seller-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.seller-icon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.seller-icon:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+}
+
+.seller-icon:hover::before {
+  left: 100%;
+}
+
+.seller-icon img {
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+}
+
+.seller-icon:hover img {
+  transform: scale(1.1);
+}
+
+.seller-icon span {
+  font-weight: 600;
+  font-size: 11px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 .nav-icon i {
   font-size: 20px;
   margin-bottom: 4px;
@@ -258,6 +311,29 @@
   border-bottom: none;
 }
 
+/* Mobile seller styling */
+.mobile-seller-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.seller-mobile-item {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  border-radius: 8px;
+  margin: 8px 0;
+  border: none !important;
+}
+
+.seller-mobile-item img {
+  filter: brightness(0) invert(1);
+}
+
+.seller-mobile-item span {
+  font-weight: 600;
+  color: white !important;
+}
+
 .mobile-menu-item i {
   font-size: 18px;
   width: 20px;
@@ -307,5 +383,15 @@
     width: 35px;
     height: 35px;
     font-size: 18px;
+  }
+  
+  /* Mobile seller icon adjustments */
+  .seller-icon {
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+  }
+  
+  .seller-icon span {
+    font-size: 10px;
   }
 }
