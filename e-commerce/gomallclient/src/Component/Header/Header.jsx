@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import CartTooltip from '../CartTooltip/CartTooltip';
+import Notifications from '../Notifications/Notifications';
 import './Header.css';
 
 function Header() {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showCartTooltip, setShowCartTooltip] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
 
   const toggleAccountDropdown = () => {
@@ -89,10 +91,15 @@ function Header() {
 
           {/* Navigation */}
           <div className="nav-section">
-            <Link to="/notifications" className="nav-item">
-              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f514.svg" alt="Notifications" />
+            <div 
+              className="nav-item notifications-dropdown"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <div className="nav-icon-img">🔔</div>
               <span className="nav-text">Notifications</span>
-            </Link>
+              {/* Unread badge */}
+              <span className="notification-count">3</span>
+            </div>
             <Link to="/seller" className="nav-item">
               <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2753.svg" alt="Become a Seller" />
               <span className="nav-text">Become a Seller</span>
@@ -185,6 +192,12 @@ function Header() {
           </div>
         </div>
       </header>
+
+      {/* Notifications Panel */}
+      <Notifications 
+        isVisible={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </div>
   );
 }
