@@ -5,12 +5,16 @@ import fs from 'fs';
 // Tạo thư mục uploads nếu chưa tồn tại
 const uploadDir = path.join(process.cwd(), 'uploads');
 const productImagesDir = path.join(uploadDir, 'products');
+const documentsDir = path.join(uploadDir, 'documents');
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 if (!fs.existsSync(productImagesDir)) {
     fs.mkdirSync(productImagesDir, { recursive: true });
+}
+if (!fs.existsSync(documentsDir)) {
+    fs.mkdirSync(documentsDir, { recursive: true });
 }
 
 // Cấu hình storage cho multer
@@ -54,6 +58,46 @@ export const uploadProductImages = upload.array('images', 10);
 
 // Middleware upload ảnh đơn
 export const uploadSingleImage = upload.single('image');
+
+// Cấu hình storage cho document upload
+const documentStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, documentsDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, `document-${uniqueSuffix}${ext}`);
+    }
+});
+
+// Filter cho document upload
+const documentFilter = (req, file, cb) => {
+    const allowedTypes = /pdf|doc|docx|jpg|jpeg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = file.mimetype === 'application/pdf' || 
+                    file.mimetype.startsWith('image/') ||
+                    file.mimetype.includes('document');
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Chỉ cho phép upload file PDF, DOC, DOCX hoặc ảnh'), false);
+    }
+};
+
+// Cấu hình multer cho document
+const documentUpload = multer({
+    storage: documentStorage,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // Giới hạn 10MB
+        files: 1 // Chỉ 1 file
+    },
+    fileFilter: documentFilter
+});
+
+// Middleware upload document
+export const uploadDocument = documentUpload.single('document');
 
 // Middleware xử lý lỗi upload
 export const handleUploadError = (error, req, res, next) => {

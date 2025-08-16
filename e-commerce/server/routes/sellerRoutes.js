@@ -10,6 +10,7 @@ import {
     registerSeller
 } from '../controllers/sellerControllers.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { uploadDocument } from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.get('/user/:userId', getSellerByUserId);
 router.use(authenticateToken);
 
 // User routes - đăng ký seller
-router.post('/register', registerSeller);
+router.post('/register', uploadDocument, registerSeller);
 
 // Admin only routes
 router.get('/', requireRole(['admin']), getAllSellers);
