@@ -73,10 +73,9 @@ const RegisterSeller = () => {
       <Navbar />
       <div className="register-seller-container">
         <div className="register-seller-form">
-          <div className="form-header">
-            <h2>Đăng ký trở thành người bán</h2>
-            <p>Vui lòng điền đầy đủ thông tin để đăng ký</p>
-          </div>
+                  <div className="form-header">
+          <h2>Đăng ký trở thành người bán</h2>
+        </div>
           
           {error && (
             <div className="error-message" role="alert">
