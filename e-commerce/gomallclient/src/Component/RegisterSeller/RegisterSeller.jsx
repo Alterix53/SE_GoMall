@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import Navbar from '../Navbar/Navbar';
 import Footer from '../Footer/Footer';
-import '../Login/login.css';
+import './RegisterSeller.css';
 
 const RegisterSeller = () => {
   const [storeName, setStoreName] = useState('');
@@ -71,79 +71,108 @@ const RegisterSeller = () => {
   return (
     <>
       <Navbar />
-      <div className="login-container">
-        <h2 className="mb-4">Đăng ký trở thành người bán</h2>
-        
-        {error && (
-          <div className="alert alert-danger mb-3" role="alert">
-            {error}
+      <div className="register-seller-container">
+        <div className="register-seller-form">
+          <div className="form-header">
+            <h2>Đăng ký trở thành người bán</h2>
+            <p>Vui lòng điền đầy đủ thông tin để đăng ký</p>
           </div>
-        )}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Tên cửa hàng</label>
-            <input
-              type="text"
-              className="form-control"
-              value={storeName}
-              onChange={(e) => setStoreName(e.target.value)}
-              required
-            />
-          </div>
+          
+          {error && (
+            <div className="error-message" role="alert">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label">Tên cửa hàng</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nhập tên cửa hàng của bạn"
+                value={storeName}
+                onChange={(e) => setStoreName(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label">Địa chỉ kinh doanh</label>
-            <input
-              type="text"
-              className="form-control"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label className="form-label">Địa chỉ kinh doanh</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nhập địa chỉ kinh doanh"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label">Email liên hệ</label>
-            <input
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label className="form-label">Email liên hệ</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Nhập email liên hệ"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label">Số điện thoại</label>
-            <input
-              type="tel"
-              className="form-control"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label className="form-label">Số điện thoại</label>
+              <input
+                type="tel"
+                className="form-control"
+                placeholder="Nhập số điện thoại"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="mb-3">
-            <label className="form-label">Tài liệu xác minh (giấy phép/CMND)</label>
-            <input
-              type="file"
-              className="form-control"
-              onChange={(e) => setDocument(e.target.files[0])}
-              accept=".pdf,.jpg,.png"
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label className="form-label">Tài liệu xác minh</label>
+              <div className="file-upload-group">
+                <div className="file-upload-wrapper">
+                  <div className="file-upload-icon">📄</div>
+                  <div className="file-upload-text">Chọn file hoặc kéo thả vào đây</div>
+                  <div className="file-upload-hint">Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)</div>
+                  <input
+                    type="file"
+                    className="file-input"
+                    onChange={(e) => setDocument(e.target.files[0])}
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    required
+                  />
+                </div>
+                {document && (
+                  <div className="file-preview">
+                    <div className="file-preview-name">📎 {document.name}</div>
+                    <div className="file-preview-size">{(document.size / 1024 / 1024).toFixed(2)} MB</div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-          <button 
-            type="submit" 
-            className="btn btn-primary" 
-            disabled={loading}
-          >
-            {loading ? 'Đang gửi...' : 'Gửi yêu cầu'}
-          </button>
-        </form>
+            <button 
+              type="submit" 
+              className={`submit-btn ${loading ? 'loading' : ''}`}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Đang gửi yêu cầu...
+                </>
+              ) : (
+                'Gửi yêu cầu đăng ký'
+              )}
+            </button>
+          </form>
+        </div>
       </div>
       <Footer />
     </>
