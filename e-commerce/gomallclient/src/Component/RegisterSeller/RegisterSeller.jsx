@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import Navbar from '../Navbar/Navbar';
 import Footer from '../Footer/Footer';
 import '../Login/login.css';
@@ -10,43 +11,61 @@ const RegisterSeller = () => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [document, setDocument] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { getCurrentUser } = useAuth();
 
-  const currentUsername = localStorage.getItem('username');
-  const users = JSON.parse(localStorage.getItem('users')) || [];
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
     // Kiểm tra các trường bắt buộc
     if (!storeName || !address || !email || !phone || !document) {
-      alert('Vui lòng điền đầy đủ thông tin và tải lên tài liệu!');
+      setError('Vui lòng điền đầy đủ thông tin và tải lên tài liệu!');
+      setLoading(false);
       return;
     }
 
-    // Tìm người dùng hiện tại
-    const userIndex = users.findIndex(u => u.username === currentUsername);
-    if (userIndex === -1) {
-      alert('Không tìm thấy người dùng!');
-      return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Bạn cần đăng nhập để đăng ký seller!');
+        setLoading(false);
+        return;
+      }
+
+      // Tạo FormData để gửi file
+      const formData = new FormData();
+      formData.append('storeName', storeName);
+      formData.append('address', address);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('document', document);
+
+      const response = await fetch('http://localhost:8080/api/seller/register', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Yêu cầu đăng ký người bán đã được gửi. Vui lòng chờ admin phê duyệt.');
+        navigate('/');
+      } else {
+        setError(data.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+      }
+    } catch (error) {
+      console.error('Register seller error:', error);
+      setError('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
     }
-
-    // Cập nhật thông tin đăng ký seller
-    users[userIndex] = {
-      ...users[userIndex],
-      role: 'seller',
-      sellerStatus: 'pending',
-      storeName,
-      address,
-      email,
-      phone,
-      documentName: document.name,
-    };
-
-    localStorage.setItem('users', JSON.stringify(users));
-
-    alert('Yêu cầu đăng ký người bán đã được gửi. Vui lòng chờ admin phê duyệt.');
-    navigate('/');
   };
 
   return (
@@ -54,6 +73,13 @@ const RegisterSeller = () => {
       <Navbar />
       <div className="login-container">
         <h2 className="mb-4">Đăng ký trở thành người bán</h2>
+        
+        {error && (
+          <div className="alert alert-danger mb-3" role="alert">
+            {error}
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Tên cửa hàng</label>
@@ -110,7 +136,13 @@ const RegisterSeller = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary">Gửi yêu cầu</button>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            disabled={loading}
+          >
+            {loading ? 'Đang gửi...' : 'Gửi yêu cầu'}
+          </button>
         </form>
       </div>
       <Footer />
