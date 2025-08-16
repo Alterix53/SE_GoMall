@@ -9,7 +9,7 @@ const Notifications = ({ isVisible, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
-  // Mock data - trong thực tế sẽ lấy từ API
+  // Load notifications từ API thật
   useEffect(() => {
     if (isVisible && isAuthenticated()) {
       loadNotifications();
@@ -19,88 +19,99 @@ const Notifications = ({ isVisible, onClose }) => {
   const loadNotifications = async () => {
     setLoading(true);
     try {
-      // Giả lập API call - trong thực tế sẽ gọi API thật
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Mock notifications data
-      const mockNotifications = [
-        {
-          id: 1,
-          type: 'order_success',
-          title: 'Đặt hàng thành công!',
-          message: 'Đơn hàng #ORD001 của bạn đã được đặt thành công. Chúng tôi sẽ xử lý và giao hàng sớm nhất.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 phút trước
-          isRead: false,
-          orderId: 'ORD001',
-          icon: 'package'
-        },
-        {
-          id: 2,
-          type: 'shipping_update',
-          title: 'Đơn hàng đang được giao',
-          message: 'Đơn hàng #ORD002 đang được giao đến địa chỉ của bạn. Dự kiến giao hàng trong 2-3 giờ tới.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 giờ trước
-          isRead: true,
-          orderId: 'ORD002',
-          icon: 'truck'
-        },
-        {
-          id: 3,
-          type: 'delivery_success',
-          title: 'Giao hàng thành công',
-          message: 'Đơn hàng #ORD003 đã được giao thành công. Vui lòng kiểm tra và đánh giá sản phẩm.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 ngày trước
-          isRead: true,
-          orderId: 'ORD003',
-          icon: 'check'
-        },
-        {
-          id: 4,
-          type: 'promotion',
-          title: 'Khuyến mãi mới!',
-          message: 'Giảm giá 20% cho tất cả sản phẩm điện tử. Áp dụng từ hôm nay đến hết tuần.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 giờ trước
-          isRead: false,
-          icon: 'info'
-        },
-        {
-          id: 5,
-          type: 'order_cancelled',
-          title: 'Đơn hàng bị hủy',
-          message: 'Đơn hàng #ORD004 đã bị hủy do hết hàng. Chúng tôi xin lỗi vì sự bất tiện này.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 giờ trước
-          isRead: true,
-          orderId: 'ORD004',
-          icon: 'alert'
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/notifications', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      ];
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+
+      const data = await response.json();
       
-      setNotifications(mockNotifications);
+      if (data.success) {
+        setNotifications(data.data.notifications);
+      } else {
+        console.error('API Error:', data.message);
+        // Fallback to empty array
+        setNotifications([]);
+      }
     } catch (error) {
       console.error('Error loading notifications:', error);
+      // Fallback to empty array
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const markAsRead = (notificationId) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === notificationId 
-          ? { ...notif, isRead: true }
-          : notif
-      )
-    );
+  const markAsRead = async (notificationId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8080/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setNotifications(prev => 
+          prev.map(notif => 
+            notif.id === notificationId 
+              ? { ...notif, isRead: true }
+              : notif
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notif => ({ ...notif, isRead: true }))
-    );
+  const markAllAsRead = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/notifications/read-all', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setNotifications(prev => 
+          prev.map(notif => ({ ...notif, isRead: true }))
+        );
+      }
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
   };
 
-  const deleteNotification = (notificationId) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
+  const deleteNotification = async (notificationId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8080/api/notifications/${notificationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
   };
 
   const getIcon = (iconType) => {
@@ -269,7 +280,8 @@ const Notifications = ({ isVisible, onClose }) => {
 // Helper function to format time ago
 const formatTimeAgo = (timestamp) => {
   const now = new Date();
-  const diff = now - timestamp;
+  const timestampDate = new Date(timestamp);
+  const diff = now.getTime() - timestampDate.getTime();
   const minutes = Math.floor(diff / (1000 * 60));
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -279,7 +291,7 @@ const formatTimeAgo = (timestamp) => {
   if (hours < 24) return `${hours} giờ trước`;
   if (days < 7) return `${days} ngày trước`;
   
-  return timestamp.toLocaleDateString('vi-VN');
+  return timestampDate.toLocaleDateString('vi-VN');
 };
 
 export default Notifications;

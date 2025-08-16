@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import CartTooltip from '../CartTooltip/CartTooltip';
@@ -9,6 +9,7 @@ function Header() {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showCartTooltip, setShowCartTooltip] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
 
   const toggleAccountDropdown = () => {
@@ -42,6 +43,34 @@ function Header() {
 
   const handleAccountMouseLeave = () => {
     setShowAccountDropdown(false);
+  };
+
+  // Load unread count khi user đăng nhập
+  useEffect(() => {
+    if (isAuthenticated()) {
+      loadUnreadCount();
+    }
+  }, [isAuthenticated]);
+
+  const loadUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/notifications/unread-count', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUnreadCount(data.data.unreadCount);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
   };
 
   return (
@@ -97,8 +126,8 @@ function Header() {
             >
               <div className="nav-icon-img">🔔</div>
               <span className="nav-text">Notifications</span>
-              {/* Unread badge */}
-              <span className="notification-count">3</span>
+                             {/* Unread badge */}
+               {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
             </div>
             <Link to="/seller" className="nav-item">
               <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2753.svg" alt="Become a Seller" />
