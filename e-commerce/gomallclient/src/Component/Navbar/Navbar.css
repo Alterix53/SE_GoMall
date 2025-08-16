@@ -210,38 +210,7 @@
   cursor: pointer;
 }
 
-/* Navigation Links */
-.navbar-links {
-  background: #f8f8f8;
-  border-top: 1px solid #e0e0e0;
-  padding: 12px 0;
-}
 
-.navbar-links .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.nav-menu {
-  display: flex;
-  gap: 30px;
-  overflow-x: auto;
-}
-
-.nav-link {
-  color: #666;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: color 0.3s;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: #ff6b35;
-}
 
 /* Mobile Menu */
 .mobile-menu {
@@ -314,9 +283,7 @@
     display: block;
   }
 
-  .nav-menu {
-    gap: 20px;
-  }
+
 }
 
 @media (max-width: 480px) {

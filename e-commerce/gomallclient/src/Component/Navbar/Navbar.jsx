@@ -103,31 +103,7 @@ const Navbar = () => {
         </div>
       </header>
 
-      {/* Navigation Links */}
-      <div className="navbar-links">
-        <div className="container">
-          <nav className="nav-menu">
-            <Link
-              to="/"
-              className={`nav-link ${isActive("/") ? "active" : ""}`}
-            >
-              Home
-            </Link>
-            <Link
-              to="/flash-sale"
-              className={`nav-link ${isActive("/flash-sale") ? "active" : ""}`}
-            >
-              Flash Sale
-            </Link>
-            <Link
-              to="/top-products"
-              className={`nav-link ${isActive("/top-products") ? "active" : ""}`}
-            >
-              Top Products
-            </Link>
-          </nav>
-        </div>
-      </div>
+      
 
       {/* Mobile Menu */}
       {isMenuOpen && (
