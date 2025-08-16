@@ -135,26 +135,60 @@ const RegisterSeller = () => {
 
             <div className="form-group">
               <label className="form-label">Tài liệu xác minh</label>
-              <div className="file-upload-group">
-                <div className="file-upload-wrapper">
-                  <div className="file-upload-icon">📄</div>
-                  <div className="file-upload-text">Chọn file hoặc kéo thả vào đây</div>
-                  <div className="file-upload-hint">Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)</div>
-                  <input
-                    type="file"
-                    className="file-input"
-                    onChange={(e) => setDocument(e.target.files[0])}
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    required
-                  />
-                </div>
-                {document && (
-                  <div className="file-preview">
-                    <div className="file-preview-name">📎 {document.name}</div>
-                    <div className="file-preview-size">{(document.size / 1024 / 1024).toFixed(2)} MB</div>
-                  </div>
-                )}
-              </div>
+                             <div className="file-upload-group">
+                 <div className={`file-upload-wrapper ${document ? 'has-file' : ''}`}>
+                   <div className="file-upload-icon">
+                     {document ? '✅' : '📄'}
+                   </div>
+                   <div className="file-upload-text">
+                     {document ? 'File đã chọn' : 'Chọn file hoặc kéo thả vào đây'}
+                   </div>
+                   <div className="file-upload-hint">
+                     {document ? `Đã chọn: ${document.name}` : 'Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)'}
+                   </div>
+                   <input
+                     type="file"
+                     className="file-input"
+                     onChange={(e) => {
+                       const file = e.target.files[0];
+                       if (file) {
+                         // Kiểm tra kích thước file (10MB)
+                         if (file.size > 10 * 1024 * 1024) {
+                           setError('File quá lớn! Kích thước tối đa là 10MB');
+                           return;
+                         }
+                         setDocument(file);
+                         setError(''); // Xóa lỗi cũ
+                       }
+                     }}
+                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                     required
+                   />
+                 </div>
+                 {document && (
+                   <div className="file-preview">
+                     <div className="file-preview-name">📎 {document.name}</div>
+                     <div className="file-preview-size">{(document.size / 1024 / 1024).toFixed(2)} MB</div>
+                     <button 
+                       type="button" 
+                       className="remove-file-btn"
+                       onClick={() => setDocument(null)}
+                       style={{
+                         background: '#e53e3e',
+                         color: 'white',
+                         border: 'none',
+                         borderRadius: '4px',
+                         padding: '4px 8px',
+                         fontSize: '12px',
+                         cursor: 'pointer',
+                         marginTop: '8px'
+                       }}
+                     >
+                       Xóa file
+                     </button>
+                   </div>
+                 )}
+               </div>
             </div>
 
             <button 

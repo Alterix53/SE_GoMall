@@ -147,6 +147,13 @@
   width: 100%;
   height: 100%;
   cursor: pointer;
+  z-index: 10;
+}
+
+/* Thêm style cho file input khi có file */
+.file-upload-wrapper.has-file {
+  border-color: #38a169;
+  background: #f0fff4;
 }
 
 .file-preview {
@@ -155,6 +162,18 @@
   background: #e6fffa;
   border-radius: 8px;
   border: 1px solid #81e6d9;
+  animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .file-preview-name {
