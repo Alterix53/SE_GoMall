@@ -192,12 +192,12 @@ function Header() {
           </div>
         </div>
       </header>
-
-      {/* Notifications Panel */}
+       {/* Notifications Panel */}
       <Notifications 
         isVisible={showNotifications}
         onClose={() => setShowNotifications(false)}
-      />
+      />         
+      
     </div>
   );
 }
