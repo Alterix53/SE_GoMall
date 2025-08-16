@@ -146,24 +146,29 @@ const RegisterSeller = () => {
                    <div className="file-upload-hint">
                      {document ? `Đã chọn: ${document.name}` : 'Hỗ trợ: PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)'}
                    </div>
-                   <input
-                     type="file"
-                     className="file-input"
-                     onChange={(e) => {
-                       const file = e.target.files[0];
-                       if (file) {
-                         // Kiểm tra kích thước file (10MB)
-                         if (file.size > 10 * 1024 * 1024) {
-                           setError('File quá lớn! Kích thước tối đa là 10MB');
-                           return;
-                         }
-                         setDocument(file);
-                         setError(''); // Xóa lỗi cũ
-                       }
-                     }}
-                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                     required
-                   />
+                                       <input
+                      type="file"
+                      className="file-input"
+                      onChange={(e) => {
+                        console.log('File input changed:', e.target.files);
+                        const file = e.target.files[0];
+                        if (file) {
+                          console.log('Selected file:', file.name, file.size);
+                          // Kiểm tra kích thước file (10MB)
+                          if (file.size > 10 * 1024 * 1024) {
+                            setError('File quá lớn! Kích thước tối đa là 10MB');
+                            return;
+                          }
+                          setDocument(file);
+                          setError(''); // Xóa lỗi cũ
+                        }
+                      }}
+                      onClick={(e) => {
+                        console.log('File input clicked');
+                      }}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      required
+                    />
                  </div>
                  {document && (
                    <div className="file-preview">
