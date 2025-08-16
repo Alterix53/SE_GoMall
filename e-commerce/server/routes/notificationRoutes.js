@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import notificationController from '../controllers/notificationController.js';
+import { authenticateToken as auth } from '../middleware/auth.js';
+
 const router = express.Router();
-const notificationController = require('../controllers/notificationController');
-const auth = require('../middleware/auth');
 
 // Tất cả routes đều yêu cầu authentication
 router.use(auth);
@@ -30,4 +31,4 @@ router.post('/', notificationController.createNotification);
 // POST /api/notifications/broadcast - Tạo thông báo cho nhiều user
 router.post('/broadcast', notificationController.createBroadcastNotification);
 
-module.exports = router;
+export default router;

@@ -57,4 +57,17 @@ class ResponseHandler {
     }
 }
 
+// Export individual functions for backward compatibility
+export const successResponse = (data, message = "Thành công") => ({
+    success: true,
+    message,
+    data,
+});
+
+export const errorResponse = (message = "Có lỗi xảy ra", error = null) => ({
+    success: false,
+    message,
+    error: error || {},
+});
+
 export default ResponseHandler; 

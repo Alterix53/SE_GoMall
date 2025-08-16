@@ -1,5 +1,5 @@
-const Notification = require('../models/Notification');
-const { successResponse, errorResponse } = require('../utils/responseHandler');
+import Notification from '../models/Notification.js';
+import { successResponse, errorResponse } from '../utils/responseHandler.js';
 
 // Lấy danh sách thông báo của user
 const getUserNotifications = async (req, res) => {
@@ -275,7 +275,7 @@ const getIconForType = (type) => {
   return iconMap[type] || 'bell';
 };
 
-module.exports = {
+export default {
   getUserNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,

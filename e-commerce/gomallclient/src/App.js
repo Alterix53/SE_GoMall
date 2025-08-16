@@ -130,7 +130,8 @@ function App() {
                 {/* Test Routes */}
                 <Route path="/qr-test" element={<QRTest />} />
                 {/* SELLER ROUTES - có thể có layout riêng */}
-                <Route path="/seller" element={
+                <Route path="/seller" element={<RegisterSeller />} />
+                <Route path="/seller-dashboard" element={
                   <ProtectedRoute requiredRole="seller">
                     <SellerDashboard />
                   </ProtectedRoute>
