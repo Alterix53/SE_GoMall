@@ -25,19 +25,20 @@ const Navbar = () => {
 
   return (
       <header className="navbar">
-        {/* Top Bar */}
-        
-        <div className="navbar-top">
-          <div className="container">
-            <div className="top-left">
-              <span>Free shipping for orders over 150k</span>
-              <span>•</span>
-              <span>24/7 Support</span>
+        {/* Top Banner - Beautiful Design */}
+        <div className="header-top-banner">
+          <div className="banner-content">
+            <div className="banner-item">
+              <span className="banner-text">Free shipping for orders over 150k</span>
+              <span className="banner-illustrative-image">🚚</span>
             </div>
-            <div className="top-right">
-              <span>Download App</span>
-              <span>•</span>
-              <span>Connect</span>
+            <div className="banner-item">
+              <span className="banner-text">24/7 Support</span>
+              <span className="banner-illustrative-image">🎧</span>
+            </div>
+            <div className="banner-item">
+              <span className="banner-text">Download app</span>
+              <span className="banner-illustrative-image">📱</span>
             </div>
           </div>
         </div>
