@@ -82,18 +82,20 @@ class AdminService {
             Seller.countDocuments(),
             User.countDocuments({ isActive: true }),
             Product.countDocuments({ isActive: true }),
-            Order.countDocuments({ status: 'pending' }),
+            // Match Order schema enum values (Pending/Processing/Shipped/Delivered/Cancelled)
+            Order.countDocuments({ status: 'Pending' }),
             Seller.countDocuments({ isActive: true })
         ]);
 
         // Calculate revenue (assuming Order has totalAmount field)
         const revenueStats = await Order.aggregate([
-            { $match: { status: 'completed' } },
+            // Delivered orders are considered completed revenue
+            { $match: { status: 'Delivered' } },
             {
                 $group: {
                     _id: null,
-                    totalRevenue: { $sum: '$totalAmount' },
-                    avgOrderValue: { $avg: '$totalAmount' }
+                    totalRevenue: { $sum: '$total' },
+                    avgOrderValue: { $avg: '$total' }
                 }
             }
         ]);
@@ -150,7 +152,7 @@ class AdminService {
         const revenueStats = await Order.aggregate([
             {
                 $match: {
-                    status: 'completed',
+                    status: 'Delivered',
                     createdAt: { $gte: startDate }
                 }
             },
@@ -161,7 +163,7 @@ class AdminService {
                         month: { $month: '$createdAt' },
                         day: { $dayOfMonth: '$createdAt' }
                     },
-                    revenue: { $sum: '$totalAmount' },
+                    revenue: { $sum: '$total' },
                     orderCount: { $sum: 1 }
                 }
             },
@@ -414,14 +416,19 @@ class AdminService {
 
         if (search) {
             query.$or = [
-                { username: { $regex: search, $options: 'i' } },
                 { businessName: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } }
+                { businessEmail: { $regex: search, $options: 'i' } },
+                { businessPhone: { $regex: search, $options: 'i' } }
             ];
         }
 
         if (status) {
-            query.isActive = status === 'active';
+            // Support filtering by lifecycle status or active flag
+            if (['pending', 'approved', 'rejected', 'suspended'].includes(status)) {
+                query.status = status;
+            } else if (['active', 'inactive'].includes(status)) {
+                query.isActive = status === 'active';
+            }
         }
 
         const [sellers, total] = await Promise.all([
@@ -454,39 +461,53 @@ class AdminService {
     }
 
     async createSeller(sellerData) {
-        const { username, email, password, businessName, phoneNumber, address } = sellerData;
+        // Align with Seller schema: expect linkage to User and business fields
+        const {
+            userID,
+            businessName,
+            businessDescription = '',
+            businessAddress = '',
+            businessPhone = '',
+            businessEmail = '',
+            businessLicense,
+            verificationDocs = [],
+            taxNumber = ''
+        } = sellerData;
 
-        // Check if seller already exists
-        const existingSeller = await Seller.findOne({
-            $or: [{ username }, { email }]
-        });
-
-        if (existingSeller) {
-            throw new Error("Tên đăng nhập hoặc email đã tồn tại");
+        if (!userID) {
+            throw new Error('userID is required to create a seller');
         }
 
-        // Hash password
-        const hashedPassword = await this.hashPassword(password);
+        if (!businessName) {
+            throw new Error('businessName is required');
+        }
 
-        // Create seller
+        if (!businessLicense) {
+            throw new Error('businessLicense is required');
+        }
+
+        const existingByUser = await Seller.findOne({ userID });
+        if (existingByUser) {
+            throw new Error('Seller profile for this user already exists');
+        }
+
         const seller = new Seller({
-            username,
-            email,
-            password: hashedPassword,
+            userID,
             businessName,
-            phoneNumber,
-            address,
-            isActive: false, // Pending approval
-            isApproved: false
+            businessDescription,
+            businessAddress,
+            businessPhone,
+            businessEmail,
+            businessLicense,
+            verificationDocs,
+            taxNumber,
+            status: 'pending',
+            isActive: false
         });
 
         await seller.save();
 
-        // Return seller without password
-        const sellerResponse = seller.toObject();
-        delete sellerResponse.password;
-
-        return sellerResponse;
+        return seller;
     }
 
     async updateSeller(sellerId, updateData) {
@@ -496,18 +517,33 @@ class AdminService {
             throw new Error("Người bán không tồn tại");
         }
 
-        // Remove sensitive fields from update
-        const { password, username, email, ...safeUpdateData } = updateData;
+        // Only allow updating known business fields and flags
+        const {
+            businessName,
+            businessDescription,
+            businessAddress,
+            businessPhone,
+            businessEmail,
+            businessLicense,
+            verificationDocs,
+            taxNumber,
+            isActive
+        } = updateData;
 
-        // Update seller
-        Object.assign(seller, safeUpdateData);
+        Object.assign(seller, {
+            ...(businessName !== undefined && { businessName }),
+            ...(businessDescription !== undefined && { businessDescription }),
+            ...(businessAddress !== undefined && { businessAddress }),
+            ...(businessPhone !== undefined && { businessPhone }),
+            ...(businessEmail !== undefined && { businessEmail }),
+            ...(businessLicense !== undefined && { businessLicense }),
+            ...(verificationDocs !== undefined && { verificationDocs }),
+            ...(taxNumber !== undefined && { taxNumber }),
+            ...(isActive !== undefined && { isActive })
+        });
         await seller.save();
 
-        // Return seller without password
-        const sellerResponse = seller.toObject();
-        delete sellerResponse.password;
-
-        return sellerResponse;
+        return seller;
     }
 
     async deleteSeller(sellerId) {
@@ -529,13 +565,20 @@ class AdminService {
             throw new Error("Người bán không tồn tại");
         }
 
-        seller.isActive = status === 'active';
+        // Support toggling both lifecycle status and active flag
+        if (['pending', 'approved', 'rejected', 'suspended'].includes(status)) {
+            seller.status = status;
+            // Auto-activate on approval
+            if (status === 'approved') {
+                seller.isActive = true;
+                seller.approvedAt = new Date();
+            }
+        } else if (['active', 'inactive'].includes(status)) {
+            seller.isActive = status === 'active';
+        }
+
         await seller.save();
-
-        const sellerResponse = seller.toObject();
-        delete sellerResponse.password;
-
-        return sellerResponse;
+        return seller;
     }
 
     async approveSeller(sellerId) {
@@ -545,14 +588,12 @@ class AdminService {
             throw new Error("Người bán không tồn tại");
         }
 
-        seller.isApproved = true;
+        seller.status = 'approved';
         seller.isActive = true;
+        seller.approvedAt = new Date();
         await seller.save();
 
-        const sellerResponse = seller.toObject();
-        delete sellerResponse.password;
-
-        return sellerResponse;
+        return seller;
     }
 
     // Product Management Services
