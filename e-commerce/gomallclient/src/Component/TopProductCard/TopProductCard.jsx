@@ -59,6 +59,9 @@ const TopProductCard = ({ product }) => {
       
       {/* Product Info */}
       <div className="product-info">
+        <div className="product-name" title={product.name}>
+          {product.name}
+        </div>
         <div className="product-price">{formatPrice(product.price)}</div>
         <button
           type="button"

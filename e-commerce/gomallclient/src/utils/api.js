@@ -98,6 +98,26 @@ export const apiService = {
   }
 };
 
+// Product API helpers
+export const productAPI = {
+  getFlashSaleProducts: async (params = {}) => {
+    const resp = await apiService.get('/products/flash-sale', { params });
+    return resp.data?.data || resp.data;
+  },
+  getTopProducts: async (type = 'bestseller', params = {}) => {
+    const resp = await apiService.get('/products/top-products', { params: { type, ...params } });
+    return resp.data?.data || resp.data;
+  },
+  getProducts: async (params = {}) => {
+    const resp = await apiService.get('/products', { params });
+    return resp.data?.data || resp.data;
+  },
+  getProductById: async (id) => {
+    const resp = await apiService.get(`/products/${id}`);
+    return resp.data?.data || resp.data;
+  }
+};
+
 // Kiểm tra token có hợp lệ không
 export const isTokenValid = (token) => {
   try {

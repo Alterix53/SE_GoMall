@@ -9,7 +9,7 @@
   /* Default width for carousel (Top Products) */
   width: calc(25% - 15px);
   min-width: 200px;
-  height: 280px;
+  height: 320px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -83,6 +83,20 @@
   text-align: center;
 }
 
+.product-name {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: calc(1.3em * 2);
+}
+
 .product-price {
   font-size: 18px;
   font-weight: bold;
@@ -112,11 +126,15 @@
 @media (max-width: 768px) {
   .top-product-card {
     min-width: 180px;
-    height: 260px;
+    height: 280px;
   }
   
   .product-image {
     height: 120px;
+  }
+  
+  .product-name {
+    font-size: 13px;
   }
   
   .product-price {

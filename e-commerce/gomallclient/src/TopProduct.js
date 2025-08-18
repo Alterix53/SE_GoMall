@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
 // Header is globally rendered in App.js
 import "./TopProduct.css";
+import { productAPI } from './utils/api';
 
 const TopProduct = () => {
   const [activeTab, setActiveTab] = useState("bestseller");
@@ -21,38 +22,25 @@ const TopProduct = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch products based on active tab
-        const apiUrl = `http://localhost:8080/api/products/top-products?type=${activeTab}`;
-        
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Top Products API response:", data);
-        const products = data?.data?.products || data?.data?.data?.products || [];
-        if (products.length === 0) {
-          console.warn("No top products from API");
-          return;
-        }
-        const mappedProducts = products.map((product, index) => ({
-          id: product._id || `fallback-${index}`,
-          name: product.name || "Unknown Product",
-          price: product.price?.sale || product.price?.original || 0,
-          originalPrice: product.price?.original || 0,
-          image: product.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/default-product.jpg",
-          rating: product.rating?.average || 0,
-          sold: product.sold || 0,
-          discount: product.price?.original && product.price?.sale
-            ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
+        const res = await productAPI.getTopProducts(activeTab);
+        const products = res?.products || [];
+        const mapped = products.map((p, index) => ({
+          id: p._id || `fallback-${index}`,
+          name: p.name || 'Unknown Product',
+          price: p.price?.sale ?? p.price?.original ?? 0,
+          originalPrice: p.price?.original ?? 0,
+          image: p.images?.[0]?.url ? `${process.env.REACT_APP_API_URL || 'http://localhost:8080/api'}`.replace('/api','') + p.images[0].url : '/images/default-product.jpg',
+          rating: p.rating?.average || 0,
+          sold: p.sold || 0,
+          discount: p.price?.original && (p.price?.sale ?? 0)
+            ? Math.round(((p.price.original - (p.price.sale ?? 0)) / p.price.original) * 100)
             : 0,
           rank: index + 1,
-          trending: product.trending || false,
+          trending: p.trending || false,
         }));
-        console.log("Mapped products:", mappedProducts);
-        setProducts(mappedProducts);
+        setProducts(mapped);
       } catch (err) {
-        console.error("Error fetching top products:", err.message);
+        console.error('Error fetching top products:', err.message);
         setProducts([]);
       } finally {
         setLoading(false);
