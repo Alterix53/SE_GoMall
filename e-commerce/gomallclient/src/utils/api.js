@@ -95,6 +95,11 @@ export const apiService = {
   // Seller application
   applyForSeller: (data) => {
     return api.post(`/sellers/apply`, data);
+  },
+  
+  // Check seller application status
+  checkSellerStatus: () => {
+    return api.get(`/sellers/my-status`);
   }
 };
 

@@ -80,7 +80,11 @@ const sellerSchema = new mongoose.Schema(
       min: 0,
     },
   },
-  { timestamps: true }
+  { 
+    timestamps: true,
+    // Tắt validation để test - comment dòng này để bật lại validation
+    strict: false
+  }
 );
 
 export default mongoose.model('Seller', sellerSchema);

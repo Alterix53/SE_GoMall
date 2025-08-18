@@ -22,13 +22,18 @@ const FlashSaleCard = ({ product }) => {
 
   const productId = product?.id || product?._id;
 
-  const goToDetail = () => {
+  const goToDetail = (e) => {
+    // Prevent event bubbling if clicking on the button
+    if (e.target.tagName === 'BUTTON') {
+      return;
+    }
+    
     if (!productId) return;
     navigate(`/product/${productId}`);
   };
 
   return (
-    <div className="flash-sale-card">
+    <div className="flash-sale-card" onClick={goToDetail}>
       {/* Product Image */}
       <div className="product-image">
         <OptimizedImage
@@ -65,7 +70,11 @@ const FlashSaleCard = ({ product }) => {
         <button
           type="button"
           className="selling-fast-btn"
-          onClick={goToDetail}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click when clicking button
+            if (!productId) return;
+            navigate(`/product/${productId}`);
+          }}
           disabled={!productId}
           aria-label="Xem chi tiết sản phẩm"
         >

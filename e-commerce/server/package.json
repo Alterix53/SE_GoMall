@@ -8,7 +8,9 @@
     "start": "node Server.js",
     "dev": "nodemon Server.js",
     "create-admin": "node scripts/createAdmin.js",
-    "seed-data": "node scripts/seedData.js"
+    "seed-data": "node scripts/seedData.js",
+    "check-sellers": "node scripts/checkSellerData.js",
+    "test-seller": "node scripts/testSellerApplication.js"
   },
   "keywords": [
     "ecommerce",
