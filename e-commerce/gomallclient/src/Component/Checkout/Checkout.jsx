@@ -20,7 +20,7 @@ const Checkout = () => {
     phone: '',
     address: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [shippingMethod, setShippingMethod] = useState('fast');
   const [note, setNote] = useState('');
   const [vouchers, setVouchers] = useState({
@@ -143,28 +143,18 @@ const Checkout = () => {
         if (paymentMethod === 'momo') {
           // Show MoMo payment component
           setShowMomoPayment(true);
-        } else if (paymentMethod === 'cod') {
-          // Cash on delivery - order completed
-          alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-          navigate('/');
-        } else {
-          // Other payment methods (card, bank transfer, etc.)
-          try {
-            const paymentData = {
-              orderID: orderResponse.order._id,
-              amount: totalWithShipping,
-              paymentMethod: paymentMethod
-            };
-            
-            await checkoutAPI.processPayment(paymentData);
-            alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-            navigate('/');
-          } catch (paymentError) {
-            console.error('Payment processing failed:', paymentError);
-            // Payment failure shouldn't stop the order creation
-            alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-            navigate('/');
-          }
+        } else if (paymentMethod === 'cash') {
+          // Cash on delivery - navigate to success page
+          navigate('/payment/cash-success', { 
+            state: { 
+              orderData: {
+                orderID: orderResponse.order._id,
+                orderNumber: orderResponse.order.orderNumber || orderResponse.order._id,
+                amount: totalWithShipping,
+                items: selectedItems
+              }
+            }
+          });
         }
       } else {
         setError('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
@@ -362,41 +352,10 @@ const Checkout = () => {
             <div className="payment-options">
               <div className="payment-tabs">
                 <button 
-                  className={`payment-tab ${paymentMethod === 'card' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('card')}
-                >
-                  Thẻ Tín dụng/Ghi nợ
-                </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'googlepay' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('googlepay')}
-                >
-                  Google Pay
-                </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'napas' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('napas')}
-                >
-                  Thẻ nội địa NAPAS
-                </button>
-
-                <button 
-                  className={`payment-tab ${paymentMethod === 'installment' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('installment')}
-                >
-                  Trả góp bằng Thẻ Tín dụng
-                </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'bank-transfer' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('bank-transfer')}
-                >
-                  Chuyển khoản ngân hàng
-                </button>
-                <button 
                   className={`payment-tab ${paymentMethod === 'cash' ? 'active' : ''}`}
                   onClick={() => setPaymentMethod('cash')}
                 >
-                  Tiền mặt
+                  💵 Tiền mặt
                 </button>
 
                 <button 
@@ -412,175 +371,17 @@ const Checkout = () => {
                 <div className="bank-transfer-option">Chuyển khoản ngân hàng</div>
               </div> */}
 
-              {/* Payment Options */}
-              {paymentMethod === 'card' && (
-                <div className="payment-options-detail">
-                  <div className="card-options">
-                    <div className="card-option">
-                      <input type="radio" name="card-type" id="visa" defaultChecked />
-                      <label htmlFor="visa">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="card-logo" />
-                        <span>Visa</span>
-                      </label>
-                    </div>
-                    <div className="card-option">
-                      <input type="radio" name="card-type" id="mastercard" />
-                      <label htmlFor="mastercard">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" className="card-logo" />
-                        <span>Mastercard</span>
-                      </label>
-                    </div>
-                    <div className="card-option">
-                      <input type="radio" name="card-type" id="jcb" />
-                      <label htmlFor="jcb">
-                        <img src="https://down-vn.img.susercontent.com/file/38fd98e55806c3b2e4535c4e4a6c4c08" alt="JCB" className="card-logo" />
-                        <span>JCB</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'googlepay' && (
-                <div className="payment-options-detail">
-                  <div className="googlepay-info">
-                    <div className="googlepay-description">
-                      <p>Thanh toán nhanh chóng và bảo mật với Google Pay</p>
-                      <div className="googlepay-benefits">
-                        <span>✓ Không cần nhập thông tin thẻ</span>
-                        <span>✓ Bảo mật tối đa</span>
-                        <span>✓ Thanh toán trong 1 chạm</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'napas' && (
-                <div className="payment-options-detail">
-                  <div className="napas-options">
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="vietcombank" defaultChecked />
-                      <label htmlFor="vietcombank">
-                        <img src="https://www.vietcombank.com.vn/-/media/Project/VCB-Sites/VCB/Home-page/VCB-Logo/Logo-VCB-no-60.png" alt="Vietcombank" className="bank-logo" />
-                        <span>Vietcombank</span>
-                      </label>
-                    </div>
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="techcombank" />
-                      <label htmlFor="techcombank">
-                        <img src="https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg" alt="Techcombank" className="bank-logo" />
-                        <span>Techcombank</span>
-                      </label>
-                    </div>
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="bidv" />
-                      <label htmlFor="bidv">
-                        <img src="https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-cc5c0724-338e-4cf5-bbe7-676f1f36fd7b-p5AGqf.&cache=none" alt="BIDV" className="bank-logo" />
-                        <span>BIDV</span>
-                      </label>
-                    </div>
-                                          <div className="napas-option">
-                        <input type="radio" name="napas-bank" id="mbbank" />
-                        <label htmlFor="mbbank">
-                          <img src="https://www.mbbank.com.vn/images/logo.png" alt="Mbbank" className="bank-logo" />
-                          <span>Mbbank</span>
-                        </label>
-                      </div>
-                  </div>
-                </div>
-              )}
 
 
 
-              {paymentMethod === 'installment' && (
-                <div className="payment-options-detail">
-                  <div className="installment-options">
-                    <div className="installment-option">
-                      <input type="radio" name="installment-plan" id="3months" defaultChecked />
-                      <label htmlFor="3months">
-                        <span className="installment-term">3 tháng</span>
-                        <span className="installment-rate">0% lãi suất</span>
-                      </label>
-                    </div>
-                    <div className="installment-option">
-                      <input type="radio" name="installment-plan" id="6months" />
-                      <label htmlFor="6months">
-                        <span className="installment-term">6 tháng</span>
-                        <span className="installment-rate">2.5% lãi suất/tháng</span>
-                      </label>
-                    </div>
-                    <div className="installment-option">
-                      <input type="radio" name="installment-plan" id="12months" />
-                      <label htmlFor="12months">
-                        <span className="installment-term">12 tháng</span>
-                        <span className="installment-rate">3.0% lãi suất/tháng</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {paymentMethod === 'bank-transfer' && (
-                <div className="payment-options-detail">
-                  <div className="bank-transfer-options">
-                    <div className="bank-transfer-info">
-                      <p>Chọn ngân hàng để chuyển khoản:</p>
-                    </div>
-                    <div className="bank-list">
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="vietcombank-transfer" defaultChecked />
-                        <label htmlFor="vietcombank-transfer">
-                          <img src="https://www.vietcombank.com.vn/-/media/Project/VCB-Sites/VCB/Home-page/VCB-Logo/Logo-VCB-no-60.png" alt="Vietcombank" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">Vietcombank</span>
-                            <span className="bank-account">1234567890 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="techcombank-transfer" />
-                        <label htmlFor="techcombank-transfer">
-                          <img src="https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg" alt="Techcombank" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">Techcombank</span>
-                            <span className="bank-account">0987654321 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="bidv-transfer" />
-                        <label htmlFor="bidv-transfer">
-                          <img src="https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-cc5c0724-338e-4cf5-bbe7-676f1f36fd7b-p5AGqf.&cache=none" alt="BIDV" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">BIDV</span>
-                            <span className="bank-account">1122334455 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="mbbank-transfer" />
-                        <label htmlFor="mbbank-transfer">
-                          <img src="https://www.mbbank.com.vn/images/logo.png" alt="Mbbank" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">Mbbank</span>
-                            <span className="bank-account">5544332211 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                    <div className="transfer-instructions">
-                      <h4>Hướng dẫn chuyển khoản:</h4>
-                      <ol>
-                        <li>Chọn ngân hàng từ danh sách trên</li>
-                        <li>Chuyển khoản đến tài khoản đã chọn</li>
-                        <li>Nội dung chuyển khoản: Mã đơn hàng</li>
-                        <li>Sau khi chuyển khoản, vui lòng chờ xác nhận</li>
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              )}
+
+
+
+
+
+
+
 
               {paymentMethod === 'cash' && (
                 <div className="payment-options-detail">

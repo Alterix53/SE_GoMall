@@ -122,7 +122,7 @@
   max-width: 50%;
 }
 
-.promotional-content {
+.welcome-content {
   color: white;
   text-align: center;
   position: relative;
@@ -131,55 +131,51 @@
   max-width: 500px;
 }
 
-.promo-title {
+.welcome-title {
   font-size: 48px;
   font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   line-height: 1.2;
 }
 
-.promo-banners {
+.welcome-subtitle {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 30px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+.welcome-features {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
   margin-bottom: 25px;
 }
 
-.promo-banner {
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-weight: bold;
-  font-size: 16px;
-  display: inline-block;
-  margin: 3px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
   transition: transform 0.3s;
 }
 
-.promo-banner:hover {
-  transform: translateY(-2px);
+.feature-item:hover {
+  transform: translateX(5px);
 }
 
-.promo-banner.blue {
-  background: #2196F3;
-  color: white;
+.feature-icon {
+  font-size: 24px;
+  width: 30px;
+  text-align: center;
 }
 
-.promo-banner.yellow {
-  background: #FFD700;
-  color: #333;
-}
-
-.promo-text {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.promo-date {
-  font-size: 18px;
-  opacity: 0.9;
+.feature-text {
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
 }
 
 /* Background Shapes */
@@ -222,7 +218,7 @@
   left: 15%;
 }
 
-.freeship-text {
+.gomall-text {
   position: absolute;
   top: 30%;
   right: 10%;
@@ -518,7 +514,7 @@
     order: 1;
   }
   
-  .promotional-content {
+  .welcome-content {
     display: none;
   }
   
@@ -526,11 +522,11 @@
     max-width: 400px;
   }
   
-  .promo-title {
+  .welcome-title {
     font-size: 36px;
   }
   
-  .freeship-text {
+  .gomall-text {
     font-size: 48px;
   }
   
@@ -549,13 +545,13 @@
     flex-direction: column;
   }
   
-  .promo-banners {
+  .welcome-features {
     gap: 10px;
   }
   
-  .promo-banner {
+  .feature-item {
     font-size: 16px;
-    padding: 10px 20px;
+    padding: 8px 0;
   }
 }
 

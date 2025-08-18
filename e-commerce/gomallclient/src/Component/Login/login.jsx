@@ -52,6 +52,28 @@ const LoginPage = () => {
     }
   };
 
+  const handleFacebookLogin = () => {
+    // Mock Facebook OAuth - có thể thay thế bằng OAuth thật sau này
+    alert('Tính năng đăng nhập Facebook đang được phát triển. Vui lòng sử dụng đăng nhập thông thường.');
+    
+    // Nếu muốn sử dụng OAuth thật, uncomment code dưới:
+    // const facebookAppId = 'your-facebook-app-id'; // Thay bằng App ID thật
+    // const redirectUri = encodeURIComponent(`${window.location.origin}/auth/facebook/callback`);
+    // const facebookAuthUrl = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${facebookAppId}&redirect_uri=${redirectUri}&scope=email,public_profile&response_type=code`;
+    // window.location.href = facebookAuthUrl;
+  };
+
+  const handleGoogleLogin = () => {
+    // Mock Google OAuth - có thể thay thế bằng OAuth thật sau này
+    alert('Tính năng đăng nhập Google đang được phát triển. Vui lòng sử dụng đăng nhập thông thường.');
+    
+    // Nếu muốn sử dụng OAuth thật, uncomment code dưới:
+    // const googleClientId = 'your-google-client-id'; // Thay bằng Client ID thật
+    // const redirectUri = encodeURIComponent(`${window.location.origin}/auth/google/callback`);
+    // const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${redirectUri}&scope=email profile&response_type=code&access_type=offline`;
+    // window.location.href = googleAuthUrl;
+  };
+
   return (
     <div className="login-page">
       {/* Phần trên - Giao diện màu cam */}
@@ -77,17 +99,29 @@ const LoginPage = () => {
 
           {/* Content - Phần dưới chia dọc */}
           <div className="login-content">
-            {/* Bên trái - Promotional content */}
+            {/* Bên trái - Welcome content */}
             <div className="content-left">
-              <div className="promotional-content">
-                <h1 className="promo-title">8.8 SIÊU HỘI VOUCHER</h1>
-                <div className="promo-banners">
-                  <div className="promo-banner blue">SIÊU RẺ CHỈ TỪ 9.000</div>
-                  <div className="promo-banner yellow">TRIỆU PHÚ VOUCHER GIẢM ĐẾN 20%</div>
-                  <div className="promo-banner blue">FREE SHIP MỌI ĐƠN</div>
+              <div className="welcome-content">
+                <h1 className="welcome-title">Chào mừng đến với GoMall</h1>
+                <p className="welcome-subtitle">Nền tảng mua sắm trực tuyến hàng đầu Việt Nam</p>
+                <div className="welcome-features">
+                  <div className="feature-item">
+                    <span className="feature-icon">🛍️</span>
+                    <span className="feature-text">Hàng triệu sản phẩm chất lượng</span>
+                  </div>
+                  <div className="feature-item">
+                    <span className="feature-icon">🚚</span>
+                    <span className="feature-text">Giao hàng nhanh chóng</span>
+                  </div>
+                  <div className="feature-item">
+                    <span className="feature-icon">💰</span>
+                    <span className="feature-text">Giá cả cạnh tranh</span>
+                  </div>
+                  <div className="feature-item">
+                    <span className="feature-icon">🔒</span>
+                    <span className="feature-text">Thanh toán an toàn</span>
+                  </div>
                 </div>
-                <div className="promo-text">SIÊU NHANH SIÊU RẺ</div>
-                <div className="promo-date">26.7 - 9.8</div>
               </div>
 
               {/* Background shapes */}
@@ -95,7 +129,7 @@ const LoginPage = () => {
                 <div className="shape shape-1"></div>
                 <div className="shape shape-2"></div>
                 <div className="shape shape-3"></div>
-                <div className="freeship-text">FREESHIP</div>
+                <div className="gomall-text">GOMALL</div>
               </div>
             </div>
 
@@ -162,11 +196,19 @@ const LoginPage = () => {
                     </div>
 
                     <div className="social-login">
-                      <button className="social-btn facebook">
+                      <button 
+                        type="button"
+                        className="social-btn facebook"
+                        onClick={handleFacebookLogin}
+                      >
                         <i className="social-icon">f</i>
                         <span>Facebook</span>
                       </button>
-                      <button className="social-btn google">
+                      <button 
+                        type="button"
+                        className="social-btn google"
+                        onClick={handleGoogleLogin}
+                      >
                         <i className="social-icon">G</i>
                         <span>Google</span>
                       </button>

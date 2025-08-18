@@ -55,6 +55,11 @@ import Suggestions from './Component/Suggestions/Suggestions';
 import PaymentSuccess from './Component/PaymentResult/PaymentSuccess';
 import PaymentFailed from './Component/PaymentResult/PaymentFailed';
 import PaymentCancelled from './Component/PaymentResult/PaymentCancelled';
+import CashPaymentSuccess from './Component/PaymentResult/CashPaymentSuccess';
+
+// Import Order and Invoice components
+import OrderView from './Component/OrderView/OrderView';
+import InvoiceDownload from './Component/InvoiceDownload/InvoiceDownload';
 
 // Import Test components
 import QRTest from './Component/MomoPayment/QRTest';
@@ -126,6 +131,11 @@ function App() {
                 <Route path="/payment/success" element={<PaymentSuccess />} />
                 <Route path="/payment/failed" element={<PaymentFailed />} />
                 <Route path="/payment/cancelled" element={<PaymentCancelled />} />
+                <Route path="/payment/cash-success" element={<CashPaymentSuccess />} />
+                
+                {/* Order and Invoice Routes */}
+                <Route path="/orders" element={<OrderView />} />
+                <Route path="/invoice" element={<InvoiceDownload />} />
                 
                 {/* Test Routes */}
                 <Route path="/qr-test" element={<QRTest />} />
