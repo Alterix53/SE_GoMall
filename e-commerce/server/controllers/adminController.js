@@ -28,6 +28,13 @@ export const getRevenueStats = ResponseHandler.asyncHandler(async (req, res) => 
     ResponseHandler.success(res, stats, "Lấy thống kê doanh thu thành công");
 });
 
+// Get revenue distribution for chart
+export const getRevenueDistribution = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to get revenue distribution");
+    const data = await adminService.getRevenueDistribution();
+    ResponseHandler.success(res, data, "Lấy phân bổ doanh thu theo danh mục thành công");
+});
+
 // Get top selling products
 export const getTopSellingProducts = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to get top selling products:", req.query);
@@ -35,6 +42,15 @@ export const getTopSellingProducts = ResponseHandler.asyncHandler(async (req, re
     const { limit = 10 } = req.query;
     const products = await adminService.getTopSellingProducts(Number(limit));
     ResponseHandler.success(res, products, "Lấy danh sách sản phẩm bán chạy thành công");
+});
+
+// Get trending products (by views)
+export const getTrendingProducts = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to get trending products:", req.query);
+    
+    const { limit = 10 } = req.query;
+    const products = await adminService.getTrendingProducts(Number(limit));
+    ResponseHandler.success(res, products, "Lấy danh sách sản phẩm thịnh hành thành công");
 });
 
 // Get seller statistics

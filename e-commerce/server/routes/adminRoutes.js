@@ -13,7 +13,9 @@ router.post("/login", adminController.adminLogin);
 // Dashboard & Statistics APIs
 router.get("/dashboard/stats", authenticateAdmin, adminController.getDashboardStats);
 router.get("/dashboard/revenue", authenticateAdmin, adminController.getRevenueStats);
+router.get("/dashboard/revenue-distribution", authenticateAdmin, adminController.getRevenueDistribution);
 router.get("/dashboard/top-products", authenticateAdmin, adminController.getTopSellingProducts);
+router.get("/dashboard/trending-products", authenticateAdmin, adminController.getTrendingProducts);
 router.get("/dashboard/seller-stats", authenticateAdmin, adminController.getSellerStats);
 router.get("/dashboard/user-activity", authenticateAdmin, adminController.getUserActivityStats);
 router.get("/dashboard/overview", authenticateAdmin, adminController.getSystemOverview);

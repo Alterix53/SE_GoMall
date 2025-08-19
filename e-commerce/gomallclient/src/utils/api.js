@@ -253,8 +253,28 @@ export const adminAPI = {
         return response.json();
     },
 
+    getRevenueDistribution: async (token) => {
+        const response = await fetch(`${API_BASE_URL}/admin/dashboard/revenue-distribution`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.json();
+    },
+
     getTopSellingProducts: async (token, limit = 10) => {
         const response = await fetch(`${API_BASE_URL}/admin/dashboard/top-products?limit=${limit}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.json();
+    },
+
+    getTrendingProducts: async (token, limit = 10) => {
+        const response = await fetch(`${API_BASE_URL}/admin/dashboard/trending-products?limit=${limit}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',

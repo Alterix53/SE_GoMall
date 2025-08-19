@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SellerDetailModal from "../SellerDetailModal";
 import UserSellerListItem from "../UserSellerListItem";
 import { adminAPI } from '../../../utils/api';
+import PendingSellerRequests from "../PendingSellerRequests";
 
 const FILTERS = [
   { key: "all", label: "All" },
@@ -57,6 +58,12 @@ function ManageSellerPage() {
   return (
     <div className="container-fluid">
       <h2 className="row text-center" style={{ minWidth: 180 }}>Manage Sellers</h2>
+      {/* Pending requests overview */}
+      <div className="row g-4 mb-3">
+        <div className="col-12">
+          <PendingSellerRequests />
+        </div>
+      </div>
       <div className="d-flex gap-2 mb-3 align-items-center">
         {FILTERS.map((filter) => (
           <button
@@ -93,7 +100,7 @@ function ManageSellerPage() {
       </ul>
       {/* Seller detail modal */}
       {selectedSeller && (
-        <div className="modal show d-block" tabIndex="-1">
+        <div className="modal show d-block" tabIndex={-1}>
           <SellerDetailModal seller={selectedSeller} onClose={() => setSelectedSeller(null)} />
         </div>
       )}

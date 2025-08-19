@@ -83,7 +83,7 @@ const sellerSchema = new mongoose.Schema(
   { 
     timestamps: true,
     // Tắt validation để test - comment dòng này để bật lại validation
-    strict: false
+    // strict: false
   }
 );
 

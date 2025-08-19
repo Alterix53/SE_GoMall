@@ -28,11 +28,12 @@ function UserDetailModal({ user, onClose }) {
             {/* Detailed information */}
             <div className="row">
               <div className="col-12">
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Phone:</strong> {user.phone}</p>
-                <p><strong>Address:</strong> {user.address}</p>
-                <p><strong>Status:</strong> {user.status}</p>
-                {/* Thêm các thông tin khác nếu cần */}
+                <p><strong>Email:</strong> {user.email || 'N/A'}</p>
+                <p><strong>Full Name:</strong> {user.fullName || 'N/A'}</p>
+                <p><strong>Phone:</strong> {user.phoneNumber || 'N/A'}</p>
+                <p><strong>Address:</strong> {user.address || 'N/A'}</p>
+                <p><strong>Status:</strong> {user.isActive ? 'Active' : 'Inactive'}</p>
+                <p><strong>Joined:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
               </div>
             </div>
           </div>

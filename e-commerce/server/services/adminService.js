@@ -173,6 +173,50 @@ class AdminService {
         return revenueStats;
     }
 
+    // Get revenue distribution by product category (for pie chart)
+    async getRevenueDistribution() {
+        const distribution = await Order.aggregate([
+            { $match: { status: 'Delivered' } },
+            { $unwind: '$items' },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.productID',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'product.categoryID',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+            {
+                $group: {
+                    _id: { $ifNull: ['$category.categoryName', 'Uncategorized'] },
+                    revenue: { $sum: { $multiply: ['$items.quantity', '$items.unitPrice'] } },
+                    orderCount: { $sum: 1 }
+                }
+            },
+            { $sort: { revenue: -1 } },
+            {
+                $project: {
+                    _id: 0,
+                    categoryName: '$_id',
+                    revenue: 1,
+                    orderCount: 1
+                }
+            }
+        ]);
+
+        return distribution;
+    }
+
     // Get top selling products
     async getTopSellingProducts(limit = 10) {
         const products = await Product.aggregate([
@@ -195,6 +239,41 @@ class AdminService {
                 }
             },
             { $sort: { sold: -1 } },
+            { $limit: limit }
+        ]);
+
+        return products;
+    }
+
+    // Get trending products (by most views)
+    async getTrendingProducts(limit = 10) {
+        const products = await Product.aggregate([
+            { $match: { isActive: true } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'categoryID',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
+            {
+                $project: {
+                    name: 1,
+                    sold: 1,
+                    views: 1,
+                    revenue: {
+                        $multiply: [
+                            { $ifNull: ['$price.sale', '$price.original'] },
+                            { $ifNull: ['$sold', 0] }
+                        ]
+                    },
+                    categoryName: '$category.categoryName',
+                    createdAt: 1
+                }
+            },
+            { $sort: { views: -1, createdAt: -1 } },
             { $limit: limit }
         ]);
 

@@ -21,6 +21,7 @@ function DashboardOverview() {
         },
         revenueData: [],
         topProducts: [],
+        trendingProducts: [],
         revenueStats: []
     });
 
@@ -37,10 +38,11 @@ function DashboardOverview() {
                 }
 
                 // Fetch all dashboard data in parallel
-                const [statsResponse, revenueResponse, topProductsResponse, revenueStatsResponse] = await Promise.all([
+                const [statsResponse, revenueDistributionResponse, topProductsResponse, trendingResponse, revenueStatsResponse] = await Promise.all([
                     adminAPI.getDashboardStats(adminToken),
-                    adminAPI.getRevenueStats(adminToken, 'month'),
+                    adminAPI.getRevenueDistribution(adminToken),
                     adminAPI.getTopSellingProducts(adminToken, 5),
+                    adminAPI.getTrendingProducts(adminToken, 10),
                     adminAPI.getRevenueStats(adminToken, 'month')
                 ]);
 
@@ -49,16 +51,19 @@ function DashboardOverview() {
                     throw new Error(statsResponse.message || 'Failed to fetch dashboard stats');
                 }
 
-                if (!revenueResponse.success) {
-                    throw new Error(revenueResponse.message || 'Failed to fetch revenue data');
+                if (!revenueDistributionResponse.success) {
+                    throw new Error(revenueDistributionResponse.message || 'Failed to fetch revenue distribution');
                 }
 
                 if (!topProductsResponse.success) {
                     throw new Error(topProductsResponse.message || 'Failed to fetch top products');
                 }
+                if (!trendingResponse.success) {
+                    throw new Error(trendingResponse.message || 'Failed to fetch trending products');
+                }
 
                 // Process revenue data for pie chart
-                const revenueData = revenueResponse.data.map(item => ({
+                const revenueData = revenueDistributionResponse.data.map(item => ({
                     name: item.categoryName || 'Other',
                     value: item.revenue || 0
                 }));
@@ -73,6 +78,12 @@ function DashboardOverview() {
                     stats: statsResponse.data,
                     revenueData,
                     topProducts: topProductsResponse.data,
+                    trendingProducts: (trendingResponse.data || []).map(item => ({
+                        id: item._id,
+                        name: item.name,
+                        unitsSold: item.sold || 0,
+                        revenue: item.revenue || 0
+                    })),
                     revenueStats
                 });
 
@@ -208,7 +219,7 @@ function DashboardOverview() {
                 <div className="card-body">
                   <h5 className="mb-3">Trending Products</h5>
                   <div className="table-responsive">
-                    <TrendingProductsTable products={dashboardData.topProducts} />
+                    <TrendingProductsTable products={dashboardData.trendingProducts} />
                   </div>
                 </div>
               </div>

@@ -17,7 +17,7 @@ function TrendingProductsTable({ products }) {
             <td>{p.id}</td>
             <td>{p.name}</td>
             <td>{p.unitsSold}</td>
-            <td>{p.revenue}</td>
+            <td>{typeof p.revenue === 'number' ? p.revenue.toLocaleString() : p.revenue}</td>
           </tr>
         ))}
       </tbody>

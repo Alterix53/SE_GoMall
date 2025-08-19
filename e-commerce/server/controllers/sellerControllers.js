@@ -41,7 +41,7 @@ export const applyForSeller = async (req, res) => {
         */
 
         // TẮT KIỂM TRA DUPLICATE ĐỂ TEST
-        /*
+        
         // Prevent duplicate active/pending applications
         const existing = await Seller.findOne({ userID: authUser._id, status: { $in: ['pending', 'approved', 'suspended'] } });
         if (existing) {
@@ -66,7 +66,7 @@ export const applyForSeller = async (req, res) => {
                 existingStatus: existing.status
             });
         }
-        */
+        
 
         // Prepare verification document URLs
         // Priority: files uploaded via multipart -> upload to Cloudinary if configured
