@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { adminAPI } from '../../../utils/api';
+import ProductDetailModal from "../ProductDetailModal";
 
 const FILTERS = [
   { key: "all", label: "All" },
@@ -41,6 +42,8 @@ function ItemsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [imageErrors, setImageErrors] = useState(new Set());
   const itemsPerPage = 12;
 
   // Fetch products from API
@@ -86,6 +89,20 @@ function ItemsPage() {
     setCurrentPage(1);
   }, [activeFilter, searchTerm]);
 
+  // Handle image loading errors
+  const handleImageError = (productId) => {
+    setImageErrors(prev => new Set(prev).add(productId));
+  };
+
+  // Get image source with fallback
+  const getImageSrc = (product) => {
+    const productId = product._id || product.id;
+    if (imageErrors.has(productId)) {
+      return "/default-product.png";
+    }
+    return product.images?.[0]?.url || "/default-product.png";
+  };
+
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
@@ -119,20 +136,48 @@ function ItemsPage() {
           <h2 className="mb-4">{FILTERS.find(f => f.key === activeFilter)?.label}</h2>
           {loading && <div className="text-center py-3">Loading...</div>}
           {error && <div className="text-danger py-2">{error}</div>}
-          <ul className="list-group">
-            {!loading && products.length === 0 && (
-              <li className="list-group-item text-muted">No products found.</li>
-            )}
-            {products.map((product) => (
-              <li className="list-group-item d-flex justify-content-between align-items-center" key={product._id || product.id}>
-                <span>{product.name}</span>
-                <span className="text-end">
-                  <div className="fw-bold">{product.manufacturer}</div>
-                  <div className="text-secondary">Sold: {product.sold}</div>
-                </span>
-              </li>
-            ))}
-          </ul>
+                     <div className="table-responsive">
+             <table className="table table-hover table-bordered">
+               <thead className="table-light">
+                 <tr>
+                   <th style={{ width: 80 }}>Item Image</th>
+                   <th>Item Name</th>
+                   <th style={{ width: 150 }}>Category</th>
+                   <th style={{ width: 200 }}>Store</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {!loading && products.length === 0 && (
+                   <tr>
+                     <td colSpan={4} className="text-muted text-center">No products found.</td>
+                   </tr>
+                 )}
+                 {products.map((product) => (
+                   <tr 
+                     key={product._id || product.id}
+                     style={{ cursor: 'pointer' }}
+                     onClick={() => setSelectedProduct(product)}
+                   >
+                                           <td>
+                        <img 
+                          src={getImageSrc(product)}
+                          alt={product.name}
+                          className="rounded"
+                          style={{ width: 50, height: 50, objectFit: "cover" }}
+                          onError={() => handleImageError(product._id || product.id)}
+                        />
+                      </td>
+                     <td>
+                       <div className="fw-bold">{product.name}</div>
+                       <div className="text-muted small">SKU: {product.sku || 'N/A'}</div>
+                     </td>
+                     <td>{product.categoryID?.categoryName || 'N/A'}</td>
+                     <td>{product.sellerID?.businessName || 'N/A'}</td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
           {/* Pagination */}
           {totalPages > 1 && (
             <nav className="mt-4">
@@ -153,6 +198,13 @@ function ItemsPage() {
           )}
         </div>
       </div>
+      
+      {/* Product detail modal */}
+      {selectedProduct && (
+        <div className="modal show d-block" tabIndex={-1}>
+          <ProductDetailModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+        </div>
+      )}
     </div>
   );
 }

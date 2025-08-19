@@ -30,6 +30,7 @@ import DashboardPage from './Component/Admin/pages/DashboardPage';
 import ManageUserPage from './Component/Admin/pages/ManageUserPage';
 import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
 import ItemsPage from './Component/Admin/pages/ItemsPage';
+import PendingRequestPage from './Component/Admin/pages/PendingRequestPage';
 import AdminLogin from './Component/Admin/AdminLogin';
 
 // Import các component Auth
@@ -90,6 +91,7 @@ function AdminLayout() {
           <Route path="ManageUser" element={<ManageUserPage />} />
           <Route path="ManageUser/User" element={<ManageUserPage />} />
           <Route path="ManageSeller" element={<ManageSellerPage />} />
+          <Route path="pendingrequest" element={<PendingRequestPage />} />
           <Route path="Items" element={<ItemsPage />} />
         </Routes>
       </div>
