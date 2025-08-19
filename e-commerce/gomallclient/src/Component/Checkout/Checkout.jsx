@@ -80,7 +80,7 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     if (!isAuthenticated()) {
-      alert('Vui lòng đăng nhập để đặt hàng!');
+      alert('Please login to place order!');
       navigate('/login');
       return;
     }
@@ -88,13 +88,13 @@ const Checkout = () => {
     // Kiểm tra token có hợp lệ không
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+      alert('Login session has expired. Please login again!');
       navigate('/login');
       return;
     }
 
     if (!userInfo.address || !userInfo.name || !userInfo.phone) {
-      setError('Vui lòng điền đầy đủ thông tin địa chỉ giao hàng!');
+      setError('Please fill in complete shipping address information!');
       return;
     }
 
@@ -157,11 +157,11 @@ const Checkout = () => {
           });
         }
       } else {
-        setError('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
+        setError('An error occurred while placing order. Please try again!');
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!';
+      const errorMessage = error.response?.data?.message || error.message || 'An error occurred while placing order. Please try again!';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -188,21 +188,21 @@ const Checkout = () => {
       
       <div className="checkout-container">
         <div className="checkout-breadcrumb">
-          <span className="page-title">Thanh Toán</span>
+          <span className="page-title">Checkout</span>
         </div>
         <div className="checkout-content">
           {/* Delivery Address Section */}
           <div className="checkout-section address-section">
             <div className="section-header">
               <span className="location-icon">📍</span>
-              <span className="section-title">Địa Chỉ Nhận Hàng</span>
+              <span className="section-title">Shipping Address</span>
             </div>
             <div className="address-content">
               <div className="user-info" style={{ width: '100%', display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input 
                     type="text" 
-                    placeholder="Họ và tên"
+                    placeholder="Full name"
                     value={userInfo.name}
                     onChange={(e) => setUserInfo((u) => ({ ...u, name: e.target.value }))}
                     className="note-input"
@@ -210,7 +210,7 @@ const Checkout = () => {
                   />
                   <input 
                     type="text" 
-                    placeholder="Số điện thoại"
+                    placeholder="Phone number"
                     value={userInfo.phone}
                     onChange={(e) => setUserInfo((u) => ({ ...u, phone: e.target.value }))}
                     className="note-input"
@@ -218,7 +218,7 @@ const Checkout = () => {
                   />
                   <input 
                     type="text" 
-                    placeholder="Địa chỉ nhận hàng"
+                    placeholder="Shipping address"
                     value={userInfo.address}
                     onChange={(e) => setUserInfo((u) => ({ ...u, address: e.target.value }))}
                     className="note-input"
@@ -243,17 +243,17 @@ const Checkout = () => {
                             address: updated.address || ''
                           });
                         }
-                        alert('Đã lưu địa chỉ vào tài khoản');
+                        alert('Address has been saved to account');
                       } catch (e) {
                         console.error('Save address failed:', e);
-                        const msg = e?.response?.data?.message || e?.message || 'Lưu địa chỉ thất bại';
+                        const msg = e?.response?.data?.message || e?.message || 'Failed to save address';
                         alert(msg);
                       } finally {
                         setLoading(false);
                       }
                     }}
                   >
-                    Lưu địa chỉ
+                    Save Address
                   </button>
                 </div>
               </div>
@@ -264,10 +264,10 @@ const Checkout = () => {
           <div className="checkout-section products-section">
             <div className="products-header">
               <div className="header-row">
-                <span className="col-product">Sản phẩm</span>
-                <span className="col-price">Đơn giá</span>
-                <span className="col-quantity">Số lượng</span>
-                <span className="col-total">Thành tiền</span>
+                <span className="col-product">Product</span>
+                <span className="col-price">Unit Price</span>
+                <span className="col-quantity">Quantity</span>
+                                  <span className="col-total">Total</span>
               </div>
             </div>
 
@@ -290,7 +290,7 @@ const Checkout = () => {
                   <div className="product-details">
                     <div className="product-name">{item.name}</div>
                     <div className="product-variant">
-                      Loại: {item.variant || item.size || 'Pink'}
+                      Type: {item.variant || item.size || 'Pink'}
                     </div>
                   </div>
                 </div>
@@ -309,15 +309,15 @@ const Checkout = () => {
               <label className="insurance-checkbox">
                 <input type="checkbox" />
                 <span className="checkmark"></span>
-                <span className="insurance-text">Bảo hiểm Thiết bị di động</span>
+                <span className="insurance-text">Mobile Device Insurance</span>
               </label>
               <div className="insurance-price">{currencyVND(415999)}</div>
               <div className="insurance-quantity">1</div>
               <div className="insurance-total">{currencyVND(415999)}</div>
             </div>
             <div className="insurance-description">
-              Bảo vệ thiết bị di động của bạn trước những thiệt hại do sự cố, tiếp xúc với chất lỏng và mất cắp/mất trộm. 
-              <span className="learn-more">Tìm hiểu thêm</span>
+                              Protect your mobile device from damage due to accidents, liquid exposure, and theft/loss.
+                <span className="learn-more">Learn more</span>
             </div>
           </div>
 
@@ -325,19 +325,19 @@ const Checkout = () => {
           <div className="checkout-section voucher-section">
             <div className="voucher-header">
               <span className="voucher-icon">🎫</span>
-              <span className="voucher-title">Hóa đơn điện tử 💡</span>
-              <span className="voucher-request">Yêu Cầu Ngay</span>
+                              <span className="voucher-title">Electronic Invoice 💡</span>
+                <span className="voucher-request">Request Now</span>
             </div>
             
             <div className="voucher-options">
               <div className="voucher-row">
-                <span className="voucher-label">🎫 Voucher của Shop</span>
-                <button className="voucher-select">Chọn Voucher</button>
+                <span className="voucher-label">🎫 Shop Voucher</span>
+                <button className="voucher-select">Select Voucher</button>
               </div>
               
               <div className="voucher-row">
-                <span className="voucher-label">🛒 Voucher nền tảng</span>
-                <button className="voucher-select">Chọn Voucher</button>
+                <span className="voucher-label">🛒 Platform Voucher</span>
+                <button className="voucher-select">Select Voucher</button>
               </div>
               
               <div className="voucher-row">
@@ -347,7 +347,7 @@ const Checkout = () => {
 
           {/* Payment Method Section */}
           <div className="checkout-section payment-section">
-            <div className="section-title payment-title">Phương thức thanh toán</div>
+                          <div className="section-title payment-title">Payment Method</div>
             
             <div className="payment-options">
               <div className="payment-tabs">
@@ -355,7 +355,7 @@ const Checkout = () => {
                   className={`payment-tab ${paymentMethod === 'cash' ? 'active' : ''}`}
                   onClick={() => setPaymentMethod('cash')}
                 >
-                  💵 Tiền mặt
+                  💵 Cash
                 </button>
 
                 <button 
@@ -368,7 +368,7 @@ const Checkout = () => {
               
               {/* Remove the old bank transfer section */}
               {/* <div className="payment-method-detail">
-                <div className="bank-transfer-option">Chuyển khoản ngân hàng</div>
+                <div className="bank-transfer-option">Bank Transfer</div>
               </div> */}
 
 
@@ -387,15 +387,15 @@ const Checkout = () => {
                 <div className="payment-options-detail">
                   <div className="cash-payment-info">
                     <div className="cash-payment-description">
-                      <p>💵 Thanh toán bằng tiền mặt khi nhận hàng</p>
-                      <div className="cash-payment-benefits">
-                        <span>✓ Không cần thẻ hay tài khoản ngân hàng</span>
-                        <span>✓ Thanh toán trực tiếp với nhân viên giao hàng</span>
-                        <span>✓ An toàn và tiện lợi</span>
-                      </div>
-                      <div className="cash-payment-note">
-                        <strong>Lưu ý:</strong> Vui lòng chuẩn bị đủ tiền mặt để thanh toán khi nhận hàng.
-                      </div>
+                                      <p>💵 Pay with cash when receiving goods</p>
+                <div className="cash-payment-benefits">
+                  <span>✓ No card or bank account needed</span>
+                  <span>✓ Pay directly with delivery staff</span>
+                  <span>✓ Safe and convenient</span>
+                </div>
+                <div className="cash-payment-note">
+                  <strong>Note:</strong> Please prepare enough cash to pay when receiving goods.
+                </div>
                     </div>
                   </div>
                 </div>
@@ -405,16 +405,16 @@ const Checkout = () => {
                 <div className="payment-options-detail">
                   <div className="momo-payment-info">
                     <div className="momo-payment-description">
-                      <p>📱 Thanh toán nhanh chóng và an toàn với MoMo Wallet</p>
-                      <div className="momo-payment-benefits">
-                        <span>✓ Quét mã QR để thanh toán</span>
-                        <span>✓ Không cần thẻ hay tài khoản ngân hàng</span>
-                        <span>✓ Xác nhận thanh toán ngay lập tức</span>
-                        <span>✓ Bảo mật thông tin tuyệt đối</span>
-                      </div>
-                      <div className="momo-payment-note">
-                        <strong>Lưu ý:</strong> Vui lòng mở ứng dụng MoMo và quét mã QR để hoàn tất thanh toán.
-                      </div>
+                                      <p>📱 Fast and secure payment with MoMo Wallet</p>
+                <div className="momo-payment-benefits">
+                  <span>✓ Scan QR code to pay</span>
+                  <span>✓ No card or bank account needed</span>
+                  <span>✓ Instant payment confirmation</span>
+                  <span>✓ Absolute information security</span>
+                </div>
+                <div className="momo-payment-note">
+                  <strong>Note:</strong> Please open the MoMo app and scan the QR code to complete payment.
+                </div>
                     </div>
                   </div>
                 </div>
@@ -423,11 +423,11 @@ const Checkout = () => {
               {/* Merged: Order details inside payment section */}
               {/* Order Note */}
               <div className="order-note">
-                <label htmlFor="note">Lời nhắn:</label>
+                <label htmlFor="note">Message:</label>
                 <input
                   id="note"
                   type="text"
-                  placeholder="Lưu ý cho Người bán..."
+                  placeholder="Note for Seller..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   className="note-input"
@@ -437,15 +437,15 @@ const Checkout = () => {
               {/* Total Summary */}
               <div className="total-summary">
                 <div className="total-row">
-                  <span className="total-label">Tổng tiền hàng</span>
+                  <span className="total-label">Subtotal</span>
                   <span className="total-value">{currencyVND(total)}</span>
                 </div>
                 <div className="total-row">
-                  <span className="total-label">Tổng tiền phí vận chuyển</span>
+                  <span className="total-label">Shipping fee</span>
                   <span className="total-value">{currencyVND(shippingFee)}</span>
                 </div>
                 <div className="total-row final-total">
-                  <span className="total-label">Tổng thanh toán</span>
+                  <span className="total-label">Total payment</span>
                   <span className="total-value final-amount">{currencyVND(totalWithShipping)}</span>
                 </div>
               </div>
@@ -459,8 +459,8 @@ const Checkout = () => {
 
               {/* Terms Agreement */}
               <div className="terms-agreement">
-                Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo{' '}
-                <span className="terms-link">Điều khoản của chúng tôi</span>
+                Clicking "Place Order" means you agree to follow our{' '}
+                <span className="terms-link">Terms and Conditions</span>
               </div>
 
               {/* Place Order Button */}
@@ -469,7 +469,7 @@ const Checkout = () => {
                 onClick={handlePlaceOrder}
                 disabled={loading}
               >
-                {loading ? 'Đang xử lý...' : 'Đặt hàng'}
+                {loading ? 'Processing...' : 'Place Order'}
               </button>
             </div>
           </div>

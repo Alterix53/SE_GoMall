@@ -17,37 +17,42 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setLoading(true);
+    setError('');
+
+    console.log('Attempting login with:', { username, password });
+
     try {
-      setLoading(true);
-      setError('');
-
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('isLoggedIn', 'true');
+      const result = await login(username, password);
+      
+      console.log('Login result:', result);
+      
+      if (result.success) {
+        const user = result.user;
+        console.log('User data:', user);
         
-        alert('Đăng nhập thành công!');
-        navigate('/');
+        // Điều hướng theo vai trò
+        if (user.role === 'seller') {
+          if (user.sellerInfo && user.sellerInfo.status === 'approved') {
+            navigate('/seller-dashboard');
+          } else {
+            setError('Your seller account has not been approved yet.');
+            return;
+          }
+        } else if (user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          // buyer hoặc role khác - về trang chủ
+          const from = location.state?.from?.pathname || '/';
+          navigate(from);
+        }
       } else {
-        setError(data.message || 'Đăng nhập thất bại');
+        console.log('Login failed:', result.message);
+        setError(result.message || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.');
+              setError('An error occurred during login. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -68,11 +73,11 @@ const LoginPage = () => {
                     <span className="gomall">GoMall</span>
                   </span>
                 </Link>
-                <span className="logo-text dangnhap"> Đăng nhập</span>
+                <span className="logo-text dangnhap"> Login</span>
               </div>
             </div>
             <div className="header-right">
-              <span className="help-text">Bạn cần giúp đỡ?</span>
+              <span className="help-text">Need help?</span>
             </div>
           </div>
 
@@ -81,14 +86,14 @@ const LoginPage = () => {
             {/* Bên trái - Promotional content */}
             <div className="content-left">
               <div className="promotional-content">
-                <h1 className="promo-title">THAM GIA CỘNG ĐỒNG</h1>
+                <h1 className="promo-title">JOIN THE COMMUNITY</h1>
                 <div className="promo-banners">
-                  <div className="promo-banner blue">MUA SẮM THÔNG MINH</div>
-                  <div className="promo-banner yellow">TIẾT KIỆM TỐI ĐA</div>
-                  <div className="promo-banner blue">TRẢI NGHIỆM TUYỆT VỜI</div>
+                  <div className="promo-banner blue">SMART SHOPPING</div>
+                  <div className="promo-banner yellow">MAXIMUM SAVINGS</div>
+                  <div className="promo-banner blue">GREAT EXPERIENCE</div>
                 </div>
-                <div className="promo-text">ĐĂNG NHẬP NGAY HÔM NAY</div>
-                <div className="promo-date">Nhận ưu đãi đặc biệt</div>
+                <div className="promo-text">LOGIN TODAY</div>
+                <div className="promo-date">Get special offers</div>
               </div>
 
               {/* Background shapes */}
@@ -104,7 +109,7 @@ const LoginPage = () => {
               <div className="login-form-container">
                 <div className="login-form">
                   <div className="form-header">
-                    <h2>Đăng nhập</h2>
+                    <h2>Login</h2>
                   </div>
 
                   {error && (
@@ -117,7 +122,7 @@ const LoginPage = () => {
                     <div className="input-group">
                       <input
                         type="text"
-                        placeholder="Email/Số điện thoại/Tên đăng nhập"
+                        placeholder="Email/Phone/Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
@@ -128,7 +133,7 @@ const LoginPage = () => {
                     <div className="input-group password-group">
                       <input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Mật khẩu"
+                        placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -148,18 +153,18 @@ const LoginPage = () => {
                       className="login-btn" 
                       disabled={loading}
                     >
-                      {loading ? 'Đang đăng nhập...' : 'ĐĂNG NHẬP'}
+                      {loading ? 'Logging in...' : 'LOGIN'}
                     </button>
                   </form>
 
                   <div className="form-footer">
                     <Link to="/forgot-password" className="forgot-password">
-                      Quên mật khẩu
+                      Forgot password
                     </Link>
                     
                     <div className="register-link">
-                      <span>Bạn mới biết đến GoMall? </span>
-                      <Link to="/signup" className="register-btn">Đăng ký</Link>
+                      <span>New to GoMall? </span>
+                      <Link to="/signup" className="register-btn">Sign up</Link>
                     </div>
                   </div>
                 </div>

@@ -78,6 +78,25 @@ export const apiService = {
   // PATCH request
   patch: (url, data = {}, config = {}) => {
     return api.patch(url, data, config);
+  },
+
+  // Product APIs for users
+  getProductById: async (productId) => {
+    try {
+      const response = await api.get(`/products/${productId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAllProducts: async (params = {}) => {
+    try {
+      const response = await api.get('/products', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

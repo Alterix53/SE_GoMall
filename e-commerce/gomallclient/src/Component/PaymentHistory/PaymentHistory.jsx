@@ -28,11 +28,11 @@ const PaymentHistory = () => {
                 setPayments(response.data.payments);
                 setPagination(response.data.pagination);
             } else {
-                setError('Không thể tải lịch sử giao dịch');
+                setError('Cannot load payment history');
             }
         } catch (error) {
             console.error('Error loading payments:', error);
-            setError('Có lỗi xảy ra khi tải lịch sử giao dịch');
+            setError('An error occurred while loading payment history');
         } finally {
             setLoading(false);
         }
@@ -51,11 +51,11 @@ const PaymentHistory = () => {
 
     const getStatusBadge = (status) => {
         const statusConfig = {
-            'PENDING': { text: 'Chờ xử lý', class: 'pending' },
-            'PROCESSING': { text: 'Đang xử lý', class: 'processing' },
-            'SUCCESS': { text: 'Thành công', class: 'success' },
-            'FAILED': { text: 'Thất bại', class: 'failed' },
-            'CANCELLED': { text: 'Đã hủy', class: 'cancelled' }
+                    'PENDING': { text: 'Pending', class: 'pending' },
+        'PROCESSING': { text: 'Processing', class: 'processing' },
+        'SUCCESS': { text: 'Success', class: 'success' },
+        'FAILED': { text: 'Failed', class: 'failed' },
+        'CANCELLED': { text: 'Cancelled', class: 'cancelled' }
         };
 
         const config = statusConfig[status] || { text: status, class: 'unknown' };
@@ -80,7 +80,7 @@ const PaymentHistory = () => {
             <div className="payment-history-container">
                 <div className="loading-container">
                     <div className="loading-spinner"></div>
-                    <p>Đang tải lịch sử giao dịch...</p>
+                    <p>Loading payment history...</p>
                 </div>
             </div>
         );
@@ -91,13 +91,13 @@ const PaymentHistory = () => {
             <div className="payment-history-container">
                 <div className="error-container">
                     <div className="error-icon">⚠️</div>
-                    <h2>Lỗi</h2>
+                    <h2>Error</h2>
                     <p>{error}</p>
                     <button 
                         className="retry-btn"
                         onClick={refreshPayments}
                     >
-                        Thử Lại
+                        Try Again
                     </button>
                 </div>
             </div>
@@ -107,26 +107,26 @@ const PaymentHistory = () => {
     return (
         <div className="payment-history-container">
             <div className="payment-history-header">
-                <h1>Lịch Sử Giao Dịch MoMo</h1>
+                <h1>MoMo Payment History</h1>
                 <button 
                     className="refresh-btn"
                     onClick={refreshPayments}
                     disabled={loading}
                 >
-                    🔄 Làm Mới
+                    🔄 Refresh
                 </button>
             </div>
 
             {payments.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-icon">📱</div>
-                    <h3>Chưa có giao dịch nào</h3>
-                    <p>Bạn chưa thực hiện giao dịch thanh toán nào qua MoMo</p>
+                    <h3>No transactions yet</h3>
+                    <p>You haven't made any MoMo payment transactions yet</p>
                     <button 
                         className="primary-btn"
                         onClick={() => navigate('/')}
                     >
-                        Bắt Đầu Mua Sắm
+                        Start Shopping
                     </button>
                 </div>
             ) : (
@@ -136,7 +136,7 @@ const PaymentHistory = () => {
                             <div key={payment._id} className="payment-item">
                                 <div className="payment-header">
                                     <div className="payment-id">
-                                        <span className="label">Mã GD:</span>
+                                        <span className="label">Transaction ID:</span>
                                         <span className="value">{payment.requestId}</span>
                                     </div>
                                     {getStatusBadge(payment.status)}
@@ -144,32 +144,32 @@ const PaymentHistory = () => {
 
                                 <div className="payment-details">
                                     <div className="detail-row">
-                                        <span className="label">Đơn hàng:</span>
+                                        <span className="label">Order:</span>
                                         <span className="value">
                                             {payment.orderID?.orderNumber || payment.orderID?._id || 'N/A'}
                                         </span>
                                     </div>
                                     <div className="detail-row">
-                                        <span className="label">Số tiền:</span>
+                                        <span className="label">Amount:</span>
                                         <span className="value amount">
                                             {formatAmount(payment.amount)}
                                         </span>
                                     </div>
                                     <div className="detail-row">
-                                        <span className="label">Thời gian:</span>
+                                        <span className="label">Time:</span>
                                         <span className="value">
                                             {formatDate(payment.createdAt)}
                                         </span>
                                     </div>
                                     {payment.transId && (
                                         <div className="detail-row">
-                                            <span className="label">Mã MoMo:</span>
+                                            <span className="label">MoMo Code:</span>
                                             <span className="value">{payment.transId}</span>
                                         </div>
                                     )}
                                     {payment.message && (
                                         <div className="detail-row">
-                                            <span className="label">Ghi chú:</span>
+                                            <span className="label">Note:</span>
                                             <span className="value">{payment.message}</span>
                                         </div>
                                     )}
@@ -180,7 +180,7 @@ const PaymentHistory = () => {
                                         className="view-btn"
                                         onClick={() => navigate(`/payment/${payment._id}`)}
                                     >
-                                        Xem Chi Tiết
+                                        View Details
                                     </button>
                                 </div>
                             </div>
@@ -194,7 +194,7 @@ const PaymentHistory = () => {
                                 onClick={() => handlePageChange(pagination.page - 1)}
                                 disabled={pagination.page <= 1}
                             >
-                                ← Trước
+                                ← Previous
                             </button>
                             
                             <span className="page-info">
@@ -212,7 +212,7 @@ const PaymentHistory = () => {
                     )}
 
                     <div className="summary-info">
-                        <p>Tổng cộng: <strong>{pagination.total}</strong> giao dịch</p>
+                        <p>Total: <strong>{pagination.total}</strong> transactions</p>
                     </div>
                 </>
             )}

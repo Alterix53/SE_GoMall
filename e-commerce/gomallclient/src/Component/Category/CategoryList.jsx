@@ -3,7 +3,7 @@ import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
 import './CategoryList.css';
 
-// Category icon mapping for display - chỉ giữ lại 14 danh mục có sản phẩm
+// Category icon mapping for display - only keeping 14 categories that have products
 const categoryIconMap = {
   'Phones': '📱',
   'Laptops': '💻',
@@ -163,7 +163,7 @@ export default function CategoryList() {
     return (
       <div className="category-section">
         <div className="category-container">
-          <h2 className="category-title">Đang tải danh mục...</h2>
+          <h2 className="category-title">Loading categories...</h2>
         </div>
       </div>
     );
@@ -181,7 +181,7 @@ export default function CategoryList() {
           <div className="category-header">
             <div className="category-header-top">
               <button className="back-button" onClick={handleBackToCategories}>
-                ← Quay lại danh mục
+                ← Back to categories
               </button>
             </div>
             <h2 className="category-title">{selectedCategory.categoryName}</h2>
@@ -189,13 +189,13 @@ export default function CategoryList() {
           
           {loadingProducts ? (
             <div className="loading-products">
-              <p>Đang tải sản phẩm...</p>
+              <p>Loading products...</p>
             </div>
           ) : (
             <>
               {categoryProducts.length === 0 ? (
                 <div className="no-products" style={{ textAlign: 'center', padding: '24px', color: '#666' }}>
-                  Chưa có sản phẩm trong danh mục này
+                  No products in this category yet
                 </div>
               ) : (
                 <div className="products-grid">
@@ -243,7 +243,7 @@ export default function CategoryList() {
   return (
     <div className="category-section">
       <div className="category-container">
-        <h2 className="category-title">Danh Mục Sản Phẩm</h2>
+        <h2 className="category-title">Product Categories</h2>
         <div className="category-grid">
           {categories.map((category) => (
             <CategoryItem 

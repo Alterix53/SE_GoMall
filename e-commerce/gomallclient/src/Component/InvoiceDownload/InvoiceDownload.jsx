@@ -9,7 +9,7 @@ const InvoiceDownload = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getCurrentUser } = useAuth();
   
-  // Lấy thông tin đơn hàng từ location state hoặc fallback
+  // Get order info from location state or fallback
   const orderData = location.state?.orderData || {
     orderID: 'N/A',
     orderNumber: 'N/A',
@@ -40,7 +40,7 @@ const InvoiceDownload = () => {
         orderNumber: orderData.orderNumber || orderData.orderID,
         orderDate: new Date(orderData.createdAt || Date.now()),
         customerInfo: {
-          name: currentUser?.fullName || currentUser?.username || 'Khách hàng',
+          name: currentUser?.fullName || currentUser?.username || 'Customer',
           email: currentUser?.email || 'N/A',
           phone: currentUser?.phoneNumber || 'N/A',
           address: orderData.shippingAddress || 'N/A'
@@ -49,12 +49,12 @@ const InvoiceDownload = () => {
         subtotal: orderData.amount || 0,
         shippingFee: 1000,
         total: (orderData.amount || 0) + 1000,
-        paymentMethod: orderData.paymentMethod || 'Tiền mặt',
-        status: 'Đã thanh toán'
+        paymentMethod: orderData.paymentMethod || 'Cash',
+        status: 'Paid'
       };
       setInvoiceData(invoice);
     } catch (err) {
-      setError('Không thể tạo dữ liệu hóa đơn');
+      setError('Cannot generate invoice data');
     }
   };
 
@@ -81,14 +81,14 @@ const InvoiceDownload = () => {
       // TODO: Implement actual PDF generation and download
       // For now, we'll create a simple HTML invoice and download it
       const invoiceHTML = generateInvoiceHTML();
-      downloadHTMLAsFile(invoiceHTML, `hoa-don-${invoiceData.invoiceNumber}.html`);
+      downloadHTMLAsFile(invoiceHTML, `invoice-${invoiceData.invoiceNumber}.html`);
       
       setTimeout(() => {
         setLoading(false);
-        alert('Hóa đơn đã được tải xuống!');
+        alert('Invoice downloaded!');
       }, 2000);
     } catch (err) {
-      setError('Không thể tải hóa đơn');
+      setError('Cannot download invoice');
       setLoading(false);
     }
   };
@@ -98,11 +98,11 @@ const InvoiceDownload = () => {
     
     return `
       <!DOCTYPE html>
-      <html lang="vi">
+      <html lang="en">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Hóa đơn ${invoiceData.invoiceNumber}</title>
+        <title>Invoice ${invoiceData.invoiceNumber}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
           .invoice { max-width: 800px; margin: 0 auto; border: 2px solid #333; padding: 30px; }
@@ -127,37 +127,37 @@ const InvoiceDownload = () => {
         <div class="invoice">
           <div class="header">
             <div class="company-name">GO MALL</div>
-            <div class="invoice-title">HÓA ĐƠN BÁN HÀNG</div>
-            <div>Số: ${invoiceData.invoiceNumber}</div>
+            <div class="invoice-title">SALES INVOICE</div>
+            <div>No: ${invoiceData.invoiceNumber}</div>
           </div>
           
           <div class="invoice-info">
             <div class="customer-info">
-              <div class="section-title">Thông tin khách hàng:</div>
-              <div class="info-row"><span class="info-label">Tên:</span> ${invoiceData.customerInfo.name}</div>
+              <div class="section-title">Customer Information:</div>
+              <div class="info-row"><span class="info-label">Name:</span> ${invoiceData.customerInfo.name}</div>
               <div class="info-row"><span class="info-label">Email:</span> ${invoiceData.customerInfo.email}</div>
-              <div class="info-row"><span class="info-label">Số điện thoại:</span> ${invoiceData.customerInfo.phone}</div>
-              <div class="info-row"><span class="info-label">Địa chỉ:</span> ${invoiceData.customerInfo.address}</div>
+              <div class="info-row"><span class="info-label">Phone:</span> ${invoiceData.customerInfo.phone}</div>
+              <div class="info-row"><span class="info-label">Address:</span> ${invoiceData.customerInfo.address}</div>
             </div>
             
             <div class="invoice-details">
-              <div class="section-title">Thông tin hóa đơn:</div>
-              <div class="info-row"><span class="info-label">Mã đơn hàng:</span> ${invoiceData.orderNumber}</div>
-              <div class="info-row"><span class="info-label">Ngày đặt:</span> ${formatDate(invoiceData.orderDate)}</div>
-              <div class="info-row"><span class="info-label">Phương thức thanh toán:</span> ${invoiceData.paymentMethod}</div>
-              <div class="info-row"><span class="info-label">Trạng thái:</span> ${invoiceData.status}</div>
+              <div class="section-title">Invoice Details:</div>
+              <div class="info-row"><span class="info-label">Order ID:</span> ${invoiceData.orderNumber}</div>
+              <div class="info-row"><span class="info-label">Order date:</span> ${formatDate(invoiceData.orderDate)}</div>
+              <div class="info-row"><span class="info-label">Payment method:</span> ${invoiceData.paymentMethod}</div>
+              <div class="info-row"><span class="info-label">Status:</span> ${invoiceData.status}</div>
             </div>
           </div>
           
           <table class="items-table">
             <thead>
               <tr>
-                <th>STT</th>
-                <th>Tên sản phẩm</th>
-                <th>Loại</th>
-                <th>Số lượng</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
+                <th>No</th>
+                <th>Product name</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Unit price</th>
+                <th>Subtotal</th>
               </tr>
             </thead>
             <tbody>
@@ -175,14 +175,14 @@ const InvoiceDownload = () => {
           </table>
           
           <div class="total-section">
-            <div class="total-row">Tổng tiền hàng: ${currencyVND(invoiceData.subtotal)}</div>
-            <div class="total-row">Phí vận chuyển: ${currencyVND(invoiceData.shippingFee)}</div>
-            <div class="total-row final-total">Tổng cộng: ${currencyVND(invoiceData.total)}</div>
+            <div class="total-row">Subtotal: ${currencyVND(invoiceData.subtotal)}</div>
+            <div class="total-row">Shipping fee: ${currencyVND(invoiceData.shippingFee)}</div>
+            <div class="total-row final-total">Total: ${currencyVND(invoiceData.total)}</div>
           </div>
           
           <div class="footer">
-            <p>Cảm ơn bạn đã mua hàng tại GO MALL!</p>
-            <p>Hóa đơn này được tạo tự động vào ${formatDate(new Date())}</p>
+            <p>Thank you for shopping at GO MALL!</p>
+            <p>This invoice was automatically generated on ${formatDate(new Date())}</p>
           </div>
         </div>
       </body>
@@ -216,7 +216,7 @@ const InvoiceDownload = () => {
         <Header />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Đang tạo hóa đơn...</p>
+          <p>Creating invoice...</p>
         </div>
       </div>
     );
@@ -228,14 +228,14 @@ const InvoiceDownload = () => {
       
       <div className="invoice-container">
         <div className="invoice-header">
-          <h1>📄 Hóa Đơn Đơn Hàng</h1>
-          <p>Hóa đơn cho đơn hàng: <strong>{invoiceData.orderNumber}</strong></p>
+          <h1>📄 Order Invoice</h1>
+          <p>Invoice for order: <strong>{invoiceData.orderNumber}</strong></p>
         </div>
 
         <div className="invoice-preview">
           <div className="invoice-preview-header">
-            <h2>Xem Trước Hóa Đơn</h2>
-            <div className="invoice-number">Số hóa đơn: {invoiceData.invoiceNumber}</div>
+            <h2>Invoice Preview</h2>
+            <div className="invoice-number">Invoice No: {invoiceData.invoiceNumber}</div>
           </div>
 
           <div className="invoice-content">
@@ -243,8 +243,8 @@ const InvoiceDownload = () => {
             <div className="company-section">
               <div className="company-name">GO MALL</div>
               <div className="company-info">
-                <p>🏢 Công ty TNHH GO MALL</p>
-                <p>📍 123 Đường ABC, Quận 1, TP.HCM</p>
+                <p>🏢 GO MALL LLC</p>
+                <p>📍 123 ABC Street, District 1, HCMC</p>
                 <p>📞 Hotline: 1900-xxxx</p>
                 <p>📧 Email: support@gomall.com</p>
               </div>
@@ -254,9 +254,9 @@ const InvoiceDownload = () => {
             <div className="invoice-info-section">
               <div className="info-grid">
                 <div className="info-column">
-                  <h3>👤 Thông Tin Khách Hàng</h3>
+                  <h3>👤 Customer Information</h3>
                   <div className="info-item">
-                    <span className="label">Tên:</span>
+                    <span className="label">Name:</span>
                     <span className="value">{invoiceData.customerInfo.name}</span>
                   </div>
                   <div className="info-item">
@@ -264,31 +264,31 @@ const InvoiceDownload = () => {
                     <span className="value">{invoiceData.customerInfo.email}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">Số điện thoại:</span>
+                    <span className="label">Phone:</span>
                     <span className="value">{invoiceData.customerInfo.phone}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">Địa chỉ:</span>
+                    <span className="label">Address:</span>
                     <span className="value">{invoiceData.customerInfo.address}</span>
                   </div>
                 </div>
 
                 <div className="info-column">
-                  <h3>📋 Thông Tin Đơn Hàng</h3>
+                  <h3>📋 Order Information</h3>
                   <div className="info-item">
-                    <span className="label">Mã đơn hàng:</span>
+                    <span className="label">Order ID:</span>
                     <span className="value">{invoiceData.orderNumber}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">Ngày đặt:</span>
+                    <span className="label">Order date:</span>
                     <span className="value">{formatDate(invoiceData.orderDate)}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">Phương thức thanh toán:</span>
+                    <span className="label">Payment method:</span>
                     <span className="value">{invoiceData.paymentMethod}</span>
                   </div>
                   <div className="info-item">
-                    <span className="label">Trạng thái:</span>
+                    <span className="label">Status:</span>
                     <span className="value status-success">{invoiceData.status}</span>
                   </div>
                 </div>
@@ -297,15 +297,15 @@ const InvoiceDownload = () => {
 
             {/* Items Table */}
             <div className="items-section">
-              <h3>🛍️ Chi Tiết Sản Phẩm</h3>
+              <h3>🛍️ Items</h3>
               <div className="items-table">
                 <div className="table-header">
-                  <div className="header-cell">STT</div>
-                  <div className="header-cell">Tên sản phẩm</div>
-                  <div className="header-cell">Loại</div>
-                  <div className="header-cell">Số lượng</div>
-                  <div className="header-cell">Đơn giá</div>
-                  <div className="header-cell">Thành tiền</div>
+                  <div className="header-cell">No</div>
+                  <div className="header-cell">Product name</div>
+                  <div className="header-cell">Type</div>
+                  <div className="header-cell">Quantity</div>
+                  <div className="header-cell">Unit price</div>
+                  <div className="header-cell">Subtotal</div>
                 </div>
                 
                 {invoiceData.items.map((item, index) => (
@@ -324,24 +324,24 @@ const InvoiceDownload = () => {
             {/* Totals */}
             <div className="totals-section">
               <div className="total-row">
-                <span className="total-label">Tổng tiền hàng:</span>
+                <span className="total-label">Subtotal:</span>
                 <span className="total-value">{currencyVND(invoiceData.subtotal)}</span>
               </div>
               <div className="total-row">
-                <span className="total-label">Phí vận chuyển:</span>
+                <span className="total-label">Shipping fee:</span>
                 <span className="total-value">{currencyVND(invoiceData.shippingFee)}</span>
               </div>
               <div className="total-row final-total">
-                <span className="total-label">Tổng cộng:</span>
+                <span className="total-label">Total:</span>
                 <span className="total-value">{currencyVND(invoiceData.total)}</span>
               </div>
             </div>
 
             {/* Footer */}
             <div className="invoice-footer">
-              <p>🎉 Cảm ơn bạn đã mua hàng tại GO MALL!</p>
-              <p>📅 Hóa đơn được tạo vào: {formatDate(new Date())}</p>
-              <p>💡 Hóa đơn này có giá trị pháp lý và được sử dụng để bảo hành, đổi trả</p>
+              <p>🎉 Thank you for shopping at GO MALL!</p>
+              <p>📅 Invoice generated on: {formatDate(new Date())}</p>
+              <p>💡 This invoice is legally valid and can be used for warranty and returns</p>
             </div>
           </div>
         </div>
@@ -353,15 +353,15 @@ const InvoiceDownload = () => {
             onClick={handleDownloadPDF}
             disabled={loading}
           >
-            {loading ? '⏳ Đang tạo...' : '📥 Tải Hóa Đơn'}
+            {loading ? '⏳ Generating...' : '📥 Download Invoice'}
           </button>
           
           <button className="btn btn-secondary" onClick={handleBackToOrder}>
-            👁️ Xem Đơn Hàng
+            👁️ View Orders
           </button>
           
           <button className="btn btn-outline" onClick={handleContinueShopping}>
-            🛒 Tiếp Tục Mua Sắm
+            🛒 Continue Shopping
           </button>
         </div>
 
@@ -370,7 +370,7 @@ const InvoiceDownload = () => {
           <div className="error-message">
             <p>❌ {error}</p>
             <button className="btn btn-primary" onClick={generateInvoiceData}>
-              Thử lại
+              Try again
             </button>
           </div>
         )}

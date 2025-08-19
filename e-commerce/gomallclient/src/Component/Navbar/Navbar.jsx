@@ -19,237 +19,129 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    // Can redirect to home page after logout
     window.location.href = '/';
   };
 
   return (
-      <header className="navbar">
-        {/* Top Bar */}
-        
-        <div className="navbar-top">
-          <div className="container">
-            <div className="top-left">
-              <span>Free shipping for orders over 150k</span>
-              <span>•</span>
-              <span>24/7 Support</span>
-            </div>
-            <div className="top-right">
-              <span>Download App</span>
-              <span>•</span>
-              <span>Connect</span>
-            </div>
+    <div className="gomall-header">
+      {/* Top Orange Banner */}
+      <div className="header-top-banner">
+        <div className="banner-content">
+          <div className="banner-item">
+            <span className="banner-text">Free shipping for orders over 150k</span>
+            <span className="banner-illustrative-image">🚚</span>
+          </div>
+          <div className="banner-item">
+            <span className="banner-text">24/7 Support</span>
+            <span className="banner-illustrative-image">🎧</span>
+          </div>
+          <div className="banner-item">
+            <span className="banner-text">Download app</span>
+            <span className="banner-illustrative-image">📱</span>
           </div>
         </div>
+      </div>
 
-        {/* Main Navbar */}
-        <div className="navbar-main">
-          <div className="container">
-            <div className="navbar-content">
-              {/* Logo */}
-              <Link to="/" className="logo">
-                <div className="logo-icon">G</div>
-                <span className="logo-text">GoMall</span>
-              </Link>
-              {/* Search Bar */} 
-                {/* <form className="search-form" onSubmit={handleSearch}>
-                  <input
-                    type="text"
-                    placeholder="Tìm kiếm sản phẩm, thương hiệu..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
-                  />
-                  <button type="submit" className="search-btn">
-                    <i className="fas fa-search"></i>
-                  </button>
-                </form> */}
-                {/* Minh comment */}
-              <SearchBar />  
-                {/* Minh bổ sung */}
-              {/* Navigation Icons */}
-              <div className="nav-icons">
-                <div className="nav-icon">
-                  <img
-                      src="/images/bell.png"
-                      alt="Notifications"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Notifications</span>
-                </div>
+      {/* Main Header */}
+      <header className="main-header">
+        <div className="header-container">
+          {/* Logo and Brand */}
+          <div className="logo-section">
+            <Link to="/" className="logo">
+              <div className="logo-icon">G</div>
+              <span className="logo-text">GoMall</span>
+            </Link>
+          </div>
 
-                <div className="nav-icon">
-                  <img
-                      src="/images/setting.png"
-                      alt="Support"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Become a Seller</span>
-                </div>
-                <Link to={isAuthenticated() ? "/cart" : "/signin" }>
-                <div className="nav-icon">
-                  <img
-                      src="/images/cart.png"
-                      alt="Cart"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={(e) => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Cart</span>
-                </div>
-                </Link>
-              
-                <div 
-                  className="nav-icon" 
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    setModalPosition({
-                      top: rect.bottom + 5,
-                      right: window.innerWidth - rect.right
-                    });
-                    setIsAccountModalOpen(true);
-                  }}
-                >
-                  <img
-                      src="/images/user.png"
-                      alt="Account"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>{isAuthenticated() ? getCurrentUser()?.username || 'Account' : 'Account'}</span>
-                </div>
-              </div>
+          {/* Search Bar */}
+          <div className="search-section">
+            <SearchBar />
+          </div>
 
-              {/* Mobile Menu Toggle */}
-              <button
-                  className="mobile-menu-toggle"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <i className="fas fa-bars"></i>
-              </button>
+          {/* Navigation */}
+          <div className="nav-section">
+            <div className="nav-item">
+              <div className="nav-icon-img">🔔</div>
+              <span className="nav-text">Notifications</span>
+            </div>
+            
+            <Link to="/seller" className="nav-item seller-nav-item">
+              <div className="nav-icon-img">❓</div>
+              <span className="nav-text">Become a Seller</span>
+            </Link>
+            
+            <Link to={isAuthenticated() ? "/cart" : "/signin"} className="nav-item">
+              <div className="nav-icon-img">🛒</div>
+              <span className="nav-text">Cart</span>
+            </Link>
+            
+            <div 
+              className="nav-item account-dropdown"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setModalPosition({
+                  top: rect.bottom + 5,
+                  right: window.innerWidth - rect.right
+                });
+                setIsAccountModalOpen(true);
+              }}
+            >
+              <div className="nav-icon-img">👤</div>
+              <span className="nav-text">
+                {isAuthenticated() && getCurrentUser() ? getCurrentUser().username : 'Account'}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Navigation Links */}
-        <div className="navbar-links">
-          <div className="container">
-            <nav className="nav-menu">
-              <Link
-                  to="/"
-                  className={`nav-link ${isActive("/") ? "active" : ""}`}
-              >
-                Home
-              </Link>
-              <Link
-                  to="/flash-sale"
-                  className={`nav-link ${isActive("/flash-sale") ? "active" : ""}`}
-              >
-                Flash Sale
-              </Link>
-              <Link
-                  to="/top-products"
-                  className={`nav-link ${isActive("/top-products") ? "active" : ""}`}
-              >
-                Top Products
-              </Link>
-              
-            </nav>
-          </div>
+          {/* Mobile Menu Toggle */}
+          <button
+            className="mobile-menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <i className="fas fa-bars"></i>
+          </button>
         </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-            <div className="mobile-menu">
-              <div className="mobile-menu-content">
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/user.png"
-                      alt="Tài khoản"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Tài khoản</span>
-                </div>
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/cart.png"
-                      alt="Giỏ hàng"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Giỏ hàng</span>
-                </div>
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/help.png"
-                      alt="Hỗ trợ"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => {
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Hỗ trợ</span>
-                </div>
-                <div className="mobile-menu-item">
-                  <img
-                      src="/images/bell.png"
-                      alt="Thông báo"
-                      style={{ width: "20px", height: "20px" }}
-                      onError={e => { 
-                        const target = e.target;
-                        if (target && target instanceof HTMLImageElement) {
-                          target.src = "/placeholder.svg?height=20&width=20";
-                        }
-                      }}
-                  />
-                  <span>Thông báo</span>
-                </div>
-              </div>
-            </div>
-        )}
-        
-        {/* User Account Modal */}
-        <UserAccountModal 
-          isOpen={isAccountModalOpen} 
-          onClose={() => setIsAccountModalOpen(false)}
-          position={modalPosition}
-        />
       </header>
+
+      
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="mobile-menu">
+          <div className="mobile-menu-content">
+            <div className="mobile-menu-item">
+              <div className="nav-icon-img">👤</div>
+                              <span>Account</span>
+            </div>
+            <div className="mobile-menu-item">
+              <div className="nav-icon-img">🛒</div>
+                              <span>Cart</span>
+            </div>
+            <div className="mobile-menu-item">
+              <div className="nav-icon-img">❓</div>
+                              <span>Support</span>
+            </div>
+            <div className="mobile-menu-item">
+              <div className="nav-icon-img">🔔</div>
+                              <span>Notifications</span>
+            </div>
+            <Link to="/seller" className="mobile-seller-link">
+              <div className="mobile-menu-item seller-mobile-item">
+                <div className="nav-icon-img">❓</div>
+                <span>Become a Seller</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
+      
+      {/* User Account Modal */}
+      <UserAccountModal 
+        isOpen={isAccountModalOpen} 
+        onClose={() => setIsAccountModalOpen(false)}
+        position={modalPosition}
+      />
+    </div>
   );
 };
 

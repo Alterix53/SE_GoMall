@@ -74,19 +74,19 @@ function TodaySuggestions() {
     const vouchers = [
       { text: '15.8 VOUCHER XTRA', color: '#ffd700' },
       { text: '15.8 VOUCHER 520', color: '#ff6b35' },
-      { text: 'Ưu đãi tháng 3', color: '#e74c3c' },
-      { text: 'VOUCHER GIẢM TỚI 40%', color: '#9b59b6' },
+              { text: 'March Promotion', color: '#e74c3c' },
+              { text: 'VOUCHER UP TO 40% OFF', color: '#9b59b6' },
     ];
     return vouchers[Math.floor(Math.random() * vouchers.length)];
   };
 
   const getRandomBadge = () => {
     const badges = [
-      'XỬ LÝ BỞI SHOPEE',
-      'SHOPEE SIÊU RẺ',
-      'HOÁ TỐC 1H',
-      'CHÍNH HÃNG 100%',
-      'BẢO HÀNH',
+              'PROCESSED BY SHOPEE',
+        'SHOPEE SUPER CHEAP',
+        'EXPRESS 1H',
+        'AUTHENTIC 100%',
+        'WARRANTY',
       'Mall',
       'Ad',
     ];
@@ -99,7 +99,7 @@ function TodaySuggestions() {
         <Header />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Đang tải gợi ý...</p>
+          <p>Loading suggestions...</p>
         </div>
       </div>
     );
@@ -113,9 +113,9 @@ function TodaySuggestions() {
         {/* Shopee-style Header */}
         <div className="shopee-header">
           <div className="header-content">
-            <h1>GỢI Ý HÔM NAY</h1>
+            <h1>TODAY'S SUGGESTIONS</h1>
             <div className="header-stats">
-              <span>{suggestions.length} sản phẩm</span>
+                              <span>{suggestions.length} products</span>
               <span>•</span>
               <span>{suggestions.filter(p => p.isFlashSale).length} Flash Sale</span>
             </div>
@@ -177,8 +177,8 @@ function TodaySuggestions() {
 
                     {/* Feature Badges */}
                     <div className="feature-badges">
-                      <span className="feature-badge">HOÁ TỐC 1H</span>
-                      <span className="feature-badge">CHÍNH HÃNG 100%</span>
+                              <span className="feature-badge">EXPRESS 1H</span>
+        <span className="feature-badge">AUTHENTIC 100%</span>
                     </div>
                   </div>
 
@@ -202,19 +202,19 @@ function TodaySuggestions() {
 
                     {/* Sold Count */}
                     <div className="sold-count">
-                      Đã bán {formatSold(product.sold)}
+                      Sold {formatSold(product.sold)}
                     </div>
 
                     {/* Action Badges */}
                     <div className="action-badges">
-                      <span className="action-badge favorite">❤ Yêu thích+</span>
+                      <span className="action-badge favorite">❤ Favorite+</span>
                       <span className="action-badge">{badge}</span>
                     </div>
 
                     {/* Additional Info */}
                     <div className="additional-info">
-                      <span className="info-text">Thiết kế thời trang</span>
-                      <span className="info-text">Âm thanh hay, trung thực</span>
+                              <span className="info-text">Fashionable design</span>
+        <span className="info-text">Great sound, authentic</span>
                     </div>
                   </div>
                 </div>
@@ -223,9 +223,9 @@ function TodaySuggestions() {
           ) : (
             <div className="no-suggestions">
               <div className="no-suggestions-icon">🔍</div>
-              <h3>Không tìm thấy sản phẩm</h3>
-              <p>Thử tìm kiếm sản phẩm khác</p>
-              <Link to="/" className="back-home-btn">Về trang chủ</Link>
+                      <h3>No products found</h3>
+        <p>Try searching for other products</p>
+        <Link to="/" className="back-home-btn">Back to home</Link>
             </div>
           )}
         </div>

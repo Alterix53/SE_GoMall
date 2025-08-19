@@ -12,7 +12,8 @@
     "seed": "npm run seed-data",
     "reset-reload": "node scripts/resetAndReloadData.js",
     "setup": "node scripts/runAllScripts.js",
-    "force-reset": "node scripts/resetAndReloadData.js --force"
+    "force-reset": "node scripts/resetAndReloadData.js --force",
+    "test-notifications": "node scripts/testNotifications.js"
   },
   "keywords": [
     "ecommerce",

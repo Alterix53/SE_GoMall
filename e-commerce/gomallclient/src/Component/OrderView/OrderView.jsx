@@ -29,11 +29,11 @@ const OrderView = () => {
       if (response.success) {
         setOrders(response.orders || []);
       } else {
-        setError('Không thể tải danh sách đơn hàng');
+        setError('Cannot load orders');
       }
     } catch (err) {
       console.error('Error loading orders:', err);
-      setError('Có lỗi xảy ra khi tải đơn hàng');
+      setError('An error occurred while loading orders');
     } finally {
       setLoading(false);
     }
@@ -70,11 +70,11 @@ const OrderView = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'Pending': return '⏳ Chờ xử lý';
-      case 'Processing': return '🔄 Đang xử lý';
-      case 'Shipped': return '📦 Đang giao';
-      case 'Delivered': return '✅ Đã giao';
-      case 'Cancelled': return '❌ Đã hủy';
+      case 'Pending': return '⏳ Pending';
+      case 'Processing': return '🔄 Processing';
+      case 'Shipped': return '📦 Shipping';
+      case 'Delivered': return '✅ Delivered';
+      case 'Cancelled': return '❌ Cancelled';
       default: return status;
     }
   };
@@ -90,7 +90,7 @@ const OrderView = () => {
   };
 
   const handleDownloadInvoice = (order) => {
-    // Navigate đến trang tải hóa đơn
+    // Navigate to invoice page
     navigate('/invoice', { 
       state: { 
         orderData: {
@@ -99,26 +99,26 @@ const OrderView = () => {
           amount: order.total,
           items: order.items || [],
           createdAt: order.createdAt,
-          shippingAddress: order.shippingAddress || 'Địa chỉ giao hàng',
-          paymentMethod: order.paymentMethod || 'Chưa xác định'
+          shippingAddress: order.shippingAddress || 'Shipping address',
+          paymentMethod: order.paymentMethod || 'Unknown'
         }
       }
     });
   };
 
   const handleCancelOrder = async (orderId) => {
-    if (window.confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
       try {
         const response = await checkoutAPI.cancelOrder(orderId);
         if (response.success) {
-          alert('Đã hủy đơn hàng thành công!');
+          alert('Order cancelled successfully!');
           loadOrders(); // Reload orders
         } else {
-          alert('Không thể hủy đơn hàng: ' + response.message);
+          alert('Cannot cancel order: ' + response.message);
         }
       } catch (err) {
         console.error('Error cancelling order:', err);
-        alert('Có lỗi xảy ra khi hủy đơn hàng');
+        alert('An error occurred while cancelling order');
       }
     }
   };
@@ -130,44 +130,44 @@ const OrderView = () => {
         <div className="order-detail-container">
           <div className="order-detail-header">
             <button className="back-btn" onClick={handleBackToList}>
-              ← Quay lại danh sách
+              ← Back to list
             </button>
-            <h1>Chi Tiết Đơn Hàng</h1>
+            <h1>Order Details</h1>
           </div>
           
           <div className="order-detail-card">
             <div className="order-info-section">
-              <h2>📋 Thông Tin Đơn Hàng</h2>
+              <h2>📋 Order Information</h2>
               <div className="order-info-grid">
                 <div className="info-item">
-                  <span className="info-label">Mã đơn hàng:</span>
+                  <span className="info-label">Order ID:</span>
                   <span className="info-value">{selectedOrder.orderNumber || selectedOrder._id}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Ngày đặt:</span>
+                  <span className="info-label">Order date:</span>
                   <span className="info-value">{formatDate(selectedOrder.createdAt)}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Trạng thái:</span>
+                  <span className="info-label">Status:</span>
                   <span className="info-value status" style={{ color: getStatusColor(selectedOrder.status) }}>
                     {getStatusText(selectedOrder.status)}
                   </span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Tổng tiền:</span>
+                  <span className="info-label">Total:</span>
                   <span className="info-value amount">{currencyVND(selectedOrder.total)}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Phương thức thanh toán:</span>
-                  <span className="info-value">{selectedOrder.paymentMethod || 'Chưa xác định'}</span>
+                  <span className="info-label">Payment method:</span>
+                  <span className="info-value">{selectedOrder.paymentMethod || 'Unknown'}</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Địa chỉ giao hàng:</span>
+                  <span className="info-label">Shipping address:</span>
                   <span className="info-value">{selectedOrder.shippingAddress}</span>
                 </div>
                 {selectedOrder.note && (
                   <div className="info-item">
-                    <span className="info-label">Ghi chú:</span>
+                    <span className="info-label">Note:</span>
                     <span className="info-value">{selectedOrder.note}</span>
                   </div>
                 )}
@@ -175,7 +175,7 @@ const OrderView = () => {
             </div>
 
             <div className="order-items-section">
-              <h2>🛍️ Sản Phẩm Đã Đặt</h2>
+              <h2>🛍️ Ordered Items</h2>
               <div className="order-items-list">
                 {selectedOrder.items && selectedOrder.items.map((item, index) => (
                   <div key={index} className="order-item">
@@ -192,15 +192,15 @@ const OrderView = () => {
                     <div className="item-details">
                       <div className="item-name">{item.name}</div>
                       <div className="item-info">
-                        <span>Loại: {item.variant || item.size || 'Standard'}</span>
-                        <span>Số lượng: {item.quantity}</span>
-                        <span>Đơn giá: {currencyVND(item.unitPrice)}</span>
+                        <span>Type: {item.variant || item.size || 'Standard'}</span>
+                        <span>Quantity: {item.quantity}</span>
+                        <span>Unit Price: {currencyVND(item.unitPrice)}</span>
                         {item.discount > 0 && (
-                          <span>Giảm giá: {currencyVND(item.discount)}</span>
+                          <span>Discount: {currencyVND(item.discount)}</span>
                         )}
                       </div>
                       <div className="item-total">
-                        Thành tiền: {currencyVND((item.unitPrice - item.discount) * item.quantity)}
+                        Subtotal: {currencyVND((item.unitPrice - item.discount) * item.quantity)}
                       </div>
                     </div>
                   </div>
@@ -213,14 +213,14 @@ const OrderView = () => {
                 className="btn btn-secondary"
                 onClick={() => handleDownloadInvoice(selectedOrder)}
               >
-                📄 Tải Hóa Đơn
+                📄 Download Invoice
               </button>
               {selectedOrder.status === 'Pending' && (
                 <button 
                   className="btn btn-danger"
                   onClick={() => handleCancelOrder(selectedOrder._id)}
                 >
-                  ❌ Hủy Đơn Hàng
+                  ❌ Cancel Order
                 </button>
               )}
             </div>
@@ -236,31 +236,31 @@ const OrderView = () => {
       
       <div className="order-view-container">
         <div className="order-view-header">
-          <h1>📋 Đơn Hàng Của Tôi</h1>
+          <h1>📋 My Orders</h1>
           <button className="refresh-btn" onClick={loadOrders}>
-            🔄 Làm mới
+            🔄 Refresh
           </button>
         </div>
 
         {loading ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p>Đang tải đơn hàng...</p>
+            <p>Loading orders...</p>
           </div>
         ) : error ? (
           <div className="error-container">
             <p className="error-message">{error}</p>
             <button className="btn btn-primary" onClick={loadOrders}>
-              Thử lại
+              Try again
             </button>
           </div>
         ) : orders.length === 0 ? (
           <div className="empty-orders">
             <div className="empty-icon">📦</div>
-            <h2>Chưa có đơn hàng nào</h2>
-            <p>Bạn chưa đặt hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+            <h2>No orders yet</h2>
+            <p>You have not placed any orders yet. Start shopping now!</p>
             <button className="btn btn-primary" onClick={() => navigate('/')}>
-              🛒 Mua Sắm Ngay
+              🛒 Shop Now
             </button>
           </div>
         ) : (
@@ -269,7 +269,7 @@ const OrderView = () => {
               <div key={order._id} className="order-card">
                 <div className="order-header">
                   <div className="order-number">
-                    <strong>Đơn hàng:</strong> {order.orderNumber || order._id}
+                    <strong>Order:</strong> {order.orderNumber || order._id}
                   </div>
                   <div className="order-date">
                     {formatDate(order.createdAt)}
@@ -287,10 +287,10 @@ const OrderView = () => {
 
                 <div className="order-summary">
                   <div className="order-items-count">
-                    {order.items ? order.items.length : 0} sản phẩm
+                    {order.items ? order.items.length : 0} items
                   </div>
                   <div className="order-total">
-                    <strong>Tổng tiền:</strong> {currencyVND(order.total)}
+                    <strong>Total:</strong> {currencyVND(order.total)}
                   </div>
                 </div>
 
@@ -299,20 +299,20 @@ const OrderView = () => {
                     className="btn btn-primary"
                     onClick={() => handleViewOrderDetail(order)}
                   >
-                    👁️ Xem Chi Tiết
+                    👁️ View Details
                   </button>
                   <button 
                     className="btn btn-secondary"
                     onClick={() => handleDownloadInvoice(order)}
                   >
-                    📄 Tải Hóa Đơn
+                    📄 Download Invoice
                   </button>
                   {order.status === 'Pending' && (
                     <button 
                       className="btn btn-outline"
                       onClick={() => handleCancelOrder(order._id)}
                     >
-                      ❌ Hủy
+                      ❌ Cancel
                     </button>
                   )}
                 </div>

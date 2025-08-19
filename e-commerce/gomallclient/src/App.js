@@ -63,9 +63,6 @@ import CashPaymentSuccess from './Component/PaymentResult/CashPaymentSuccess';
 import OrderView from './Component/OrderView/OrderView';
 import InvoiceDownload from './Component/InvoiceDownload/InvoiceDownload';
 
-// Import Test components
-import QRTest from './Component/MomoPayment/QRTest';
-
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
@@ -141,10 +138,9 @@ function App() {
                 <Route path="/orders" element={<OrderView />} />
                 <Route path="/invoice" element={<InvoiceDownload />} />
                 
-                {/* Test Routes */}
-                <Route path="/qr-test" element={<QRTest />} />
                 {/* SELLER ROUTES - có thể có layout riêng */}
-                <Route path="/seller" element={
+                <Route path="/seller" element={<RegisterSeller />} />
+                <Route path="/seller-dashboard" element={
                   <ProtectedRoute requiredRole="seller">
                     <SellerDashboard />
                   </ProtectedRoute>

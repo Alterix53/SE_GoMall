@@ -20,7 +20,7 @@ const UnauthorizedPage = () => {
                 </p>
                 <div className="d-grid gap-2 d-md-block">
                   <Link to="/" className="btn btn-primary me-md-2">
-                    Về trang chủ
+                    Back to home
                   </Link>
                   <Link to="/login" className="btn btn-outline-secondary">
                     Login

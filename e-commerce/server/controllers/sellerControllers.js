@@ -224,3 +224,61 @@ export const getSellerByUserId = async (req, res) => {
         });
     }
 };
+
+// [POST] Đăng ký trở thành seller
+export const registerSeller = async (req, res) => {
+    try {
+        const { storeName, address, email, phone } = req.body;
+        const document = req.file; // File upload từ multer
+        const userId = req.user._id; // User từ middleware auth
+
+        // Kiểm tra user đã đăng ký seller chưa
+        const existingSeller = await Seller.findOne({ userID: userId });
+        if (existingSeller) {
+            return res.status(400).json({
+                success: false,
+                message: 'Bạn đã đăng ký seller rồi'
+            });
+        }
+
+        // Kiểm tra các trường bắt buộc
+        if (!storeName || !address || !email || !phone) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui lòng điền đầy đủ thông tin'
+            });
+        }
+
+        // Tạo seller mới với status pending
+        const newSeller = new Seller({
+            userID: userId,
+            businessName: storeName,
+            address,
+            email,
+            phone,
+            documentUrl: document ? document.path : null,
+            status: 'pending',
+            isActive: true
+        });
+
+        await newSeller.save();
+
+        res.status(201).json({
+            success: true,
+            message: 'Đăng ký seller thành công. Vui lòng chờ admin phê duyệt.',
+            data: {
+                id: newSeller._id,
+                businessName: newSeller.businessName,
+                status: newSeller.status
+            }
+        });
+
+    } catch (error) {
+        console.error('Register seller error:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Có lỗi xảy ra khi đăng ký seller',
+            error: error.message 
+        });
+    }
+};

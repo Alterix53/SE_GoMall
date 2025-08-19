@@ -39,7 +39,7 @@ import { Separator } from "../../components/ui/separator"
 import { Avatar, AvatarFallback } from "../../components/ui/avatar"
 import { useToast } from "../../hooks/use-toast"
 import { cn } from "../../lib/utils"
-import ApiService from "../../utils/apiService"
+import { apiService } from "../../utils/api"
 import Header from "../Header/Header"
 import Footer from "../Footer/Footer"
 
@@ -90,14 +90,14 @@ export default function ProductDetail() {
   const [liked, setLiked] = useState(false)
   const [selectedVariations, setSelectedVariations] = useState({})
   const [quantity, setQuantity] = useState(1)
-  const [shippingTo, setShippingTo] = useState("Hà Nội")
+  const [shippingTo, setShippingTo] = useState("Hanoi")
 
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true)
-        const response = await ApiService.getProductById(id)
+        const response = await apiService.getProductById(id)
         console.log("Product response:", response)
         
         if (response.success && response.data && response.data.product) {
@@ -114,11 +114,11 @@ export default function ProductDetail() {
             setSelectedVariations(defaults)
           }
       } else {
-          setError("Không thể tải thông tin sản phẩm")
+          setError("Cannot load product information")
       }
     } catch (err) {
         console.error("Error fetching product:", err)
-        setError("Đã xảy ra lỗi khi tải thông tin sản phẩm")
+        setError("An error occurred while loading product information")
     } finally {
         setLoading(false)
       }
@@ -171,14 +171,14 @@ export default function ProductDetail() {
       await addToCart(cartItem)
       
       toast({
-        title: "Thành công!",
-        description: "Đã thêm sản phẩm vào giỏ hàng",
+        title: "Success!",
+        description: "Product has been added to cart",
       })
     } catch (error) {
       console.error("Error adding to cart:", error)
       toast({
-        title: "Lỗi!",
-        description: "Đã xảy ra lỗi khi thêm vào giỏ hàng",
+        title: "Error!",
+        description: "An error occurred while adding to cart",
         variant: "destructive",
       })
     }
@@ -204,8 +204,8 @@ export default function ProductDetail() {
     } catch (error) {
       console.error("Error buying now:", error)
       toast({
-        title: "Lỗi!",
-        description: "Đã xảy ra lỗi khi xử lý đơn hàng",
+        title: "Error!",
+        description: "An error occurred while processing order",
         variant: "destructive",
       })
     }
@@ -225,7 +225,7 @@ export default function ProductDetail() {
         <main className="min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-3">
             <Loader2 className="w-6 h-6 animate-spin" />
-            <span>Đang tải thông tin sản phẩm...</span>
+            <span>Loading product information...</span>
           </div>
         </main>
         <Footer />
@@ -240,9 +240,9 @@ export default function ProductDetail() {
         <main className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Không thể tải sản phẩm</h2>
-            <p className="text-muted-foreground mb-4">{error || "Sản phẩm không tồn tại"}</p>
-            <Button onClick={() => navigate("/")}>Về trang chủ</Button>
+                    <h2 className="text-xl font-semibold mb-2">Cannot load product</h2>
+        <p className="text-muted-foreground mb-4">{error || "Product does not exist"}</p>
+        <Button onClick={() => navigate("/")}>Back to home</Button>
           </div>
         </main>
         <Footer />
@@ -331,10 +331,10 @@ export default function ProductDetail() {
                     </span>
                   </div>
                   <div className="text-gray-600">
-                    {product.rating?.count?.toLocaleString() || 0} Đánh giá
+                    {product.rating?.count?.toLocaleString() || 0} Reviews
                   </div>
                   <div className="text-gray-600">
-                    Đã bán {product.sold?.toLocaleString() || 0}+
+                    Sold {product.sold?.toLocaleString() || 0}+
                   </div>
                 </div>
 
@@ -360,13 +360,13 @@ export default function ProductDetail() {
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                       <Tag className="w-3 h-3 mr-1" />
-                      Giảm 50k cho đơn từ 5tr
+                      Save 50k for orders from 5M
                     </Badge>
                     <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      Voucher 10% tối đa 500k
+                      Voucher 10% up to 500k
                     </Badge>
                     <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                      Hoàn xu 5%
+                      Cashback 5%
                     </Badge>
                   </div>
 
@@ -375,7 +375,7 @@ export default function ProductDetail() {
                     <div className="mt-3 flex items-center gap-2 p-3 bg-orange-50 rounded-lg border border-orange-200">
                       <Clock className="w-4 h-4 text-orange-600" />
                       <span className="text-sm font-medium text-orange-800">
-                        Flash Sale - Kết thúc: {product.flashSaleEndDate ? 
+                        Flash Sale - Ends: {product.flashSaleEndDate ? 
                           new Date(product.flashSaleEndDate).toLocaleDateString('vi-VN') : 
                           '10/8/2025'
                         }
@@ -395,9 +395,9 @@ export default function ProductDetail() {
                         return (
                           <div key={index}>
                                                          <Label htmlFor={`${spec.name}-label`} className="text-base font-medium text-gray-900 mb-3 block">
-                               {spec.name === 'color' ? 'Màu sắc' : 
-                                spec.name === 'storage' ? 'Dung lượng' : 
-                                spec.name === 'size' ? 'Kích thước' : spec.name}
+                                               {spec.name === 'color' ? 'Color' :
+                spec.name === 'storage' ? 'Storage' :
+                spec.name === 'size' ? 'Size' : spec.name}
                              </Label>
                             <RadioGroup 
                               value={currentValue} 
@@ -431,7 +431,7 @@ export default function ProductDetail() {
                 {/* Quantity */}
                 <div className="mb-6">
                                      <Label htmlFor="quantity-input" className="text-base font-medium text-gray-900 mb-3 block">
-                     Số lượng
+                     Quantity
                    </Label>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border border-gray-300 rounded-lg">
@@ -469,7 +469,7 @@ export default function ProductDetail() {
                     </div>
                     {product.inventory && (
                       <span className="text-sm text-gray-600">
-                        Còn {product.inventory.quantity} sản phẩm
+                        {product.inventory.quantity} items remaining
                       </span>
                     )}
                   </div>
@@ -478,27 +478,27 @@ export default function ProductDetail() {
                 {/* Shipping */}
                 <div className="mb-6">
                                      <Label htmlFor="shipping-select" className="text-base font-medium text-gray-900 mb-3 block">
-                     Vận chuyển
+                     Shipping
                    </Label>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <Truck className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm text-gray-900 font-medium">Miễn phí vận chuyển</span>
+                                              <span className="text-sm text-gray-900 font-medium">Free shipping</span>
         </div>
                     <div className="flex items-center gap-3">
                       <MapPin className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm text-gray-900">Giao đến</span>
+                                              <span className="text-sm text-gray-900">Deliver to</span>
                       <select 
                         value={shippingTo} 
                         onChange={(e) => setShippingTo(e.target.value)}
                         className="text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
                       >
                         {[
-                          "Hà Nội",
-                          "TP. Hồ Chí Minh", 
-                          "Đà Nẵng",
-                          "Hải Phòng",
-                          "Cần Thơ",
+                          "Hanoi",
+                          "Ho Chi Minh City", 
+                          "Da Nang",
+                          "Hai Phong",
+                          "Can Tho",
                         ].map((loc) => (
                           <option key={loc} value={loc}>{loc}</option>
                         ))}
@@ -517,7 +517,7 @@ export default function ProductDetail() {
                     className="w-full h-14 text-base font-medium border-gray-400 text-gray-900 hover:bg-gray-50"
                   >
                     <ShoppingCart className="w-5 h-5 mr-2" />
-                    {product.inventory?.quantity === 0 ? "Hết hàng" : "Thêm vào giỏ"}
+                    {product.inventory?.quantity === 0 ? "Out of stock" : "Add to cart"}
                   </Button>
                   <Button 
                     size="lg" 
@@ -525,7 +525,7 @@ export default function ProductDetail() {
                     disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
                     className="w-full h-14 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    {product.inventory?.quantity === 0 ? "Hết hàng" : "Mua ngay"}
+                    {product.inventory?.quantity === 0 ? "Out of stock" : "Buy now"}
                   </Button>
                   <Button 
                     size="lg" 
@@ -542,19 +542,19 @@ export default function ProductDetail() {
                 <div className="mt-6 space-y-3">
                   <div className="flex items-center gap-3 text-sm">
                     <ShieldCheck className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-900 font-medium">Hàng chính hãng 100%</span>
+                                            <span className="text-gray-900 font-medium">100% Authentic products</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-900 font-medium">Bảo hành 12 tháng</span>
+                                            <span className="text-gray-900 font-medium">12 months warranty</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <RotateCcw className="w-5 h-5 text-orange-600" />
-                    <span className="text-gray-900 font-medium">7 ngày miễn phí trả hàng</span>
+                                            <span className="text-gray-900 font-medium">7 days free return</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Truck className="w-5 h-5 text-blue-600" />
-                    <span className="text-gray-900 font-medium">Miễn phí vận chuyển</span>
+                                            <span className="text-gray-900 font-medium">Free shipping</span>
                   </div>
                 </div>
           </div>
@@ -576,7 +576,7 @@ export default function ProductDetail() {
                       {product.sellerID?.name || "Apple Flagship Store"}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Hoạt động 1 giờ trước
+                      Active 1 hour ago
                     </p>
                   </div>
                 </div>
@@ -588,7 +588,7 @@ export default function ProductDetail() {
               
               <div className="grid grid-cols-2 gap-6 mt-4">
                 <div className="text-center">
-                  <div className="text-xs text-gray-600 mb-1">Đánh giá shop</div>
+                                          <div className="text-xs text-gray-600 mb-1">Shop rating</div>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                     <span className="font-semibold text-gray-900">
@@ -597,7 +597,7 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xs text-gray-600 mb-1">Người theo dõi</div>
+                                          <div className="text-xs text-gray-600 mb-1">Followers</div>
                   <div className="font-semibold text-gray-900">
                     {product.sellerID?.followers || "1.2M"}
                   </div>
@@ -609,7 +609,7 @@ export default function ProductDetail() {
           {/* Rating Summary Section */}
           <div className="max-w-6xl mx-auto px-4 mt-8">
             <div className="bg-white rounded-xl p-6 shadow-sm border">
-              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Đánh giá sản phẩm</h3>
+                              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Product Reviews</h3>
               <div className="flex items-start gap-8">
                 <div className="text-center">
                   <div className="text-5xl font-bold text-blue-600 mb-2">
@@ -617,7 +617,7 @@ export default function ProductDetail() {
                   </div>
                   <StarRating rating={product.rating?.average || 4.8} size={24} />
                   <div className="text-sm text-gray-600 mt-2">
-                    {product.rating?.count?.toLocaleString() || "12.500"} đánh giá
+                    {product.rating?.count?.toLocaleString() || "12.500"} reviews
                   </div>
                 </div>
                 <div className="flex-1 space-y-2">
@@ -642,12 +642,12 @@ export default function ProductDetail() {
                         {/* Product Description */}
             <Card className="shadow-sm border">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Mô tả sản phẩm</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Product Description</h2>
                 <div className="prose prose-sm max-w-none text-gray-700">
                   {product.description ? (
                     <div dangerouslySetInnerHTML={{ __html: product.description }} />
                   ) : (
-                    <p className="text-gray-500">Chưa có mô tả chi tiết cho sản phẩm này.</p>
+                    <p className="text-gray-500">No detailed description available for this product.</p>
                   )}
                 </div>
               </CardContent>

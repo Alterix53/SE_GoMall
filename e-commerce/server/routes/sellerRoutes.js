@@ -6,9 +6,11 @@ import {
     rejectSeller,
     updateSeller,
     deleteSeller,
-    getSellerByUserId
+    getSellerByUserId,
+    registerSeller
 } from '../controllers/sellerControllers.js';
 import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { uploadDocument } from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -17,6 +19,9 @@ router.get('/user/:userId', getSellerByUserId);
 
 // Protected routes - require authentication
 router.use(authenticateToken);
+
+// User routes - đăng ký seller
+router.post('/register', uploadDocument, registerSeller);
 
 // Admin only routes
 router.get('/', requireRole(['admin']), getAllSellers);
