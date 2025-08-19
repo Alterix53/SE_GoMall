@@ -3,32 +3,23 @@ import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
 import './CategoryList.css';
 
-// Category icon mapping for display
+// Category icon mapping for display - chỉ giữ lại 14 danh mục có sản phẩm
 const categoryIconMap = {
-  'Fashion': '👔',
   'Phones': '📱',
-  'Electronics': '📺',
   'Laptops': '💻',
+  'Fashion': '👔',
+  'Sports': '⚽',
+  'Home & Garden': '🏠',
+  'Beauty & Cosmetics': '💄',
+  'Accessories': '💍',
+  'Books': '📚',
+  'Vehicles': '🚗',
+  'Electronics': '📺',
   'Cameras': '📷',
   'Watches': '⌚',
   'Shoes': '👞',
-  'Home & Garden': '🏠',
-  'Beauty & Cosmetics': '💄',
-  'Sports': '⚽',
-  'Books': '📚',
-  'Health': '🏥',
-  'Accessories': '💍',
-  'Gaming': '🎮',
-  'Auto': '🛵',
-  'Baby': '👶',
-  'Jewelry': '💎',
-  'Music': '🎵',
-  'Toys': '🧸',
-  'Pet Supplies': '🐕',
-  'Vehicles': '🚗'
+  'Health': '🏥'
 };
-
-
 
 export default function CategoryList() {
   const [categories, setCategories] = useState([]);

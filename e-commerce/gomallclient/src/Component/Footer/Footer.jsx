@@ -16,15 +16,7 @@ export default function Footer() {
               <ul className="footer-links">
                 <li><Link to="/help">Trung Tâm Trợ Giúp GoMall</Link></li>
                 <li><Link to="/blog">GoMall Blog</Link></li>
-                <li><Link to="/mall">GoMall Mall</Link></li>
-                <li><Link to="/guide">Hướng Dẫn Mua Hàng/Đặt Hàng</Link></li>
-                <li><Link to="/sell-guide">Hướng Dẫn Bán Hàng</Link></li>
-                <li><Link to="/payment">Ví GoMallPay</Link></li>
-                <li><Link to="/xu">GoMall Xu</Link></li>
                 <li><Link to="/shipping">Đơn Hàng</Link></li>
-                <li><Link to="/refund">Trả Hàng/Hoàn Tiền</Link></li>
-                <li><Link to="/support">Liên Hệ GoMall</Link></li>
-                <li><Link to="/policy">Chính Sách Bảo Hành</Link></li>
               </ul>
             </div>
 
@@ -33,11 +25,6 @@ export default function Footer() {
               <h3 className="footer-title">GOMALL VIỆT NAM</h3>
               <ul className="footer-links">
                 <li><Link to="/about">Về GoMall</Link></li>
-                <li><Link to="/careers">Tuyển Dụng</Link></li>
-                <li><Link to="/terms">Điều Khoản GoMall</Link></li>
-                <li><Link to="/privacy">Chính Sách Bảo Mật</Link></li>
-                <li><Link to="/mall-info">GoMall Mall</Link></li>
-                <li><Link to="/seller">Kênh Người Bán</Link></li>
                 <li><Link to="/flash-sale">Flash Sale</Link></li>
                 <li><Link to="/affiliate">Tiếp Thị Liên Kết</Link></li>
                 <li><Link to="/media">Liên Hệ Truyền Thông</Link></li>
@@ -87,25 +74,6 @@ export default function Footer() {
                 </a>
               </div>
             </div>
-
-            {/* Section 5: TẢI ỨNG DỤNG GOMALL */}
-            <div className="footer-section">
-              <h3 className="footer-title">TẢI ỨNG DỤNG GOMALL</h3>
-              <div className="app-download">
-                <div className="qr-code">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QR Code" />
-                </div>
-                <div className="app-stores">
-                  <a href="#" className="app-store-link">
-                    <img src="https://down-vn.img.susercontent.com/file/ad01628e90ddf248076685f73497c163" alt="App Store" />
-                  </a>
-                  <a href="#" className="app-store-link">
-                    <img src="https://down-vn.img.susercontent.com/file/ae7dced05f7243d0f3171f786e123def" alt="Google Play" />
-                  </a>  
-                  
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -117,7 +85,7 @@ export default function Footer() {
               © 2025 GoMall. Tất cả các quyền được bảo lưu.
             </div>
             <div className="footer-countries">
-              <span>Quốc gia & Khu vực: Singapore | Indonesia | Thái Lan | Malaysia | Việt Nam | Philippines | Brazil | México | Colombia | Chile | Đài Loan</span>
+              <span>Quốc gia & Khu vực: Việt Nam | Singapore | Thái Lan</span>
             </div>
           </div>
         </div>

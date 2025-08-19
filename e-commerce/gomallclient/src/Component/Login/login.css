@@ -7,10 +7,34 @@
   background: white;
 }
 
+/* Đảm bảo màu cam cho trang login */
+.login-page .login-main-section,
+.login-page .orange-background,
+.login-page .content-left {
+  background: #ff6b35 !important;
+}
+
+/* Override any gradient backgrounds for login page specifically */
+.login-page {
+  background: white !important;
+}
+
+.login-page .login-main-section {
+  background: #ff6b35 !important;
+}
+
+.login-page .orange-background {
+  background: #ff6b35 !important;
+}
+
+.login-page .content-left {
+  background: #ff6b35 !important;
+}
+
 /* Phần trên - Giao diện màu cam */
 .login-main-section {
   flex: 1;
-  background: #ff6b35;
+  background: #ff6b35 !important;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -24,6 +48,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  background: #ff6b35 !important;
 }
 
 /* Header - Phần trên */
@@ -120,9 +145,10 @@
   align-items: center;
   justify-content: center;
   max-width: 50%;
+  background: #ff6b35 !important;
 }
 
-.welcome-content {
+.promotional-content {
   color: white;
   text-align: center;
   position: relative;
@@ -131,51 +157,57 @@
   max-width: 500px;
 }
 
-.welcome-title {
+.promo-title {
   font-size: 48px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   line-height: 1.2;
 }
 
-.welcome-subtitle {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 30px;
-  opacity: 0.9;
-  line-height: 1.4;
-}
-
-.welcome-features {
+.promo-banners {
   display: flex;
   flex-direction: column;
   gap: 15px;
   margin-bottom: 25px;
 }
 
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
+.promo-banner {
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 16px;
+  display: inline-block;
+  margin: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s;
 }
 
-.feature-item:hover {
-  transform: translateX(5px);
+.promo-banner:hover {
+  transform: translateY(-2px);
 }
 
-.feature-icon {
-  font-size: 24px;
-  width: 30px;
-  text-align: center;
+.promo-banner.blue {
+  background: #2196F3;
+  color: white;
 }
 
-.feature-text {
-  font-size: 16px;
-  font-weight: 500;
-  text-align: left;
+.promo-banner.yellow {
+  background: #FFD700;
+  color: #333;
+}
+
+.promo-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #e55a2b;
+}
+
+.promo-date {
+  font-size: 18px;
+  opacity: 0.9;
+  color: #e55a2b;
 }
 
 /* Background Shapes */
@@ -216,18 +248,6 @@
   background: #FF4444;
   bottom: 20%;
   left: 15%;
-}
-
-.gomall-text {
-  position: absolute;
-  top: 30%;
-  right: 10%;
-  font-size: 56px;
-  font-weight: bold;
-  color: #2196F3;
-  transform: rotate(-15deg);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  opacity: 0.7;
 }
 
 /* Bên phải - Login Form */
@@ -526,10 +546,6 @@
     font-size: 36px;
   }
   
-  .gomall-text {
-    font-size: 48px;
-  }
-  
   .form-header {
     justify-content: center;
   }
@@ -545,13 +561,13 @@
     flex-direction: column;
   }
   
-  .welcome-features {
+  .welcome-banners {
     gap: 10px;
   }
   
-  .feature-item {
+  .welcome-banner {
     font-size: 16px;
-    padding: 8px 0;
+    padding: 10px 20px;
   }
 }
 

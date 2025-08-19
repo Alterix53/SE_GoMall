@@ -15,34 +15,35 @@ const LoginPage = () => {
   const location = useLocation();
   const { login } = useAuth();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
+    
     try {
-      const result = await login(username, password);
-      
-      if (result.success) {
-        const user = result.user;
+      setLoading(true);
+      setError('');
+
+      const response = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('isLoggedIn', 'true');
         
-        // Điều hướng theo vai trò
-        if (user.role === 'seller') {
-          if (user.sellerInfo && user.sellerInfo.status === 'approved') {
-            navigate('/seller-dashboard');
-          } else {
-            setError('Tài khoản seller của bạn chưa được phê duyệt.');
-            return;
-          }
-        } else if (user.role === 'admin') {
-          navigate('/admin');
-        } else {
-          // buyer hoặc role khác - về trang chủ
-          const from = location.state?.from?.pathname || '/';
-          navigate(from);
-        }
+        alert('Đăng nhập thành công!');
+        navigate('/');
       } else {
-        setError(result.message || 'Đăng nhập thất bại');
+        setError(data.message || 'Đăng nhập thất bại');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -50,28 +51,6 @@ const LoginPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFacebookLogin = () => {
-    // Mock Facebook OAuth - có thể thay thế bằng OAuth thật sau này
-    alert('Tính năng đăng nhập Facebook đang được phát triển. Vui lòng sử dụng đăng nhập thông thường.');
-    
-    // Nếu muốn sử dụng OAuth thật, uncomment code dưới:
-    // const facebookAppId = 'your-facebook-app-id'; // Thay bằng App ID thật
-    // const redirectUri = encodeURIComponent(`${window.location.origin}/auth/facebook/callback`);
-    // const facebookAuthUrl = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${facebookAppId}&redirect_uri=${redirectUri}&scope=email,public_profile&response_type=code`;
-    // window.location.href = facebookAuthUrl;
-  };
-
-  const handleGoogleLogin = () => {
-    // Mock Google OAuth - có thể thay thế bằng OAuth thật sau này
-    alert('Tính năng đăng nhập Google đang được phát triển. Vui lòng sử dụng đăng nhập thông thường.');
-    
-    // Nếu muốn sử dụng OAuth thật, uncomment code dưới:
-    // const googleClientId = 'your-google-client-id'; // Thay bằng Client ID thật
-    // const redirectUri = encodeURIComponent(`${window.location.origin}/auth/google/callback`);
-    // const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${redirectUri}&scope=email profile&response_type=code&access_type=offline`;
-    // window.location.href = googleAuthUrl;
   };
 
   return (
@@ -99,29 +78,17 @@ const LoginPage = () => {
 
           {/* Content - Phần dưới chia dọc */}
           <div className="login-content">
-            {/* Bên trái - Welcome content */}
+            {/* Bên trái - Promotional content */}
             <div className="content-left">
-              <div className="welcome-content">
-                <h1 className="welcome-title">Chào mừng đến với GoMall</h1>
-                <p className="welcome-subtitle">Nền tảng mua sắm trực tuyến hàng đầu Việt Nam</p>
-                <div className="welcome-features">
-                  <div className="feature-item">
-                    <span className="feature-icon">🛍️</span>
-                    <span className="feature-text">Hàng triệu sản phẩm chất lượng</span>
-                  </div>
-                  <div className="feature-item">
-                    <span className="feature-icon">🚚</span>
-                    <span className="feature-text">Giao hàng nhanh chóng</span>
-                  </div>
-                  <div className="feature-item">
-                    <span className="feature-icon">💰</span>
-                    <span className="feature-text">Giá cả cạnh tranh</span>
-                  </div>
-                  <div className="feature-item">
-                    <span className="feature-icon">🔒</span>
-                    <span className="feature-text">Thanh toán an toàn</span>
-                  </div>
+              <div className="promotional-content">
+                <h1 className="promo-title">THAM GIA CỘNG ĐỒNG</h1>
+                <div className="promo-banners">
+                  <div className="promo-banner blue">MUA SẮM THÔNG MINH</div>
+                  <div className="promo-banner yellow">TIẾT KIỆM TỐI ĐA</div>
+                  <div className="promo-banner blue">TRẢI NGHIỆM TUYỆT VỜI</div>
                 </div>
+                <div className="promo-text">ĐĂNG NHẬP NGAY HÔM NAY</div>
+                <div className="promo-date">Nhận ưu đãi đặc biệt</div>
               </div>
 
               {/* Background shapes */}
@@ -129,7 +96,6 @@ const LoginPage = () => {
                 <div className="shape shape-1"></div>
                 <div className="shape shape-2"></div>
                 <div className="shape shape-3"></div>
-                <div className="gomall-text">GOMALL</div>
               </div>
             </div>
 
@@ -147,7 +113,7 @@ const LoginPage = () => {
                     </div>
                   )}
 
-                  <form onSubmit={handleLogin}>
+                  <form onSubmit={handleSubmit}>
                     <div className="input-group">
                       <input
                         type="text"
@@ -191,29 +157,6 @@ const LoginPage = () => {
                       Quên mật khẩu
                     </Link>
                     
-                    <div className="separator">
-                      <span>HOẶC</span>
-                    </div>
-
-                    <div className="social-login">
-                      <button 
-                        type="button"
-                        className="social-btn facebook"
-                        onClick={handleFacebookLogin}
-                      >
-                        <i className="social-icon">f</i>
-                        <span>Facebook</span>
-                      </button>
-                      <button 
-                        type="button"
-                        className="social-btn google"
-                        onClick={handleGoogleLogin}
-                      >
-                        <i className="social-icon">G</i>
-                        <span>Google</span>
-                      </button>
-                    </div>
-
                     <div className="register-link">
                       <span>Bạn mới biết đến GoMall? </span>
                       <Link to="/signup" className="register-btn">Đăng ký</Link>

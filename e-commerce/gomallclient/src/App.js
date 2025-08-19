@@ -32,6 +32,8 @@ import ItemsPage from './Component/Admin/pages/ItemsPage';
 // Import các component Auth
 import LoginPage from './Component/Login/login';
 import SignUpPage from './Component/Signup/signup';
+import ForgotPassword from './Component/Login/ForgotPassword';
+import ResetPassword from './Component/Login/ResetPassword';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
 
 // 
@@ -67,7 +69,7 @@ import QRTest from './Component/MomoPayment/QRTest';
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
-  const hideLayout = ['/login', '/signup'].includes(location.pathname);
+  const hideLayout = ['/login', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname);
   return (
     <>
       {children}
@@ -115,6 +117,8 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signin" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
                 
