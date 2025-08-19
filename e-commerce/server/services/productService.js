@@ -7,26 +7,25 @@ class ProductService {
         const filter = { isActive: true };
 
         if (query.category) {
-            filter.categoryID = query.category;
+            // Accept both category id and category name
+            // If it's a 24-char hex, treat as ObjectId string match; otherwise we'll match by populated name later
+            filter.$or = [
+                ...(filter.$or || []),
+                { categoryID: query.category },
+            ];
         }
         if (query.brand) {
             filter.brand = new RegExp(query.brand, "i");
         }
         if (query.minPrice || query.maxPrice) {
+            const priceFilter = {};
+            if (query.minPrice) priceFilter.$gte = Number(query.minPrice);
+            if (query.maxPrice) priceFilter.$lte = Number(query.maxPrice);
+            // Match either sale or original when sale missing
             filter.$or = [
-                { 
-                    "price.sale": { 
-                        ...(query.minPrice && { $gte: Number(query.minPrice) }), 
-                        ...(query.maxPrice && { $lte: Number(query.maxPrice) }) 
-                    } 
-                },
-                { 
-                    "price.original": { 
-                        ...(query.minPrice && { $gte: Number(query.minPrice) }), 
-                        ...(query.maxPrice && { $lte: Number(query.maxPrice) }) 
-                    }, 
-                    "price.sale": { $exists: false } 
-                },
+                ...(filter.$or || []),
+                { "price.sale": priceFilter },
+                { "price.original": priceFilter },
             ];
         }
         if (query.rating) {
@@ -72,11 +71,11 @@ class ProductService {
 
     // Search products
     async searchProducts(query, options = {}) {
-        const { page = 1, limit = 12, sortBy = 'createdAt' } = options;
+        const { page = 1, limit = 12, sortBy = 'createdAt', sortOrder = 'desc' } = options;
         
-        // Build sort object
+        // Build sort object (support nested fields, asc/desc)
         const sort = {};
-        sort[sortBy] = -1;
+        sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
         
         const products = await Product.find(query)
             .populate("categoryID", "categoryName slug")

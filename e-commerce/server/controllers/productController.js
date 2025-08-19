@@ -46,10 +46,10 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to search products:", req.query);
     
     try {
-        const { keyword, category, minPrice, maxPrice, sortBy, page = 1, limit = 12 } = req.query;
+        const { keyword, sortBy, page = 1, limit = 12 } = req.query;
         
-        // Build search query
-        let query = { isActive: true };
+        // Start from generic filter to support price/category/rating, etc.
+        let query = productService.buildFilter(req.query);
         
         // Keyword search
         if (keyword) {
@@ -68,23 +68,14 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
             console.log('Search query:', JSON.stringify(query));
         }
         
-        // Category filter
-        if (category) {
-            query.categoryID = category;
-        }
-        
-        // Price filter
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = parseInt(minPrice);
-            if (maxPrice) query.price.$lte = parseInt(maxPrice);
-        }
+        // Note: price/category filters are already handled in buildFilter (supports nested price fields)
         
         // Execute search
         const products = await productService.searchProducts(query, {
             page: parseInt(page),
             limit: parseInt(limit),
-            sortBy: sortBy || 'createdAt'
+            sortBy: sortBy || 'createdAt',
+            sortOrder: req.query.sortOrder === 'asc' ? 'asc' : 'desc'
         });
         
         console.log(`Found ${products.products.length} products for keyword: ${keyword}`);

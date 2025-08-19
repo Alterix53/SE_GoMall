@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import CartTooltip from '../CartTooltip/CartTooltip';
 import Notifications from '../Notifications/Notifications';
@@ -11,6 +11,8 @@ function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const navigate = useNavigate();
 
   const toggleAccountDropdown = () => {
     setShowAccountDropdown(!showAccountDropdown);
@@ -73,6 +75,13 @@ function Header() {
     }
   };
 
+  const submitSearch = (e) => {
+    if (e) e.preventDefault();
+    const kw = searchKeyword.trim();
+    if (!kw) return;
+    navigate(`/search?keyword=${encodeURIComponent(kw)}`);
+  };
+
   return (
     <div className="gomall-header">
       {/* Top Orange Banner */}
@@ -106,16 +115,18 @@ function Header() {
 
           {/* Search Bar */}
           <div className="search-section">
-            <div className="search-input-wrapper">
+            <form className="search-input-wrapper" onSubmit={submitSearch}>
               <input
                 type="text"
                 placeholder="Search products, ..."
                 className="search-input"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
               />
-              <button type="submit" className="search-button">
+              <button type="submit" className="search-button" aria-label="Search">
                 <i className="search-icon">🔍</i>
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Navigation */}
