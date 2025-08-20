@@ -256,6 +256,7 @@ class ProductService {
     async getProductById(productId) {
         const product = await Product.findById(productId)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "name rating followers")
             .lean();
 
         if (!product) {
