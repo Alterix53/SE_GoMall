@@ -21,8 +21,9 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (password !== confirmPassword) {
+    const { username, email, password, confirm } = form;
+
+    if (password !== confirm) {
       setError('Mật khẩu xác nhận không khớp');
       return;
     }
@@ -39,15 +40,13 @@ const SignUpPage = () => {
         body: JSON.stringify({
           username,
           email,
-          password,
-          name,
-          phone
+          password
         }),
       });
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         alert('Đăng ký thành công! Vui lòng đăng nhập.');
         navigate('/login');
       } else {
