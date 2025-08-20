@@ -1,0 +1,681 @@
+import axios from 'axios';
+
+// Base API configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
+// Create axios instance
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+});
+
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const url = error.config?.url || '';
+      if (!url.includes('/auth/login') && !url.includes('/admin/login')) {
+        // Import LogoutController dynamically to avoid circular imports
+        import('../logoutController.js').then(({ default: LogoutController }) => {
+          LogoutController.forceLogout(null, null, null);
+        }).catch(() => {
+          // Fallback
+          let currentUser = null;
+          try {
+            currentUser = JSON.parse(localStorage.getItem('user'));
+          } catch {}
+
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('isLoggedIn');
+
+          if (currentUser?.role === 'admin') {
+            window.location.href = '/admin/login';
+          } else {
+            window.location.href = '/login';
+          }
+        });
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Generic API methods
+export const apiService = {
+  get: (url, config = {}) => api.get(url, config),
+  post: (url, data = {}, config = {}) => api.post(url, data, config),
+  put: (url, data = {}, config = {}) => api.put(url, data, config),
+  delete: (url, config = {}) => api.delete(url, config),
+  patch: (url, data = {}, config = {}) => api.patch(url, data, config),
+};
+
+// Auth API
+export const authAPI = {
+  login: async (identifier, password) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmail = typeof identifier === 'string' && emailRegex.test(identifier);
+    const payload = isEmail ? { email: identifier, password } : { username: identifier, password };
+    return apiService.post('/auth/login', payload);
+  },
+
+  loginAdmin: async (username, password) => {
+    return apiService.post('/admin/login', { username, password });
+  },
+
+  logout: async (token, isAdmin = false) => {
+    try {
+      const endpoint = isAdmin ? '/admin/logout' : '/auth/logout';
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.json();
+    } catch (error) {
+      console.error('Logout API error:', error);
+      return { success: false, message: 'Logout failed' };
+    }
+  },
+
+  getMe: async () => {
+    const resp = await apiService.get('/auth/me');
+    return resp.data;
+  },
+
+  updateMe: async (payload) => {
+    const resp = await apiService.put('/auth/me', payload);
+    return resp.data;
+  },
+
+  changePassword: (userId, passwordData) => {
+    return apiService.put(`/auth/change-password`, passwordData);
+  },
+};
+
+// User API
+export const userAPI = {
+  updateProfile: (userId, userData) => apiService.put(`/users/${userId}`, userData),
+  getProfile: (userId) => apiService.get(`/users/${userId}`),
+  applyForSeller: (data) => apiService.post(`/sellers/apply`, data),
+  checkSellerStatus: () => apiService.get(`/sellers/my-status`),
+};
+
+// Product API
+export const productAPI = {
+  getFlashSaleProducts: async (params = {}) => {
+    const resp = await apiService.get('/products/flash-sale', { params });
+    return resp.data?.data || resp.data;
+  },
+  
+  getTopProducts: async (type = 'bestseller', params = {}) => {
+    const resp = await apiService.get('/products/top-products', { params: { type, ...params } });
+    return resp.data?.data || resp.data;
+  },
+  
+  getProducts: async (params = {}) => {
+    const resp = await apiService.get('/products', { params });
+    return resp.data?.data || resp.data;
+  },
+  
+  getProductById: async (id) => {
+    const resp = await apiService.get(`/products/${id}`);
+    return resp.data?.data || resp.data;
+  },
+};
+
+// Admin API
+export const adminAPI = {
+  // Dashboard APIs
+  getDashboardStats: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/stats`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getRevenueStats: async (token, period = 'month') => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/revenue?period=${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getRevenueDistribution: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/revenue-distribution`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getTopSellingProducts: async (token, limit = 10) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/top-products?limit=${limit}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getTrendingProducts: async (token, limit = 10) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/trending-products?limit=${limit}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getSellerStats: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/seller-stats`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getUserActivityStats: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/user-activity`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getSystemOverview: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/dashboard/overview`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  // User Management APIs
+  getAllUsers: async (token, params = {}) => {
+    const queryParams = new URLSearchParams(params);
+    const response = await fetch(`${API_BASE_URL}/admin/users?${queryParams}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getUserById: async (token, userId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  createUser: async (token, userData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/users`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+    return response.json();
+  },
+
+  updateUser: async (token, userId, updateData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+    return response.json();
+  },
+
+  deleteUser: async (token, userId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  updateUserStatus: async (token, userId, status) => {
+    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    return response.json();
+  },
+
+  // Seller Management APIs
+  getAllSellers: async (token, params = {}) => {
+    const queryParams = new URLSearchParams(params);
+    const response = await fetch(`${API_BASE_URL}/admin/sellers?${queryParams}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getSellerById: async (token, sellerId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  createSeller: async (token, sellerData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(sellerData),
+    });
+    return response.json();
+  },
+
+  updateSeller: async (token, sellerId, updateData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+    return response.json();
+  },
+
+  deleteSeller: async (token, sellerId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  updateSellerStatus: async (token, sellerId, status) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    return response.json();
+  },
+
+  approveSeller: async (token, sellerId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}/approve`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  // Product Management APIs
+  getAllProducts: async (token, params = {}) => {
+    const queryParams = new URLSearchParams(params);
+    const response = await fetch(`${API_BASE_URL}/admin/products?${queryParams}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getProductById: async (token, productId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  createProduct: async (token, productData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/products`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(productData),
+    });
+    return response.json();
+  },
+
+  updateProduct: async (token, productId, updateData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${productId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+    return response.json();
+  },
+
+  deleteProduct: async (token, productId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  updateProductStatus: async (token, productId, status) => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${productId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    return response.json();
+  },
+
+  toggleProductFeature: async (token, productId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/products/${productId}/feature`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  // Order Management APIs
+  getAllOrders: async (token, params = {}) => {
+    const queryParams = new URLSearchParams(params);
+    const response = await fetch(`${API_BASE_URL}/admin/orders?${queryParams}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getOrderById: async (token, orderId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  updateOrder: async (token, orderId, updateData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+    return response.json();
+  },
+
+  updateOrderStatus: async (token, orderId, status) => {
+    const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status }),
+    });
+    return response.json();
+  },
+
+  // Category Management APIs
+  getAllCategories: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/categories`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  getCategoryById: async (token, categoryId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/categories/${categoryId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  createCategory: async (token, categoryData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/categories`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(categoryData),
+    });
+    return response.json();
+  },
+
+  updateCategory: async (token, categoryId, updateData) => {
+    const response = await fetch(`${API_BASE_URL}/admin/categories/${categoryId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+    return response.json();
+  },
+
+  deleteCategory: async (token, categoryId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/categories/${categoryId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  // System Management APIs
+  getSystemLogs: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/system/logs`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  createBackup: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/admin/system/backup`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
+  toggleMaintenanceMode: async (token, enabled) => {
+    const response = await fetch(`${API_BASE_URL}/admin/system/maintenance`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ enabled }),
+    });
+    return response.json();
+  },
+
+  // Logout function
+  logout: async (token, isAdmin = false) => {
+    try {
+      const endpoint = isAdmin ? '/admin/logout' : '/auth/logout';
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.json();
+    } catch (error) {
+      console.error('Logout API error:', error);
+      return { success: false, message: 'Logout failed' };
+    }
+  },
+};
+
+// Checkout and Order APIs
+export const checkoutAPI = {
+  createOrder: async (orderData) => {
+    try {
+      const response = await apiService.post('/orders', orderData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  processPayment: async (paymentData) => {
+    try {
+      const response = await apiService.post('/payments/process', paymentData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getUserOrders: async () => {
+    try {
+      const response = await apiService.get('/orders');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateOrderStatus: async (orderId, status) => {
+    try {
+      const response = await apiService.put(`/orders/${orderId}/status`, { status });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+// Utility functions
+export const isTokenValid = (token) => {
+  try {
+    if (!token) return false;
+    
+    if (token.split('.').length === 3) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      return payload.exp > currentTime;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error validating token:', error);
+    return false;
+  }
+};
+
+export const getUserFromToken = (token) => {
+  try {
+    if (!token) return null;
+    
+    if (token.split('.').length === 3) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error parsing token:', error);
+    return null;
+  }
+};
+
+export default api;

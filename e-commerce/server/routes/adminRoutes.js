@@ -9,6 +9,7 @@ router.use(adminRateLimit);
 
 // Admin authentication
 router.post("/login", adminController.adminLogin);
+router.post("/logout", authenticateAdmin, adminController.adminLogout);
 
 // Dashboard & Statistics APIs
 router.get("/dashboard/stats", authenticateAdmin, adminController.getDashboardStats);

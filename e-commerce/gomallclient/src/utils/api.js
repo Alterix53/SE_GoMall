@@ -32,22 +32,29 @@ api.interceptors.response.use(
       if (url.includes('/auth/login') || url.includes('/admin/login')) {
         return Promise.reject(error);
       }
-      // Token không hợp lệ hoặc hết hạn
-      let currentUser = null;
-      try {
-        currentUser = JSON.parse(localStorage.getItem('user'));
-      } catch {}
+      
+      // Import LogoutController dynamically to avoid circular imports
+      import('./logoutController.js').then(({ default: LogoutController }) => {
+        // Token không hợp lệ hoặc hết hạn - use force logout
+        LogoutController.forceLogout(null, null, null);
+      }).catch(() => {
+        // Fallback if LogoutController fails to load
+        let currentUser = null;
+        try {
+          currentUser = JSON.parse(localStorage.getItem('user'));
+        } catch {}
 
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('isLoggedIn');
 
-      // Redirect phù hợp theo role trước đó
-      if (currentUser?.role === 'admin') {
-        window.location.href = '/admin/login';
-      } else {
-        window.location.href = '/login';
-      }
+        // Redirect phù hợp theo role trước đó
+        if (currentUser?.role === 'admin') {
+          window.location.href = '/admin/login';
+        } else {
+          window.location.href = '/login';
+        }
+      });
     }
     return Promise.reject(error);
   }
@@ -78,6 +85,22 @@ export const apiService = {
   // PATCH request
   patch: (url, data = {}, config = {}) => {
     return api.patch(url, data, config);
+  },
+
+  // Logout function (thêm vào đây)
+  logout: async (token, isAdmin = false) => {
+    try {
+      const endpoint = isAdmin ? '/admin/logout' : '/auth/logout';
+      const response = await api.post(endpoint, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Logout API error:', error);
+      return { success: false, message: 'Logout failed' };
+    }
   },
 
   // User management functions
@@ -675,6 +698,24 @@ export const adminAPI = {
             body: JSON.stringify({ enabled }),
         });
         return response.json();
+    },
+
+    // Logout function
+    logout: async (token, isAdmin = false) => {
+        try {
+            const endpoint = isAdmin ? '/admin/logout' : '/auth/logout';
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            return response.json();
+        } catch (error) {
+            console.error('Logout API error:', error);
+            return { success: false, message: 'Logout failed' };
+        }
     },
 };
 

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiService } from '../utils/api';
+import { authAPI, isTokenValid } from '../utils/api/index.js';
+import LogoutController from '../utils/logoutController.js';
 
 const AuthContext = createContext();
 
@@ -44,31 +45,10 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  // Kiểm tra token có hợp lệ không
-  const isTokenValid = (token) => {
-    try {
-      // Nếu token là JWT, decode để kiểm tra expiration
-      if (token && token.split('.').length === 3) {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const currentTime = Date.now() / 1000;
-        return payload.exp > currentTime;
-      }
-      // Nếu không phải JWT, coi như luôn hợp lệ (cho demo)
-      return true;
-    } catch (error) {
-      console.error('Error validating token:', error);
-      return false;
-    }
-  };
-
   // Đăng nhập
   const login = async (identifier, password) => {
     try {
-      // Cho phép đăng nhập bằng username hoặc email: dùng regex email thay vì chỉ kiểm tra '@'
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const isEmail = typeof identifier === 'string' && emailRegex.test(identifier);
-      const payload = isEmail ? { email: identifier, password } : { username: identifier, password };
-      const resp = await apiService.post('/auth/login', payload);
+      const resp = await authAPI.login(identifier, password);
       if (resp?.data?.success) {
         const { token: newToken, user: rawUser } = resp.data.data;
         const userData = {
@@ -115,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   const loginAdmin = async (username, password) => {
     try {
       // Admin API chỉ chấp nhận username + password
-      const resp = await apiService.post('/admin/login', { username, password });
+      const resp = await authAPI.loginAdmin(username, password);
       if (resp?.data?.data) {
         const { token: newToken, admin } = resp.data.data;
         const adminUser = {
@@ -148,15 +128,23 @@ export const AuthProvider = ({ children }) => {
 
   // Đăng xuất
   const logout = () => {
-    // Xóa token và user khỏi localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('isLoggedIn');
-    
-    // Reset state
+    LogoutController.clearLocalStorage();
     setToken(null);
     setUser(null);
+  };
+
+  // Enhanced logout with navigation
+  const logoutWithNavigation = (navigate, isAdmin = false) => {
+    if (isAdmin) {
+      return LogoutController.adminLogout(navigate, setUser, setToken);
+    } else {
+      return LogoutController.userLogout(navigate, setUser, setToken);
+    }
+  };
+
+  // Force logout for invalid tokens
+  const forceLogout = (navigate) => {
+    LogoutController.forceLogout(navigate, setUser, setToken);
   };
 
   // Kiểm tra người dùng đã đăng nhập chưa
@@ -192,6 +180,8 @@ export const AuthProvider = ({ children }) => {
     login,
     loginAdmin,
     logout,
+    logoutWithNavigation,
+    forceLogout,
     isAuthenticated,
     getToken,
     getCurrentUser

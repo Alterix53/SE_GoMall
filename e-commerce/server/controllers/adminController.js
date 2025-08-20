@@ -11,6 +11,19 @@ export const adminLogin = ResponseHandler.asyncHandler(async (req, res) => {
     ResponseHandler.success(res, result, "Đăng nhập admin thành công");
 });
 
+// Admin logout
+export const adminLogout = ResponseHandler.asyncHandler(async (req, res) => {
+    console.log("Request to admin logout");
+    
+    // In a stateless JWT system, logout is typically handled client-side
+    // by removing the token. However, we can implement additional security measures here.
+    
+    // You could implement token blacklisting here if needed
+    // For now, we'll just return success as the client will handle token removal
+    
+    ResponseHandler.success(res, {}, "Đăng xuất admin thành công");
+});
+
 // Get dashboard statistics
 export const getDashboardStats = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to get dashboard stats");

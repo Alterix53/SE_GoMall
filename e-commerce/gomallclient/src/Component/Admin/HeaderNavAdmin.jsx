@@ -6,14 +6,20 @@ import "./HeaderNavAdmin.css";
 function HeaderNavAdmin() {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logoutWithNavigation } = useAuth();
 
-  const handleLogout = () => {
-    // Clear all tokens and redirect to admin login
-    logout();
-    localStorage.removeItem('adminToken');
+  const handleLogout = async () => {
     setShowModal(false);
-    navigate('/admin/login', { replace: true });
+    try {
+      const result = await logoutWithNavigation(navigate, true); // true for admin logout
+      if (!result.success) {
+        console.warn('Logout warning:', result.message);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Fallback: force navigation to admin login
+      navigate('/admin/login', { replace: true });
+    }
   };
 
   return (
