@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import './utils/imageOptimization.css';
+import './Component/Admin/adminTheme.css';
 import { useImageOptimization } from './hooks/useImageOptimization';
 
 import Cart from './Component/Cart/Cart';
@@ -82,7 +83,7 @@ const LayoutWrapper = ({ children }) => {
 
 function AdminLayout() {
   return (
-    <div className="d-flex">
+    <div className="admin-theme d-flex">
       <SidebarNav />
       <div className="flex-grow-1 p-3">
         <Breadcrumbs />
@@ -122,7 +123,11 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signin" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
-                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/login" element={
+                  <div className="admin-theme">
+                    <AdminLogin />
+                  </div>
+                } />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
                 

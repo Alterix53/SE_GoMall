@@ -672,6 +672,15 @@ class AdminService {
         seller.approvedAt = new Date();
         await seller.save();
 
+        // Ensure associated user has 'seller' role
+        if (seller.userID) {
+            await User.findByIdAndUpdate(
+                seller.userID,
+                { $addToSet: { role: 'seller' } },
+                { new: true }
+            );
+        }
+
         return seller;
     }
 

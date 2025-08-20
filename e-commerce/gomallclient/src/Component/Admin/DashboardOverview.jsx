@@ -98,7 +98,7 @@ function DashboardOverview() {
         fetchDashboardData();
     }, []);
 
-    const COLORS = ['#0d6efd', '#28a745', '#ffc107', '#dc3545'];
+    const COLORS = ['var(--admin-primary)', '#28a745', '#ffc107', '#dc3545'];
 
     if (loading) {
         return (

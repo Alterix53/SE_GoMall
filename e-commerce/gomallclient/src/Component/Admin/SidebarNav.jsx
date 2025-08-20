@@ -1,82 +1,116 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import "./SidebarNav.css";
 
 // thanh tab bên trái điều hướng các danh mục cần quản lý
 function SidebarNav() {
   return (
-    <nav className="sidebar-nav" style={{ minWidth: 200, borderRight: '1px solid #eee', height: '100vh', padding: '2rem 1rem' }}>
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        <li style={{ marginBottom: '1rem' }}>
-          <NavLink to="/Admin/" end style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-            Dashboard
-          </NavLink>
-        </li>
-        
-        {/* Manage Customers Section */}
-        <li style={{ marginBottom: '1rem' }}>
-          <div
-            style={{ 
-              fontWeight: 'bold',
-              color: '#666',
-              opacity: 0.6,
-              pointerEvents: 'none',
-              fontSize: '0.9rem',
-              textTransform: 'uppercase',
-              marginBottom: '0.5rem'
-            }}
-          >
-            Manage Customers
-          </div>
-          <ul style={{ listStyle: 'none', paddingLeft: 16, margin: 0 }}>
-            <li style={{ marginBottom: 6 }}>
-              <NavLink to="/Admin/ManageUser" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                View Customers
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/Admin/reportedusers" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                Reported Users
-              </NavLink>
-            </li>
-          </ul>
-        </li>
+    <nav className="admin-sidebar">
+      {/* Sidebar Header */}
+      <div className="admin-sidebar-header">
+        <h1 className="admin-sidebar-title">
+          <i className="fas fa-shield-alt"></i>
+          Admin Panel
+        </h1>
+      </div>
 
-        {/* Manage Sellers Section */}
-        <li style={{ marginBottom: '1rem' }}>
-          <div
-            style={{ 
-              fontWeight: 'bold',
-              color: '#666',
-              opacity: 0.6,
-              pointerEvents: 'none',
-              fontSize: '0.9rem',
-              textTransform: 'uppercase',
-              marginBottom: '0.5rem'
-            }}
-          >
-            Manage Sellers
-          </div>
-          <ul style={{ listStyle: 'none', paddingLeft: 16, margin: 0 }}>
-            <li style={{ marginBottom: 6 }}>
-              <NavLink to="/Admin/ManageSeller" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                View Sellers
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/Admin/pendingrequest" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-                Pending Request
-              </NavLink>
-            </li>
-          </ul>
-        </li>
+      {/* Navigation Menu */}
+      <div className="admin-sidebar-nav">
+        <ul className="admin-sidebar-list">
+          {/* Dashboard */}
+          <li className="admin-sidebar-item">
+            <NavLink 
+              to="/Admin/" 
+              end 
+              className={({ isActive }) => 
+                `admin-sidebar-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <i className="fas fa-tachometer-alt"></i>
+              Dashboard
+            </NavLink>
+          </li>
+          
+          {/* Manage Customers Section */}
+          <li className="admin-sidebar-item">
+            <div className="admin-sidebar-section">
+              <div className="admin-sidebar-section-title">
+                Manage Customers
+              </div>
+              <ul className="admin-sidebar-submenu">
+                <li className="admin-sidebar-item">
+                  <NavLink 
+                    to="/Admin/ManageUser" 
+                    className={({ isActive }) => 
+                      `admin-sidebar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    <i className="fas fa-users"></i>
+                    View Customers
+                  </NavLink>
+                </li>
+                <li className="admin-sidebar-item">
+                  <NavLink 
+                    to="/Admin/reportedusers" 
+                    className={({ isActive }) => 
+                      `admin-sidebar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    <i className="fas fa-exclamation-triangle"></i>
+                    Reported Users
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          </li>
 
-        {/* Manage Items Section */}
-        <li style={{ marginBottom: '1rem' }}>
-          <NavLink to="/Admin/Items" style={({ isActive }) => ({ fontWeight: isActive ? 'bold' : 'normal', color: isActive ? '#007bff' : '#333', textDecoration: 'none' })}>
-            Manage Items
-          </NavLink>
-        </li>
-      </ul>
+          {/* Manage Sellers Section */}
+          <li className="admin-sidebar-item">
+            <div className="admin-sidebar-section">
+              <div className="admin-sidebar-section-title">
+                Manage Sellers
+              </div>
+              <ul className="admin-sidebar-submenu">
+                <li className="admin-sidebar-item">
+                  <NavLink 
+                    to="/Admin/ManageSeller" 
+                    className={({ isActive }) => 
+                      `admin-sidebar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    <i className="fas fa-store"></i>
+                    View Sellers
+                  </NavLink>
+                </li>
+                <li className="admin-sidebar-item">
+                  <NavLink 
+                    to="/Admin/pendingrequest" 
+                    className={({ isActive }) => 
+                      `admin-sidebar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    <i className="fas fa-clock"></i>
+                    Pending Requests
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          {/* Manage Items Section */}
+          <li className="admin-sidebar-item">
+            <NavLink 
+              to="/Admin/Items" 
+              className={({ isActive }) => 
+                `admin-sidebar-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <i className="fas fa-box"></i>
+              Manage Items
+            </NavLink>
+          </li>
+        </ul>
+      </div>
     </nav>
   );
 }

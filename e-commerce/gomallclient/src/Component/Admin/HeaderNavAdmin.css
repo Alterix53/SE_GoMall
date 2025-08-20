@@ -2,8 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 1050;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--admin-surface);
+  border-bottom: 1px solid var(--admin-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -15,7 +15,7 @@
 .admin-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #22223b;
+  color: var(--admin-text);
   letter-spacing: 1px;
 }
 
@@ -30,20 +30,20 @@
   border: none;
   position: relative;
   font-size: 1.3rem;
-  color: #22223b;
+  color: var(--admin-text);
   cursor: pointer;
   outline: none;
 }
 
 .admin-bell-btn:hover {
-  color: #3b82f6;
+  color: var(--admin-primary);
 }
 
 .admin-badge {
   position: absolute;
   top: -6px;
   right: -8px;
-  background: #ef4444;
+  background: var(--admin-danger);
   color: #fff;
   font-size: 0.75rem;
   border-radius: 50%;
@@ -51,12 +51,26 @@
   font-weight: 600;
 }
 
-.admin-avatar img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #e5e7eb;
+.admin-account-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--admin-text);
+  font-weight: 500;
+}
+
+.admin-account-btn:hover {
+  background: rgba(99, 102, 241, 0.05);
+  color: var(--admin-primary);
+}
+
+.admin-account-btn i {
+  font-size: 1.2rem;
+  color: var(--admin-primary);
 }
 
 /* Modal overlay & modal */
@@ -70,7 +84,7 @@
   justify-content: center;
 }
 .admin-modal {
-  background: #fff;
+  background: var(--admin-surface);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.15);
   min-width: 320px;
@@ -87,7 +101,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px 8px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--admin-border);
 }
 .admin-modal-header h5 {
   margin: 0;
@@ -106,8 +120,53 @@
 }
 .admin-modal-close:hover {
   background: #f3f4f6;
-  color: #22223b;
+  color: var(--admin-text);
 }
 .admin-modal-body {
   padding: 20px;
+}
+
+.admin-account-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-account-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--admin-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.admin-account-details h6 {
+  margin: 0;
+  color: var(--admin-text);
+  font-weight: 600;
+}
+
+.admin-account-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-account-actions .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.admin-account-actions .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 } 
