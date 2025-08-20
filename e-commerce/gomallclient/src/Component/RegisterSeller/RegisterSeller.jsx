@@ -71,9 +71,7 @@ const RegisterSeller = () => {
         formData.append('verificationDocs', document);
       }
 
-      const resp = await api.post('/sellers/apply', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const resp = await api.post('/sellers/apply', formData);
       
       if (resp?.data?.success) {
         alert('✅ Hồ sơ đăng ký seller đã được nộp thành công!\n\n📋 Thông tin hồ sơ:\n- Tên doanh nghiệp: ' + (businessName || 'Test Business') + '\n- Địa chỉ: ' + (address || 'Test Address') + '\n- Số điện thoại: ' + (phone || '0123456789') + '\n\n⏳ Trạng thái: Đang chờ admin duyệt\n\n📧 Bạn sẽ nhận được thông báo khi hồ sơ được xem xét.');
@@ -209,7 +207,6 @@ const RegisterSeller = () => {
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               placeholder="Nhập tên doanh nghiệp hoặc cửa hàng"
-              required
             />
           </div>
 
@@ -223,7 +220,6 @@ const RegisterSeller = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Nhập địa chỉ đầy đủ"
-              required
             />
           </div>
 
@@ -237,7 +233,6 @@ const RegisterSeller = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@email.com"
-              required
             />
           </div>
 
@@ -251,7 +246,6 @@ const RegisterSeller = () => {
               value={businessLicense}
               onChange={(e) => setBusinessLicense(e.target.value)}
               placeholder="Nhập số giấy phép kinh doanh"
-              required
             />
           </div>
 
@@ -265,7 +259,6 @@ const RegisterSeller = () => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="0123456789"
-              required
             />
           </div>
 
@@ -278,7 +271,6 @@ const RegisterSeller = () => {
               className="form-control"
               onChange={handleFileChange}
               accept=".pdf,.jpg,.png"
-              required
             />
             <div className="form-text">
               📄 Chấp nhận file PDF, JPG, PNG. Kích thước tối đa: 10MB

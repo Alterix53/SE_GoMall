@@ -125,23 +125,31 @@ export const applyForSeller = async (req, res) => {
         });
     } catch (error) {
         console.error('Apply seller error:', error);
-        
-        // Log chi tiết lỗi để debug
-        if (error.name === 'ValidationError') {
+
+        // Validation errors
+        if (error?.name === 'ValidationError') {
             const validationErrors = Object.values(error.errors).map(err => err.message);
             return res.status(400).json({ 
                 success: false, 
                 message: 'Dữ liệu không hợp lệ: ' + validationErrors.join(', ')
             });
         }
-        
-        if (error.code === 11000) {
+
+        // Duplicate key errors (Mongo E11000)
+        const isDuplicate = error?.code === 11000 || String(error?.message || '').includes('E11000');
+        if (isDuplicate) {
+            const keyPattern = error?.keyPattern || {};
+            const keyValue = error?.keyValue || {};
+            // Log chi tiết để xác định field gây trùng
+            console.error('Duplicate key details:', { keyPattern, keyValue });
             return res.status(400).json({ 
                 success: false, 
-                message: 'Hồ sơ đã tồn tại cho user này'
+                message: 'Trùng dữ liệu (duplicate key) khi tạo hồ sơ seller',
+                keyPattern,
+                keyValue
             });
         }
-        
+
         return res.status(500).json({ 
             success: false, 
             message: 'Lỗi server. Vui lòng thử lại sau.' 

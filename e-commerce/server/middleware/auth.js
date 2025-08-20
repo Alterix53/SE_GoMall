@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Admin from '../models/Admin.js';
+import Seller from '../models/Seller.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -182,15 +183,6 @@ export const requireSeller = async (req, res, next) => {
             });
         }
 
-        // You can also check if the seller is approved here if needed
-        // const seller = await Seller.findOne({ userID: req.user._id });
-        // if (!seller || seller.status !== 'approved') {
-        //     return res.status(403).json({
-        //         success: false,
-        //         message: 'Seller account not approved'
-        //     });
-        // }
-
         next();
     } catch (error) {
         console.error('Require seller middleware error:', error);
@@ -198,5 +190,29 @@ export const requireSeller = async (req, res, next) => {
             success: false,
             message: 'Server error'
         });
+    }
+};
+
+// Middleware: require approved and active seller
+export const requireApprovedSeller = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ success: false, message: 'Authentication required' });
+        }
+
+        const userRoles = Array.isArray(req.user.role) ? req.user.role : [req.user.role];
+        if (!userRoles.includes('seller')) {
+            return res.status(403).json({ success: false, message: 'Seller access required' });
+        }
+
+        const seller = await Seller.findOne({ userID: req.user._id }).select('status isActive');
+        if (!seller || seller.status !== 'approved' || seller.isActive === false) {
+            return res.status(403).json({ success: false, message: 'Seller account not approved or inactive' });
+        }
+
+        next();
+    } catch (error) {
+        console.error('Require approved seller middleware error:', error);
+        return res.status(500).json({ success: false, message: 'Server error' });
     }
 }; 

@@ -12,7 +12,7 @@ import {
     getProductsBySeller,
     handleProductImageUpload
 } from '../controllers/productController.js';
-import { authenticateToken, requireRole } from '../middleware/auth.js';
+import { authenticateToken, requireApprovedSeller } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -27,10 +27,10 @@ router.get('/:id', getProductById);
 // Protected routes (require authentication)
 router.use(authenticateToken);
 
-// Seller routes (require seller role)
-router.get('/seller/my-products', requireRole(['seller']), getProductsBySeller);
-router.post('/', requireRole(['seller']), handleProductImageUpload, createProduct);
-router.put('/:id', requireRole(['seller']), handleProductImageUpload, updateProduct);
-router.delete('/:id', requireRole(['seller']), deleteProduct);
+// Seller routes (require approved seller)
+router.get('/seller/my-products', requireApprovedSeller, getProductsBySeller);
+router.post('/', requireApprovedSeller, handleProductImageUpload, createProduct);
+router.put('/:id', requireApprovedSeller, handleProductImageUpload, updateProduct);
+router.delete('/:id', requireApprovedSeller, deleteProduct);
 
 export default router;
