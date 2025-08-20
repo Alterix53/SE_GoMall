@@ -4,6 +4,20 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import './CartTooltip.css';
 
+// Resolve image URL to absolute path (prefix server origin for relative paths)
+const resolveImageUrl = (image) => {
+  try {
+    if (!image) return "/images/placeholder-product.svg";
+    const raw = typeof image === "string" ? image : image.url || "";
+    if (!raw) return "/images/placeholder-product.svg";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const base = "http://localhost:8080";
+    return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`;
+  } catch {
+    return "/images/placeholder-product.svg";
+  }
+};
+
 const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
   const { isAuthenticated } = useAuth();
   const { cartItems, getTotalPrice } = useCart();
@@ -94,11 +108,11 @@ const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
             <div key={`${item.id}-${index}`} className="cart-tooltip-item">
               <div className="item-image">
                 <img 
-                  src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/default-product.jpg'}`}
+                  src={resolveImageUrl(item.image)}
                   alt={item.name}
                   onError={(e) => {
                     if (e.target && e.target['src']) {
-                      e.target['src'] = '/images/default-product.jpg';
+                      e.target['src'] = '/images/placeholder-product.svg';
                     }
                   }}
                 />

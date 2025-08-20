@@ -3,6 +3,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import './PaymentResult.css';
 
+// Resolve image URL to absolute path (prefix server origin for relative paths)
+const resolveImageUrl = (image) => {
+  try {
+    if (!image) return "/images/placeholder-product.svg";
+    const raw = typeof image === "string" ? image : image.url || "";
+    if (!raw) return "/images/placeholder-product.svg";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const base = "http://localhost:8080";
+    return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`;
+  } catch {
+    return "/images/placeholder-product.svg";
+  }
+};
+
 const CashPaymentSuccess = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -96,7 +110,7 @@ const CashPaymentSuccess = () => {
                 {orderData.items.map((item, index) => (
                   <div key={index} className="product-item">
                     <img 
-                      src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/placeholder-product.svg'}`} 
+                      src={resolveImageUrl(item.image)} 
                       alt={item.name}
                       className="product-image"
                       onError={(e) => {

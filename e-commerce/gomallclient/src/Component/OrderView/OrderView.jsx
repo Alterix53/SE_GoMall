@@ -5,6 +5,20 @@ import { useAuth } from '../../contexts/AuthContext';
 import { checkoutAPI } from '../../utils/api';
 import './OrderView.css';
 
+// Resolve image URL to absolute path (prefix server origin for relative paths)
+const resolveImageUrl = (image) => {
+  try {
+    if (!image) return "/images/placeholder-product.svg";
+    const raw = typeof image === "string" ? image : image.url || "";
+    if (!raw) return "/images/placeholder-product.svg";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const base = "http://localhost:8080";
+    return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`;
+  } catch {
+    return "/images/placeholder-product.svg";
+  }
+};
+
 const OrderView = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getCurrentUser } = useAuth();
@@ -180,7 +194,7 @@ const OrderView = () => {
                 {selectedOrder.items && selectedOrder.items.map((item, index) => (
                   <div key={index} className="order-item">
                     <img 
-                      src={item.image && item.image.startsWith('http') ? item.image : `http://localhost:8080${item.image || '/images/placeholder-product.svg'}`} 
+                      src={resolveImageUrl(item.image)} 
                       alt={item.name}
                       className="item-image"
                       onError={(e) => {
