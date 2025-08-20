@@ -69,7 +69,11 @@ export default function CartManager() {
         const products = data.data.products.map(product => ({
           id: product._id,
           name: product.name,
-          image: product.images?.[0]?.url || '/images/placeholder-product.jpg',
+          image: (() => {
+            const raw = product.images?.[0]?.url || '';
+            if (!raw) return '/images/placeholder-product.svg';
+            return raw.startsWith('http') ? raw : `http://localhost:8080${raw}`;
+          })(),
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
           discount: product.discount || 0,
@@ -188,114 +192,118 @@ export default function CartManager() {
     return (
       <div className="cart-page cart--empty">
         <div className="cart-container">
-          <div className="cart-empty-layout">
-            {/* Cart Header */}
-            <div className="cart-header-table">
-              <div className="cart-table-row cart-table-header">
-                <div className="cart-col-checkbox">
-                  <input type="checkbox" disabled />
-                </div>
-                <div className="cart-col-product">Sản Phẩm</div>
-                <div className="cart-col-price">Đơn Giá</div>
-                <div className="cart-col-quantity">Số Lượng</div>
-                <div className="cart-col-total">Số Tiền</div>
-                <div className="cart-col-actions">Thao Tác</div>
+          <span className="page-title">Cart</span>
+        </div>
+        <div className="cart-wrapper">
+          {/* Cart Header */}
+          <div className="cart-header-table">
+            <div className="cart-table-row cart-table-header">
+              <div className="cart-col-checkbox">
+                <input type="checkbox" disabled />
               </div>
+              <div className="cart-col-product">Product</div>
+              <div className="cart-col-price">Unit Price</div>
+              <div className="cart-col-quantity">Quantity</div>
+              <div className="cart-col-total">Amount</div>
+              <div className="cart-col-actions">Actions</div>
             </div>
+          </div>
 
-            {/* Voucher Section */}
+          {/* Voucher Section - Only show when cart has items */}
+          {cartItems && cartItems.length > 0 && (
             <div className="cart-voucher-section">
               <div className="voucher-item">
                 <div className="voucher-icon">🎫</div>
-                <span className="voucher-text">Shopee Voucher</span>
-                <button className="voucher-select-btn">Chọn hoặc nhập mã</button>
+                <span className="voucher-text">Voucher</span>
+                <button className="voucher-select-btn">Select or enter code</button>
               </div>
               <div className="voucher-item">
                 <div className="voucher-icon">💰</div>
-                <span className="voucher-text">Shopee Xu</span>
-                <span className="voucher-unavailable">Bạn chưa chọn sản phẩm</span>
+                <span className="voucher-text">Coins</span>
+                <span className="voucher-unavailable">You haven't selected any product</span>
                 <span className="voucher-balance">-₫0</span>
               </div>
             </div>
+          )}
 
-            {/* Selection Controls */}
-            <div className="cart-selection-controls">
-              <div className="select-all-section">
-                <input type="checkbox" id="select-all" disabled />
-                <label htmlFor="select-all">Chọn Tất Cả (1)</label>
-                <button className="delete-btn" disabled>Xóa</button>
-                <button className="save-btn" disabled>Lưu vào mục Đã thích</button>
-              </div>
-              
-              <div className="cart-total-section">
-                <div className="total-info">
-                  <span className="total-label">Tổng cộng (0 Sản phẩm): </span>
-                  <span className="total-amount">₫0</span>
-                </div>
-                <button className="checkout-btn" disabled>Mua Hàng</button>
-              </div>
+          {/* Selection Controls */}
+          <div className="cart-selection-controls">
+            <div className="select-all-section">
+              <input type="checkbox" id="select-all" disabled />
+              <label htmlFor="select-all">Select All (1)</label>
+              <button className="delete-btn" disabled>Delete</button>
+              <button className="save-btn" disabled>Save to Favorites</button>
             </div>
-
-            {/* Suggested Products Section */}
-            <div className="cart-suggestions-section">
-              <div className="suggestions-header">
-                <h2 className="suggestions-title">CÓ THỂ BẠN CŨNG THÍCH</h2>
-                <Link to="/suggestions" className="view-all-link">Xem Tất Cả &gt;</Link>
+            
+            <div className="cart-total-section">
+              <div className="total-info">
+                <span className="total-label">Total (0 items): </span>
+                <span className="total-amount">₫0</span>
               </div>
-              
-              {loadingSuggestions ? (
-                <div className="suggestions-loading">
-                  <div className="loading-spinner"></div>
-                  <span>Đang tải sản phẩm...</span>
-                </div>
-              ) : (
-                <div className="suggestions-grid">
-                  {suggestedProducts.map((product) => (
-                    <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
-                      <div className="suggestion-image-container">
-                        <OptimizedImage
-                          src={product.image}
-                          alt={product.name}
-                          className="suggestion-image"
-                          fallbackUrl={createPlaceholderUrl(160,160,'')}
-                          onLoad={() => {}}
-                          onError={() => {}}
-                        />
-                        {product.discount > 0 && (
-                          <div className="suggestion-discount">-{product.discount}%</div>
+              <button className="checkout-btn" disabled>Checkout</button>
+            </div>
+          </div>
+
+          {/* Suggested Products Section */}
+          <div className="cart-suggestions-section">
+            <div className="suggestions-header">
+              <h2 className="suggestions-title">YOU MAY ALSO LIKE</h2>
+              <Link to="/suggestions" className="view-all-link">View All &gt;</Link>
+            </div>
+            
+            {loadingSuggestions ? (
+              <div className="suggestions-loading">
+                <div className="loading-spinner"></div>
+                <span>Loading products...</span>
+              </div>
+            ) : (
+              <div className="suggestions-grid">
+                {suggestedProducts.map((product) => (
+                  <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
+                    <div className="suggestion-image-container">
+                      <OptimizedImage 
+                        src={product.image}
+                        alt={product.name}
+                        className="suggestion-image"
+                        fallbackUrl={createPlaceholderUrl(160,160,'')}
+                        onLoad={() => {}}
+                        onError={() => {}}
+                      />
+                      {product.discount > 0 && (
+                        <div className="suggestion-discount">-{product.discount}%</div>
+                      )}
+                    </div>
+                    <div className="suggestion-info">
+                        <h3 className="suggestion-name">{product.name}</h3>
+                        <div className="suggestion-price">
+                          <span className="current-price">{formatVND(product.price)}</span>
+                        {product.originalPrice > product.price && (
+                          <span className="original-price">{formatVND(product.originalPrice)}</span>
                         )}
                       </div>
-                      <div className="suggestion-info">
-                          <h3 className="suggestion-name">{product.name}</h3>
-                          <div className="suggestion-price">
-                            <span className="current-price">{formatVND(product.price)}</span>
-                          {product.originalPrice > product.price && (
-                            <span className="original-price">{formatVND(product.originalPrice)}</span>
-                          )}
+                      <div className="suggestion-stats">
+                        <div className="rating">
+                          <span className="stars">★★★★★</span>
+                          <span className="rating-value">{product.rating.toFixed(1)}</span>
                         </div>
-                        <div className="suggestion-stats">
-                          <div className="rating">
-                            <span className="stars">★★★★★</span>
-                            <span className="rating-value">{product.rating.toFixed(1)}</span>
-                          </div>
-                          <span className="sold-count">Đã bán {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
-                        </div>
+                        <span className="sold-count">Sold {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
                       </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
     );
   }
 
+
   return (
     <>
       <div className="cart-container">
-        <span className="page-title">Giỏ Hàng</span>
+        <span className="page-title">Cart</span>
       </div>
       <div className="cart-wrapper">
         {/* New box styled like checkout products-section */}
@@ -309,12 +317,12 @@ export default function CartManager() {
                   checked={allSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
                 />
-                <span>Sản phẩm</span>
+                <span>Product</span>
               </div>
-              <div>Đơn giá</div>
-              <div>Số lượng</div>
-              <div>Thành tiền</div>
-              <div>Thao tác</div>
+              <div>Unit Price</div>
+              <div>Quantity</div>
+              <div>Total</div>
+              <div>Actions</div>
             </div>
           </div>
 
@@ -344,12 +352,12 @@ export default function CartManager() {
                   />
                   <div className="product-details">
                     <div className="product-name">{item.name}</div>
-                    <div className="product-variant">Phân loại: {item.size || 'Mặc định'}</div>
+                    <div className="product-variant">Variant: {item.size || 'Default'}</div>
                   </div>
                 </div>
                 <div className="product-price">{currencyVND(salePrice)}</div>
                 <div className="product-quantity">
-                  <div style={{fontSize: '12px', color: '#999', marginBottom: '4px'}}>Số lượng</div>
+                  <div style={{fontSize: '12px', color: '#999', marginBottom: '4px'}}>Quantity</div>
                   <div className="qty-control">
                     <button
                       className="btn-qty"
@@ -373,7 +381,7 @@ export default function CartManager() {
                     className="link danger"
                     onClick={() => handleRemoveItem(item.id, item.size)}
                   >
-                    Xóa
+                    Delete
                   </button>
                 </div>
               </div>
@@ -391,13 +399,13 @@ export default function CartManager() {
                   checked={allSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
                 />
-                <span>Chọn Tất Cả ({selectedKeys.size || 0})</span>
+                <span>Select All ({selectedKeys.size || 0})</span>
               </label>
             </div>
             <div className="footer-total">
               <div className="total-summary">
                 <div className="total-line">
-                  <span className="total-label">Tổng cộng ({totals.selectedCount} Sản phẩm):</span>
+                  <span className="total-label">Total ({totals.selectedCount} items):</span>
                   <span className="total-amount">{currencyVND(totals.selectedTotal)}</span>
                 </div>
               </div>
@@ -408,7 +416,7 @@ export default function CartManager() {
                 disabled={!cartItems || cartItems.length === 0}
                 onClick={handleCheckout}
               >
-                Mua Hàng
+                Checkout
               </button>
             </div>
           </div>
@@ -416,14 +424,14 @@ export default function CartManager() {
       {/* Suggestions section (always visible) */}
       <div className="cart-suggestions-section">
         <div className="suggestions-header">
-          <h2 className="suggestions-title">CÓ THỂ BẠN CŨNG THÍCH</h2>
-          <Link to="/suggestions" className="view-all-link">Xem Tất Cả &gt;</Link>
+          <h2 className="suggestions-title">YOU MAY ALSO LIKE</h2>
+          <Link to="/suggestions" className="view-all-link">View All &gt;</Link>
         </div>
 
         {loadingSuggestions ? (
           <div className="suggestions-loading">
             <div className="loading-spinner"></div>
-            <span>Đang tải sản phẩm...</span>
+            <span>Loading products...</span>
           </div>
         ) : (
           <div className="suggestions-grid">
@@ -455,7 +463,7 @@ export default function CartManager() {
                       <span className="stars">★★★★★</span>
                       <span className="rating-value">{Number(product.rating || 0).toFixed(1)}</span>
                     </div>
-                    <span className="sold-count">Đã bán {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
+                    <span className="sold-count">Sold {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
                   </div>
                 </div>
               </Link>
@@ -470,7 +478,7 @@ export default function CartManager() {
         <div className="error-modal-overlay">
           <div className="error-modal">
             <div className="error-message">
-              Bạn vẫn chưa chọn sản phẩm nào để mua.
+              You haven't selected any items to purchase.
             </div>
             <button 
               className="error-modal-btn"

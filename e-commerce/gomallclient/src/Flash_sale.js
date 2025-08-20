@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { RenderProduct } from "./Component/ProductCard/ProductCard.jsx";
-// Header is globally rendered in App.js
+import FlashSaleCard from "./Component/FlashSaleCard/FlashSaleCard.jsx";
+import Header from "./Component/Header/Header";
 import "./Flash_sale.css";
-import { productAPI } from './utils/api';
+ 
 
 const FlashSale = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -44,24 +44,35 @@ const FlashSale = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await productAPI.getFlashSaleProducts();
-        const products = res?.products || [];
-        const mapped = products.map((p, i) => ({
-          id: p._id || `fallback-${i}`,
-          name: p.name || 'Unknown Product',
-          price: p.price?.sale ?? p.price?.original ?? 0,
-          originalPrice: p.price?.original ?? 0,
-          image: p.images?.[0]?.url ? `${process.env.REACT_APP_API_URL || 'http://localhost:8080/api'}`.replace('/api','') + p.images[0].url : '/images/default-product.jpg',
-          rating: p.rating?.average || 0,
-          sold: p.sold || 0,
-          discount: p.price?.original && (p.price?.sale ?? 0)
-            ? Math.round(((p.price.original - (p.price.sale ?? 0)) / p.price.original) * 100)
+        const response = await fetch("http://localhost:8080/api/products/flash-sale");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const products = data?.data?.products || data?.data?.data?.products || [];
+        if (products.length === 0) {
+          setFlashSaleProducts([]);
+          return;
+        }
+        const mappedProducts = products.map((product, index) => ({
+          _id: product._id || `fallback-${index}`,
+          name: product.name || "Unknown Product",
+          price: product.flashSalePrice || product.price?.sale || product.price?.original || 0,
+          originalPrice: product.price?.original || 0,
+          image: (() => {
+            const raw = product.images?.[0]?.url || '';
+            if (!raw) return "/images/placeholder-product.svg";
+            return raw.startsWith('http') ? raw : `http://localhost:8080${raw}`;
+          })(),
+          rating: product.rating || { average: 0, count: 0 },
+          sold: product.sold || 0,
+          discount: product.price?.original && product.flashSalePrice
+            ? Math.round(((product.price.original - product.flashSalePrice) / product.price.original) * 100)
             : 0,
-          isFlashSale: !!p.isFlashSale,
+          isFlashSale: product.isFlashSale || false,
         }));
-        setFlashSaleProducts(mapped);
+        setFlashSaleProducts(mappedProducts);
       } catch (err) {
-        console.error('Error fetching flash sale products:', err.message);
         setFlashSaleProducts([]);
       } finally {
         setLoading(false);
@@ -122,7 +133,7 @@ const FlashSale = () => {
             ) : flashSaleProducts.length > 0 ? (
               <div className="products-grid">
                 {flashSaleProducts.map((product) => (
-                  <RenderProduct key={product.id} product={product} />
+                  <FlashSaleCard key={product._id} product={product} />
                 ))}
               </div>
             ) : (

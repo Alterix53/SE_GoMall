@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import './RegisterSeller.css';
-import api, { apiService } from '../../utils/api';
+import { apiService } from '../../utils/api';
 
 const RegisterSeller = () => {
   // Chuẩn hóa field: dùng businessName thay cho storeName (giữ tương thích ngược khi lưu)
@@ -14,7 +15,9 @@ const RegisterSeller = () => {
   const [loading, setLoading] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [sellerStatus, setSellerStatus] = useState(null);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { getCurrentUser } = useAuth();
 
   // Kiểm tra trạng thái hồ sơ seller khi component load
   useEffect(() => {
@@ -24,7 +27,7 @@ const RegisterSeller = () => {
   const checkSellerStatus = async () => {
     try {
       setCheckingStatus(true);
-      const response = await api.get('/sellers/my-status');
+      const response = await apiService.get('/sellers/my-status');
       
       if (response.data.success) {
         setSellerStatus(response.data.data);
@@ -44,6 +47,8 @@ const RegisterSeller = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
     // TẮT VALIDATION ĐỂ TEST - COMMENT ĐOẠN NÀY ĐỂ BẬT LẠI
     /*
@@ -71,7 +76,7 @@ const RegisterSeller = () => {
         formData.append('verificationDocs', document);
       }
 
-      const resp = await api.post('/sellers/apply', formData, {
+      const resp = await apiService.post('/sellers/apply', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       

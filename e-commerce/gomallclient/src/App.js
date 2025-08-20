@@ -36,6 +36,8 @@ import AdminLogin from './Component/Admin/AdminLogin';
 // Import các component Auth
 import LoginPage from './Component/Login/login';
 import SignUpPage from './Component/Signup/signup';
+import ForgotPassword from './Component/Login/ForgotPassword';
+import ResetPassword from './Component/Login/ResetPassword';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
 
 // 
@@ -55,6 +57,16 @@ import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 import Header from './Component/Header/Header';
 import Suggestions from './Component/Suggestions/Suggestions';
 
+// Import Payment Result components
+import PaymentSuccess from './Component/PaymentResult/PaymentSuccess';
+import PaymentFailed from './Component/PaymentResult/PaymentFailed';
+import PaymentCancelled from './Component/PaymentResult/PaymentCancelled';
+import CashPaymentSuccess from './Component/PaymentResult/CashPaymentSuccess';
+
+// Import Order and Invoice components
+import OrderView from './Component/OrderView/OrderView';
+import InvoiceDownload from './Component/InvoiceDownload/InvoiceDownload';
+
 
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
@@ -62,11 +74,11 @@ const LayoutWrapper = ({ children }) => {
 
   const isAdminRoute = path.startsWith('/admin');
   const isSellerRoute = path.startsWith('/seller');
-  const isAuthRoute = ['/login', '/signin', '/signup', '/admin/login'].includes(path);
+  const isAuthRoute = ['/login', '/signin', '/signup', '/admin/login', '/forgot-password', '/reset-password'].includes(path);
 
   // Visibility rules
   // - Admin & Seller: no Header, no Footer
-  // - Auth (login/signin/signup): no Header, Footer visible
+  // - Auth (login/signin/signup/forgot/reset): no Header, Footer visible
   // - Others: show both
   const showHeader = !isAdminRoute && !isSellerRoute && !isAuthRoute;
   const showFooter = !isAdminRoute && !isSellerRoute; // includes auth pages
@@ -123,6 +135,8 @@ function App() {
                 <Route path="/signin" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
                 
@@ -134,8 +148,20 @@ function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                
+                {/* Payment Result Routes */}
+                <Route path="/payment/success" element={<PaymentSuccess />} />
+                <Route path="/payment/failed" element={<PaymentFailed />} />
+                <Route path="/payment/cancelled" element={<PaymentCancelled />} />
+                <Route path="/payment/cash-success" element={<CashPaymentSuccess />} />
+                
+                {/* Order and Invoice Routes */}
+                <Route path="/orders" element={<OrderView />} />
+                <Route path="/invoice" element={<InvoiceDownload />} />
+                
                 {/* SELLER ROUTES - có thể có layout riêng */}
-                <Route path="/seller" element={
+                <Route path="/seller" element={<RegisterSeller />} />
+                <Route path="/seller-dashboard" element={
                   <ProtectedRoute requiredRole="seller">
                     <SellerDashboard />
                   </ProtectedRoute>

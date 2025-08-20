@@ -33,14 +33,14 @@ const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
             <div className="empty-cart-icon">
               <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Empty Cart" />
             </div>
-            <h3>Chưa Có Sản Phẩm</h3>
-            <p>Đăng nhập để xem giỏ hàng của bạn</p>
+            <h3>No Products Yet</h3>
+            <p>Login to view your cart</p>
             <div className="cart-auth-buttons">
               <Link to="/login" className="btn-login" onClick={onClose}>
-                Đăng Nhập
+                Login
               </Link>
               <Link to="/signup" className="btn-signup" onClick={onClose}>
-                Đăng Ký
+                Sign Up
               </Link>
             </div>
           </div>
@@ -62,10 +62,10 @@ const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
             <div className="empty-cart-icon">
               <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f6d2.svg" alt="Empty Cart" />
             </div>
-            <h3>Chưa Có Sản Phẩm</h3>
-            <p>Hãy thêm sản phẩm vào giỏ hàng của bạn</p>
+            <h3>No Products Yet</h3>
+            <p>Add products to your cart</p>
             <Link to="/" className="btn-continue-shopping" onClick={onClose}>
-              Tiếp Tục Mua Sắm
+                              Continue Shopping
             </Link>
           </div>
         </div>
@@ -85,8 +85,8 @@ const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
     >
       <div className="cart-tooltip-content">
         <div className="cart-header">
-          <h3>Sản Phẩm Mới Thêm</h3>
-          <span className="cart-count">{cartItems.length} sản phẩm</span>
+          <h3>Recently Added Products</h3>
+          <span className="cart-count">{cartItems.length} products</span>
         </div>
         
         <div className="cart-items-list">
@@ -116,14 +116,14 @@ const CartTooltip = ({ isVisible, onClose, onMouseEnter, onMouseLeave }) => {
 
         {remainingItems > 0 && (
           <div className="more-items">
-            <span>Và {remainingItems} sản phẩm khác...</span>
+            <span>And {remainingItems} other products...</span>
           </div>
         )}
 
         <div className="cart-footer">
           <div className="cart-actions">
             <Link to="/cart" className="btn-view-cart" onClick={onClose}>
-              Xem Giỏ Hàng
+              View Cart
             </Link>
           </div>
         </div>

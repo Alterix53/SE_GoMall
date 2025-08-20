@@ -19,7 +19,7 @@ const ProductAnimation = () => {
           id: product._id,
           name: product.name,
           price: `${product.price?.sale?.toLocaleString() || 0}₫`,
-          image: product.images?.[0]?.url || "/images/default-product.jpg",
+          image: product.images?.[0]?.url || "/images/placeholder-product.svg",
           discount: product.isFlashSale ? "FLASH SALE" : ""
         }));
         

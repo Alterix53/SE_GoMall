@@ -2,14 +2,21 @@ import adminService from "../services/adminService.js";
 import ResponseHandler from "../utils/responseHandler.js";
 
 // Admin login
-export const adminLogin = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to admin login:", req.body);
-    
-    const { username, password } = req.body;
-    const result = await adminService.authenticateAdmin(username, password);
-    
-    ResponseHandler.success(res, result, "Đăng nhập admin thành công");
-});
+export const adminLogin = async (req, res) => {
+    try {
+        console.log("Request to admin login:", req.body);
+        const { username, password } = req.body;
+        const result = await adminService.authenticateAdmin(username, password);
+        return ResponseHandler.success(res, result, "Đăng nhập admin thành công");
+    } catch (error) {
+        const message = error?.message || 'Đăng nhập admin thất bại';
+        const status =
+            message === 'Username not found' ? 401 :
+            message === 'Incorrect password' ? 401 :
+            message === 'Admin account is locked' ? 403 : 500;
+        return ResponseHandler.error(res, message, status);
+    }
+};
 
 // Get dashboard statistics
 export const getDashboardStats = ResponseHandler.asyncHandler(async (req, res) => {

@@ -22,7 +22,11 @@ const Suggestions = () => {
         const products = data.data.products.map(product => ({
           id: product._id,
           name: product.name,
-          image: product.images?.[0]?.url || '/images/placeholder-product.jpg',
+          image: (() => {
+            const raw = product.images?.[0]?.url || '';
+            if (!raw) return '/images/placeholder-product.jpg';
+            return raw.startsWith('http') ? raw : `http://localhost:8080${raw}`;
+          })(),
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
           discount: product.discount || 0,

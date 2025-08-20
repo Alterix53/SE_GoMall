@@ -8,7 +8,13 @@
     "start": "node Server.js",
     "dev": "nodemon Server.js",
     "create-admin": "node scripts/createAdmin.js",
+    "reset-admin": "node scripts/resetAdminPassword.js",
     "seed-data": "node scripts/seedData.js",
+    "seed": "npm run seed-data",
+    "reset-reload": "node scripts/resetAndReloadData.js",
+    "setup": "node scripts/runAllScripts.js",
+    "force-reset": "node scripts/resetAndReloadData.js --force",
+    "test-notifications": "node scripts/testNotifications.js",
     "check-sellers": "node scripts/checkSellerData.js",
     "test-seller": "node scripts/testSellerApplication.js"
   },

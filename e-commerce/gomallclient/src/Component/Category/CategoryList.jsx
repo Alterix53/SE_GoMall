@@ -3,32 +3,23 @@ import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
 import './CategoryList.css';
 
-// Category icon mapping for display
+// Category icon mapping for display - only keeping 14 categories that have products
 const categoryIconMap = {
-  'Fashion': '👔',
   'Phones': '📱',
-  'Electronics': '📺',
   'Laptops': '💻',
+  'Fashion': '👔',
+  'Sports': '⚽',
+  'Home & Garden': '🏠',
+  'Beauty & Cosmetics': '💄',
+  'Accessories': '💍',
+  'Books': '📚',
+  'Vehicles': '🚗',
+  'Electronics': '📺',
   'Cameras': '📷',
   'Watches': '⌚',
   'Shoes': '👞',
-  'Home & Garden': '🏠',
-  'Beauty & Cosmetics': '💄',
-  'Sports': '⚽',
-  'Books': '📚',
-  'Health': '🏥',
-  'Accessories': '💍',
-  'Gaming': '🎮',
-  'Auto': '🛵',
-  'Baby': '👶',
-  'Jewelry': '💎',
-  'Music': '🎵',
-  'Toys': '🧸',
-  'Pet Supplies': '🐕',
-  'Vehicles': '🚗'
+  'Health': '🏥'
 };
-
-
 
 export default function CategoryList() {
   const [categories, setCategories] = useState([]);
@@ -111,7 +102,7 @@ export default function CategoryList() {
             discount: product?.price?.original && product?.price?.sale
               ? Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
               : 0,
-            image: product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/default-product.jpg',
+            image: product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/placeholder-product.svg',
             rating: product?.rating || { average: 0, count: 0 },
             sold: product?.sold || 0,
           }));
@@ -172,7 +163,7 @@ export default function CategoryList() {
     return (
       <div className="category-section">
         <div className="category-container">
-          <h2 className="category-title">Đang tải danh mục...</h2>
+          <h2 className="category-title">Loading categories...</h2>
         </div>
       </div>
     );
@@ -190,7 +181,7 @@ export default function CategoryList() {
           <div className="category-header">
             <div className="category-header-top">
               <button className="back-button" onClick={handleBackToCategories}>
-                ← Quay lại danh mục
+                ← Back to categories
               </button>
             </div>
             <h2 className="category-title">{selectedCategory.categoryName}</h2>
@@ -198,13 +189,13 @@ export default function CategoryList() {
           
           {loadingProducts ? (
             <div className="loading-products">
-              <p>Đang tải sản phẩm...</p>
+              <p>Loading products...</p>
             </div>
           ) : (
             <>
               {categoryProducts.length === 0 ? (
                 <div className="no-products" style={{ textAlign: 'center', padding: '24px', color: '#666' }}>
-                  Chưa có sản phẩm trong danh mục này
+                  No products in this category yet
                 </div>
               ) : (
                 <div className="products-grid">
@@ -252,7 +243,7 @@ export default function CategoryList() {
   return (
     <div className="category-section">
       <div className="category-container">
-        <h2 className="category-title">Danh Mục Sản Phẩm</h2>
+        <h2 className="category-title">Product Categories</h2>
         <div className="category-grid">
           {categories.map((category) => (
             <CategoryItem 

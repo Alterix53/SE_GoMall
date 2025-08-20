@@ -39,6 +39,11 @@ class ResponseHandler {
         return this.error(res, message, 403);
     }
 
+    // Server error response
+    static serverError(res, message = "Lỗi server", error = null) {
+        return this.error(res, message, 500, error);
+    }
+
     // Handle async controller errors
     static asyncHandler(fn) {
         return async (req, res, next) => {
@@ -51,5 +56,18 @@ class ResponseHandler {
         };
     }
 }
+
+// Export individual functions for backward compatibility
+export const successResponse = (data, message = "Thành công") => ({
+    success: true,
+    message,
+    data,
+});
+
+export const errorResponse = (message = "Có lỗi xảy ra", error = null) => ({
+    success: false,
+    message,
+    error: error || {},
+});
 
 export default ResponseHandler; 

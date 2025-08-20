@@ -7,7 +7,7 @@ class ApiService {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers,
+        ...(options.headers || {}),
       },
       ...options,
     };
@@ -20,10 +20,20 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        // Don't redirect on login calls
+        if (!endpoint.includes('/auth/login') && !endpoint.includes('/admin/login')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('isLoggedIn');
+          window.location.href = '/login';
+        }
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        throw new Error(data?.message || `HTTP error! status: ${response.status}`);
       }
 
       return data;
@@ -34,20 +44,26 @@ class ApiService {
   }
 
   // Product APIs
-  static async getAllProducts(page = 1, limit = 12) {
-    return this.request(`/products?page=${page}&limit=${limit}`);
+  static async getAllProducts(page = 1, limit = 12, extra = {}) {
+    const paramsObj = { page: String(page), limit: String(limit), ...Object.fromEntries(Object.entries(extra).map(([k, v]) => [k, String(v)])) };
+    const params = new URLSearchParams(paramsObj);
+    return this.request(`/products?${params.toString()}`);
   }
 
   static async getProductById(id) {
     return this.request(`/products/${id}`);
   }
 
-  static async getFlashSaleProducts() {
-    return this.request('/products/flash-sale');
+  static async getFlashSaleProducts(extra = {}) {
+    const params = new URLSearchParams(Object.fromEntries(Object.entries(extra).map(([k, v]) => [k, String(v)])));
+    const qs = params.toString();
+    return this.request(`/products/flash-sale${qs ? `?${qs}` : ''}`);
   }
 
-  static async getTopProducts() {
-    return this.request('/products/top-products');
+  static async getTopProducts(type = 'bestseller', extra = {}) {
+    const paramsObj = { type: String(type), ...Object.fromEntries(Object.entries(extra).map(([k, v]) => [k, String(v)])) };
+    const params = new URLSearchParams(paramsObj);
+    return this.request(`/products/top-products?${params.toString()}`);
   }
 
   static async getProductStats() {
@@ -56,22 +72,17 @@ class ApiService {
 
   // Category APIs
   static async getAllCategories() {
+    // server exposes /api/categories without auth
     return this.request('/categories');
   }
 
-  static async getCategoryById(id) {
-    return this.request(`/categories/${id}`);
-  }
-
-  static async getCategoryProducts(id) {
-    return this.request(`/categories/${id}/products`);
-  }
-
   // Authentication APIs
-  static async login(email, password) {
+  static async login(identifier, password) {
+    // backend accepts username or email via /auth/login
+    const body = identifier?.includes('@') ? { email: identifier, password } : { username: identifier, password };
     return this.request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(body),
     });
   }
 
@@ -87,43 +98,42 @@ class ApiService {
   }
 
   static async logout() {
-    const result = await this.request('/auth/logout', {
-      method: 'POST',
-    });
+    // No dedicated endpoint; clear client state
     localStorage.removeItem('token');
-    return result;
+    localStorage.removeItem('user');
+    localStorage.removeItem('isLoggedIn');
+    return { success: true };
   }
 
-  // Cart APIs
+  // Cart APIs (require auth)
   static async getCart() {
-    return this.request('/cart');
+    return this.request('/cart/me');
   }
 
-  static async addToCart(productId, quantity = 1) {
+  static async addToCart(productID, quantity = 1, size = 'default') {
     return this.request('/cart/add', {
       method: 'POST',
-      body: JSON.stringify({ productId, quantity }),
+      body: JSON.stringify({ productID, quantity, size }),
     });
   }
 
-  static async updateCartItem(productId, quantity) {
+  static async updateCartItem(productID, quantity, size = 'default') {
     return this.request('/cart/update', {
       method: 'PUT',
-      body: JSON.stringify({ productId, quantity }),
+      body: JSON.stringify({ productID, quantity, size }),
     });
   }
 
-  static async removeFromCart(productId) {
+  static async removeFromCart(productID, size = 'default') {
     return this.request('/cart/remove', {
       method: 'DELETE',
-      body: JSON.stringify({ productId }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productID, size }),
     });
   }
 
   static async clearCart() {
-    return this.request('/cart/clear', {
-      method: 'DELETE',
-    });
+    return this.request('/cart/clear', { method: 'DELETE' });
   }
 
   // Order APIs
@@ -142,34 +152,10 @@ class ApiService {
     return this.request(`/orders/${id}`);
   }
 
-  // Admin APIs
-  static async getAdminStats() {
-    return this.request('/admin/stats');
-  }
-
-  static async getAllUsers() {
-    return this.request('/admin/users');
-  }
-
-  static async getAllSellers() {
-    return this.request('/admin/sellers');
-  }
-
-  static async approveSeller(sellerId) {
-    return this.request(`/admin/sellers/${sellerId}/approve`, {
-      method: 'PATCH',
-    });
-  }
-
-  static async rejectSeller(sellerId) {
-    return this.request(`/admin/sellers/${sellerId}/reject`, {
-      method: 'PATCH',
-    });
-  }
-
-  // Seller APIs
-  static async getSellerProducts() {
-    return this.request('/products/seller/my-products');
+  // Seller/Product management (seller auth)
+  static async getSellerProducts(extra = {}) {
+    const params = new URLSearchParams(Object.fromEntries(Object.entries(extra).map(([k, v]) => [k, String(v)])));
+    return this.request(`/products/seller/my-products?${params.toString()}`);
   }
 
   static async createProduct(productData) {
@@ -187,9 +173,7 @@ class ApiService {
   }
 
   static async deleteProduct(id) {
-    return this.request(`/products/${id}`, {
-      method: 'DELETE',
-    });
+    return this.request(`/products/${id}`, { method: 'DELETE' });
   }
 }
 

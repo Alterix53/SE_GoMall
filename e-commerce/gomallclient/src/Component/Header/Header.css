@@ -201,6 +201,26 @@
   justify-content: center;
 }
 
+.notifications-dropdown {
+  position: relative;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 1;
+}
+
+
 .nav-item:hover {
   color: #ff6b35;
 }

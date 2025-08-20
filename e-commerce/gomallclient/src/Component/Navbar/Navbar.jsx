@@ -21,28 +21,28 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    // Can redirect to home page after logout
     window.location.href = '/';
   };
 
   return (
-      <header className="navbar">
-        {/* Top Bar */}
-        
-        <div className="navbar-top">
-          <div className="container">
-            <div className="top-left">
-              <span>Free shipping for orders over 150k</span>
-              <span>•</span>
-              <span>24/7 Support</span>
-            </div>
-            <div className="top-right">
-              <span>Download App</span>
-              <span>•</span>
-              <span>Connect</span>
-            </div>
+    <div className="gomall-header">
+      {/* Top Orange Banner */}
+      <div className="header-top-banner">
+        <div className="banner-content">
+          <div className="banner-item">
+            <span className="banner-text">Free shipping for orders over 150k</span>
+            <span className="banner-illustrative-image">🚚</span>
+          </div>
+          <div className="banner-item">
+            <span className="banner-text">24/7 Support</span>
+            <span className="banner-illustrative-image">🎧</span>
+          </div>
+          <div className="banner-item">
+            <span className="banner-text">Download app</span>
+            <span className="banner-illustrative-image">📱</span>
           </div>
         </div>
+      </div>
 
         {/* Main Navbar */}
         <div className="navbar-main">
@@ -137,42 +137,13 @@ const Navbar = () => {
                  </div>
               </div>
 
-              {/* Mobile Menu Toggle */}
-              <button
-                  className="mobile-menu-toggle"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <i className="fas fa-bars"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="navbar-links">
-          <div className="container">
-            <nav className="nav-menu">
-              <Link
-                  to="/"
-                  className={`nav-link ${isActive("/") ? "active" : ""}`}
-              >
-                Home
-              </Link>
-              <Link
-                  to="/flash-sale"
-                  className={`nav-link ${isActive("/flash-sale") ? "active" : ""}`}
-              >
-                Flash Sale
-              </Link>
-              <Link
-                  to="/top-products"
-                  className={`nav-link ${isActive("/top-products") ? "active" : ""}`}
-              >
-                Top Products
-              </Link>
-              
-            </nav>
-          </div>
+          {/* Mobile Menu Toggle */}
+          <button
+            className="mobile-menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <i className="fas fa-bars"></i>
+          </button>
         </div>
 
         {/* Mobile Menu */}
@@ -237,7 +208,8 @@ const Navbar = () => {
           onClose={() => setIsAccountModalOpen(false)}
           position={modalPosition}
         />
-      </header>
+      </div>
+    </div>
   );
 };
 

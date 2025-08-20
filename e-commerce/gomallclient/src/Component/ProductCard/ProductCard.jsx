@@ -4,7 +4,6 @@ import OptimizedImage from "../../utils/OptimizedImage";
 
 export const RenderProduct = ({ product }) => {
   if (!product || !product.name) {
-    console.warn("Invalid product data:", product)
     return (
       <div className="product-card" style={{ minHeight: "300px", padding: "20px", textAlign: "center" }}>
         <p style={{ color: "#ff4444" }}>Invalid product</p>
@@ -19,7 +18,6 @@ export const RenderProduct = ({ product }) => {
 
   const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
 
-  console.log("Rendering product:", product.name, product)
   const productId = product.id || product._id
 
   return (
@@ -33,7 +31,7 @@ export const RenderProduct = ({ product }) => {
           alt={product.name}
           className="product-image"
           lazy={true}
-          fallbackUrl="/images/default-product.jpg"
+          fallbackUrl="/images/placeholder-product.svg"
           onLoad={() => {}}
           onError={() => {}}
         />
