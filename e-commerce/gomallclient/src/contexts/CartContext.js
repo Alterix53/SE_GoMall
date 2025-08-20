@@ -39,7 +39,7 @@ export const CartProvider = ({ children }) => {
           id: item.productID._id,
           name: item.productID.name,
           price: item.productID.price?.sale || item.productID.price?.original || 0,
-          image: item.productID.images?.[0]?.url || "/images/default-product.jpg",
+          image: item.productID.images?.[0] || "/images/default-product.jpg",
           quantity: item.quantity,
           size: item.size || 'default'
         }));

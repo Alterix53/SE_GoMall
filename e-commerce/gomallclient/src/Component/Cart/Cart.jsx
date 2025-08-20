@@ -5,6 +5,20 @@ import "./Cart.css";
 import OptimizedImage from "../../utils/OptimizedImage";
 import { createPlaceholderUrl } from "../../utils/imageUtils";
 
+// Resolve image URL to absolute path (prefix server origin for relative paths)
+const resolveImageUrl = (image) => {
+  try {
+    if (!image) return "/images/placeholder-product.svg";
+    const raw = typeof image === "string" ? image : image.url || "";
+    if (!raw) return "/images/placeholder-product.svg";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const base = "http://localhost:8080";
+    return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`;
+  } catch {
+    return "/images/placeholder-product.svg";
+  }
+};
+
 export default function CartManager() {
   const { cartItems, updateQuantity, removeFromCart, loading, error } = useCart();
   const navigate = useNavigate();
@@ -69,11 +83,7 @@ export default function CartManager() {
         const products = data.data.products.map(product => ({
           id: product._id,
           name: product.name,
-          image: (() => {
-            const raw = product.images?.[0]?.url || '';
-            if (!raw) return '/images/placeholder-product.svg';
-            return raw.startsWith('http') ? raw : `http://localhost:8080${raw}`;
-          })(),
+          image: resolveImageUrl(product.images?.[0]),
           price: product.price?.sale || product.price?.original || 0,
           originalPrice: product.price?.original || 0,
           discount: product.discount || 0,
@@ -262,7 +272,7 @@ export default function CartManager() {
                   <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
                     <div className="suggestion-image-container">
                       <OptimizedImage 
-                        src={product.image}
+                        src={resolveImageUrl(product.image)}
                         alt={product.name}
                         className="suggestion-image"
                         fallbackUrl={createPlaceholderUrl(160,160,'')}
@@ -343,7 +353,7 @@ export default function CartManager() {
                     style={{marginRight:'8px'}}
                   />
                   <OptimizedImage
-                    src={item.image}
+                    src={resolveImageUrl(item.image)}
                     alt={item.name}
                     className="product-image"
                     fallbackUrl={createPlaceholderUrl(80,80,'')}
@@ -439,7 +449,7 @@ export default function CartManager() {
               <Link key={product.id} to={`/product/${product.id}`} className="suggestion-card">
                 <div className="suggestion-image-container">
                   <OptimizedImage
-                    src={product.image}
+                    src={resolveImageUrl(product.image)}
                     alt={product.name}
                     className="suggestion-image"
                     fallbackUrl={createPlaceholderUrl(160,160,'')}
