@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './RegisterSeller.css';
@@ -18,6 +18,7 @@ const RegisterSeller = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { getCurrentUser } = useAuth();
+  const fileInputRef = useRef(null);
 
   // Kiểm tra trạng thái hồ sơ seller khi component load
   useEffect(() => {
@@ -198,113 +199,116 @@ const RegisterSeller = () => {
   return (
     <>
       <div className="register-seller-container">
-        <h2 className="mb-4">📝 Đăng ký trở thành Seller</h2>
-        <div className="alert alert-info">
-          <strong>ℹ️ Lưu ý:</strong> Hồ sơ của bạn sẽ được admin xem xét trong vòng 1-3 ngày làm việc.
-        </div>
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Tên doanh nghiệp/Cửa hàng</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="Nhập tên doanh nghiệp hoặc cửa hàng"
-              required
-            />
+        <div className="register-seller-form">
+          <div className="form-header">
+            <h2>Đăng ký trở thành Seller</h2>
+            <p>Hồ sơ của bạn sẽ được admin xem xét trong vòng 1-3 ngày làm việc.</p>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Địa chỉ doanh nghiệp</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Nhập địa chỉ đầy đủ"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Email liên hệ</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@email.com"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Số giấy phép kinh doanh</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              value={businessLicense}
-              onChange={(e) => setBusinessLicense(e.target.value)}
-              placeholder="Nhập số giấy phép kinh doanh"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Số điện thoại</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="tel"
-              className="form-control"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="0123456789"
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Tài liệu xác minh (Giấy phép/CMND)</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="file"
-              className="form-control"
-              onChange={handleFileChange}
-              accept=".pdf,.jpg,.png"
-              required
-            />
-            <div className="form-text">
-              📄 Chấp nhận file PDF, JPG, PNG. Kích thước tối đa: 10MB
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label">Tên doanh nghiệp/Cửa hàng <span className="text-danger">*</span></label>
+              <input
+                type="text"
+                className="form-control"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                placeholder="Nhập tên doanh nghiệp hoặc cửa hàng"
+                required
+              />
             </div>
-          </div>
 
-          <button 
-            type="submit" 
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Đang nộp hồ sơ...
-              </>
-            ) : (
-              '📤 Nộp hồ sơ đăng ký'
-            )}
-          </button>
-        </form>
+            <div className="form-group">
+              <label className="form-label">Địa chỉ doanh nghiệp <span className="text-danger">*</span></label>
+              <input
+                type="text"
+                className="form-control"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Nhập địa chỉ đầy đủ"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Email liên hệ <span className="text-danger">*</span></label>
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="example@email.com"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Số giấy phép kinh doanh <span className="text-danger">*</span></label>
+              <input
+                type="text"
+                className="form-control"
+                value={businessLicense}
+                onChange={(e) => setBusinessLicense(e.target.value)}
+                placeholder="Nhập số giấy phép kinh doanh"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Số điện thoại <span className="text-danger">*</span></label>
+              <input
+                type="tel"
+                className="form-control"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0123456789"
+                required
+              />
+            </div>
+
+            <div className="form-group file-upload-group">
+              <label className="form-label">Tài liệu xác minh (Giấy phép/CMND) <span className="text-danger">*</span></label>
+              <div
+                className={`file-upload-wrapper ${document ? 'has-file' : ''}`}
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              >
+                <div className="file-upload-icon">📎</div>
+                <div className="file-upload-text">{document ? 'Đã chọn tệp' : 'Kéo thả hoặc bấm để chọn tệp'}</div>
+                <div className="file-upload-hint">Chấp nhận PDF, JPG, PNG. Tối đa 10MB</div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="file-input"
+                  onChange={handleFileChange}
+                  accept=".pdf,.jpg,.png"
+                  required
+                />
+              </div>
+
+              {document && (
+                <div className="file-preview">
+                  <div className="file-preview-name">{document.name}</div>
+                  <div className="file-preview-size">{(document.size / 1024 / 1024).toFixed(2)} MB</div>
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className={`submit-btn ${loading ? 'loading' : ''}`}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Đang nộp hồ sơ...
+                </>
+              ) : (
+                '📤 Nộp hồ sơ đăng ký'
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );
