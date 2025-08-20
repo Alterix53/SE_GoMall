@@ -92,6 +92,20 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
   const [shippingTo, setShippingTo] = useState("Hanoi")
 
+  // Resolve image URL to absolute path (prefix server origin for relative paths)
+  const resolveImageUrl = (image) => {
+    try {
+      if (!image) return "/images/placeholder-product.svg"
+      const raw = typeof image === "string" ? image : image.url || ""
+      if (!raw) return "/images/placeholder-product.svg"
+      if (raw.startsWith("http://") || raw.startsWith("https://")) return raw
+      const base = "http://localhost:8080"
+      return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`
+    } catch {
+      return "/images/placeholder-product.svg"
+    }
+  }
+
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
@@ -163,7 +177,7 @@ export default function ProductDetail() {
         id: product._id,
         name: product.name,
         price: product.price?.sale || product.price?.original || 0,
-        image: product.images?.[0]?.url || product.images?.[0] || "/images/placeholder-product.svg",
+        image: resolveImageUrl(product.images?.[0]),
         quantity: quantity,
         size: 'default'
       }
@@ -192,7 +206,7 @@ export default function ProductDetail() {
         id: product._id,
         name: product.name,
         price: product.price?.sale || product.price?.original || 0,
-        image: product.images?.[0]?.url || product.images?.[0] || "/images/placeholder-product.svg",
+        image: resolveImageUrl(product.images?.[0]),
         quantity: quantity,
         size: 'default'
       }
@@ -264,9 +278,15 @@ export default function ProductDetail() {
                 <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
                   {product.images && product.images.length > 0 ? (
                     <img
-                      src={product.images[activeImage]?.url || product.images[activeImage]}
+                      src={resolveImageUrl(product.images[activeImage])}
                       alt={product.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target
+                        if (target && target instanceof HTMLImageElement) {
+                          target.src = '/images/placeholder-product.svg'
+                        }
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -303,9 +323,15 @@ export default function ProductDetail() {
                         )}
                 >
                   <img
-                          src={image?.url || image}
+                          src={resolveImageUrl(image)}
                           alt={`${product.name} - ${index + 1}`}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target
+                            if (target && target instanceof HTMLImageElement) {
+                              target.src = '/images/placeholder-product.svg'
+                            }
+                          }}
                   />
                 </button>
             ))}
