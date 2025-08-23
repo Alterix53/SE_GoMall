@@ -31,8 +31,8 @@ const Navbar = () => {
     
     if (hasSellerApplication) {
       if (isApprovedSeller) {
-        // Nếu đã được approve, chuyển đến SellerDashboard
-        navigate('/seller-dashboard');
+        // Nếu đã được approve, chuyển đến Seller Dashboard
+        navigate('/seller');
       } else if (isPendingSeller) {
         // Nếu đang pending, chuyển đến register-seller để xem trạng thái
         navigate('/register-seller');

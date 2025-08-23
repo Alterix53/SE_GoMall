@@ -31,17 +31,10 @@ const LoginPage = () => {
         console.log('User data:', user);
         
         // Điều hướng theo vai trò
-        if (user.role === 'seller') {
-          if (user.sellerInfo && user.sellerInfo.status === 'approved') {
-            navigate('/seller-dashboard');
-          } else {
-            setError('Your seller account has not been approved yet.');
-            return;
-          }
-        } else if (user.role === 'admin') {
+        if (user.role === 'admin') {
           navigate('/admin');
         } else {
-          // buyer hoặc role khác - về trang chủ
+          // buyer, seller hoặc role khác - về trang chủ hoặc trang được yêu cầu
           const from = location.state?.from?.pathname || '/';
           navigate(from);
         }

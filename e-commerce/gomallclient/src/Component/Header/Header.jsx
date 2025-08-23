@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSellerAuthV2 } from '../../hooks/useSellerAuthV2';
 import CartTooltip from '../CartTooltip/CartTooltip';
 import Notifications from '../Notifications/Notifications';
 import './Header.css';
@@ -11,6 +12,7 @@ function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
+  const { isApprovedSeller } = useSellerAuthV2();
   const [searchKeyword, setSearchKeyword] = useState("");
   const navigate = useNavigate();
 
@@ -61,12 +63,12 @@ function Header() {
     setShowAccountDropdown(false);
   };
 
-  // Load unread count when user logged in
+  // Load unread count when user logged in (chỉ gọi 1 lần)
   useEffect(() => {
     if (isAuthenticated()) {
       loadUnreadCount();
     }
-  }, [isAuthenticated]);
+  }, []); // Chỉ chạy 1 lần khi component mount
 
   const loadUnreadCount = async () => {
     try {
@@ -211,8 +213,8 @@ function Header() {
                       <i className="dropdown-icon">📦</i>
                       <span>My Orders</span>
                     </Link>
-                    {user.role === 'seller' && (
-                      <Link to="/seller-dashboard" className="dropdown-item">
+                    {isApprovedSeller && (
+                      <Link to="/seller" className="dropdown-item">
                         <i className="dropdown-icon">🏪</i>
                         <span>Seller Center</span>
                       </Link>

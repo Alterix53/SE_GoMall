@@ -164,13 +164,13 @@ const Notifications = ({ isVisible, onClose }) => {
     
     // Xử lý chuyển hướng dựa trên loại notification
     if (notification.type === 'seller_approved' && notification.metadata?.action === 'navigate_to_seller_dashboard') {
-      navigate('/seller-dashboard');
+      navigate('/seller');
       onClose(); // Đóng notification panel
     } else if (notification.type === 'seller_welcome' && notification.metadata?.action === 'navigate_to_seller_dashboard') {
-      navigate('/seller-dashboard');
+      navigate('/seller');
       onClose(); // Đóng notification panel
     } else if (notification.type === 'seller_guide' && notification.metadata?.action === 'navigate_to_seller_dashboard') {
-      navigate('/seller-dashboard');
+      navigate('/seller');
       onClose(); // Đóng notification panel
     } else if (notification.type === 'seller_rejected' && notification.metadata?.action === 'navigate_to_register_seller') {
       navigate('/register-seller');

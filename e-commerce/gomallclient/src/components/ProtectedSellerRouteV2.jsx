@@ -8,10 +8,13 @@ const ProtectedSellerRouteV2 = ({ children }) => {
   const [sellerStatus, setSellerStatus] = useState(null);
   const [checkingSellerStatus, setCheckingSellerStatus] = useState(false);
 
-  // Kiểm tra trạng thái seller
+  // Kiểm tra trạng thái seller (chỉ gọi 1 lần)
   useEffect(() => {
     const checkSellerStatus = async () => {
       if (!isAuthenticated()) return;
+      
+      // Kiểm tra xem đã có sellerStatus chưa để tránh gọi API liên tục
+      if (sellerStatus) return;
       
       setCheckingSellerStatus(true);
       try {
@@ -37,7 +40,7 @@ const ProtectedSellerRouteV2 = ({ children }) => {
     };
 
     checkSellerStatus();
-  }, [isAuthenticated]);
+  }, []); // Chỉ chạy 1 lần khi component mount
 
   // Hiển thị loading khi đang kiểm tra authentication hoặc seller status
   if (loading || checkingSellerStatus) {

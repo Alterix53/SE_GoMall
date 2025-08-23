@@ -20,18 +20,18 @@ const RegisterSeller = () => {
     setDocument(e.target.files[0]);
   };
 
-  // Kiểm tra trạng thái seller khi component mount
+  // Kiểm tra trạng thái seller khi component mount (chỉ gọi 1 lần)
   useEffect(() => {
     if (isAuthenticated()) {
       checkSellerStatus();
     }
-  }, [isAuthenticated]);
+  }, []); // Chỉ chạy 1 lần khi component mount
 
   // Xử lý chuyển hướng khi seller đã được approve
   useEffect(() => {
     if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved') {
       const timer = setTimeout(() => {
-        navigate('/seller-dashboard');
+        navigate('/seller');
       }, 2000);
       
       return () => clearTimeout(timer);
@@ -129,7 +129,7 @@ const RegisterSeller = () => {
               <p>Bạn sẽ được chuyển hướng đến Seller Dashboard trong vài giây...</p>
               <button 
                 className="btn btn-primary"
-                onClick={() => navigate('/seller-dashboard')}
+                onClick={() => navigate('/seller')}
               >
                 Vào Seller Dashboard ngay
               </button>
