@@ -42,6 +42,11 @@ const FlashSaleCard = ({ product }) => {
     return rating.average.toFixed(1);
   };
 
+  const sale = product?.price?.sale ?? product?.price ?? 0;
+  const original = product?.price?.original ?? product?.originalPrice ?? 0;
+  const discount = original && original > sale ? Math.round(((original - sale) / original) * 100) : (product.discount || 0);
+  const imageSrc = product?.image || (product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : "/images/placeholder-product.svg");
+
   return (
     <div className="flash-sale-card" onClick={goToDetail}>
       {/* Product Image */}
@@ -62,9 +67,9 @@ const FlashSaleCard = ({ product }) => {
         </div>
         
         {/* Discount Badge */}
-        {product.discount > 0 && (
+        {discount > 0 && (
           <div className="discount-badge">
-            {formatDiscount(product.discount)}
+            {formatDiscount(discount)}
           </div>
         )}
       </div>
@@ -78,9 +83,9 @@ const FlashSaleCard = ({ product }) => {
         
         {/* Price Section */}
         <div className="price-section">
-          <div className="current-price">{formatPrice(product.price)}</div>
-          {product.originalPrice && product.originalPrice > product.price && (
-            <div className="original-price">{formatPrice(product.originalPrice)}</div>
+          <div className="current-price">{formatPrice(sale)}</div>
+          {original && original > sale && (
+            <div className="original-price">{formatPrice(original)}</div>
           )}
         </div>
         

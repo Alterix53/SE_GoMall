@@ -111,12 +111,17 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        console.log("🔍 Fetching product with ID:", id)
         setLoading(true)
+        setError(null)
+        
         const response = await apiService.getProductById(id)
-        console.log("Product response:", response)
+        console.log("📦 Product response:", response)
         
         if (response.success && response.data && response.data.product) {
+          console.log("✅ Setting product data:", response.data.product)
           setProduct(response.data.product)
+          
           // Set default variations if available
           if (response.data.product.specifications) {
             const defaults = {}
@@ -128,21 +133,30 @@ export default function ProductDetail() {
             })
             setSelectedVariations(defaults)
           }
-      } else {
+        } else {
+          console.log("❌ Invalid response format:", response)
           setError("Cannot load product information")
-      }
-    } catch (err) {
-        console.error("Error fetching product:", err)
+        }
+      } catch (err) {
+        console.error("💥 Error fetching product:", err)
         setError("An error occurred while loading product information")
-    } finally {
+      } finally {
         setLoading(false)
       }
     }
 
     if (id) {
+      console.log("🚀 Starting fetch for product ID:", id)
       fetchProduct()
+    } else {
+      console.log("⚠️ No product ID provided")
     }
   }, [id])
+
+  // Debug: Log current state
+  useEffect(() => {
+    console.log("🔄 Current state - loading:", loading, "error:", error, "product:", product)
+  }, [loading, error, product])
 
   // Calculate final price and discount
   const finalPrice = useMemo(() => {

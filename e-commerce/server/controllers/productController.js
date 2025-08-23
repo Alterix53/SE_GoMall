@@ -39,8 +39,31 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to search products:", req.query);
     try {
         const { keyword, sortBy, page = 1, limit = 12 } = req.query;
+        
+        // Normalize category by names to IDs if needed (defensive against invalid casts)
+        if (req.query.category) {
+            const raw = Array.isArray(req.query.category)
+                ? req.query.category
+                : String(req.query.category).split(",");
+            const values = raw.map(v => String(v).trim()).filter(Boolean);
+            const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+            const containsName = values.some(v => !objectIdRegex.test(v));
+            if (containsName) {
+                const nameRegexes = values
+                    .filter(v => !objectIdRegex.test(v))
+                    .map(v => new RegExp(v, 'i'));
+                const matched = await Category.find({ categoryName: { $in: nameRegexes } }, '_id').lean();
+                const idList = [
+                    ...values.filter(v => objectIdRegex.test(v)),
+                    ...matched.map(c => c._id.toString())
+                ];
+                req.query.category = idList.join(',');
+            }
+        }
+        
         // Start from generic filter to support price/category/rating, etc.
-        let query = productService.buildFilter(req.query);
+        let query = await productService.buildFilter(req.query);
+        
         // Keyword search
         if (keyword) {
             console.log('Searching for keyword:', keyword);

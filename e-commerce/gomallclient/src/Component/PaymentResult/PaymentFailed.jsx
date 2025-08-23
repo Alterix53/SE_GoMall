@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Header from '../Header/Header';
 import './PaymentResult.css';
 
 const PaymentFailed = () => {
@@ -19,47 +20,49 @@ const PaymentFailed = () => {
     };
 
     return (
-        <div className="payment-result-container failed">
-            <div className="payment-result-card">
+        <>
+            <Header />
+            <div className="payment-result-container failed">
+                <div className="payment-result-card">
                 <div className="result-icon">
                     <div className="failed-icon">❌</div>
                 </div>
                 
-                <h1>Thanh Toán Thất Bại</h1>
+                <h1>Payment Failed</h1>
                 <p className="result-message">
-                    Rất tiếc, giao dịch thanh toán của bạn không thành công.
+                    Sorry, your payment transaction was not successful.
                 </p>
 
                 <div className="payment-details">
                     <div className="detail-row">
-                        <span>Mã giao dịch:</span>
+                        <span>Transaction ID:</span>
                         <span>{paymentData?.transId || 'N/A'}</span>
                     </div>
                     <div className="detail-row">
-                        <span>Mã đơn hàng:</span>
+                        <span>Order ID:</span>
                         <span>{orderData?.orderNumber || orderData?.orderID}</span>
                     </div>
                     <div className="detail-row">
-                        <span>Số tiền:</span>
+                        <span>Amount:</span>
                         <span className="amount">{formatAmount(orderData?.amount)}</span>
                     </div>
                     <div className="detail-row">
-                        <span>Thời gian:</span>
+                        <span>Time:</span>
                         <span>{formatDate(paymentData?.responseTime || new Date())}</span>
                     </div>
                     <div className="detail-row">
-                        <span>Lý do:</span>
-                        <span>{paymentData?.message || 'Không xác định'}</span>
+                        <span>Reason:</span>
+                        <span>{paymentData?.message || 'Unknown'}</span>
                     </div>
                 </div>
 
                 <div className="troubleshooting">
-                    <h3>Có thể do các nguyên nhân sau:</h3>
+                    <h3>Possible reasons:</h3>
                     <ul>
-                        <li>Số dư tài khoản MoMo không đủ</li>
-                        <li>Thông tin tài khoản không chính xác</li>
-                        <li>Mạng internet không ổn định</li>
-                        <li>Ứng dụng MoMo gặp sự cố</li>
+                        <li>Insufficient MoMo wallet balance</li>
+                        <li>Incorrect account information</li>
+                        <li>Unstable internet connection</li>
+                        <li>MoMo app experiencing issues</li>
                     </ul>
                 </div>
 
@@ -68,22 +71,23 @@ const PaymentFailed = () => {
                         className="result-btn primary"
                         onClick={() => navigate('/cart')}
                     >
-                        Thử Lại Thanh Toán
+                        Try Payment Again
                     </button>
                     <button 
                         className="result-btn secondary"
                         onClick={() => navigate('/')}
                     >
-                        Tiếp Tục Mua Sắm
+                        Continue Shopping
                     </button>
                 </div>
 
                 <div className="support-info">
-                    <p>Nếu vấn đề vẫn tiếp tục, vui lòng liên hệ:</p>
+                    <p>If the problem persists, please contact:</p>
                     <p>📧 support@gomall.com | 📞 1900-1234</p>
                 </div>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

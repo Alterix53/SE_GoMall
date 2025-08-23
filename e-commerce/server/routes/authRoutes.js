@@ -40,8 +40,8 @@ const registerValidation = [
         .withMessage('Full name must be between 2 and 100 characters'),
     body('phoneNumber')
         .optional()
-        .matches(/^[\+]?[1-9][\d]{0,15}$/)
-        .withMessage('Please provide a valid phone number'),
+        .matches(/^[0-9]{10,11}$/)
+        .withMessage('Please provide a valid phone number (10-11 digits)'),
     body('address')
         .optional()
         .trim()

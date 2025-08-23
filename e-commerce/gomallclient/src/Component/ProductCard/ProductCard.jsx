@@ -19,10 +19,15 @@ export const RenderProduct = ({ product }) => {
   const formatSold = (sold) => (sold >= 1000 ? `${(sold / 1000).toFixed(1)}k` : sold || 0)
 
   const productId = product.id || product._id
+  const priceValue = product?.price?.sale ?? product?.price?.original ?? product?.price ?? 0
+  const originalValue = product?.price?.original ?? product?.originalPrice ?? 0
+  const discountPercent = (originalValue && priceValue && originalValue > priceValue)
+    ? Math.round(((originalValue - priceValue) / originalValue) * 100)
+    : (product.discount || 0)
 
   return (
     <Link to={`/product/${productId}`} className="product-card" style={{ minHeight: "300px", display: "block", color: "inherit", textDecoration: "none" }}>
-      {product.discount > 0 && <span className="discount-badge">-{product.discount}%</span>}
+      {discountPercent > 0 && <span className="discount-badge">-{discountPercent}%</span>}
       {product.isFlashSale && <span className="flash-sale-badge">Flash Sale</span>}
 
       <div className="product-image">
@@ -40,9 +45,9 @@ export const RenderProduct = ({ product }) => {
       <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
         <div className="price-section">
-          <span className="current-price">{formatPrice(product.price)}</span>
-          {product.originalPrice && product.originalPrice > product.price && (
-            <span className="original-price">{formatPrice(product.originalPrice)}</span>
+          <span className="current-price">{formatPrice(priceValue)}</span>
+          {originalValue && originalValue > priceValue && (
+            <span className="original-price">{formatPrice(originalValue)}</span>
           )}
         </div>
         <div className="product-stats">

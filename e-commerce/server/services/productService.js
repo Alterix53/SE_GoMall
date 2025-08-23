@@ -3,49 +3,62 @@ import Category from "../models/Category.js";
 
 class ProductService {
     // Build filter object from query parameters
-    buildFilter(query) {
+    async buildFilter(query) {
         const filter = { isActive: true };
+        const andConditions = [];
 
-        // Category by ID or list of IDs; also accept legacy 'category'
-        if (query.categoryID) {
-            if (Array.isArray(query.categoryID)) {
-                filter.categoryID = { $in: query.categoryID };
-            } else {
-                filter.categoryID = query.categoryID;
+        // Category filtering: accept either category id (ObjectId string) or category name
+        if (query.category) {
+            const raw = Array.isArray(query.category)
+                ? query.category
+                : String(query.category).split(",");
+            const values = raw.map((v) => String(v).trim()).filter(Boolean);
+            const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+            const idValues = values.filter((v) => objectIdRegex.test(v));
+            const nameValues = values.filter((v) => !objectIdRegex.test(v));
+
+            let categoryIds = [...idValues];
+            if (nameValues.length > 0) {
+                const regexes = nameValues.map((n) => new RegExp(n, "i"));
+                const categories = await Category.find(
+                    { categoryName: { $in: regexes } },
+                    "_id"
+                ).lean();
+                categoryIds.push(...categories.map((c) => c._id));
             }
+            andConditions.push({ categoryID: { $in: categoryIds.length > 0 ? categoryIds : [null] } });
         }
-        if (query.category && !filter.categoryID) {
-            filter.categoryID = query.category;
-        }
-        // Brand: support CSV or single, case-insensitive
+
+        // Brand filter (case-insensitive regex)
         if (query.brand) {
-            const brandStr = String(query.brand);
-            if (brandStr.includes(',')) {
-                const brands = brandStr.split(',').map(s => s.trim()).filter(Boolean);
-                filter.brand = { $in: brands };
-            } else {
-                filter.brand = new RegExp(brandStr, "i");
+            const raw = Array.isArray(query.brand)
+                ? query.brand
+                : String(query.brand).split(",");
+            const values = raw.map((v) => String(v).trim()).filter(Boolean);
+            if (values.length > 0) {
+                const brandAlternatives = values.map((v) => {
+                    const rx = new RegExp(v, "i");
+                    return { $or: [
+                        { brand: rx },
+                        { tags: rx },
+                        { name: rx },
+                    ]};
+                });
+                andConditions.push({ $or: brandAlternatives });
             }
         }
-        // Price boundaries using nested fields, fallback when sale not present
+
+        // Price range: match either sale or original price
         if (query.minPrice || query.maxPrice) {
-            const orConds = [];
-            const min = query.minPrice !== undefined ? Number(query.minPrice) : undefined;
-            const max = query.maxPrice !== undefined ? Number(query.maxPrice) : undefined;
-            const saleCond = {};
-            const origCond = {};
-            if (min !== undefined) { saleCond.$gte = min; origCond.$gte = min; }
-            if (max !== undefined) { saleCond.$lte = max; origCond.$lte = max; }
-            if (Object.keys(saleCond).length) {
-                orConds.push({ "price.sale": saleCond });
-            }
-            if (Object.keys(origCond).length) {
-                orConds.push({ "price.original": origCond });
-            }
-            if (orConds.length) {
-                filter.$or = (filter.$or || []).concat(orConds);
-            }
+            const priceFilter = {};
+            if (query.minPrice) priceFilter.$gte = Number(query.minPrice);
+            if (query.maxPrice) priceFilter.$lte = Number(query.maxPrice);
+            andConditions.push({ $or: [
+                { "price.sale": priceFilter },
+                { "price.original": priceFilter },
+            ]});
         }
+
         if (query.rating) {
             filter["rating.average"] = { $gte: Number(query.rating) };
         }
@@ -60,6 +73,9 @@ class ProductService {
             filter.isFeatured = true;
         }
 
+        if (andConditions.length > 0) {
+            filter.$and = andConditions;
+        }
         return filter;
     }
 
@@ -146,7 +162,7 @@ class ProductService {
     // Get all products with filtering and pagination
     async getAllProducts(query) {
         const { page = 1, limit = 12 } = query;
-        const filter = this.buildFilter(query);
+        const filter = await this.buildFilter(query);
         const sort = this.buildSort(query);
 
         const products = await Product.find(filter)
@@ -302,7 +318,7 @@ class ProductService {
             .lean();
 
         if (!product) {
-            throw new Error("Sản phẩm không tồn tại");
+            throw new Error("Product not found");
         }
 
         return {

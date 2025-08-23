@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
 import './CategoryList.css';
@@ -31,6 +32,15 @@ export default function CategoryList() {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [error, setError] = useState(null);
   const productsPerPage = 4;
+
+  const formatCurrency = (value) => {
+    try {
+      const number = Number(value || 0);
+      return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(number);
+    } catch (_) {
+      return `${value}`;
+    }
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -198,10 +208,37 @@ export default function CategoryList() {
                   No products in this category yet
                 </div>
               ) : (
-                <div className="products-grid">
-                  {currentProducts.map(product => (
-                    <ProductCard key={product._id} product={product} />
-                  ))}
+                <div className="category-products-grid">
+                  {currentProducts.map(product => {
+                    const sale = product?.price?.sale ?? product?.price ?? 0;
+                    const original = product?.price?.original ?? product?.originalPrice ?? 0;
+                    const imgSrc = product?.image || (product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/placeholder-product.svg');
+                    const discount = (original && original > sale) ? Math.round(((original - sale) / original) * 100) : 0;
+                    const ratingAvg = typeof product?.rating === 'object' ? (product.rating?.average || 0) : (product?.rating || 0);
+                    const sold = product?.sold || 0;
+                    return (
+                      <Link key={product._id} to={`/product/${product._id}`} className="product-card" style={{ display: 'flex', flexDirection: 'column', minHeight: '360px', textDecoration: 'none', color: 'inherit' }}>
+                        {discount > 0 && <span className="cat-discount-badge">-{discount}%</span>}
+                        <div className="cat-product-image">
+                          <img src={imgSrc} alt={product?.name || 'Product'} style={{ objectFit: 'cover', width: '100%', height: '200px', backgroundColor: '#f8f9fa' }} />
+                        </div>
+                        <div className="cat-product-info">
+                          <h3 className="cat-product-name">{product?.name || 'Unnamed product'}</h3>
+                          <div className="cat-price-section">
+                            <span className="cat-current-price">{formatCurrency(sale)}</span>
+                            {original && original > sale && (
+                              <span className="cat-original-price">{formatCurrency(original)}</span>
+                            )}
+                          </div>
+                          <div className="cat-product-stats">
+                            <span className="cat-rating">★ {ratingAvg}</span>
+                            <span className="cat-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
+                          </div>
+                        </div>
+                        <button className="cat-selling-fast-btn">SELLING FAST</button>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
               

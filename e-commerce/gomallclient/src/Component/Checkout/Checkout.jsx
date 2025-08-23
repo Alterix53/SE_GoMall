@@ -80,6 +80,10 @@ const Checkout = () => {
   const totalWithShipping = total + shippingFee;
 
   const handlePlaceOrder = async () => {
+    console.log('=== HANDLE PLACE ORDER START ===');
+    console.log('isAuthenticated:', isAuthenticated());
+    console.log('paymentMethod:', paymentMethod);
+    
     if (!isAuthenticated()) {
       alert('Please login to place order!');
       navigate('/login');
@@ -129,9 +133,14 @@ const Checkout = () => {
       console.log('Final orderData:', orderData);
 
       // Create order
+      console.log('Calling checkoutAPI.createOrder...');
       const orderResponse = await checkoutAPI.createOrder(orderData);
+      console.log('Order response:', orderResponse);
       
       if (orderResponse.success) {
+        console.log('Order created successfully!');
+        console.log('Order ID:', orderResponse.order._id);
+        
         // Store order data for MoMo payment
         setCurrentOrder({
           orderID: orderResponse.order._id,
@@ -142,9 +151,11 @@ const Checkout = () => {
 
         // Handle different payment methods
         if (paymentMethod === 'momo') {
+          console.log('Payment method is MoMo - showing MoMo payment component');
           // Show MoMo payment component
           setShowMomoPayment(true);
         } else if (paymentMethod === 'cash') {
+          console.log('Payment method is Cash - navigating to cash success page');
           // Cash on delivery - navigate to success page
           navigate('/payment/cash-success', { 
             state: { 
@@ -156,12 +167,16 @@ const Checkout = () => {
               }
             }
           });
+        } else {
+          console.log('Unknown payment method:', paymentMethod);
         }
       } else {
+        console.log('Order creation failed:', orderResponse);
         setError('An error occurred while placing order. Please try again!');
       }
     } catch (error) {
       console.error('Error placing order:', error);
+      console.error('Error response:', error.response);
       const errorMessage = error.response?.data?.message || error.message || 'An error occurred while placing order. Please try again!';
       setError(errorMessage);
     } finally {

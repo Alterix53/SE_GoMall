@@ -155,12 +155,25 @@
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 30px;
   margin-top: 30px;
   justify-items: center;
   max-width: 100%;
 }
+
+/* Minimal card styling for fallback rendering */
+.fs-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; width: 100%; }
+.fs-image { width: 100%; height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; }
+.fs-image img { width: 100%; height: 100%; object-fit: cover; }
+.fs-discount { position: absolute; margin: 12px; padding: 6px 10px; background: #ee4d2d; color: #fff; border-radius: 6px; font-weight: 700; }
+.fs-info { padding: 12px; }
+.fs-name { font-size: 16px; margin: 8px 0; }
+.fs-prices { margin: 6px 0; }
+.fs-price { color: #ee4d2d; font-weight: 700; font-size: 18px; margin-right: 8px; }
+.fs-original { color: #9ca3af; text-decoration: line-through; }
+.fs-stats { display: flex; justify-content: space-between; color: #6b7280; font-size: 13px; }
+.fs-btn { width: 100%; margin-top: 10px; background: linear-gradient(45deg,#ee4d2d,#ff6b35); color: #fff; border: none; padding: 10px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
 /* Responsive Design */
 @media (max-width: 768px) {

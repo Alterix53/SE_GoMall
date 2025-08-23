@@ -277,19 +277,9 @@ const MomoPayment = ({ orderData, onBack }) => {
 		}
 	};
 
-	// Simulate payment (cho testing)
-	const simulatePayment = async (resultCode = 0) => {
-		if (!paymentData?.requestId) return;
 
-		try {
-			setLoading(true);
-			await momoPaymentAPI.simulateResponse(paymentData.requestId, resultCode);
-		} catch (error) {
-			console.error('Error simulating payment:', error);
-		} finally {
-			setLoading(false);
-		}
-	};
+
+
 
 	// Format amount
 	const formatAmount = (amount) => {
@@ -472,6 +462,22 @@ const MomoPayment = ({ orderData, onBack }) => {
 							Cancel Transaction
 						</button>
 					</div>
+
+					{/* Quick Test Page Button */}
+					<div className="quick-test" style={{ marginTop: '20px', textAlign: 'center' }}>
+						<button 
+							className="momo-btn primary"
+							onClick={() => navigate('/payment/test', { state: { orderData } })}
+							style={{ fontSize: '14px', padding: '12px 20px', backgroundColor: '#9c27b0', minWidth: '200px' }}
+						>
+							🧪 Payment Test Page
+						</button>
+						<p style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+							💡 Go to a separate test page with 2 payment success/failure buttons
+						</p>
+					</div>
+
+
 
 					<div className="payment-note">
 						<p>💡 Note: Transaction will be automatically cancelled after 5 minutes if not processed</p>
