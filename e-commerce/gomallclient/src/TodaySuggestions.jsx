@@ -131,93 +131,34 @@ function TodaySuggestions() {
               const hasDiscount = product.discount > 0;
               
               return (
-                <div key={product._id} className="shopee-card">
-                  {/* Product Image Container */}
-                  <div className="product-image-container">
+                <Link key={product._id} to={`/product/${product._id}`} className="fs-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  {hasDiscount && <span className="fs-discount">-{product.discount}%</span>}
+                  <div className="fs-image">
                     <img 
                       src={product.image}
                       alt={product.name}
-                      className="product-image"
                       onError={(e) => {
                         if (e.target && e.target['src']) {
                           e.target['src'] = '/images/placeholder-product.svg';
                         }
                       }}
                     />
-                    
-                    {/* Discount Badge */}
-                    {hasDiscount && (
-                      <div className="discount-badge">
-                        -{product.discount}%
-                      </div>
-                    )}
-
-                    {/* Flash Sale Badge */}
-                    {product.isFlashSale && (
-                      <div className="flash-sale-badge">
-                        🔥 Flash Sale
-                      </div>
-                    )}
-
-                    {/* Voucher Badge */}
-                    <div className="voucher-badge" style={{ backgroundColor: voucher.color }}>
-                      <span className="voucher-number">15.8</span>
-                      <span className="voucher-text">VOUCHER XTRA</span>
-                    </div>
-
-                    {/* Play Button */}
-                    <div className="play-button">
-                      ▶
-                    </div>
-
-                    {/* Brand Badge */}
-                    <div className="brand-badge">
-                      {product.brand}
-                    </div>
-
-                    {/* Feature Badges */}
-                    <div className="feature-badges">
-                              <span className="feature-badge">EXPRESS 1H</span>
-        <span className="feature-badge">AUTHENTIC 100%</span>
-                    </div>
                   </div>
-
-                  {/* Product Info */}
-                  <div className="product-info">
-                    <div className="product-name">
-                      {product.name}
-                    </div>
-                    
-                    {/* Price Section */}
-                    <div className="price-section">
-                      <div className="current-price">
-                        {formatPrice(product.price)}
-                      </div>
+                  <div className="fs-info">
+                    <h3 className="fs-name">{product.name}</h3>
+                    <div className="fs-prices">
+                      <span className="fs-price">{formatPrice(product.price)}</span>
                       {hasDiscount && (
-                        <div className="original-price">
-                          {formatPrice(product.originalPrice)}
-                        </div>
+                        <span className="fs-original">{formatPrice(product.originalPrice)}</span>
                       )}
                     </div>
-
-                    {/* Sold Count */}
-                    <div className="sold-count">
-                      Sold {formatSold(product.sold)}
+                    <div className="fs-stats">
+                      <span className="fs-rating">★ {typeof product.rating === 'object' ? (product.rating?.average || 0).toFixed(1) : (product.rating || 0).toFixed(1)}</span>
+                      <span className="fs-sold">Sold {formatSold(product.sold)}</span>
                     </div>
-
-                    {/* Action Badges */}
-                    <div className="action-badges">
-                      <span className="action-badge favorite">❤ Favorite+</span>
-                      <span className="action-badge">{badge}</span>
-                    </div>
-
-                    {/* Additional Info */}
-                    <div className="additional-info">
-                              <span className="info-text">Fashionable design</span>
-        <span className="info-text">Great sound, authentic</span>
-                    </div>
+                    <button className="fs-btn">SELLING FAST</button>
                   </div>
-                </div>
+                </Link>
               );
             })
           ) : (

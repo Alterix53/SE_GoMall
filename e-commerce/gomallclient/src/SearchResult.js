@@ -1,10 +1,10 @@
 // Minh
 
 import React, { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
-import SearchBar from "./Component/SearchBar/SearchBar"
-import ProductCard from "./Component/ProductCard/ProductCard"
+import { useSearchParams, Link } from "react-router-dom"
+import Header from "./Component/Header/Header"
 import "./SearchResult.css"
+import "./Flash_sale.css"
 
 // Categories and brands for filters - Updated to match backend data
 const categories = [
@@ -24,6 +24,8 @@ const SearchResult = () => {
   const [searchResults, setSearchResults] = useState([])
   const [filteredResults, setFilteredResults] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 6
 
   const searchQuery = searchParams.get("keyword") || ""
 
@@ -31,26 +33,32 @@ const SearchResult = () => {
   useEffect(() => {
     const fetchSearchResults = async () => {
       try {
-        if (!searchQuery.trim()) {
+        const params = new URLSearchParams({
+          minPrice: priceRange[0].toString(),
+          maxPrice: priceRange[1].toString(),
+          // backend expects sortBy field name (supports nested via dot), plus sortOrder
+          sortBy: sortBy === 'price-low' || sortBy === 'price-high' ? 'price.sale' : 'createdAt',
+          sortOrder: sortBy === 'price-low' ? 'asc' : 'desc'
+        });
+        // optional keyword: only apply when no category/brand filters are selected
+        if (searchQuery.trim() && selectedCategories.length === 0 && selectedBrands.length === 0) {
+          params.set('keyword', searchQuery);
+        }
+        if (selectedCategories.length > 0) {
+          // pass all selected categories (ids or names) as comma-separated values
+          params.set('category', selectedCategories.join(','));
+        }
+        if (selectedBrands.length > 0) {
+          params.set('brand', selectedBrands.join(','));
+        }
+        const response = await fetch(`http://localhost:8080/api/products/search?${params}`);
+        if (!response.ok) {
+          console.warn('Search API error status:', response.status);
           setSearchResults([]);
           setFilteredResults([]);
           return;
         }
-        const params = new URLSearchParams({
-          keyword: searchQuery,
-          minPrice: priceRange[0],
-          maxPrice: priceRange[1],
-          sortBy: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? '-price' : 'createdAt'
-        });
-        if (selectedCategories.length > 0) {
-          params.append('category', selectedCategories.join(','));
-        }
-        const response = await fetch(`http://localhost:8080/api/products/search?${params}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
         const data = await response.json();
-        console.log('API Response:', data);
         if (data.success && data.data?.products) {
           console.log('Raw products from API:', data.data.products);
           const products = data.data.products.map(product => {
@@ -72,11 +80,10 @@ const SearchResult = () => {
             console.log('Mapped product:', mappedProduct);
             return mappedProduct;
           });
-          console.log('Final products array:', products);
           setSearchResults(products);
           setFilteredResults(products);
+          setCurrentPage(1);
         } else {
-          console.log('No products found or invalid response structure');
           setSearchResults([]);
           setFilteredResults([]);
         }
@@ -122,15 +129,12 @@ const SearchResult = () => {
   };
 
   console.log('Rendering SearchResult - searchResults:', searchResults.length, 'filteredResults:', filteredResults.length);
+  const totalPages = Math.max(1, Math.ceil(filteredResults.length / ITEMS_PER_PAGE))
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const currentItems = filteredResults.slice(startIndex, startIndex + ITEMS_PER_PAGE)
   return (
     <div className="search-results-page">
-      {/* Breadcrumb */}
-      <div className="breadcrumb-container">
-        <nav className="breadcrumb">
-          <span>Trang chủ</span> / <span>Kết quả tìm kiếm</span> /{" "}
-          <span className="breadcrumb-current">"{searchQuery}"</span>
-        </nav>
-      </div>
+      <Header />
       <div className="search-results-container">
         <div className="search-layout">
           {/* Sidebar Filters */}
@@ -224,7 +228,7 @@ const SearchResult = () => {
             <div className="results-header">
               <div className="results-info">
                 <span>
-                  Hiển thị <strong>{filteredResults.length}</strong> kết quả cho "{searchQuery}"
+                  Hiển thị <strong>{filteredResults.length}</strong> kết quả{searchQuery.trim() ? ` cho "${searchQuery}"` : ''}
                   {(selectedCategories.length > 0 || selectedBrands.length > 0) && (
                     <span className="filter-applied"> (đã lọc)</span>
                   )}
@@ -245,13 +249,6 @@ const SearchResult = () => {
                     title="Xem dạng lưới"
                   >
                     ⊞
-                  </button>
-                  <button
-                    className={`view-btn ${viewMode === "list" ? "active" : ""}`}
-                    onClick={() => setViewMode("list")}
-                    title="Xem dạng danh sách"
-                  >
-                    ☰
                   </button>
                 </div>
               </div>
@@ -299,9 +296,36 @@ const SearchResult = () => {
             {/* Products Grid */}
             {filteredResults.length > 0 ? (
               <div className={`products-grid ${viewMode}`}>
-                {filteredResults.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+                {currentItems.map((product) => {
+                  const sale = product?.price || 0;
+                  const original = product?.originalPrice || 0;
+                  const discount = original && original > sale ? Math.round(((original - sale) / original) * 100) : (product.discount || 0);
+                  const image = product?.image || '/images/placeholder-product.svg';
+                  const ratingAvg = typeof product?.rating === 'object' ? (product.rating?.average || 0) : (product?.rating || 0);
+                  const sold = product?.sold || 0;
+                  return (
+                    <Link key={product.id} to={`/product/${product.id}`} className="fs-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      {discount > 0 && <span className="fs-discount">-{discount}%</span>}
+                      <div className="fs-image">
+                        <img src={image} alt={product?.name || 'Product'} />
+                      </div>
+                      <div className="fs-info">
+                        <h3 className="fs-name">{product?.name || 'Product'}</h3>
+                        <div className="fs-prices">
+                          <span className="fs-price">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sale || 0)}</span>
+                          {original && original > sale && (
+                            <span className="fs-original">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(original)}</span>
+                          )}
+                        </div>
+                        <div className="fs-stats">
+                          <span className="fs-rating">★ {Number(ratingAvg).toFixed(1)}</span>
+                          <span className="fs-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
+                        </div>
+                        <button className="fs-btn">SELLING FAST</button>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             ) : searchQuery.trim() ? (
               <div className="empty-results">
@@ -320,13 +344,29 @@ const SearchResult = () => {
             {/* Pagination */}
             {filteredResults.length > 0 && (
               <div className="pagination">
-                <button className="pagination-btn" disabled>
+                <button 
+                  className="pagination-btn" 
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                >
                   Trước
                 </button>
-                <button className="pagination-btn active">1</button>
-                <button className="pagination-btn">2</button>
-                <button className="pagination-btn">3</button>
-                <button className="pagination-btn">Sau</button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button 
+                  className="pagination-btn" 
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                >
+                  Sau
+                </button>
               </div>
             )}
           </div>

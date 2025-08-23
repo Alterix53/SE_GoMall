@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import FlashSaleCard from "./Component/FlashSaleCard/FlashSaleCard.jsx";
 import Header from "./Component/Header/Header.jsx";
 import "./Flash_sale.css";
@@ -131,9 +132,36 @@ const FlashSale = () => {
               </div>
             ) : flashSaleProducts.length > 0 ? (
               <div className="products-grid">
-                {flashSaleProducts.map((product) => (
-                  <FlashSaleCard key={product._id} product={product} />
-                ))}
+                {flashSaleProducts.map((product) => {
+                  const sale = product?.price?.sale ?? product?.price ?? 0;
+                  const original = product?.price?.original ?? product?.originalPrice ?? 0;
+                  const discount = original && original > sale ? Math.round(((original - sale) / original) * 100) : (product.discount || 0);
+                  const image = product?.image || (product?.images?.[0]?.url ? `http://localhost:8080${product.images[0].url}` : '/images/placeholder-product.svg');
+                  const ratingAvg = typeof product?.rating === 'object' ? (product.rating?.average || 0) : (product?.rating || 0);
+                  const sold = product?.sold || 0;
+                  return (
+                    <Link key={product._id} to={`/product/${product._id}`} className="fs-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      {discount > 0 && <span className="fs-discount">-{discount}%</span>}
+                      <div className="fs-image">
+                        <img src={image} alt={product?.name || 'Product'} />
+                      </div>
+                      <div className="fs-info">
+                        <h3 className="fs-name">{product?.name || 'Product'}</h3>
+                        <div className="fs-prices">
+                          <span className="fs-price">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sale || 0)}</span>
+                          {original && original > sale && (
+                            <span className="fs-original">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(original)}</span>
+                          )}
+                        </div>
+                        <div className="fs-stats">
+                          <span className="fs-rating">★ {Number(ratingAvg).toFixed(1)}</span>
+                          <span className="fs-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
+                        </div>
+                        <button className="fs-btn">SELLING FAST</button>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             ) : (
               <div className="no-products">

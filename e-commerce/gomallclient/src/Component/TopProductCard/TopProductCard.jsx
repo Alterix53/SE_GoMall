@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './TopProductCard.css';
 
 const TopProductCard = ({ product }) => {
@@ -28,7 +29,7 @@ const TopProductCard = ({ product }) => {
   };
 
   return (
-    <div className="top-product-card">
+    <Link to={`/product/${product._id}`} className="top-product-card" style={{ textDecoration: 'none', color: 'inherit' }}>
       {/* Product Image */}
       <div className="product-image">
         <img
@@ -89,7 +90,7 @@ const TopProductCard = ({ product }) => {
         {/* Action Button */}
         <button className="selling-fast-btn">ĐANG BÁN CHẠY</button>
       </div>
-    </div>
+    </Link>
   );
 };
 

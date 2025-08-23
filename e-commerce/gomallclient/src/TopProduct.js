@@ -36,6 +36,7 @@ const TopProduct = () => {
           return;
         }
         const mappedProducts = products.map((product, index) => ({
+          _id: product._id || `fallback-${index}`,
           id: product._id || `fallback-${index}`,
           name: product.name || "Unknown Product",
           price: product.price?.sale || product.price?.original || 0,

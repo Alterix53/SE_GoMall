@@ -1,4 +1,5 @@
 import productService from "../services/productService.js";
+import Category from "../models/Category.js";
 import ResponseHandler from "../utils/responseHandler.js";
 import { uploadProductImages, handleUploadError } from "../middleware/upload.js";
 
@@ -46,10 +47,30 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to search products:", req.query);
     
     try {
-        const { keyword, category, minPrice, maxPrice, sortBy, page = 1, limit = 12 } = req.query;
+        const { keyword, sortBy, page = 1, limit = 12 } = req.query;
+        // Normalize category by names to IDs if needed (defensive against invalid casts)
+        if (req.query.category) {
+            const raw = Array.isArray(req.query.category)
+                ? req.query.category
+                : String(req.query.category).split(",");
+            const values = raw.map(v => String(v).trim()).filter(Boolean);
+            const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+            const containsName = values.some(v => !objectIdRegex.test(v));
+            if (containsName) {
+                const nameRegexes = values
+                    .filter(v => !objectIdRegex.test(v))
+                    .map(v => new RegExp(v, 'i'));
+                const matched = await Category.find({ categoryName: { $in: nameRegexes } }, '_id').lean();
+                const idList = [
+                    ...values.filter(v => objectIdRegex.test(v)),
+                    ...matched.map(c => c._id.toString())
+                ];
+                req.query.category = idList.join(',');
+            }
+        }
         
-        // Build search query
-        let query = { isActive: true };
+        // Start from generic filter to support price/category/rating, etc.
+        let query = await productService.buildFilter(req.query);
         
         // Keyword search
         if (keyword) {
@@ -68,23 +89,14 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
             console.log('Search query:', JSON.stringify(query));
         }
         
-        // Category filter
-        if (category) {
-            query.categoryID = category;
-        }
-        
-        // Price filter
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = parseInt(minPrice);
-            if (maxPrice) query.price.$lte = parseInt(maxPrice);
-        }
+        // Note: price/category filters are already handled in buildFilter (supports nested price fields)
         
         // Execute search
         const products = await productService.searchProducts(query, {
             page: parseInt(page),
             limit: parseInt(limit),
-            sortBy: sortBy || 'createdAt'
+            sortBy: sortBy || 'createdAt',
+            sortOrder: req.query.sortOrder === 'asc' ? 'asc' : 'desc'
         });
         
         console.log(`Found ${products.products.length} products for keyword: ${keyword}`);

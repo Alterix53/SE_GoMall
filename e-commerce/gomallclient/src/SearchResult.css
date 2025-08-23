@@ -282,7 +282,7 @@
 }
 
 .products-grid.grid {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .products-grid.list {
@@ -389,7 +389,7 @@
   }
 
   .products-grid.grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .checkbox-group {
@@ -403,7 +403,7 @@
 
 @media (max-width: 480px) {
   .products-grid.grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(1, 1fr);
   }
   
   .sort-select {

@@ -10,6 +10,8 @@ const SignUpPage = () => {
     email: '',
     password: '',
     confirm: '',
+    name: '',
+    phone: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -23,8 +25,8 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (password !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp');
+    if (form.password !== form.confirm) {
+      setError('Confirm password does not match');
       return;
     }
 
@@ -38,25 +40,31 @@ const SignUpPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username,
-          email,
-          password,
-          name,
-          phone
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          fullName: form.name || form.username,
+          phoneNumber: form.phone || ''
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        alert('Đăng ký thành công! Vui lòng đăng nhập.');
+        alert('Registration successful! Please login.');
         navigate('/login');
       } else {
-        setError(data.message || 'Đăng ký thất bại');
+        // Hiển thị lỗi chi tiết
+        if (data.errors && Array.isArray(data.errors)) {
+          const errorMessages = data.errors.map(err => err.msg || err.message).join('\n');
+          setError(errorMessages);
+        } else {
+          setError(data.message || 'Registration failed');
+        }
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setError('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.');
+      setError('An error occurred during registration. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -77,11 +85,11 @@ const SignUpPage = () => {
                     <span className="gomall">GoMall</span>
                   </span>
                 </Link>
-                <span className="logo-text dangky"> Đăng ký</span>
+                <span className="logo-text dangky"> Sign Up</span>
               </div>
             </div>
             <div className="header-right">
-              <span className="help-text">Bạn cần giúp đỡ?</span>
+              <span className="help-text">Need help?</span>
             </div>
           </div>
 
@@ -90,14 +98,14 @@ const SignUpPage = () => {
             {/* Bên trái - Promotional content */}
             <div className="content-left">
               <div className="promotional-content">
-                <h1 className="promo-title">THAM GIA CỘNG ĐỒNG</h1>
+                <h1 className="promo-title">JOIN THE COMMUNITY</h1>
                 <div className="promo-banners">
-                  <div className="promo-banner blue">MUA SẮM THÔNG MINH</div>
-                  <div className="promo-banner yellow">TIẾT KIỆM TỐI ĐA</div>
-                  <div className="promo-banner blue">TRẢI NGHIỆM TUYỆT VỜI</div>
+                  <div className="promo-banner blue">SMART SHOPPING</div>
+                  <div className="promo-banner yellow">MAXIMUM SAVINGS</div>
+                  <div className="promo-banner blue">AMAZING EXPERIENCE</div>
                 </div>
-                <div className="promo-text">ĐĂNG KÝ NGAY HÔM NAY</div>
-                <div className="promo-date">Nhận ưu đãi đặc biệt</div>
+                <div className="promo-text">SIGN UP TODAY</div>
+                <div className="promo-date">Get special offers</div>
               </div>
 
               {/* Background shapes */}
@@ -113,7 +121,7 @@ const SignUpPage = () => {
               <div className="signup-form-container">
                 <div className="signup-form">
                   <div className="form-header">
-                    <h2>Đăng ký tài khoản</h2>
+                    <h2>Create Account</h2>
                   </div>
 
                   {error && (
@@ -127,7 +135,7 @@ const SignUpPage = () => {
                       <input
                         type="text"
                         name="username"
-                        placeholder="Tên đăng nhập (3-30 ký tự, chỉ chữ cái, số và _)"
+                        placeholder="Username (3-30 characters, letters, numbers and _ only)"
                         value={form.username}
                         onChange={handleChange}
                         required
@@ -147,11 +155,35 @@ const SignUpPage = () => {
                       />
                     </div>
 
+                    <div className="input-group">
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
+                        className="form-input"
+                      />
+                    </div>
+
+                    <div className="input-group">
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Phone Number"
+                        value={form.phone}
+                        onChange={handleChange}
+                        required
+                        className="form-input"
+                      />
+                    </div>
+
                     <div className="input-group password-group">
                       <input
                         type={showPassword ? "text" : "password"}
                         name="password"
-                        placeholder="Mật khẩu (ít nhất 6 ký tự, có chữ hoa, chữ thường và số)"
+                        placeholder="Password (min 6 characters, uppercase, lowercase and numbers)"
                         value={form.password}
                         onChange={handleChange}
                         required
@@ -170,7 +202,7 @@ const SignUpPage = () => {
                       <input
                         type={showConfirmPassword ? "text" : "password"}
                         name="confirm"
-                        placeholder="Xác nhận mật khẩu"
+                        placeholder="Confirm Password"
                         value={form.confirm}
                         onChange={handleChange}
                         required
@@ -190,14 +222,14 @@ const SignUpPage = () => {
                       className="signup-btn" 
                       disabled={loading}
                     >
-                      {loading ? 'Đang đăng ký...' : 'ĐĂNG KÝ'}
+                      {loading ? 'Signing up...' : 'SIGN UP'}
                     </button>
                   </form>
 
                   <div className="form-footer">
                     <div className="login-link">
-                      <span>Đã có tài khoản? </span>
-                      <Link to="/login" className="login-btn-link">Đăng nhập</Link>
+                      <span>Already have an account? </span>
+                      <Link to="/login" className="login-btn-link">Login</Link>
                     </div>
                   </div>
                 </div>

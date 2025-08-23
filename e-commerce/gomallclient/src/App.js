@@ -58,6 +58,7 @@ import PaymentSuccess from './Component/PaymentResult/PaymentSuccess';
 import PaymentFailed from './Component/PaymentResult/PaymentFailed';
 import PaymentCancelled from './Component/PaymentResult/PaymentCancelled';
 import CashPaymentSuccess from './Component/PaymentResult/CashPaymentSuccess';
+import TestPaymentPage from './Component/PaymentResult/TestPaymentPage';
 
 // Import Order and Invoice components
 import OrderView from './Component/OrderView/OrderView';
@@ -67,10 +68,11 @@ import InvoiceDownload from './Component/InvoiceDownload/InvoiceDownload';
 const LayoutWrapper = ({ children }) => {
   const location = useLocation();
   const hideLayout = ['/login', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname);
+  const hideFooter = ['/login', '/signup', '/forgot-password', '/reset-password', '/product'].includes(location.pathname) || location.pathname.startsWith('/product/');
   return (
     <>
       {children}
-      {!hideLayout && <Footer />}
+      {!hideFooter && <Footer />}
     </>
   );
 };
@@ -133,6 +135,7 @@ function App() {
                 <Route path="/payment/failed" element={<PaymentFailed />} />
                 <Route path="/payment/cancelled" element={<PaymentCancelled />} />
                 <Route path="/payment/cash-success" element={<CashPaymentSuccess />} />
+                <Route path="/payment/test" element={<TestPaymentPage />} />
                 
                 {/* Order and Invoice Routes */}
                 <Route path="/orders" element={<OrderView />} />
