@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react"
 import { useSearchParams, Link } from "react-router-dom"
-import Header from "./Component/Header/Header"
 import "./SearchResult.css"
 import "./Flash_sale.css"
 
@@ -134,7 +133,6 @@ const SearchResult = () => {
   const currentItems = filteredResults.slice(startIndex, startIndex + ITEMS_PER_PAGE)
   return (
     <div className="search-results-page">
-      <Header />
       <div className="search-results-container">
         <div className="search-layout">
           {/* Sidebar Filters */}

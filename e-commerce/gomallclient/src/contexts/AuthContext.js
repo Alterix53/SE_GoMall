@@ -162,6 +162,13 @@ export const AuthProvider = ({ children }) => {
     return user;
   };
 
+  // Cập nhật thông tin user
+  const updateUser = (newUserData) => {
+    const updatedUser = { ...user, ...newUserData };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   // (Giữ sẵn) Tạo mock JWT token – dùng cho môi trường demo khác nếu cần
 
   // Tạo mock JWT token
@@ -184,7 +191,8 @@ export const AuthProvider = ({ children }) => {
     forceLogout,
     isAuthenticated,
     getToken,
-    getCurrentUser
+    getCurrentUser,
+    updateUser
   };
 
   return (

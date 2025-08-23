@@ -152,6 +152,32 @@ class ApiService {
     return this.request(`/orders/${id}`);
   }
 
+  // User Profile APIs
+  static async getCurrentUserProfile(userId) {
+    return this.request(`/users/${userId}`);
+  }
+
+  static async updateUserProfile(userId, userData) {
+    return this.request(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  static async changePassword(userId, passwordData) {
+    return this.request(`/auth/change-password`, {
+      method: 'PUT',
+      body: JSON.stringify(passwordData),
+    });
+  }
+
+  static async updateUserAvatar(userId, avatarData) {
+    return this.request(`/users/${userId}/avatar`, {
+      method: 'PUT',
+      body: JSON.stringify(avatarData),
+    });
+  }
+
   // Seller/Product management (seller auth)
   static async getSellerProducts(extra = {}) {
     const params = new URLSearchParams(Object.fromEntries(Object.entries(extra).map(([k, v]) => [k, String(v)])));

@@ -43,6 +43,7 @@ import { apiService } from "../../utils/api"
 import OptimizedImage from "../../utils/OptimizedImage"
 import { createPlaceholderUrl } from "../../utils/imageUtils"
 import Footer from "../Footer/Footer"
+import CartSuccessModal from "../CartSuccessModal/CartSuccessModal"
 
 // Star Rating Component
 function StarRating({
@@ -92,6 +93,8 @@ export default function ProductDetail() {
   const [selectedVariations, setSelectedVariations] = useState({})
   const [quantity, setQuantity] = useState(1)
   const [shippingTo, setShippingTo] = useState("Hanoi")
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [addedProduct, setAddedProduct] = useState(null)
 
   // Resolve image URL to absolute path (prefix server origin for relative paths)
   const resolveImageUrl = (image) => {
@@ -199,10 +202,9 @@ export default function ProductDetail() {
       
       await addToCart(cartItem)
       
-      toast({
-        title: "Success!",
-        description: "Product has been added to cart",
-      })
+      // Show success modal instead of toast
+      setAddedProduct(cartItem)
+      setShowSuccessModal(true)
     } catch (error) {
       console.error("Error adding to cart:", error)
       toast({
@@ -685,6 +687,13 @@ export default function ProductDetail() {
       </div>
     </div>
       </main>
+
+      {/* Cart Success Modal */}
+      <CartSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        product={addedProduct}
+      />
     </>
   )
 }

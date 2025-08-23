@@ -13,7 +13,7 @@ import SearchResult from "./SearchResult";    // Minh
 import SearchBar from './Component/SearchBar/SearchBar';    // Minh
 import ProductCard from './Component/ProductCard/ProductCard';    // Minh
 import Footer from './Component/Footer/Footer';
-import UserSettings from './Component/UserPage/UserSetting';
+import UserPage from './Component/UserPage/UserPage';
 // view item detail
 import ViewItemDetail from './Component/viewItemDetail';
 import ProductDetail from './Component/ProductDetail/ProductDetail';
@@ -42,7 +42,6 @@ import ResetPassword from './Component/Login/ResetPassword';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
 
 // 
-import UserPage from './Component/UserPage/UserPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProtectedSellerRouteV2 from './components/ProtectedSellerRouteV2';
 import UnauthorizedPage from './components/UnauthorizedPage';
@@ -150,7 +149,7 @@ function App() {
                 
                 {/* User routes - có navbar và footer */}
                 <Route path="/user" element={<UserPage />} />
-                <Route path="/user/settings" element={<UserSettings />} />
+                <Route path="/user/settings" element={<UserPage />} /> {/* Redirect to /user */}
                 <Route path="/search" element={<SearchResult />} /> {/* Route cho tìm kiếm */}  {/* Minh */}
                 
                 <Route path="/product/:id" element={<ProductDetail />} />

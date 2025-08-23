@@ -83,7 +83,7 @@ const UserAccountModal = ({ isOpen, onClose, position }) => {
               Orders
             </button>
             
-            <button className="dropdown-btn" onClick = {() => handleNavigate('/user/settings')}>
+            <button className="dropdown-btn" onClick = {() => handleNavigate('/user')}>
               <i className="fas fa-cog"></i>
               Settings
             </button>

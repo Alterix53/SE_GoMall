@@ -99,6 +99,7 @@ export const ROUTES = {
   ADMIN_LOGIN: '/admin/login',
   ADMIN_DASHBOARD: '/Admin',
   USER_PROFILE: '/user',
+  USER_SETTINGS: '/user', // Redirect to /user instead of /user/settings
   CART: '/cart',
   CHECKOUT: '/checkout',
   PRODUCT_DETAIL: '/product',
