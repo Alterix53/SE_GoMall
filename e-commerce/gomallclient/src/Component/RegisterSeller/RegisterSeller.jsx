@@ -1,167 +1,107 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './RegisterSeller.css';
-import { apiService } from '../../utils/api';
 
 const RegisterSeller = () => {
-  // Chuẩn hóa field: dùng businessName thay cho storeName (giữ tương thích ngược khi lưu)
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [sellerStatus, setSellerStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [businessName, setBusinessName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [document, setDocument] = useState(null);
   const [businessLicense, setBusinessLicense] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [checkingStatus, setCheckingStatus] = useState(true);
-  const [sellerStatus, setSellerStatus] = useState(null);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const { getCurrentUser } = useAuth();
-  const fileInputRef = useRef(null);
 
-  // Kiểm tra trạng thái hồ sơ seller khi component load
+  // Kiểm tra trạng thái seller khi component mount
   useEffect(() => {
-    checkSellerStatus();
-  }, []);
+    if (isAuthenticated()) {
+      checkSellerStatus();
+    }
+  }, [isAuthenticated]);
 
-  const checkSellerStatus = async () => {
-    try {
-      setCheckingStatus(true);
-      const response = await apiService.get('/sellers/my-status');
+  // Xử lý chuyển hướng khi seller đã được approve
+  useEffect(() => {
+    if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved') {
+      const timer = setTimeout(() => {
+        navigate('/seller-dashboard');
+      }, 2000);
       
-      if (response.data.success) {
-        setSellerStatus(response.data.data);
+      return () => clearTimeout(timer);
+    }
+  }, [sellerStatus, navigate]);
+
+  const checkSellerStatus = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/sellers/my-status', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setSellerStatus(data.data);
+        }
       }
     } catch (error) {
       console.error('Error checking seller status:', error);
-      // Nếu lỗi 401 (chưa đăng nhập), redirect về login
-      if (error.response?.status === 401) {
-        alert('Vui lòng đăng nhập để đăng ký seller!');
-        navigate('/login');
-        return;
-      }
     } finally {
-      setCheckingStatus(false);
+      setLoading(false);
     }
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
-    // TẮT VALIDATION ĐỂ TEST - COMMENT ĐOẠN NÀY ĐỂ BẬT LẠI
-    /*
-    if (!businessName || !address || !email || !phone || !businessLicense) {
-      alert('Vui lòng điền đầy đủ các trường bắt buộc!');
-      return;
-    }
-
-    // Kiểm tra file size
-    if (document && document.size > 10 * 1024 * 1024) {
-      alert('📁 Kích thước file không được vượt quá 10MB!');
-      return;
-    }
-    */
-
-    setLoading(true);
     try {
-      // Use multipart/form-data to send the file actually
+      const token = localStorage.getItem('token');
       const formData = new FormData();
-      formData.append('businessName', businessName || 'Test Business');
-      formData.append('businessAddress', address || 'Test Address');
-      formData.append('businessPhone', phone || '0123456789');
-      formData.append('businessLicense', businessLicense || 'TEST123');
+      formData.append('businessName', businessName);
+      formData.append('businessAddress', address);
+      formData.append('businessPhone', phone);
+      formData.append('businessLicense', businessLicense);
       if (document) {
         formData.append('verificationDocs', document);
       }
 
-      const resp = await apiService.post('/sellers/apply', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      const response = await fetch('http://localhost:8080/api/sellers/apply', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
       });
-      
-      if (resp?.data?.success) {
-        alert('✅ Hồ sơ đăng ký seller đã được nộp thành công!\n\n📋 Thông tin hồ sơ:\n- Tên doanh nghiệp: ' + (businessName || 'Test Business') + '\n- Địa chỉ: ' + (address || 'Test Address') + '\n- Số điện thoại: ' + (phone || '0123456789') + '\n\n⏳ Trạng thái: Đang chờ admin duyệt\n\n📧 Bạn sẽ nhận được thông báo khi hồ sơ được xem xét.');
-        navigate('/home');
-      } else {
-        alert('❌ Lỗi: ' + (resp?.data?.message || 'Không thể nộp hồ sơ'));
-      }
-    } catch (err) {
-      console.error('Submit error:', err);
-      
-      if (err.response?.status === 400) {
-        const errorMessage = err.response.data.message;
-        if (errorMessage.includes('already have an active or pending seller application')) {
-          alert('⚠️ Bạn đã có hồ sơ đăng ký seller đang chờ duyệt hoặc đã được duyệt.\n\nVui lòng kiểm tra trạng thái hồ sơ của bạn.');
-          checkSellerStatus(); // Refresh status
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          alert('Hồ sơ đăng ký seller đã được nộp thành công! Vui lòng chờ admin duyệt.');
+          // Kiểm tra lại trạng thái sau khi nộp
+          await checkSellerStatus();
         } else {
-          alert('❌ Lỗi: ' + errorMessage);
+          alert('Có lỗi xảy ra: ' + data.message);
         }
-      } else if (err.response?.status === 401) {
-        alert('🔐 Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
-        navigate('/login');
-      } else if (err.response?.status === 413) {
-        alert('📁 File quá lớn! Kích thước file không được vượt quá 10MB.');
       } else {
-        alert('❌ Lỗi server: ' + (err?.response?.data?.message || 'Không thể kết nối đến server. Vui lòng thử lại sau.'));
+        alert('Có lỗi xảy ra khi nộp hồ sơ');
       }
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      alert('Có lỗi xảy ra khi nộp hồ sơ');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // TẮT VALIDATION FILE ĐỂ TEST - COMMENT ĐOẠN NÀY ĐỂ BẬT LẠI
-      /*
-      if (file.size > 10 * 1024 * 1024) {
-        alert('📁 Kích thước file không được vượt quá 10MB!');
-        e.target.value = '';
-        return;
-      }
-      
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('📄 Chỉ chấp nhận file ảnh (JPG, PNG) hoặc PDF!');
-        e.target.value = '';
-        return;
-      }
-      */
-      
-      setDocument(file);
-    }
-  };
-
-  // Hiển thị trạng thái hồ sơ nếu đã có
-  if (checkingStatus) {
-    return (
-      <div className="register-seller-container">
-        <div className="text-center">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="mt-3">Đang kiểm tra trạng thái hồ sơ...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Nếu đã có hồ sơ, hiển thị thông tin trạng thái
   if (sellerStatus && sellerStatus.hasApplication) {
-    // Tự động chuyển hướng nếu đã được duyệt
-    if (sellerStatus.status === 'approved') {
-      // Chuyển hướng sau 2 giây để user có thể đọc thông báo
-      useEffect(() => {
-        const timer = setTimeout(() => {
-          navigate('/seller-dashboard');
-        }, 2000);
-        
-        return () => clearTimeout(timer);
-      }, [navigate]);
-    }
-
     return (
       <div className="register-seller-container">
         <div className="alert alert-info">
@@ -208,121 +148,90 @@ const RegisterSeller = () => {
     );
   }
 
+  // Form đăng ký seller
   return (
-    <>
-      <div className="register-seller-container">
-        <div className="register-seller-form">
-          <div className="form-header">
-            <h2>Đăng ký trở thành Seller</h2>
-            <p>Hồ sơ của bạn sẽ được admin xem xét trong vòng 1-3 ngày làm việc.</p>
+    <div className="register-seller-container">
+      <div className="register-seller-form">
+        <h2>Đăng ký trở thành Seller</h2>
+        <p>Vui lòng điền đầy đủ thông tin để đăng ký trở thành seller trên GoMall</p>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="businessName">Tên doanh nghiệp *</label>
+            <input
+              type="text"
+              id="businessName"
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+              required
+              placeholder="Nhập tên doanh nghiệp"
+            />
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Tên doanh nghiệp/Cửa hàng <span className="text-danger">*</span></label>
-              <input
-                type="text"
-                className="form-control"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                placeholder="Nhập tên doanh nghiệp hoặc cửa hàng"
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="address">Địa chỉ doanh nghiệp *</label>
+            <input
+              type="text"
+              id="address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+              placeholder="Nhập địa chỉ doanh nghiệp"
+            />
+          </div>
 
-            <div className="form-group">
-              <label className="form-label">Địa chỉ doanh nghiệp <span className="text-danger">*</span></label>
-              <input
-                type="text"
-                className="form-control"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Nhập địa chỉ đầy đủ"
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="email">Email doanh nghiệp</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Nhập email doanh nghiệp"
+            />
+          </div>
 
-            <div className="form-group">
-              <label className="form-label">Email liên hệ <span className="text-danger">*</span></label>
-              <input
-                type="email"
-                className="form-control"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="example@email.com"
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="phone">Số điện thoại doanh nghiệp *</label>
+            <input
+              type="tel"
+              id="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              placeholder="Nhập số điện thoại"
+            />
+          </div>
 
-            <div className="form-group">
-              <label className="form-label">Số giấy phép kinh doanh <span className="text-danger">*</span></label>
-              <input
-                type="text"
-                className="form-control"
-                value={businessLicense}
-                onChange={(e) => setBusinessLicense(e.target.value)}
-                placeholder="Nhập số giấy phép kinh doanh"
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="businessLicense">Giấy phép kinh doanh *</label>
+            <input
+              type="text"
+              id="businessLicense"
+              value={businessLicense}
+              onChange={(e) => setBusinessLicense(e.target.value)}
+              required
+              placeholder="Nhập số giấy phép kinh doanh"
+            />
+          </div>
 
-            <div className="form-group">
-              <label className="form-label">Số điện thoại <span className="text-danger">*</span></label>
-              <input
-                type="tel"
-                className="form-control"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="0123456789"
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="document">Tài liệu xác minh</label>
+            <input
+              type="file"
+              id="document"
+              onChange={(e) => setDocument(e.target.files[0])}
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
+            <small>Chấp nhận file PDF, JPG, JPEG, PNG</small>
+          </div>
 
-            <div className="form-group file-upload-group">
-              <label className="form-label">Tài liệu xác minh (Giấy phép/CMND) <span className="text-danger">*</span></label>
-              <div
-                className={`file-upload-wrapper ${document ? 'has-file' : ''}`}
-                onClick={() => fileInputRef.current && fileInputRef.current.click()}
-              >
-                <div className="file-upload-icon">📎</div>
-                <div className="file-upload-text">{document ? 'Đã chọn tệp' : 'Kéo thả hoặc bấm để chọn tệp'}</div>
-                <div className="file-upload-hint">Chấp nhận PDF, JPG, PNG. Tối đa 10MB</div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className="file-input"
-                  onChange={handleFileChange}
-                  accept=".pdf,.jpg,.png"
-                  required
-                />
-              </div>
-
-              {document && (
-                <div className="file-preview">
-                  <div className="file-preview-name">{document.name}</div>
-                  <div className="file-preview-size">{(document.size / 1024 / 1024).toFixed(2)} MB</div>
-                </div>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className={`submit-btn ${loading ? 'loading' : ''}`}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="loading-spinner"></span>
-                  Đang nộp hồ sơ...
-                </>
-              ) : (
-                '📤 Nộp hồ sơ đăng ký'
-              )}
-            </button>
-          </form>
-        </div>
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? 'Đang xử lý...' : 'Nộp hồ sơ đăng ký'}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
