@@ -2,6 +2,7 @@ import Seller from '../models/Seller.js';
 import User from '../models/User.js';
 import cloudinary from '../config/cloudinary.js';
 import { uploadFileToCloudinary, saveBufferToLocal } from '../middleware/upload.js';
+import NotificationService from '../services/notificationService.js';
 
 // [POST] User apply to become seller (authenticated user)
 export const applyForSeller = async (req, res) => {
@@ -130,6 +131,18 @@ export const approveSeller = async (req, res) => {
         }
         // Update user role to include seller
         await User.findByIdAndUpdate(seller.userID._id, { $addToSet: { role: 'seller' } });
+        
+        // Gửi notification khi seller được chấp nhận
+        try {
+            await NotificationService.createSellerApprovalNotification(seller.userID._id, seller);
+            // Gửi thêm notification chào mừng
+            await NotificationService.createWelcomeSellerNotification(seller.userID._id, seller);
+            // Gửi thêm notification hướng dẫn
+            await NotificationService.createSellerGuideNotification(seller.userID._id, seller);
+        } catch (error) {
+            console.error('Error sending seller approval notification:', error);
+        }
+        
         res.json({ success: true, message: 'Seller approved successfully', data: seller });
     } catch (error) {
         console.error('Approve seller error:', error);
@@ -150,6 +163,14 @@ export const rejectSeller = async (req, res) => {
         if (!seller) {
             return res.status(404).json({ success: false, message: 'Seller not found' });
         }
+        
+        // Gửi notification khi seller bị từ chối
+        try {
+            await NotificationService.createSellerRejectionNotification(seller.userID._id, seller, reason);
+        } catch (error) {
+            console.error('Error sending seller rejection notification:', error);
+        }
+        
         res.json({ success: true, message: 'Seller rejected successfully', data: seller });
     } catch (error) {
         console.error('Reject seller error:', error);

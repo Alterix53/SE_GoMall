@@ -154,6 +154,50 @@ class NotificationService {
     }
   }
 
+  // Tạo thông báo chào mừng seller mới
+  static async createWelcomeSellerNotification(userId, sellerInfo) {
+    try {
+      await Notification.create({
+        userId,
+        type: 'seller_welcome',
+        title: '🎉 Chào mừng bạn đến với cộng đồng Seller!',
+        message: `Xin chào ${sellerInfo.businessName}! Bạn đã chính thức trở thành seller của GoMall. Bây giờ bạn có thể bắt đầu đăng sản phẩm và bán hàng. Chúc bạn thành công!`,
+        metadata: { 
+          sellerId: sellerInfo._id,
+          businessName: sellerInfo.businessName,
+          action: 'navigate_to_seller_dashboard'
+        },
+        priority: 'high',
+        icon: 'check'
+      });
+      console.log(`Created welcome seller notification for user ${userId}, seller ${sellerInfo._id}`);
+    } catch (error) {
+      console.error('Error creating welcome seller notification:', error);
+    }
+  }
+
+  // Tạo thông báo hướng dẫn seller mới
+  static async createSellerGuideNotification(userId, sellerInfo) {
+    try {
+      await Notification.create({
+        userId,
+        type: 'seller_guide',
+        title: '📚 Hướng dẫn bắt đầu cho Seller mới',
+        message: `Chào mừng ${sellerInfo.businessName}! Để bắt đầu bán hàng hiệu quả, hãy: 1) Đăng sản phẩm đầu tiên, 2) Thiết lập thông tin cửa hàng, 3) Xem hướng dẫn chi tiết trong Seller Dashboard.`,
+        metadata: { 
+          sellerId: sellerInfo._id,
+          businessName: sellerInfo.businessName,
+          action: 'navigate_to_seller_dashboard'
+        },
+        priority: 'medium',
+        icon: 'info'
+      });
+      console.log(`Created seller guide notification for user ${userId}, seller ${sellerInfo._id}`);
+    } catch (error) {
+      console.error('Error creating seller guide notification:', error);
+    }
+  }
+
   // Tạo thông báo cho tất cả user (broadcast)
   static async createBroadcastNotification(userIds, type, title, message, metadata = {}) {
     try {

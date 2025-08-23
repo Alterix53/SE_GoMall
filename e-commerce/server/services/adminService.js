@@ -656,6 +656,10 @@ class AdminService {
                 // Gửi notification khi seller được chấp nhận
                 try {
                     await NotificationService.createSellerApprovalNotification(seller.userID, seller);
+                    // Gửi thêm notification chào mừng
+                    await NotificationService.createWelcomeSellerNotification(seller.userID, seller);
+                    // Gửi thêm notification hướng dẫn
+                    await NotificationService.createSellerGuideNotification(seller.userID, seller);
                 } catch (error) {
                     console.error('Error sending seller approval notification:', error);
                 }

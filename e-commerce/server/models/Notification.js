@@ -9,7 +9,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['order_success', 'shipping_update', 'delivery_success', 'promotion', 'order_cancelled', 'payment_success', 'refund_processed', 'seller_approved', 'seller_rejected'],
+    enum: ['order_success', 'shipping_update', 'delivery_success', 'promotion', 'order_cancelled', 'payment_success', 'refund_processed', 'seller_approved', 'seller_rejected', 'seller_welcome', 'seller_guide'],
     required: true
   },
   title: {
