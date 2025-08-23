@@ -21,43 +21,16 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
     const { username, email, password, confirm } = form;
 
     if (password !== confirm) {
-      setError('Mật khẩu xác nhận không khớp!');
-      setLoading(false);
-      return;
-    }
-
-    // Validate username requirements
-    const usernameRegex = /^[a-zA-Z0-9_]+$/;
-    if (username.length < 3 || username.length > 30 || !usernameRegex.test(username)) {
-      setError('Tên đăng nhập phải từ 3-30 ký tự, chỉ chứa chữ cái, số và dấu gạch dưới!');
-      setLoading(false);
-      return;
-    }
-
-    // Validate password requirements
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
-    if (!passwordRegex.test(password)) {
-      setError('Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường và số!');
-      setLoading(false);
+      setError('Mật khẩu xác nhận không khớp');
       return;
     }
 
     try {
-      // Đảm bảo không có token cũ can thiệp vào quá trình đăng ký
-      const tempToken = localStorage.getItem('token');
-      const tempUser = localStorage.getItem('user');
-      const tempIsLoggedIn = localStorage.getItem('isLoggedIn');
-      
-      // Tạm thời xóa hết thông tin đăng nhập cũ
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('isLoggedIn');
+      setLoading(true);
+      setError('');
 
       const response = await fetch('http://localhost:8080/api/auth/register', {
         method: 'POST',
@@ -67,37 +40,20 @@ const SignUpPage = () => {
         body: JSON.stringify({
           username,
           email,
-          password,
-          role: 'user'  // mặc định là user theo schema
+          password
         }),
       });
 
       const data = await response.json();
-      
-      // Khôi phục token cũ nếu đăng ký thất bại
-      if (!data.success) {
-        if (tempToken) localStorage.setItem('token', tempToken);
-        if (tempUser) localStorage.setItem('user', tempUser);
-        if (tempIsLoggedIn) localStorage.setItem('isLoggedIn', tempIsLoggedIn);
-      }
 
-      if (data.success) {
-        alert('Đăng ký thành công!');
+      if (response.ok && data.success) {
+        alert('Đăng ký thành công! Vui lòng đăng nhập.');
         navigate('/login');
       } else {
-        // Hiển thị lỗi từ server
-        const errorMessage = data.message || 'Đăng ký thất bại';
-        const errors = data.errors;
-        
-        if (Array.isArray(errors) && errors.length > 0) {
-          const errorMessages = errors.map(err => err.msg || err.message).join('\n');
-          setError(errorMessages);
-        } else {
-          setError(errorMessage);
-        }
+        setError(data.message || 'Đăng ký thất bại');
       }
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Registration error:', error);
       setError('Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.');
     } finally {
       setLoading(false);
@@ -147,7 +103,6 @@ const SignUpPage = () => {
                 <div className="shape shape-1"></div>
                 <div className="shape shape-2"></div>
                 <div className="shape shape-3"></div>
-                <div className="freeship-text">WELCOME</div>
               </div>
             </div>
 
@@ -238,21 +193,6 @@ const SignUpPage = () => {
                   </form>
 
                   <div className="form-footer">
-                    <div className="separator">
-                      <span>HOẶC</span>
-                    </div>
-
-                    <div className="social-login">
-                      <button className="social-btn facebook">
-                        <i className="social-icon">f</i>
-                        <span>Facebook</span>
-                      </button>
-                      <button className="social-btn google">
-                        <i className="social-icon">G</i>
-                        <span>Google</span>
-                      </button>
-                    </div>
-
                     <div className="login-link">
                       <span>Đã có tài khoản? </span>
                       <Link to="/login" className="login-btn-link">Đăng nhập</Link>

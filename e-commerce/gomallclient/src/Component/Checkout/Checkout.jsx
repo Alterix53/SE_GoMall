@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { checkoutAPI, selfAPI } from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
+import momoPaymentAPI from '../../utils/momoPaymentAPI';
+import MomoPayment from '../MomoPayment/MomoPayment';
 import './Checkout.css';
 import OptimizedImage from '../../utils/OptimizedImage';
 import { createPlaceholderUrl } from '../../utils/imageUtils';
@@ -19,7 +21,7 @@ const Checkout = () => {
     phone: '',
     address: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
   const [shippingMethod, setShippingMethod] = useState('fast');
   const [note, setNote] = useState('');
   const [vouchers, setVouchers] = useState({
@@ -28,6 +30,8 @@ const Checkout = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showMomoPayment, setShowMomoPayment] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState(null);
 
   // Load user info and redirect if no items selected
   useEffect(() => {
@@ -77,13 +81,21 @@ const Checkout = () => {
 
   const handlePlaceOrder = async () => {
     if (!isAuthenticated()) {
-      alert('Vui lòng đăng nhập để đặt hàng!');
+      alert('Please login to place order!');
+      navigate('/login');
+      return;
+    }
+
+    // Kiểm tra token có hợp lệ không
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Login session has expired. Please login again!');
       navigate('/login');
       return;
     }
 
     if (!userInfo.address || !userInfo.name || !userInfo.phone) {
-      setError('Vui lòng điền đầy đủ thông tin địa chỉ giao hàng!');
+      setError('Please fill in complete shipping address information!');
       return;
     }
 
@@ -120,31 +132,37 @@ const Checkout = () => {
       const orderResponse = await checkoutAPI.createOrder(orderData);
       
       if (orderResponse.success) {
-        // Process payment if needed (only for non-COD methods)
-        if (paymentMethod !== 'cod') {
-          try {
-            const paymentData = {
-              orderID: orderResponse.order._id,
-              amount: totalWithShipping,
-              paymentMethod: paymentMethod
-            };
-            
-            await checkoutAPI.processPayment(paymentData);
-          } catch (paymentError) {
-            console.error('Payment processing failed:', paymentError);
-            // Payment failure shouldn't stop the order creation
-            // We can handle this differently based on business logic
-          }
-        }
+        // Store order data for MoMo payment
+        setCurrentOrder({
+          orderID: orderResponse.order._id,
+          orderNumber: orderResponse.order.orderNumber || orderResponse.order._id,
+          amount: totalWithShipping,
+          items: selectedItems
+        });
 
-        alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-        navigate('/');
+        // Handle different payment methods
+        if (paymentMethod === 'momo') {
+          // Show MoMo payment component
+          setShowMomoPayment(true);
+        } else if (paymentMethod === 'cash') {
+          // Cash on delivery - navigate to success page
+          navigate('/payment/cash-success', { 
+            state: { 
+              orderData: {
+                orderID: orderResponse.order._id,
+                orderNumber: orderResponse.order.orderNumber || orderResponse.order._id,
+                amount: totalWithShipping,
+                items: selectedItems
+              }
+            }
+          });
+        }
       } else {
-        setError('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!');
+        setError('An error occurred while placing order. Please try again!');
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!';
+      const errorMessage = error.response?.data?.message || error.message || 'An error occurred while placing order. Please try again!';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -155,26 +173,36 @@ const Checkout = () => {
     return null;
   }
 
+  // Show MoMo Payment component if payment method is MoMo and order is created
+  if (showMomoPayment && currentOrder) {
+    return (
+      <MomoPayment 
+        orderData={currentOrder}
+        onBack={() => setShowMomoPayment(false)}
+      />
+    );
+  }
+
   return (
     <div className="checkout-page">
       
       <div className="checkout-container">
         <div className="checkout-breadcrumb">
-          <span className="page-title">Thanh Toán</span>
+          <span className="page-title">Checkout</span>
         </div>
         <div className="checkout-content">
           {/* Delivery Address Section */}
           <div className="checkout-section address-section">
             <div className="section-header">
               <span className="location-icon">📍</span>
-              <span className="section-title">Địa Chỉ Nhận Hàng</span>
+              <span className="section-title">Shipping Address</span>
             </div>
             <div className="address-content">
               <div className="user-info" style={{ width: '100%', display: 'grid', gridTemplateColumns: '1fr auto', gap: '10px', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <input 
                     type="text" 
-                    placeholder="Họ và tên"
+                    placeholder="Full name"
                     value={userInfo.name}
                     onChange={(e) => setUserInfo((u) => ({ ...u, name: e.target.value }))}
                     className="note-input"
@@ -182,7 +210,7 @@ const Checkout = () => {
                   />
                   <input 
                     type="text" 
-                    placeholder="Số điện thoại"
+                    placeholder="Phone number"
                     value={userInfo.phone}
                     onChange={(e) => setUserInfo((u) => ({ ...u, phone: e.target.value }))}
                     className="note-input"
@@ -190,7 +218,7 @@ const Checkout = () => {
                   />
                   <input 
                     type="text" 
-                    placeholder="Địa chỉ nhận hàng"
+                    placeholder="Shipping address"
                     value={userInfo.address}
                     onChange={(e) => setUserInfo((u) => ({ ...u, address: e.target.value }))}
                     className="note-input"
@@ -215,17 +243,17 @@ const Checkout = () => {
                             address: updated.address || ''
                           });
                         }
-                        alert('Đã lưu địa chỉ vào tài khoản');
+                        alert('Address has been saved to account');
                       } catch (e) {
                         console.error('Save address failed:', e);
-                        const msg = e?.response?.data?.message || e?.message || 'Lưu địa chỉ thất bại';
+                        const msg = e?.response?.data?.message || e?.message || 'Failed to save address';
                         alert(msg);
                       } finally {
                         setLoading(false);
                       }
                     }}
                   >
-                    Lưu địa chỉ
+                    Save Address
                   </button>
                 </div>
               </div>
@@ -236,10 +264,10 @@ const Checkout = () => {
           <div className="checkout-section products-section">
             <div className="products-header">
               <div className="header-row">
-                <span className="col-product">Sản phẩm</span>
-                <span className="col-price">Đơn giá</span>
-                <span className="col-quantity">Số lượng</span>
-                <span className="col-total">Thành tiền</span>
+                <span className="col-product">Product</span>
+                <span className="col-price">Unit Price</span>
+                <span className="col-quantity">Quantity</span>
+                                  <span className="col-total">Total</span>
               </div>
             </div>
 
@@ -260,7 +288,7 @@ const Checkout = () => {
                   <div className="product-details">
                     <div className="product-name">{item.name}</div>
                     <div className="product-variant">
-                      Loại: {item.variant || item.size || 'Pink'}
+                      Type: {item.variant || item.size || 'Pink'}
                     </div>
                   </div>
                 </div>
@@ -279,15 +307,15 @@ const Checkout = () => {
               <label className="insurance-checkbox">
                 <input type="checkbox" />
                 <span className="checkmark"></span>
-                <span className="insurance-text">Bảo hiểm Thiết bị di động</span>
+                <span className="insurance-text">Mobile Device Insurance</span>
               </label>
               <div className="insurance-price">{currencyVND(415999)}</div>
               <div className="insurance-quantity">1</div>
               <div className="insurance-total">{currencyVND(415999)}</div>
             </div>
             <div className="insurance-description">
-              Bảo vệ thiết bị di động của bạn trước những thiệt hại do sự cố, tiếp xúc với chất lỏng và mất cắp/mất trộm. 
-              <span className="learn-more">Tìm hiểu thêm</span>
+                              Protect your mobile device from damage due to accidents, liquid exposure, and theft/loss.
+                <span className="learn-more">Learn more</span>
             </div>
           </div>
 
@@ -295,19 +323,19 @@ const Checkout = () => {
           <div className="checkout-section voucher-section">
             <div className="voucher-header">
               <span className="voucher-icon">🎫</span>
-              <span className="voucher-title">Hóa đơn điện tử 💡</span>
-              <span className="voucher-request">Yêu Cầu Ngay</span>
+                              <span className="voucher-title">Electronic Invoice 💡</span>
+                <span className="voucher-request">Request Now</span>
             </div>
             
             <div className="voucher-options">
               <div className="voucher-row">
-                <span className="voucher-label">🎫 Voucher của Shop</span>
-                <button className="voucher-select">Chọn Voucher</button>
+                <span className="voucher-label">🎫 Shop Voucher</span>
+                <button className="voucher-select">Select Voucher</button>
               </div>
               
               <div className="voucher-row">
-                <span className="voucher-label">🛒 Voucher nền tảng</span>
-                <button className="voucher-select">Chọn Voucher</button>
+                <span className="voucher-label">🛒 Platform Voucher</span>
+                <button className="voucher-select">Select Voucher</button>
               </div>
               
               <div className="voucher-row">
@@ -317,237 +345,74 @@ const Checkout = () => {
 
           {/* Payment Method Section */}
           <div className="checkout-section payment-section">
-            <div className="section-title payment-title">Phương thức thanh toán</div>
+                          <div className="section-title payment-title">Payment Method</div>
             
             <div className="payment-options">
               <div className="payment-tabs">
                 <button 
-                  className={`payment-tab ${paymentMethod === 'card' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('card')}
-                >
-                  Thẻ Tín dụng/Ghi nợ
-                </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'googlepay' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('googlepay')}
-                >
-                  Google Pay
-                </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'napas' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('napas')}
-                >
-                  Thẻ nội địa NAPAS
-                </button>
-
-                <button 
-                  className={`payment-tab ${paymentMethod === 'installment' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('installment')}
-                >
-                  Trả góp bằng Thẻ Tín dụng
-                </button>
-                <button 
-                  className={`payment-tab ${paymentMethod === 'bank-transfer' ? 'active' : ''}`}
-                  onClick={() => setPaymentMethod('bank-transfer')}
-                >
-                  Chuyển khoản ngân hàng
-                </button>
-                <button 
                   className={`payment-tab ${paymentMethod === 'cash' ? 'active' : ''}`}
                   onClick={() => setPaymentMethod('cash')}
                 >
-                  Tiền mặt
+                  💵 Cash
+                </button>
+
+                <button 
+                  className={`payment-tab ${paymentMethod === 'momo' ? 'active' : ''}`}
+                  onClick={() => setPaymentMethod('momo')}
+                >
+                  📱 MoMo Wallet
                 </button>
               </div>
               
               {/* Remove the old bank transfer section */}
               {/* <div className="payment-method-detail">
-                <div className="bank-transfer-option">Chuyển khoản ngân hàng</div>
+                <div className="bank-transfer-option">Bank Transfer</div>
               </div> */}
 
-              {/* Payment Options */}
-              {paymentMethod === 'card' && (
-                <div className="payment-options-detail">
-                  <div className="card-options">
-                    <div className="card-option">
-                      <input type="radio" name="card-type" id="visa" defaultChecked />
-                      <label htmlFor="visa">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="card-logo" />
-                        <span>Visa</span>
-                      </label>
-                    </div>
-                    <div className="card-option">
-                      <input type="radio" name="card-type" id="mastercard" />
-                      <label htmlFor="mastercard">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" className="card-logo" />
-                        <span>Mastercard</span>
-                      </label>
-                    </div>
-                    <div className="card-option">
-                      <input type="radio" name="card-type" id="jcb" />
-                      <label htmlFor="jcb">
-                        <img src="https://down-vn.img.susercontent.com/file/38fd98e55806c3b2e4535c4e4a6c4c08" alt="JCB" className="card-logo" />
-                        <span>JCB</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'googlepay' && (
-                <div className="payment-options-detail">
-                  <div className="googlepay-info">
-                    <div className="googlepay-description">
-                      <p>Thanh toán nhanh chóng và bảo mật với Google Pay</p>
-                      <div className="googlepay-benefits">
-                        <span>✓ Không cần nhập thông tin thẻ</span>
-                        <span>✓ Bảo mật tối đa</span>
-                        <span>✓ Thanh toán trong 1 chạm</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'napas' && (
-                <div className="payment-options-detail">
-                  <div className="napas-options">
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="vietcombank" defaultChecked />
-                      <label htmlFor="vietcombank">
-                        <img src="https://www.vietcombank.com.vn/-/media/Project/VCB-Sites/VCB/Home-page/VCB-Logo/Logo-VCB-no-60.png" alt="Vietcombank" className="bank-logo" />
-                        <span>Vietcombank</span>
-                      </label>
-                    </div>
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="techcombank" />
-                      <label htmlFor="techcombank">
-                        <img src="https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg" alt="Techcombank" className="bank-logo" />
-                        <span>Techcombank</span>
-                      </label>
-                    </div>
-                    <div className="napas-option">
-                      <input type="radio" name="napas-bank" id="bidv" />
-                      <label htmlFor="bidv">
-                        <img src="https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-cc5c0724-338e-4cf5-bbe7-676f1f36fd7b-p5AGqf.&cache=none" alt="BIDV" className="bank-logo" />
-                        <span>BIDV</span>
-                      </label>
-                    </div>
-                                          <div className="napas-option">
-                        <input type="radio" name="napas-bank" id="mbbank" />
-                        <label htmlFor="mbbank">
-                          <img src="https://www.mbbank.com.vn/images/logo.png" alt="Mbbank" className="bank-logo" />
-                          <span>Mbbank</span>
-                        </label>
-                      </div>
-                  </div>
-                </div>
-              )}
 
 
 
-              {paymentMethod === 'installment' && (
-                <div className="payment-options-detail">
-                  <div className="installment-options">
-                    <div className="installment-option">
-                      <input type="radio" name="installment-plan" id="3months" defaultChecked />
-                      <label htmlFor="3months">
-                        <span className="installment-term">3 tháng</span>
-                        <span className="installment-rate">0% lãi suất</span>
-                      </label>
-                    </div>
-                    <div className="installment-option">
-                      <input type="radio" name="installment-plan" id="6months" />
-                      <label htmlFor="6months">
-                        <span className="installment-term">6 tháng</span>
-                        <span className="installment-rate">2.5% lãi suất/tháng</span>
-                      </label>
-                    </div>
-                    <div className="installment-option">
-                      <input type="radio" name="installment-plan" id="12months" />
-                      <label htmlFor="12months">
-                        <span className="installment-term">12 tháng</span>
-                        <span className="installment-rate">3.0% lãi suất/tháng</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              )}
 
-              {paymentMethod === 'bank-transfer' && (
-                <div className="payment-options-detail">
-                  <div className="bank-transfer-options">
-                    <div className="bank-transfer-info">
-                      <p>Chọn ngân hàng để chuyển khoản:</p>
-                    </div>
-                    <div className="bank-list">
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="vietcombank-transfer" defaultChecked />
-                        <label htmlFor="vietcombank-transfer">
-                          <img src="https://www.vietcombank.com.vn/-/media/Project/VCB-Sites/VCB/Home-page/VCB-Logo/Logo-VCB-no-60.png" alt="Vietcombank" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">Vietcombank</span>
-                            <span className="bank-account">1234567890 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="techcombank-transfer" />
-                        <label htmlFor="techcombank-transfer">
-                          <img src="https://techcombank.com/content/dam/techcombank/public-site/seo/techcombank_logo_svg_86201e50d1.svg" alt="Techcombank" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">Techcombank</span>
-                            <span className="bank-account">0987654321 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="bidv-transfer" />
-                        <label htmlFor="bidv-transfer">
-                          <img src="https://bidv.com.vn/wps/wcm/connect/cc5c0724-338e-4cf5-bbe7-676f1f36fd7b/logopc.png?MOD=AJPERES&CACHEID=ROOTWORKSPACE-cc5c0724-338e-4cf5-bbe7-676f1f36fd7b-p5AGqf.&cache=none" alt="BIDV" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">BIDV</span>
-                            <span className="bank-account">1122334455 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                      <div className="bank-option">
-                        <input type="radio" name="bank-transfer" id="mbbank-transfer" />
-                        <label htmlFor="mbbank-transfer">
-                          <img src="https://www.mbbank.com.vn/images/logo.png" alt="Mbbank" className="bank-logo" />
-                          <div className="bank-details">
-                            <span className="bank-name">Mbbank</span>
-                            <span className="bank-account">5544332211 - GoMall</span>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                    <div className="transfer-instructions">
-                      <h4>Hướng dẫn chuyển khoản:</h4>
-                      <ol>
-                        <li>Chọn ngân hàng từ danh sách trên</li>
-                        <li>Chuyển khoản đến tài khoản đã chọn</li>
-                        <li>Nội dung chuyển khoản: Mã đơn hàng</li>
-                        <li>Sau khi chuyển khoản, vui lòng chờ xác nhận</li>
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              )}
+
+
+
+
+
+
+
 
               {paymentMethod === 'cash' && (
                 <div className="payment-options-detail">
                   <div className="cash-payment-info">
                     <div className="cash-payment-description">
-                      <p>💵 Thanh toán bằng tiền mặt khi nhận hàng</p>
-                      <div className="cash-payment-benefits">
-                        <span>✓ Không cần thẻ hay tài khoản ngân hàng</span>
-                        <span>✓ Thanh toán trực tiếp với nhân viên giao hàng</span>
-                        <span>✓ An toàn và tiện lợi</span>
-                      </div>
-                      <div className="cash-payment-note">
-                        <strong>Lưu ý:</strong> Vui lòng chuẩn bị đủ tiền mặt để thanh toán khi nhận hàng.
-                      </div>
+                                      <p>💵 Pay with cash when receiving goods</p>
+                <div className="cash-payment-benefits">
+                  <span>✓ No card or bank account needed</span>
+                  <span>✓ Pay directly with delivery staff</span>
+                  <span>✓ Safe and convenient</span>
+                </div>
+                <div className="cash-payment-note">
+                  <strong>Note:</strong> Please prepare enough cash to pay when receiving goods.
+                </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {paymentMethod === 'momo' && (
+                <div className="payment-options-detail">
+                  <div className="momo-payment-info">
+                    <div className="momo-payment-description">
+                                      <p>📱 Fast and secure payment with MoMo Wallet</p>
+                <div className="momo-payment-benefits">
+                  <span>✓ Scan QR code to pay</span>
+                  <span>✓ No card or bank account needed</span>
+                  <span>✓ Instant payment confirmation</span>
+                  <span>✓ Absolute information security</span>
+                </div>
+                <div className="momo-payment-note">
+                  <strong>Note:</strong> Please open the MoMo app and scan the QR code to complete payment.
+                </div>
                     </div>
                   </div>
                 </div>
@@ -556,11 +421,11 @@ const Checkout = () => {
               {/* Merged: Order details inside payment section */}
               {/* Order Note */}
               <div className="order-note">
-                <label htmlFor="note">Lời nhắn:</label>
+                <label htmlFor="note">Message:</label>
                 <input
                   id="note"
                   type="text"
-                  placeholder="Lưu ý cho Người bán..."
+                  placeholder="Note for Seller..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   className="note-input"
@@ -570,15 +435,15 @@ const Checkout = () => {
               {/* Total Summary */}
               <div className="total-summary">
                 <div className="total-row">
-                  <span className="total-label">Tổng tiền hàng</span>
+                  <span className="total-label">Subtotal</span>
                   <span className="total-value">{currencyVND(total)}</span>
                 </div>
                 <div className="total-row">
-                  <span className="total-label">Tổng tiền phí vận chuyển</span>
+                  <span className="total-label">Shipping fee</span>
                   <span className="total-value">{currencyVND(shippingFee)}</span>
                 </div>
                 <div className="total-row final-total">
-                  <span className="total-label">Tổng thanh toán</span>
+                  <span className="total-label">Total payment</span>
                   <span className="total-value final-amount">{currencyVND(totalWithShipping)}</span>
                 </div>
               </div>
@@ -592,8 +457,8 @@ const Checkout = () => {
 
               {/* Terms Agreement */}
               <div className="terms-agreement">
-                Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo{' '}
-                <span className="terms-link">Điều khoản của chúng tôi</span>
+                Clicking "Place Order" means you agree to follow our{' '}
+                <span className="terms-link">Terms and Conditions</span>
               </div>
 
               {/* Place Order Button */}
@@ -602,7 +467,7 @@ const Checkout = () => {
                 onClick={handlePlaceOrder}
                 disabled={loading}
               >
-                {loading ? 'Đang xử lý...' : 'Đặt hàng'}
+                {loading ? 'Processing...' : 'Place Order'}
               </button>
             </div>
           </div>

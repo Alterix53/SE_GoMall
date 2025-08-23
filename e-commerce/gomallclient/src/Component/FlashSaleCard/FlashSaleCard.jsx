@@ -19,17 +19,27 @@ const FlashSaleCard = ({ product }) => {
   };
 
   const navigate = useNavigate();
-
   const productId = product?.id || product?._id;
 
   const goToDetail = (e) => {
-    // Prevent event bubbling if clicking on the button
-    if (e.target.tagName === 'BUTTON') {
-      return;
-    }
-    
+    if (e.target.tagName === 'BUTTON') return;
     if (!productId) return;
     navigate(`/product/${productId}`);
+  };
+
+  const formatSold = (sold) => {
+    if (!sold) return "0";
+    if (sold >= 1000000) {
+      return `${(sold / 1000000).toFixed(1)}M`;
+    } else if (sold >= 1000) {
+      return `${(sold / 1000).toFixed(1)}k`;
+    }
+    return sold.toString();
+  };
+
+  const formatRating = (rating) => {
+    if (!rating || !rating.average) return "0.0";
+    return rating.average.toFixed(1);
   };
 
   return (
@@ -37,49 +47,56 @@ const FlashSaleCard = ({ product }) => {
       {/* Product Image */}
       <div className="product-image">
         <OptimizedImage
-          src={product.image}
+          src={product.image || "/images/placeholder-product.svg"}
           alt={product.name}
-          lazy={true}
-          fallbackUrl={
-            'data:image/svg+xml;base64,' + btoa(
-              `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100%" height="100%" fill="#f0f0f0"/>
-                <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="14" fill="#999" text-anchor="middle" dy=".3em">No Image</text>
-              </svg>`
-            )
-          }
+          lazy
+          fallbackUrl={"/images/placeholder-product.svg"}
           onLoad={() => {}}
           onError={() => {}}
+          style={{ backgroundColor: '#f8f9fa', objectFit: 'cover', width: '100%', height: '200px' }}
         />
-      </div>
-      
-      {/* Promotional Labels */}
-      <div className="promo-labels">
-        <div className="promo-label left">8.8</div>
-        <div className="promo-label right">
-          {product.discount ? formatDiscount(product.discount) : ''}
+        
+        {/* Flash Sale Badge */}
+        <div className="flash-sale-badge">
+          🔥 Flash Sale
         </div>
+        
+        {/* Discount Badge */}
+        {product.discount > 0 && (
+          <div className="discount-badge">
+            {formatDiscount(product.discount)}
+          </div>
+        )}
       </div>
       
       {/* Product Info */}
       <div className="product-info">
-        <div className="product-name" title={product.name}>
-          {product.name}
+        {/* Product Name */}
+        <div className="product-name">
+          {product.name || "Product"}
         </div>
-        <div className="product-price">{formatPrice(product.price)}</div>
-        <button
-          type="button"
-          className="selling-fast-btn"
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent card click when clicking button
-            if (!productId) return;
-            navigate(`/product/${productId}`);
-          }}
-          disabled={!productId}
-          aria-label="Xem chi tiết sản phẩm"
-        >
-          ĐANG BÁN CHẠY
-        </button>
+        
+        {/* Price Section */}
+        <div className="price-section">
+          <div className="current-price">{formatPrice(product.price)}</div>
+          {product.originalPrice && product.originalPrice > product.price && (
+            <div className="original-price">{formatPrice(product.originalPrice)}</div>
+          )}
+        </div>
+        
+        {/* Rating and Sold */}
+        <div className="product-stats">
+          <div className="rating">
+            <span className="stars">★★★★★</span>
+            <span className="rating-value">{formatRating(product.rating)}</span>
+          </div>
+          <div className="sold-count">
+            Sold {formatSold(product.sold)}
+          </div>
+        </div>
+        
+        {/* Action Button */}
+        <button className="selling-fast-btn">SELLING FAST</button>
       </div>
     </div>
   );

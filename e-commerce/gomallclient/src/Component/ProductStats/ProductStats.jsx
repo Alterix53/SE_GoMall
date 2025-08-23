@@ -28,7 +28,7 @@ const ProductStats = () => {
       <div className="product-stats">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Đang tải thống kê...</p>
+          <p>Loading statistics...</p>
         </div>
       </div>
     );
@@ -38,7 +38,7 @@ const ProductStats = () => {
     return (
       <div className="product-stats">
         <div className="error-message">
-          <p>❌ Lỗi: {error}</p>
+          <p>❌ Error: {error}</p>
         </div>
       </div>
     );
@@ -48,7 +48,7 @@ const ProductStats = () => {
     return (
       <div className="product-stats">
         <div className="no-data">
-          <p>Không có dữ liệu thống kê</p>
+          <p>No statistics data available</p>
         </div>
       </div>
     );
@@ -59,15 +59,15 @@ const ProductStats = () => {
   return (
     <div className="product-stats">
       <div className="stats-header">
-        <h3>📊 Thống Kê Sản Phẩm</h3>
-        <p>Thông tin tổng quan về hệ thống sản phẩm</p>
+        <h3>📊 Product Statistics</h3>
+        <p>Overview of product system information</p>
       </div>
 
       <div className="stats-overview">
         <div className="stat-card">
           <div className="stat-icon">📦</div>
           <div className="stat-content">
-            <h4>Tổng Sản Phẩm</h4>
+            <h4>Total Products</h4>
             <span className="stat-number">{overview.totalProducts}</span>
           </div>
         </div>
@@ -75,7 +75,7 @@ const ProductStats = () => {
         <div className="stat-card">
           <div className="stat-icon">🏷️</div>
           <div className="stat-content">
-            <h4>Danh Mục</h4>
+            <h4>Categories</h4>
             <span className="stat-number">{overview.totalCategories?.length || 0}</span>
           </div>
         </div>
@@ -83,9 +83,9 @@ const ProductStats = () => {
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-content">
-            <h4>Giá Trung Bình</h4>
+            <h4>Average Price</h4>
             <span className="stat-number">
-              {overview.avgPrice ? `${Math.round(overview.avgPrice).toLocaleString()}đ` : 'N/A'}
+                              {overview.avgPrice ? `${Math.round(overview.avgPrice).toLocaleString()} VND` : 'N/A'}
             </span>
           </div>
         </div>
@@ -93,7 +93,7 @@ const ProductStats = () => {
         <div className="stat-card">
           <div className="stat-icon">⭐</div>
           <div className="stat-content">
-            <h4>Đánh Giá TB</h4>
+            <h4>Average Rating</h4>
             <span className="stat-number">
               {overview.avgRating ? overview.avgRating.toFixed(1) : 'N/A'}
             </span>
@@ -103,7 +103,7 @@ const ProductStats = () => {
         <div className="stat-card">
           <div className="stat-icon">🛒</div>
           <div className="stat-content">
-            <h4>Đã Bán</h4>
+            <h4>Total Sold</h4>
             <span className="stat-number">{overview.totalSold?.toLocaleString() || 0}</span>
           </div>
         </div>
@@ -111,7 +111,7 @@ const ProductStats = () => {
         <div className="stat-card">
           <div className="stat-icon">👁️</div>
           <div className="stat-content">
-            <h4>Lượt Xem</h4>
+            <h4>Total Views</h4>
             <span className="stat-number">{overview.totalViews?.toLocaleString() || 0}</span>
           </div>
         </div>
@@ -127,7 +127,7 @@ const ProductStats = () => {
         <div className="stat-card">
           <div className="stat-icon">⭐</div>
           <div className="stat-content">
-            <h4>Nổi Bật</h4>
+            <h4>Featured</h4>
             <span className="stat-number">{overview.featuredCount || 0}</span>
           </div>
         </div>
@@ -135,18 +135,18 @@ const ProductStats = () => {
 
       {byCategory && byCategory.length > 0 && (
         <div className="category-stats">
-          <h4>📈 Thống Kê Theo Danh Mục</h4>
+          <h4>📈 Statistics by Category</h4>
           <div className="category-list">
             {byCategory.map((category, index) => (
               <div key={index} className="category-item">
                 <div className="category-name">{category._id}</div>
                 <div className="category-details">
-                  <span className="category-count">{category.count} sản phẩm</span>
+                  <span className="category-count">{category.count} products</span>
                   <span className="category-price">
-                    Giá TB: {category.avgPrice ? `${Math.round(category.avgPrice).toLocaleString()}đ` : 'N/A'}
+                    Avg Price: {category.avgPrice ? `${Math.round(category.avgPrice).toLocaleString()} VND` : 'N/A'}
                   </span>
                   <span className="category-sold">
-                    Đã bán: {category.totalSold?.toLocaleString() || 0}
+                    Sold: {category.totalSold?.toLocaleString() || 0}
                   </span>
                 </div>
               </div>

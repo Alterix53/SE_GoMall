@@ -15,7 +15,7 @@ import { uploadVerificationDocs } from '../middleware/upload.js';
 
 const router = express.Router();
 
-// Public routes (if any)
+// Public routes
 router.get('/user/:userId', getSellerByUserId);
 
 // Protected routes - user auth for applying (supports multipart form with verificationDocs[])

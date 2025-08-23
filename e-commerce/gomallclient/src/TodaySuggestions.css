@@ -1,65 +1,385 @@
-/* Today Suggestions Page Styles */
+/* Reset and Force Styles for Today Suggestions Page */
+* {
+  box-sizing: border-box;
+}
+
+/* Today Suggestions Page - Shopee Style */
 .today-suggestions-page {
-  min-height: 100vh;
-  background: #f8f9fa;
+  min-height: 100vh !important;
+  background: #f5f5f5 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
 }
 
 .suggestions-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 20px !important;
+  width: 100% !important;
+  display: block !important;
 }
 
-.suggestions-header {
-  text-align: center;
-  margin-bottom: 40px;
+/* Shopee Header */
+.shopee-header {
+  background: #ee4d2d !important;
+  color: white !important;
+  padding: 20px !important;
+  text-align: center !important;
+  margin-bottom: 20px !important;
+  border-radius: 0 0 8px 8px !important;
+  width: 100% !important;
+  display: block !important;
 }
 
-.suggestions-header h1 {
-  font-size: 32px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
+.header-content h1 {
+  font-size: 24px !important;
+  font-weight: bold !important;
+  margin-bottom: 8px !important;
+  margin-top: 0 !important;
 }
 
-.suggestions-header p {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 0;
+.header-stats {
+  font-size: 14px !important;
+  opacity: 0.9 !important;
 }
 
-.suggestions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
+.header-stats span {
+  margin: 0 8px !important;
 }
 
+/* Shopee Grid */
+.shopee-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  gap: 8px !important;
+  margin-bottom: 20px !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Shopee Card */
+.shopee-card {
+  background: white !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  position: relative !important;
+  width: 100% !important;
+  min-height: 300px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+.shopee-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Product Image Container */
+.product-image-container {
+  position: relative !important;
+  width: 100% !important;
+  height: 200px !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+.product-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.3s ease !important;
+  display: block !important;
+}
+
+.shopee-card:hover .product-image {
+  transform: scale(1.05) !important;
+}
+
+/* Discount Badge */
+.discount-badge {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  background: #ee4d2d !important;
+  color: white !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+  z-index: 10 !important;
+}
+
+/* Flash Sale Badge */
+.flash-sale-badge {
+  position: absolute !important;
+  top: 8px !important;
+  left: 8px !important;
+  background: linear-gradient(45deg, #ff6b35, #f7931e) !important;
+  color: white !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  z-index: 10 !important;
+}
+
+/* Voucher Badge */
+.voucher-badge {
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 8px !important;
+  background: #ffd700 !important;
+  color: #333 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  z-index: 10 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  min-width: 60px !important;
+}
+
+.voucher-number {
+  font-size: 12px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+}
+
+.voucher-text {
+  font-size: 8px !important;
+  line-height: 1 !important;
+  margin-top: 1px !important;
+}
+
+/* Play Button */
+.play-button {
+  position: absolute !important;
+  bottom: 8px !important;
+  right: 8px !important;
+  width: 24px !important;
+  height: 24px !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  cursor: pointer !important;
+  z-index: 10 !important;
+}
+
+/* Brand Badge */
+.brand-badge {
+  position: absolute !important;
+  bottom: 40px !important;
+  left: 8px !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  color: white !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  z-index: 10 !important;
+}
+
+/* Feature Badges */
+.feature-badges {
+  position: absolute !important;
+  bottom: 40px !important;
+  right: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  z-index: 10 !important;
+}
+
+.feature-badge {
+  background: rgba(0, 0, 0, 0.7) !important;
+  color: white !important;
+  padding: 1px 4px !important;
+  border-radius: 2px !important;
+  font-size: 8px !important;
+  font-weight: bold !important;
+}
+
+/* Product Info */
+.product-info {
+  padding: 12px !important;
+  display: block !important;
+}
+
+.product-name {
+  font-size: 13px !important;
+  color: #333 !important;
+  line-height: 1.3 !important;
+  margin-bottom: 8px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  height: 34px !important;
+  margin-top: 0 !important;
+}
+
+/* Price Section */
+.price-section {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+.current-price {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: #ee4d2d !important;
+}
+
+.original-price {
+  font-size: 12px !important;
+  color: #999 !important;
+  text-decoration: line-through !important;
+}
+
+/* Sold Count */
+.sold-count {
+  font-size: 11px !important;
+  color: #999 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Action Badges */
+.action-badges {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  margin-bottom: 6px !important;
+}
+
+.action-badge {
+  background: #f5f5f5 !important;
+  color: #666 !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.action-badge.favorite {
+  background: #ff6b6b !important;
+  color: white !important;
+}
+
+/* Additional Info */
+.additional-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.info-text {
+  font-size: 10px !important;
+  color: #999 !important;
+  line-height: 1.2 !important;
+}
+
+/* No Suggestions */
 .no-suggestions {
-  text-align: center;
-  font-size: 18px;
-  color: #666;
-  grid-column: 1 / -1;
-  padding: 40px;
+  text-align: center !important;
+  grid-column: 1 / -1 !important;
+  padding: 60px 20px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
+.no-suggestions-icon {
+  font-size: 48px !important;
+  margin-bottom: 16px !important;
+}
+
+.no-suggestions h3 {
+  font-size: 18px !important;
+  color: #333 !important;
+  margin-bottom: 8px !important;
+  margin-top: 0 !important;
+}
+
+.no-suggestions p {
+  font-size: 14px !important;
+  color: #666 !important;
+  margin-bottom: 20px !important;
+}
+
+.back-home-btn {
+  display: inline-block !important;
+  background: #ee4d2d !important;
+  color: white !important;
+  padding: 10px 20px !important;
+  border-radius: 4px !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.back-home-btn:hover {
+  background: #d63a1f !important;
+}
+
+/* Load More Section */
+.load-more-section {
+  text-align: center !important;
+  margin-bottom: 40px !important;
+}
+
+.load-more-btn {
+  background: #ee4d2d !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.load-more-btn:hover {
+  background: #d63a1f !important;
+}
+
+/* Loading */
 .loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  background: #f8f9fa;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 400px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  margin: 20px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #ff6b35;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+  width: 40px !important;
+  height: 40px !important;
+  border: 3px solid #f3f3f3 !important;
+  border-top: 3px solid #ee4d2d !important;
+  border-radius: 50% !important;
+  animation: spin 1s linear infinite !important;
+  margin-bottom: 16px !important;
 }
 
 @keyframes spin {
@@ -68,45 +388,97 @@
 }
 
 .loading-container p {
-  font-size: 16px;
-  color: #666;
+  font-size: 14px !important;
+  color: #666 !important;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .suggestions-container {
-    padding: 20px 15px;
+    padding: 0 10px !important;
   }
   
-  .suggestions-header h1 {
-    font-size: 28px;
+  .shopee-header {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
   }
   
-  .suggestions-header p {
-    font-size: 14px;
+  .header-content h1 {
+    font-size: 20px !important;
   }
   
-  .suggestions-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
+  .shopee-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+    gap: 6px !important;
+  }
+  
+  .product-image-container {
+    height: 160px !important;
+  }
+  
+  .product-info {
+    padding: 8px !important;
+  }
+  
+  .product-name {
+    font-size: 12px !important;
+    height: 32px !important;
+  }
+  
+  .current-price {
+    font-size: 14px !important;
+  }
+  
+  .original-price {
+    font-size: 11px !important;
   }
 }
 
 @media (max-width: 480px) {
   .suggestions-container {
-    padding: 15px 10px;
+    padding: 0 8px !important;
   }
   
-  .suggestions-header h1 {
-    font-size: 24px;
+  .shopee-header {
+    padding: 12px !important;
   }
   
-  .suggestions-header p {
-    font-size: 13px;
+  .header-content h1 {
+    font-size: 18px !important;
   }
   
-  .suggestions-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
+  .shopee-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 4px !important;
+  }
+  
+  .product-image-container {
+    height: 140px !important;
+  }
+  
+  .product-info {
+    padding: 6px !important;
+  }
+  
+  .product-name {
+    font-size: 11px !important;
+    height: 28px !important;
+  }
+  
+  .current-price {
+    font-size: 13px !important;
+  }
+  
+  .voucher-badge {
+    min-width: 50px !important;
+    padding: 2px 4px !important;
+  }
+  
+  .voucher-number {
+    font-size: 10px !important;
+  }
+  
+  .voucher-text {
+    font-size: 7px !important;
   }
 } 

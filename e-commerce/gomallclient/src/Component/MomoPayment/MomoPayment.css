@@ -1,0 +1,405 @@
+.momo-payment-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.momo-payment-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.momo-payment-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #e91e63, #9c27b0);
+}
+
+.momo-header {
+    margin-bottom: 20px;
+}
+
+.momo-logo {
+    margin-bottom: 20px;
+}
+
+.momo-logo img {
+    width: 120px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.momo-logo .qr-icon {
+    font-size: 60px;
+    margin-bottom: 10px;
+}
+
+.momo-payment-card h2 {
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.payment-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row span:first-child {
+    color: #666;
+    font-weight: 500;
+}
+
+.info-row span:last-child {
+    color: #333;
+    font-weight: 600;
+}
+
+.amount {
+    color: #e91e63 !important;
+    font-size: 18px;
+}
+
+.countdown {
+    color: #ff9800 !important;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.qr-section {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.qr-code {
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.qr-code-image {
+    width: 400px;
+    height: 400px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.qr-code:hover {
+    transform: scale(1.02);
+}
+
+.qr-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.qr-placeholder p {
+    color: #666;
+    margin: 10px 0 0 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.qr-placeholder .qr-placeholder-image {
+    margin-bottom: 15px;
+    opacity: 0.8;
+    filter: grayscale(0.3);
+}
+
+.qr-placeholder .qr-placeholder-image svg {
+    width: 400px;
+    height: 400px;
+}
+
+.qr-instruction {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 15px 0;
+    font-weight: 500;
+}
+
+.payment-status {
+    margin-bottom: 20px;
+}
+
+.status-indicator {
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.status-indicator.pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-indicator.processing {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.status-indicator.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-indicator.failed {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-indicator.cancelled {
+    background: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.momo-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.momo-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.momo-btn.primary {
+    background: linear-gradient(135deg, #e91e63, #9c27b0);
+    color: white;
+}
+
+.momo-btn.primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(233, 30, 99, 0.3);
+}
+
+.momo-btn.secondary {
+    background: #f8f9fa;
+    color: #666;
+    border: 2px solid #dee2e6;
+}
+
+.momo-btn.secondary:hover:not(:disabled) {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.testing-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.momo-btn.test {
+    padding: 10px 20px;
+    font-size: 12px;
+    flex: 1;
+}
+
+.momo-btn.test.success {
+    background: #28a745;
+    color: white;
+}
+
+.momo-btn.test.success:hover:not(:disabled) {
+    background: #218838;
+}
+
+.momo-btn.test.failed {
+    background: #dc3545;
+    color: white;
+}
+
+.momo-btn.test.failed:hover:not(:disabled) {
+    background: #c82333;
+}
+
+.payment-note {
+    background: #e3f2fd;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid #2196f3;
+}
+
+.payment-note p {
+    margin: 0;
+    color: #1976d2;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Loading state */
+.momo-payment-card.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #e91e63;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.qr-placeholder .loading-spinner {
+    width: 80px;
+    height: 80px;
+    border-width: 6px;
+    margin-bottom: 30px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error state */
+.momo-payment-card.error {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+}
+
+.momo-payment-card.error h2 {
+    color: #c53030;
+}
+
+.momo-payment-card.error p {
+    color: #e53e3e;
+    margin-bottom: 20px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .momo-payment-container {
+        padding: 10px;
+    }
+    
+    .momo-payment-card {
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    .momo-payment-card h2 {
+        font-size: 24px;
+    }
+    
+    .qr-code-image,
+    .qr-placeholder .qr-placeholder-image svg {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .qr-code,
+    .qr-placeholder {
+        min-height: 300px;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .testing-buttons {
+        flex-direction: column;
+    }
+    
+    .momo-btn {
+        padding: 12px 25px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .momo-payment-card {
+        padding: 15px;
+    }
+    
+    .momo-logo img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .qr-code-image,
+    .qr-placeholder .qr-placeholder-image svg {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .qr-code,
+    .qr-placeholder {
+        min-height: 250px;
+    }
+    
+    .payment-info {
+        padding: 15px;
+    }
+}
+
+

@@ -14,23 +14,28 @@ const LoginPage = () => {
   const location = useLocation();
   const { login } = useAuth();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    console.log('Attempting login with:', { username, password });
+
     try {
       const result = await login(username, password);
       
+      console.log('Login result:', result);
+      
       if (result.success) {
         const user = result.user;
+        console.log('User data:', user);
         
         // Điều hướng theo vai trò
         if (user.role === 'seller') {
           if (user.sellerInfo && user.sellerInfo.status === 'approved') {
             navigate('/seller-dashboard');
           } else {
-            setError('Tài khoản seller của bạn chưa được phê duyệt.');
+            setError('Your seller account has not been approved yet.');
             return;
           }
         } else if (user.role === 'admin') {
@@ -41,11 +46,12 @@ const LoginPage = () => {
           navigate(from);
         }
       } else {
-        setError(result.message || 'Đăng nhập thất bại');
+        console.log('Login failed:', result.message);
+        setError(result.message || 'Login failed');
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại.');
+              setError('An error occurred during login. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -66,11 +72,11 @@ const LoginPage = () => {
                     <span className="gomall">GoMall</span>
                   </span>
                 </Link>
-                <span className="logo-text dangnhap"> Đăng nhập</span>
+                <span className="logo-text dangnhap"> Login</span>
               </div>
             </div>
             <div className="header-right">
-              <span className="help-text">Bạn cần giúp đỡ?</span>
+              <span className="help-text">Need help?</span>
             </div>
           </div>
 
@@ -79,14 +85,14 @@ const LoginPage = () => {
             {/* Bên trái - Promotional content */}
             <div className="content-left">
               <div className="promotional-content">
-                <h1 className="promo-title">8.8 SIÊU HỘI VOUCHER</h1>
+                <h1 className="promo-title">JOIN THE COMMUNITY</h1>
                 <div className="promo-banners">
-                  <div className="promo-banner blue">SIÊU RẺ CHỈ TỪ 9.000</div>
-                  <div className="promo-banner yellow">TRIỆU PHÚ VOUCHER GIẢM ĐẾN 20%</div>
-                  <div className="promo-banner blue">FREE SHIP MỌI ĐƠN</div>
+                  <div className="promo-banner blue">SMART SHOPPING</div>
+                  <div className="promo-banner yellow">MAXIMUM SAVINGS</div>
+                  <div className="promo-banner blue">GREAT EXPERIENCE</div>
                 </div>
-                <div className="promo-text">SIÊU NHANH SIÊU RẺ</div>
-                <div className="promo-date">26.7 - 9.8</div>
+                <div className="promo-text">LOGIN TODAY</div>
+                <div className="promo-date">Get special offers</div>
               </div>
 
               {/* Background shapes */}
@@ -94,7 +100,6 @@ const LoginPage = () => {
                 <div className="shape shape-1"></div>
                 <div className="shape shape-2"></div>
                 <div className="shape shape-3"></div>
-                <div className="freeship-text">FREESHIP</div>
               </div>
             </div>
 
@@ -103,7 +108,7 @@ const LoginPage = () => {
               <div className="login-form-container">
                 <div className="login-form">
                   <div className="form-header">
-                    <h2>Đăng nhập</h2>
+                    <h2>Login</h2>
                   </div>
 
                   {error && (
@@ -112,11 +117,11 @@ const LoginPage = () => {
                     </div>
                   )}
 
-                  <form onSubmit={handleLogin}>
+                  <form onSubmit={handleSubmit}>
                     <div className="input-group">
                       <input
                         type="text"
-                        placeholder="Email/Số điện thoại/Tên đăng nhập"
+                        placeholder="Email/Phone/Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
@@ -127,7 +132,7 @@ const LoginPage = () => {
                     <div className="input-group password-group">
                       <input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Mật khẩu"
+                        placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -147,33 +152,18 @@ const LoginPage = () => {
                       className="login-btn" 
                       disabled={loading}
                     >
-                      {loading ? 'Đang đăng nhập...' : 'ĐĂNG NHẬP'}
+                      {loading ? 'Logging in...' : 'LOGIN'}
                     </button>
                   </form>
 
                   <div className="form-footer">
                     <Link to="/forgot-password" className="forgot-password">
-                      Quên mật khẩu
+                      Forgot password
                     </Link>
                     
-                    <div className="separator">
-                      <span>HOẶC</span>
-                    </div>
-
-                    <div className="social-login">
-                      <button className="social-btn facebook">
-                        <i className="social-icon">f</i>
-                        <span>Facebook</span>
-                      </button>
-                      <button className="social-btn google">
-                        <i className="social-icon">G</i>
-                        <span>Google</span>
-                      </button>
-                    </div>
-
                     <div className="register-link">
-                      <span>Bạn mới biết đến GoMall? </span>
-                      <Link to="/signup" className="register-btn">Đăng ký</Link>
+                      <span>New to GoMall? </span>
+                      <Link to="/signup" className="register-btn">Sign up</Link>
                     </div>
                   </div>
                 </div>

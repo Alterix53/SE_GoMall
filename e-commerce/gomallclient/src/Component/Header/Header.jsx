@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import CartTooltip from '../CartTooltip/CartTooltip';
+import Notifications from '../Notifications/Notifications';
 import './Header.css';
 
 function Header() {
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
   const [showCartTooltip, setShowCartTooltip] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated, logout } = useAuth();
+  const [searchKeyword, setSearchKeyword] = useState("");
   const navigate = useNavigate();
 
   const toggleAccountDropdown = () => {
@@ -57,6 +61,41 @@ function Header() {
     setShowAccountDropdown(false);
   };
 
+  // Load unread count when user logged in
+  useEffect(() => {
+    if (isAuthenticated()) {
+      loadUnreadCount();
+    }
+  }, [isAuthenticated]);
+
+  const loadUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/api/notifications/unread-count', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUnreadCount(data.data.unreadCount);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading unread count:', error);
+    }
+  };
+
+  const submitSearch = (e) => {
+    if (e) e.preventDefault();
+    const kw = searchKeyword.trim();
+    if (!kw) return;
+    navigate(`/search?keyword=${encodeURIComponent(kw)}`);
+  };
+
   return (
     <div className="gomall-header">
       {/* Top Orange Banner */}
@@ -90,24 +129,31 @@ function Header() {
 
           {/* Search Bar */}
           <div className="search-section">
-            <div className="search-input-wrapper">
+            <form className="search-input-wrapper" onSubmit={submitSearch}>
               <input
                 type="text"
                 placeholder="Search products, ..."
                 className="search-input"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
               />
-              <button type="submit" className="search-button">
+              <button type="submit" className="search-button" aria-label="Search">
                 <i className="search-icon">🔍</i>
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Navigation */}
           <div className="nav-section">
-            <Link to="/notifications" className="nav-item">
-              <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f514.svg" alt="Notifications" />
+            <div 
+              className="nav-item notifications-dropdown"
+              onClick={() => setShowNotifications(!showNotifications)}
+            >
+              <div className="nav-icon-img">🔔</div>
               <span className="nav-text">Notifications</span>
-            </Link>
+              {/* Unread badge */}
+              {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
+            </div>
             <Link to="/register-seller" className="nav-item" onClick={handleBecomeSellerClick}>
               <img className="nav-icon-img" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2753.svg" alt="Become a Seller" />
               <span className="nav-text">Become a Seller</span>
@@ -148,7 +194,7 @@ function Header() {
                 onMouseLeave={handleAccountMouseLeave}
               >
                 {isAuthenticated() && user ? (
-                  // Đã đăng nhập - hiển thị menu user
+                  // Logged in - show user menu
                   <>
                     <div className="dropdown-item user-info">
                       <i className="dropdown-icon">👤</i>
@@ -159,39 +205,39 @@ function Header() {
                     </div>
                     <Link to="/profile" className="dropdown-item">
                       <i className="dropdown-icon">⚙️</i>
-                      <span>Tài khoản của tôi</span>
+                      <span>My Account</span>
                     </Link>
                     <Link to="/orders" className="dropdown-item">
                       <i className="dropdown-icon">📦</i>
-                      <span>Đơn mua</span>
+                      <span>My Orders</span>
                     </Link>
                     {user.role === 'seller' && (
                       <Link to="/seller-dashboard" className="dropdown-item">
                         <i className="dropdown-icon">🏪</i>
-                        <span>Kênh Người Bán</span>
+                        <span>Seller Center</span>
                       </Link>
                     )}
                     {user.role === 'admin' && (
                       <Link to="/admin" className="dropdown-item">
                         <i className="dropdown-icon">🛠️</i>
-                        <span>Quản trị</span>
+                        <span>Admin</span>
                       </Link>
                     )}
                     <button className="dropdown-item logout-btn" onClick={handleLogout}>
                       <i className="dropdown-icon">🚪</i>
-                      <span>Đăng xuất</span>
+                      <span>Log out</span>
                     </button>
                   </>
                 ) : (
-                  // Chưa đăng nhập - hiển thị login/signup
+                  // Not logged in - show login/signup
                   <>
                     <Link to="/login" className="dropdown-item">
                       <i className="dropdown-icon">🔑</i>
-                      <span>Đăng nhập</span>
+                      <span>Login</span>
                     </Link>
                     <Link to="/signup" className="dropdown-item">
                       <i className="dropdown-icon">📝</i>
-                      <span>Đăng ký</span>
+                      <span>Sign up</span>
                     </Link>
                   </>
                 )}
@@ -200,6 +246,12 @@ function Header() {
           </div>
         </div>
       </header>
+       {/* Notifications Panel */}
+      <Notifications 
+        isVisible={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />         
+      
     </div>
   );
 }

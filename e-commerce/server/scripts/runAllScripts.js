@@ -82,39 +82,21 @@ const runAllScripts = async () => {
     log('This will run all scripts in the correct order', 'yellow');
     
     // Step 1: Create default admin
-    logStep('STEP 1/4', 'Creating default admin user');
+    logStep('STEP 1/2', 'Creating default admin user');
     await runScript('createAdmin.js');
     
     // Step 2: Seed all data
-    logStep('STEP 2/4', 'Seeding categories, users, and products');
+    logStep('STEP 2/2', 'Seeding categories, users, and products');
     await runScript('seedData.js');
     
-    // Step 3: Add flash sale data
-    logStep('STEP 3/4', 'Adding flash sale data to products');
-    await runScript('addFlashSaleToProducts.js');
-    
-    // Step 4: Check final status
-    logStep('STEP 4/4', 'Checking final database status');
-    await runScript('checkStatus.js');
-    
     const endTime = Date.now();
-    const duration = ((endTime - startTime) / 1000).toFixed(2);
+    const duration = Math.round((endTime - startTime) / 1000);
     
-    log('\n🎉 All scripts completed successfully!', 'green');
-    log(`⏱️  Total time: ${duration} seconds`, 'cyan');
-    log('\n📋 Summary:', 'bright');
-    log('✅ Default admin created (admin/admin123)', 'green');
-    log('✅ Categories, users, and products seeded', 'green');
-    log('✅ Flash sale data added', 'green');
-    log('✅ Database status verified', 'green');
-    
-    log('\n🚀 Your GoMall database is ready!', 'bright');
-    log('You can now start the server and frontend', 'yellow');
+    log(`\n🎉 All scripts completed successfully in ${duration}s!`, 'green');
+    log('Database is now ready for use.', 'bright');
     
   } catch (error) {
-    log('\n❌ Database setup failed!', 'red');
-    log(`Error: ${error.message}`, 'red');
-    log('\nPlease check the error above and try again', 'yellow');
+    log(`\n❌ Setup failed: ${error.message}`, 'red');
     process.exit(1);
   }
 };

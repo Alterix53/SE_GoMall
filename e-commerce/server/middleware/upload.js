@@ -8,6 +8,7 @@ import streamifier from 'streamifier';
 const uploadDir = path.join(process.cwd(), 'uploads');
 const productImagesDir = path.join(uploadDir, 'products');
 const verificationDir = path.join(uploadDir, 'verification');
+const documentsDir = path.join(uploadDir, 'documents');
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -18,8 +19,11 @@ if (!fs.existsSync(productImagesDir)) {
 if (!fs.existsSync(verificationDir)) {
     fs.mkdirSync(verificationDir, { recursive: true });
 }
+if (!fs.existsSync(documentsDir)) {
+    fs.mkdirSync(documentsDir, { recursive: true });
+}
 
-// Cấu hình storage cho multer
+// Cấu hình storage cho multer (product images)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, productImagesDir);
@@ -108,30 +112,59 @@ export const saveBufferToLocal = async (file) => {
     return `/uploads/verification/${filename}`;
 };
 
+// Cấu hình storage cho document upload (single file other than verification)
+const documentStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, documentsDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, `document-${uniqueSuffix}${ext}`);
+    }
+});
+
+// Filter cho document upload
+const documentFilter = (req, file, cb) => {
+    const allowedTypes = /pdf|doc|docx|jpg|jpeg|png/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = file.mimetype === 'application/pdf' || 
+                    file.mimetype.startsWith('image/') ||
+                    file.mimetype.includes('document');
+
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Chỉ cho phép upload file PDF, DOC, DOCX hoặc ảnh'), false);
+    }
+};
+
+// Cấu hình multer cho document
+const documentUpload = multer({
+    storage: documentStorage,
+    limits: {
+        fileSize: 10 * 1024 * 1024, // Giới hạn 10MB
+        files: 1 // Chỉ 1 file
+    },
+    fileFilter: documentFilter
+});
+
+// Middleware upload document
+export const uploadDocument = documentUpload.single('document');
+
 // Middleware xử lý lỗi upload
 export const handleUploadError = (error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
-            return res.status(400).json({
-                success: false,
-                message: 'File quá lớn.'
-            });
+            return res.status(400).json({ success: false, message: 'File quá lớn.' });
         }
         if (error.code === 'LIMIT_FILE_COUNT') {
-            return res.status(400).json({
-                success: false,
-                message: 'Quá nhiều file. Tối đa 10 file'
-            });
+            return res.status(400).json({ success: false, message: 'Quá nhiều file. Tối đa 10 file' });
         }
     }
-    
-    if (error.message.includes('Chỉ cho phép upload file ảnh') || error.message.includes('Chỉ cho phép upload file ảnh hoặc PDF')) {
-        return res.status(400).json({
-            success: false,
-            message: error.message
-        });
+    if (error.message.includes('Chỉ cho phép upload file ảnh') || error.message.includes('Chỉ cho phép upload file ảnh hoặc PDF') || error.message.includes('PDF, DOC, DOCX')) {
+        return res.status(400).json({ success: false, message: error.message });
     }
-    
     next(error);
 };
 

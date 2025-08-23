@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
-import SearchBar from "./Component/SearchBar/SearchBar"
+import Header from "./Component/Header/Header"
 import ProductCard from "./Component/ProductCard/ProductCard"
 import "./SearchResult.css"
 
@@ -40,17 +40,23 @@ const SearchResult = () => {
           keyword: searchQuery,
           minPrice: priceRange[0],
           maxPrice: priceRange[1],
-          sortBy: sortBy === 'price-low' ? 'price' : sortBy === 'price-high' ? '-price' : 'createdAt'
+          // backend expects sortBy field name (supports nested via dot), plus sortOrder
+          sortBy: sortBy === 'price-low' || sortBy === 'price-high' ? 'price.sale' : 'createdAt',
+          sortOrder: sortBy === 'price-low' ? 'asc' : 'desc'
         });
         if (selectedCategories.length > 0) {
-          params.append('category', selectedCategories.join(','));
+          // backend expects categoryID; as a fallback, pass name and let server match basics
+          // Here we pass the first selected category for simplicity
+          params.set('category', selectedCategories[0]);
         }
         const response = await fetch(`http://localhost:8080/api/products/search?${params}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          console.warn('Search API error status:', response.status);
+          setSearchResults([]);
+          setFilteredResults([]);
+          return;
         }
         const data = await response.json();
-        console.log('API Response:', data);
         if (data.success && data.data?.products) {
           console.log('Raw products from API:', data.data.products);
           const products = data.data.products.map(product => {
@@ -72,11 +78,9 @@ const SearchResult = () => {
             console.log('Mapped product:', mappedProduct);
             return mappedProduct;
           });
-          console.log('Final products array:', products);
           setSearchResults(products);
           setFilteredResults(products);
         } else {
-          console.log('No products found or invalid response structure');
           setSearchResults([]);
           setFilteredResults([]);
         }
@@ -124,13 +128,7 @@ const SearchResult = () => {
   console.log('Rendering SearchResult - searchResults:', searchResults.length, 'filteredResults:', filteredResults.length);
   return (
     <div className="search-results-page">
-      {/* Breadcrumb */}
-      <div className="breadcrumb-container">
-        <nav className="breadcrumb">
-          <span>Trang chủ</span> / <span>Kết quả tìm kiếm</span> /{" "}
-          <span className="breadcrumb-current">"{searchQuery}"</span>
-        </nav>
-      </div>
+      <Header />
       <div className="search-results-container">
         <div className="search-layout">
           {/* Sidebar Filters */}

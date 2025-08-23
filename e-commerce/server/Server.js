@@ -11,8 +11,10 @@ import authRoutes from "./routes/authRoutes.js"; // Import auth routes
 import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import momoPaymentRoutes from "./routes/momoPaymentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
@@ -92,11 +94,7 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
 app.get('/api/categories', async (req, res) => {
     try {
         const categories = await Category.find({}).sort({ categoryName: 1 });
-        res.json({
-            success: true,
-            data: { categories },
-            message: "Get categories list successfully"
-        });
+        res.json({ success: true, data: { categories }, message: "Get categories list successfully" });
     } catch (error) {
         console.error("Error fetching categories:", error);
         res.status(500).json({ success: false, message: "Server error" });
@@ -109,12 +107,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);  // Thêm order routes
 app.use("/api/payments", paymentRoutes);
+app.use("/api/momo", momoPaymentRoutes);  // Thêm MoMo payment routes
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/sellers", sellerRoutes);
-
-// app.use("/api/auth", userRoutes); // Mount auth routes trước
-
-
 
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);
@@ -127,17 +123,13 @@ app.use((err, req, res, next) => {
 
 app.use((req, res) => {
     console.log("404 Not Found for path:", req.path);
-    res.status(404).json({
-        success: false,
-        message: "API endpoint not found",
-    });
+    res.status(404).json({ success: false, message: "API endpoint not found" });
 });
 
 const startServer = async () => {
     try {
         await connectDB(MONGODB_URI);
         console.log("MongoDB Connected");
-
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

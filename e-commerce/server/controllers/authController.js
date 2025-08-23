@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Seller from '../models/Seller.js';
 import { validationResult } from 'express-validator';
+import crypto from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -308,21 +309,10 @@ export const login = async (req, res) => {
 // POST /api/auth/logout - User logout
 export const logout = async (req, res) => {
     try {
-        // In a stateless JWT system, logout is typically handled client-side
-        // by removing the token. However, we can implement a blacklist if needed.
-        
-        res.json({
-            success: true,
-            message: 'Logout successful'
-        });
-
+        res.json({ success: true, message: 'Logout successful' });
     } catch (error) {
         console.error('Logout error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during logout',
-            error: process.env.NODE_ENV === 'development' ? error.message : {}
-        });
+        res.status(500).json({ success: false, message: 'Server error during logout', error: process.env.NODE_ENV === 'development' ? error.message : {} });
     }
 };
 
@@ -358,20 +348,11 @@ export const getCurrentUser = async (req, res) => {
             sellerInfo
         };
 
-        res.json({
-            success: true,
-            data: {
-                user: userResponse
-            }
-        });
+        res.json({ success: true, data: { user: userResponse } });
 
     } catch (error) {
         console.error('Get current user error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error while fetching user data',
-            error: process.env.NODE_ENV === 'development' ? error.message : {}
-        });
+        res.status(500).json({ success: false, message: 'Server error while fetching user data', error: process.env.NODE_ENV === 'development' ? error.message : {} });
     }
 };
 
@@ -417,10 +398,7 @@ export const refreshToken = async (req, res) => {
         const { refreshToken } = req.body;
 
         if (!refreshToken) {
-            return res.status(400).json({
-                success: false,
-                message: 'Refresh token is required'
-            });
+            return res.status(400).json({ success: false, message: 'Refresh token is required' });
         }
 
         // Verify refresh token
@@ -428,10 +406,7 @@ export const refreshToken = async (req, res) => {
         const user = await User.findById(decoded.userId);
 
         if (!user || !user.isActive) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid refresh token'
-            });
+            return res.status(401).json({ success: false, message: 'Invalid refresh token' });
         }
 
         // Generate new access token
@@ -441,20 +416,11 @@ export const refreshToken = async (req, res) => {
             { expiresIn: JWT_EXPIRES_IN }
         );
 
-        res.json({
-            success: true,
-            message: 'Token refreshed successfully',
-            data: {
-                token: newToken
-            }
-        });
+        res.json({ success: true, message: 'Token refreshed successfully', data: { token: newToken } });
 
     } catch (error) {
         console.error('Refresh token error:', error);
-        res.status(401).json({
-            success: false,
-            message: 'Invalid refresh token'
-        });
+        res.status(401).json({ success: false, message: 'Invalid refresh token' });
     }
 };
 
@@ -467,19 +433,13 @@ export const changePassword = async (req, res) => {
         // Get user with password
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
+            return res.status(404).json({ success: false, message: 'User not found' });
         }
 
         // Verify old password
         const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
         if (!isOldPasswordValid) {
-            return res.status(400).json({
-                success: false,
-                message: 'Current password is incorrect'
-            });
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
         }
 
         // Hash new password and save
@@ -487,17 +447,84 @@ export const changePassword = async (req, res) => {
         user.password = hashedNewPassword;
         await user.save();
 
-        res.json({
-            success: true,
-            message: 'Password changed successfully'
-        });
+        res.json({ success: true, message: 'Password changed successfully' });
 
     } catch (error) {
         console.error('Change password error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during password change',
-            error: process.env.NODE_ENV === 'development' ? error.message : {}
-        });
+        res.status(500).json({ success: false, message: 'Server error during password change', error: process.env.NODE_ENV === 'development' ? error.message : {} });
     }
+};
+
+// Forgot Password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email là bắt buộc' });
+    }
+
+    // Tìm user theo email
+    const user = await User.findOne({ email });
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Email không tồn tại trong hệ thống' });
+    }
+
+    // Tạo reset token (có thể sử dụng crypto hoặc uuid)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = Date.now() + 3600000; // 1 giờ
+
+    // Lưu reset token vào database
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = resetTokenExpiry;
+    await user.save();
+
+    // Tạo reset URL
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`;
+    console.log('Reset URL:', resetUrl);
+
+    res.json({ success: true, message: 'Email reset mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn.' });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra khi xử lý yêu cầu' });
+  }
+};
+
+// Reset Password
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ success: false, message: 'Token và mật khẩu mới là bắt buộc' });
+    }
+
+    // Tìm user với reset token hợp lệ
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Token không hợp lệ hoặc đã hết hạn' });
+    }
+
+    // Hash mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Cập nhật mật khẩu và xóa reset token
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, message: 'Mật khẩu đã được đặt lại thành công' });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ success: false, message: 'Có lỗi xảy ra khi đặt lại mật khẩu' });
+  }
 }; 

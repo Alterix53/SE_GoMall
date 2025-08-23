@@ -92,14 +92,14 @@ const categories = [
         name: "iPhone 15 Pro Max", 
         price: 35000000, 
         brand: "Apple",
-        description: "iPhone 15 Pro Max với chip A17 Pro, camera 48MP, màn hình Super Retina XDR 6.7 inch, titanium design.",
+        description: "iPhone 15 Pro Max with A17 Pro chip, 48MP camera, Super Retina XDR 6.7 inch display, titanium design.",
         image: "iphone-15-pro-max.jpg"
       },
       { 
         name: "Samsung Galaxy S24 Ultra", 
         price: 32000000, 
         brand: "Samsung",
-        description: "Galaxy S24 Ultra với S Pen tích hợp, camera 200MP, màn hình Dynamic AMOLED 2X 6.8 inch, chip Snapdragon 8 Gen 3.",
+        description: "Galaxy S24 Ultra with integrated S Pen, 200MP camera, Dynamic AMOLED 2X 6.8 inch display, Snapdragon 8 Gen 3 chip.",
         image: "samsung-s24-ultra.jpg"
       }
     ],
@@ -108,14 +108,14 @@ const categories = [
         name: "MacBook Pro 16-inch M3 Max", 
         price: 65000000, 
         brand: "Apple",
-        description: "MacBook Pro 16 inch với chip M3 Max, màn hình Liquid Retina XDR, RAM 32GB, SSD 1TB, hiệu năng cực mạnh.",
+        description: "MacBook Pro 16 inch with M3 Max chip, Liquid Retina XDR display, 32GB RAM, 1TB SSD, extremely powerful performance.",
         image: "macbook-pro-16-m3.jpg"
       },
       { 
         name: "Dell XPS 15 9530", 
         price: 42000000, 
         brand: "Dell",
-        description: "Dell XPS 15 với Intel Core i9-13900H, RTX 4070, màn hình OLED 3.5K, RAM 32GB, SSD 1TB.",
+        description: "Dell XPS 15 with Intel Core i9-13900H, RTX 4070, OLED 3.5K display, 32GB RAM, 1TB SSD.",
         image: "dell-xps-15.jpg"
       }
     ],
@@ -124,14 +124,14 @@ const categories = [
         name: "Nike Air Jordan 1 Retro High OG", 
         price: 4500000, 
         brand: "Nike",
-        description: "Air Jordan 1 Retro High OG với thiết kế cổ điển, chất liệu da cao cấp, màu sắc đẹp mắt.",
+        description: "Air Jordan 1 Retro High OG with classic design, premium leather material, attractive colors.",
         image: "nike-air-jordan-1.jpg"
       },
       { 
         name: "Gucci Marmont Small Shoulder Bag", 
         price: 28000000, 
         brand: "Gucci",
-        description: "Túi Gucci Marmont với thiết kế cổ điển, chất liệu da mềm mại, logo GG đặc trưng.",
+        description: "Gucci Marmont bag with classic design, soft leather material, distinctive GG logo.",
         image: "gucci-marmont-bag.jpg"
       }
     ],
@@ -140,14 +140,14 @@ const categories = [
         name: "Nike Air Max 270", 
         price: 3200000, 
         brand: "Nike",
-        description: "Nike Air Max 270 với đệm khí Air Max lớn nhất, thiết kế thời trang, phù hợp cho thể thao và đi chơi.",
+        description: "Nike Air Max 270 with largest Air Max air cushion, fashionable design, suitable for sports and casual wear.",
         image: "nike-air-max-270.jpg"
       },
       { 
         name: "Adidas Ultraboost 22", 
         price: 3800000, 
         brand: "Adidas",
-        description: "Adidas Ultraboost 22 với công nghệ Boost, đế Continental, thiết kế sock-fit, hiệu suất chạy bộ cao.",
+        description: "Adidas Ultraboost 22 with Boost technology, Continental sole, sock-fit design, high running performance.",
         image: "adidas-ultraboost-22.jpg"
       }
     ],
@@ -156,14 +156,14 @@ const categories = [
         name: "Philips Air Fryer HD9654/90", 
         price: 4500000, 
         brand: "Philips",
-        description: "Philips Air Fryer với công nghệ TurboStar, dung tích 1.2kg, tiết kiệm dầu, nấu ăn lành mạnh.",
+        description: "Philips Air Fryer with TurboStar technology, 1.2kg capacity, oil saving, healthy cooking.",
         image: "philips-air-fryer.jpg"
       },
       { 
         name: "Dyson V15 Detect Absolute", 
         price: 22000000, 
         brand: "Dyson",
-        description: "Dyson V15 Detect với laser detection, công suất 240AW, pin 60 phút, công nghệ HEPA filtration.",
+        description: "Dyson V15 Detect with laser detection, 240AW power, 60-minute battery, HEPA filtration technology.",
         image: "dyson-v15-detect.jpg"
       }
     ],
@@ -172,7 +172,7 @@ const categories = [
         name: "La Mer Crème de la Mer", 
         price: 12000000, 
         brand: "La Mer",
-        description: "La Mer Crème de la Mer với Miracle Broth, dưỡng ẩm sâu, phục hồi da, chống lão hóa.",
+        description: "La Mer Crème de la Mer with Miracle Broth, deep hydration, skin recovery, anti-aging.",
         image: "la-mer-cream.jpg"
       },
       { 

@@ -30,9 +30,10 @@ export default function ViewItemDetail() {
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products?limit=4');
+        const response = await fetch('http://localhost:8080/api/products?limit=4');
         const data = await response.json();
-        setRelatedProducts(data.products || []);
+        const list = data?.data?.products || data?.products || [];
+        setRelatedProducts(list);
       } catch (error) {
         console.error('Error fetching related products:', error);
         setRelatedProducts([]);
