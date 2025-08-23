@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiService } from '../../utils/api';
@@ -9,6 +9,8 @@ const RegisterSeller = () => {
   const navigate = useNavigate();
   const [sellerStatus, setSellerStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [hasCheckedStatus, setHasCheckedStatus] = useState(false);
+  const redirectRef = useRef(false);
   const [businessName, setBusinessName] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -22,26 +24,39 @@ const RegisterSeller = () => {
 
   // Kiểm tra trạng thái seller khi component mount (chỉ gọi 1 lần)
   useEffect(() => {
-    if (isAuthenticated()) {
+    console.log('RegisterSeller useEffect triggered, isAuthenticated:', isAuthenticated(), 'hasCheckedStatus:', hasCheckedStatus);
+    if (isAuthenticated() && !hasCheckedStatus) {
+      console.log('Calling checkSellerStatus...');
       checkSellerStatus();
+    } else if (!isAuthenticated()) {
+      // Nếu chưa đăng nhập, set hasCheckedStatus = true để không hiển thị loading
+      setHasCheckedStatus(true);
     }
-  }, []); // Chỉ chạy 1 lần khi component mount
+  }, [hasCheckedStatus]); // Chỉ chạy khi hasCheckedStatus thay đổi
 
   // Xử lý chuyển hướng khi seller đã được approve
   useEffect(() => {
-    if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved') {
+    console.log('Redirect useEffect triggered, sellerStatus:', sellerStatus, 'redirectRef.current:', redirectRef.current);
+    if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved' && !redirectRef.current) {
+      console.log('Seller approved, setting redirect timer...');
+      redirectRef.current = true; // Đánh dấu đã chuyển hướng
       const timer = setTimeout(() => {
+        console.log('Redirecting to /seller...');
         navigate('/seller');
       }, 2000);
       
       return () => clearTimeout(timer);
     }
-  }, [sellerStatus, navigate]);
+  }, [sellerStatus]); // Chỉ dependency sellerStatus
 
   const checkSellerStatus = useCallback(async () => {
+    console.log('checkSellerStatus called');
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      console.log('Making API call to /sellers/my-status');
+      console.log('Token:', token ? 'exists' : 'missing');
+      
       const response = await fetch('http://localhost:8080/api/sellers/my-status', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -49,14 +64,31 @@ const RegisterSeller = () => {
         }
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('API response:', data);
         if (data.success) {
+          console.log('Setting seller status:', data.data);
+          console.log('hasApplication:', data.data.hasApplication);
+          console.log('status:', data.data.status);
           setSellerStatus(data.data);
+          setHasCheckedStatus(true);
+        } else {
+          console.log('API response not successful:', data.message);
+          setHasCheckedStatus(true); // Vẫn set true để tránh loading vô hạn
         }
+      } else {
+        console.log('API response not ok:', response.status);
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
+        setHasCheckedStatus(true); // Vẫn set true để tránh loading vô hạn
       }
     } catch (error) {
       console.error('Error checking seller status:', error);
+      setHasCheckedStatus(true); // Vẫn set true để tránh loading vô hạn
     } finally {
       setLoading(false);
     }
@@ -104,7 +136,40 @@ const RegisterSeller = () => {
     }
   };
 
+  // Hiển thị loading khi đang check trạng thái
+  if (loading || !hasCheckedStatus) {
+    return (
+      <div className="register-seller-container">
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <span className="ms-3">Đang kiểm tra trạng thái seller...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Nếu chưa đăng nhập, hiển thị thông báo
+  if (!isAuthenticated()) {
+    return (
+      <div className="register-seller-container">
+        <div className="alert alert-warning">
+          <h4 className="alert-heading">⚠️ Vui lòng đăng nhập</h4>
+          <p>Bạn cần đăng nhập để đăng ký trở thành seller.</p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => navigate('/login')}
+          >
+            Đăng nhập
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Nếu đã có hồ sơ, hiển thị thông tin trạng thái
+  console.log('Rendering RegisterSeller, sellerStatus:', sellerStatus);
   if (sellerStatus && sellerStatus.hasApplication) {
     return (
       <div className="register-seller-container">
@@ -152,7 +217,7 @@ const RegisterSeller = () => {
     );
   }
 
-  // Form đăng ký seller
+  // Form đăng ký seller (chỉ hiển thị khi đã check xong và không có hồ sơ)
   return (
     <div className="register-seller-container">
       <div className="register-seller-form">
