@@ -48,6 +48,7 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
     
     try {
         const { keyword, sortBy, page = 1, limit = 12 } = req.query;
+<<<<<<< HEAD
         // Normalize category by names to IDs if needed (defensive against invalid casts)
         if (req.query.category) {
             const raw = Array.isArray(req.query.category)
