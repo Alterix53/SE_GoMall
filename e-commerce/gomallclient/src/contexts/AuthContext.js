@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
           id: rawUser._id || rawUser.id,
           username: rawUser.username,
           email: rawUser.email,
-          role: Array.isArray(rawUser.role) ? rawUser.role[0] : rawUser.role,
+          role: Array.isArray(rawUser.role) ? rawUser.role : rawUser.role,
           sellerInfo: rawUser.sellerInfo || null,
         };
         

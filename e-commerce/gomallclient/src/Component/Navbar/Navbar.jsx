@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCart } from "../../contexts/CartContext";
+import { useSellerAuthV2 } from "../../hooks/useSellerAuthV2";
 import UserAccountModal from "../UserAccountModal/UserAccountModal";
 import SearchBar from "../SearchBar/SearchBar";
 import OptimizedImage from "../../utils/OptimizedImage";
@@ -16,56 +17,26 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getCurrentUser, logout } = useAuth();
   const { cartItems } = useCart();
+  const { sellerStatus, isApprovedSeller, isPendingSeller, isRejectedSeller, hasSellerApplication } = useSellerAuthV2();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [modalPosition, setModalPosition] = useState({ top: 0, right: 0 });
-  const [sellerStatus, setSellerStatus] = useState(null);
-  const [loadingSellerStatus, setLoadingSellerStatus] = useState(false);
 
-  // Kiểm tra trạng thái seller khi component mount
-  useEffect(() => {
-    if (isAuthenticated()) {
-      checkSellerStatus();
-    }
-  }, [isAuthenticated]);
 
-  const checkSellerStatus = async () => {
-    setLoadingSellerStatus(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/sellers/my-status', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setSellerStatus(data.data);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking seller status:', error);
-    } finally {
-      setLoadingSellerStatus(false);
-    }
-  };
 
   const handleBecomeSellerClick = (e) => {
     e.preventDefault();
     
-    if (sellerStatus && sellerStatus.hasApplication) {
-      if (sellerStatus.status === 'approved') {
+    if (hasSellerApplication) {
+      if (isApprovedSeller) {
         // Nếu đã được approve, chuyển đến SellerDashboard
         navigate('/seller-dashboard');
-      } else if (sellerStatus.status === 'pending') {
+      } else if (isPendingSeller) {
         // Nếu đang pending, chuyển đến register-seller để xem trạng thái
         navigate('/register-seller');
-      } else if (sellerStatus.status === 'rejected') {
+      } else if (isRejectedSeller) {
         // Nếu bị reject, chuyển đến register-seller để nộp lại
         navigate('/register-seller');
       }

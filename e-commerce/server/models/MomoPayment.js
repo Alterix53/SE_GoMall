@@ -44,8 +44,6 @@ const momoPaymentSchema = new mongoose.Schema({
 });
 
 // Indexes
-momoPaymentSchema.index({ requestId: 1 });
-momoPaymentSchema.index({ transId: 1 });
 momoPaymentSchema.index({ status: 1, createdAt: -1 });
 momoPaymentSchema.index({ userID: 1, createdAt: -1 });
 

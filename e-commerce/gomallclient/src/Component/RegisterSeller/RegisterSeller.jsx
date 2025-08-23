@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { apiService } from '../../utils/api';
 import './RegisterSeller.css';
 
 const RegisterSeller = () => {
@@ -14,6 +15,10 @@ const RegisterSeller = () => {
   const [phone, setPhone] = useState('');
   const [document, setDocument] = useState(null);
   const [businessLicense, setBusinessLicense] = useState('');
+
+  const handleFileChange = (e) => {
+    setDocument(e.target.files[0]);
+  };
 
   // Kiểm tra trạng thái seller khi component mount
   useEffect(() => {
@@ -72,7 +77,7 @@ const RegisterSeller = () => {
         formData.append('verificationDocs', document);
       }
 
-      const resp = await api.post('/sellers/apply', formData);
+      const resp = await apiService.post('/sellers/apply', formData);
       
       if (resp?.data?.success) {
         alert('✅ Hồ sơ đăng ký seller đã được nộp thành công!\n\n📋 Thông tin hồ sơ:\n- Tên doanh nghiệp: ' + (businessName || 'Test Business') + '\n- Địa chỉ: ' + (address || 'Test Address') + '\n- Số điện thoại: ' + (phone || '0123456789') + '\n\n⏳ Trạng thái: Đang chờ admin duyệt\n\n📧 Bạn sẽ nhận được thông báo khi hồ sơ được xem xét.');
@@ -89,14 +94,11 @@ const RegisterSeller = () => {
           alert('⚠️ Bạn đã có hồ sơ đăng ký seller đang chờ duyệt hoặc đã được duyệt.\n\nVui lòng kiểm tra trạng thái hồ sơ của bạn.');
           checkSellerStatus(); // Refresh status
         } else {
-          alert('Có lỗi xảy ra: ' + data.message);
+          alert('Có lỗi xảy ra: ' + errorMessage);
         }
       } else {
         alert('Có lỗi xảy ra khi nộp hồ sơ');
       }
-    } catch (error) {
-      console.error('Error submitting application:', error);
-      alert('Có lỗi xảy ra khi nộp hồ sơ');
     } finally {
       setLoading(false);
     }

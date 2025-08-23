@@ -44,6 +44,7 @@ import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
 // 
 import UserPage from './Component/UserPage/UserPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedSellerRouteV2 from './components/ProtectedSellerRouteV2';
 import UnauthorizedPage from './components/UnauthorizedPage';
 
 // Import AuthContext
@@ -167,29 +168,29 @@ function App() {
                 
                 {/* SELLER ROUTES - có thể có layout riêng */}
                 <Route path="/seller" element={
-                  <ProtectedRoute requiredRole="seller">
+                  <ProtectedSellerRouteV2>
                     <SellerDashboard />
-                  </ProtectedRoute>
+                  </ProtectedSellerRouteV2>
                 } />
                 <Route path="/seller-dashboard" element={
-                  <ProtectedRoute requiredRole="seller">
+                  <ProtectedSellerRouteV2>
                     <SellerDashboard />
-                  </ProtectedRoute>
+                  </ProtectedSellerRouteV2>
                 } />
                 <Route path="/seller/statistics" element={
-                  <ProtectedRoute requiredRole="seller">
+                  <ProtectedSellerRouteV2>
                     <Statistics />
-                  </ProtectedRoute>
+                  </ProtectedSellerRouteV2>
                 } />
                 <Route path="/seller/orders" element={
-                  <ProtectedRoute requiredRole="seller">
+                  <ProtectedSellerRouteV2>
                     <ShippingStatus />
-                  </ProtectedRoute>
+                  </ProtectedSellerRouteV2>
                 } />
                 <Route path="/seller/orders/:id" element={
-                  <ProtectedRoute requiredRole="seller">
+                  <ProtectedSellerRouteV2>
                     <OrderDetail />
-                  </ProtectedRoute>
+                  </ProtectedSellerRouteV2>
                 } />
                 
                 {/* Main routes - sử dụng Navbar và Footer */}

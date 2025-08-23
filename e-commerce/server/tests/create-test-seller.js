@@ -1,74 +1,105 @@
 import mongoose from 'mongoose';
-import Seller from './models/Seller.js';
+import bcrypt from 'bcryptjs';
 import User from './models/User.js';
-import dotenv from 'dotenv';
+import Seller from './models/Seller.js';
 
-dotenv.config();
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gomall')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-async function createTestSeller() {
+const createTestSeller = async () => {
   try {
-    // Find or create a test user
-    let testUser = await User.findOne({ username: 'testuser2' });
+    await mongoose.connect('mongodb://localhost:27017/GoMall');
+    console.log('Connected to MongoDB');
+
+    // Tạo user test
+    const hashedPassword = await bcrypt.hash('password123', 10);
     
+    // Kiểm tra xem user đã tồn tại chưa
+    let testUser = await User.findOne({ username: 'testseller' });
     if (!testUser) {
-      console.log('Creating test user...');
       testUser = new User({
-        username: 'testuser2',
-        email: 'testuser2@example.com',
-        password: 'password123',
-        role: 'user'
+        username: 'testseller',
+        email: 'testseller@example.com',
+        password: hashedPassword,
+        fullName: 'Test Seller',
+        phoneNumber: '0123456789',
+        address: '123 Test Street, Test City',
+        role: ['user', 'seller'],
+        isActive: true
       });
       await testUser.save();
-      console.log('Test user created:', testUser._id);
+      console.log('Created test user:', testUser._id);
     } else {
       console.log('Using existing test user:', testUser._id);
     }
-    
-    // Check if seller already exists for this user
-    const existingSeller = await Seller.findOne({ userID: testUser._id });
-    if (existingSeller) {
-      console.log('Seller already exists for this user, updating status to pending...');
-      existingSeller.status = 'pending';
-      existingSeller.isActive = false;
-      existingSeller.approvedAt = null;
-      await existingSeller.save();
-      console.log('Seller updated to pending:', existingSeller._id);
-      return;
+
+    // Tạo seller record
+    let testSeller = await Seller.findOne({ userID: testUser._id });
+    if (!testSeller) {
+      testSeller = new Seller({
+        userID: testUser._id,
+        businessName: 'Test Shop',
+        businessDescription: 'A test shop for testing purposes',
+        businessAddress: '123 Test Street, Test City',
+        businessPhone: '0123456789',
+        businessEmail: 'testseller@example.com',
+        businessLicense: 'TEST-LICENSE-123',
+        verificationDocs: [],
+        status: 'approved',
+        isActive: true,
+        approvedAt: new Date()
+      });
+      await testSeller.save();
+      console.log('Created test seller:', testSeller._id);
+    } else {
+      console.log('Using existing test seller:', testSeller._id);
     }
-    
-    // Create a test seller
-    const testSeller = new Seller({
-      userID: testUser._id,
-      businessName: 'Test Business 2',
-      businessDescription: 'A test business for testing',
-      businessAddress: '123 Test Street',
-      businessPhone: '1234567890',
-      businessEmail: 'test2@business.com',
-      businessLicense: 'TEST123457',
-      verificationDocs: ['test-doc1.pdf'],
-      taxNumber: 'TAX123457',
-      status: 'pending',
-      isActive: false
-    });
-    
-    await testSeller.save();
-    console.log('Test seller created:', {
-      id: testSeller._id,
-      businessName: testSeller.businessName,
-      status: testSeller.status
-    });
+
+    // Tạo thêm một user pending
+    let pendingUser = await User.findOne({ username: 'pendingseller' });
+    if (!pendingUser) {
+      pendingUser = new User({
+        username: 'pendingseller',
+        email: 'pendingseller@example.com',
+        password: hashedPassword,
+        fullName: 'Pending Seller',
+        phoneNumber: '0987654321',
+        address: '456 Pending Street, Pending City',
+        role: ['user'],
+        isActive: true
+      });
+      await pendingUser.save();
+      console.log('Created pending user:', pendingUser._id);
+    } else {
+      console.log('Using existing pending user:', pendingUser._id);
+    }
+
+    let pendingSeller = await Seller.findOne({ userID: pendingUser._id });
+    if (!pendingSeller) {
+      pendingSeller = new Seller({
+        userID: pendingUser._id,
+        businessName: 'Pending Shop',
+        businessDescription: 'A pending shop',
+        businessAddress: '456 Pending Street, Pending City',
+        businessPhone: '0987654321',
+        businessEmail: 'pendingseller@example.com',
+        businessLicense: 'PENDING-LICENSE-456',
+        verificationDocs: [],
+        status: 'pending',
+        isActive: true
+      });
+      await pendingSeller.save();
+      console.log('Created pending seller:', pendingSeller._id);
+    } else {
+      console.log('Using existing pending seller:', pendingSeller._id);
+    }
+
+    await mongoose.connection.close();
+    console.log('Test data created successfully!');
+    console.log('\nTest accounts:');
+    console.log('1. Approved Seller - Username: testseller, Password: password123');
+    console.log('2. Pending Seller - Username: pendingseller, Password: password123');
     
   } catch (error) {
-    console.error('Error creating test seller:', error.message);
-    console.error('Full error:', error);
-  } finally {
-    mongoose.connection.close();
+    console.error('Error creating test seller:', error);
   }
-}
+};
 
 createTestSeller();

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
-const Notification = require('../models/Notification');
-const NotificationService = require('../services/notificationService');
+import mongoose from 'mongoose';
+import Notification from '../models/Notification.js';
+import NotificationService from '../services/notificationService.js';
 
 // Kết nối database
 const MONGODB_URI = "mongodb://localhost:27017/GoMall";

@@ -365,11 +365,28 @@ export const updateCurrentUser = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Authentication required' });
         }
 
+        console.log('Update user request:', {
+            userId: user._id,
+            body: req.body,
+            currentUser: {
+                fullName: user.fullName,
+                phoneNumber: user.phoneNumber,
+                address: user.address
+            }
+        });
+
         const { fullName, phoneNumber, address } = req.body || {};
 
-        if (typeof fullName !== 'undefined') user.fullName = fullName;
-        if (typeof phoneNumber !== 'undefined') user.phoneNumber = phoneNumber;
-        if (typeof address !== 'undefined') user.address = address;
+        // Update only if values are provided
+        if (fullName !== undefined) user.fullName = fullName;
+        if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+        if (address !== undefined) user.address = address;
+
+        console.log('Saving user with updated data:', {
+            fullName: user.fullName,
+            phoneNumber: user.phoneNumber,
+            address: user.address
+        });
 
         await user.save();
 
@@ -388,6 +405,11 @@ export const updateCurrentUser = async (req, res) => {
         res.json({ success: true, message: 'Cập nhật thông tin thành công', data: { user: userResponse } });
     } catch (error) {
         console.error('Update current user error:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
         res.status(500).json({ success: false, message: 'Server error while updating user', error: process.env.NODE_ENV === 'development' ? error.message : {} });
     }
 };

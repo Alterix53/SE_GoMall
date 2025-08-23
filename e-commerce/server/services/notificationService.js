@@ -1,4 +1,4 @@
-const Notification = require('../models/Notification');
+import Notification from '../models/Notification.js';
 
 class NotificationService {
   // Tạo thông báo đặt hàng thành công
@@ -293,5 +293,5 @@ class NotificationService {
   }
 }
 
-module.exports = NotificationService;
+export default NotificationService;
 

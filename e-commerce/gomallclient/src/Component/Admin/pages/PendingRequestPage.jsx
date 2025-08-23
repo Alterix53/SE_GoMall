@@ -10,6 +10,11 @@ function PendingRequestPage() {
   const [search, setSearch] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const [totalRequests, setTotalRequests] = useState(0);
+  
+  // Modal states
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [approvedSellerName, setApprovedSellerName] = useState("");
 
   useEffect(() => {
     const fetchPending = async () => {
@@ -51,12 +56,22 @@ function PendingRequestPage() {
       const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
       console.log('Using token:', token ? 'yes' : 'no');
       
+      // Tìm thông tin seller trước khi approve để hiển thị trong modal
+      const sellerToApprove = requests.find(req => req._id === sellerId);
+      const sellerName = sellerToApprove?.businessName || 'Unknown Seller';
+      
       console.log('Calling adminAPI.approveSeller...');
       const res = await adminAPI.approveSeller(token, sellerId);
       console.log('API response:', res);
       
       if (res.success) {
         console.log('Approve successful, updating UI...');
+        
+        // Hiển thị modal thành công
+        setApprovedSellerName(sellerName);
+        setSuccessMessage("Seller đã được duyệt thành công!");
+        setShowSuccessModal(true);
+        
         // Refresh the list
         setRequests(prev => prev.filter(req => req._id !== sellerId));
         setTotalRequests(prev => prev - 1);
@@ -80,6 +95,13 @@ function PendingRequestPage() {
       const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
       const res = await adminAPI.updateSellerStatus(token, sellerId, "rejected");
       if (res.success) {
+        // Hiển thị thông báo thành công cho reject
+        const sellerToReject = requests.find(req => req._id === sellerId);
+        const sellerName = sellerToReject?.businessName || 'Unknown Seller';
+        setApprovedSellerName(sellerName);
+        setSuccessMessage("Seller đã bị từ chối thành công!");
+        setShowSuccessModal(true);
+        
         // Refresh the list
         setRequests(prev => prev.filter(req => req._id !== sellerId));
         setTotalRequests(prev => prev - 1);
@@ -232,6 +254,47 @@ function PendingRequestPage() {
           )}
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header bg-success text-white">
+                <h5 className="modal-title">
+                  <i className="fas fa-check-circle me-2"></i>
+                  Thành công!
+                </h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white" 
+                  onClick={() => setShowSuccessModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body text-center">
+                <div className="mb-3">
+                  <i className="fas fa-check-circle text-success" style={{ fontSize: '3rem' }}></i>
+                </div>
+                <h6 className="mb-2">{successMessage}</h6>
+                <p className="text-muted mb-0">
+                  <strong>{approvedSellerName}</strong> đã được xử lý thành công.
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-success" 
+                  onClick={() => setShowSuccessModal(false)}
+                >
+                  <i className="fas fa-check me-2"></i>
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show"></div>
+        </div>
+      )}
     </div>
   );
 }
