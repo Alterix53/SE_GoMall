@@ -13,7 +13,7 @@ export default function StatsChart({ data, xKey, dataKey, height = 200 }) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey={xKey} />
         <YAxis />
-        <Tooltip formatter={(val) => new Intl.NumberFormat().format(val)} />
+        <Tooltip formatter={(val) => new Intl.NumberFormat().format(Number(val))} />
         <Line
           type="monotone"
           dataKey={dataKey}

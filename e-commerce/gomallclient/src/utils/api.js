@@ -475,14 +475,35 @@ export const adminAPI = {
     },
 
     approveSeller: async (token, sellerId) => {
-        const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}/approve`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.json();
+        try {
+            console.log('Making API call to approve seller:', sellerId);
+            console.log('API URL:', `${API_BASE_URL}/admin/sellers/${sellerId}/approve`);
+            
+            const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}/approve`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                console.error('HTTP error:', response.status, response.statusText);
+                const errorText = await response.text();
+                console.error('Error response body:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('Response data:', data);
+            return data;
+        } catch (error) {
+            console.error('Error in approveSeller API call:', error);
+            throw error;
+        }
     },
 
     // Product Management APIs

@@ -46,7 +46,8 @@ class ResponseHandler {
                 await fn(req, res, next);
             } catch (error) {
                 console.error("Controller error:", error.message);
-                this.error(res, "Lỗi server", 500, error.message);
+                console.error("Full error:", error);
+                this.error(res, error.message || "Lỗi server", 500, error.message);
             }
         };
     }

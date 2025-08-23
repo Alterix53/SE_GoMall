@@ -202,11 +202,22 @@ export const updateSellerStatus = ResponseHandler.asyncHandler(async (req, res) 
 
 export const approveSeller = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to approve seller:", req.params.id);
+    console.log("Request headers:", req.headers);
+    console.log("Request body:", req.body);
     
     const sellerId = req.params.id;
-    const seller = await adminService.approveSeller(sellerId);
+    console.log("Processing seller ID:", sellerId);
     
-    ResponseHandler.success(res, { seller }, "Duyệt người bán thành công");
+    try {
+        const seller = await adminService.approveSeller(sellerId);
+        console.log("Seller approved successfully:", seller._id);
+        
+        ResponseHandler.success(res, { seller }, "Duyệt người bán thành công");
+    } catch (error) {
+        console.error("Error in approveSeller controller:", error.message);
+        console.error("Full error:", error);
+        throw error; // Let ResponseHandler.asyncHandler handle it
+    }
 });
 
 // Product Management Controllers

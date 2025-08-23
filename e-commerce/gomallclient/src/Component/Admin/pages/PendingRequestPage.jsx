@@ -46,16 +46,31 @@ function PendingRequestPage() {
 
   const handleApprove = async (sellerId) => {
     try {
+      console.log('handleApprove called with sellerId:', sellerId);
+      
       const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
-      const res = await adminAPI.updateSellerStatus(token, sellerId, "approved");
+      console.log('Using token:', token ? 'yes' : 'no');
+      
+      console.log('Calling adminAPI.approveSeller...');
+      const res = await adminAPI.approveSeller(token, sellerId);
+      console.log('API response:', res);
+      
       if (res.success) {
+        console.log('Approve successful, updating UI...');
         // Refresh the list
         setRequests(prev => prev.filter(req => req._id !== sellerId));
         setTotalRequests(prev => prev - 1);
       } else {
+        console.error('Approve failed:', res.message);
         alert("Failed to approve seller: " + res.message);
       }
     } catch (err) {
+      console.error('Error in handleApprove:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        response: err.response
+      });
       alert("Error approving seller: " + err.message);
     }
   };

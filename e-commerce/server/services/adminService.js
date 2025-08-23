@@ -661,27 +661,44 @@ class AdminService {
     }
 
     async approveSeller(sellerId) {
-        const seller = await Seller.findById(sellerId);
-        
-        if (!seller) {
-            throw new Error("Người bán không tồn tại");
+        try {
+            console.log('approveSeller called with ID:', sellerId);
+            
+            const seller = await Seller.findById(sellerId);
+            console.log('Found seller:', seller ? 'yes' : 'no');
+            
+            if (!seller) {
+                throw new Error("Người bán không tồn tại");
+            }
+
+            console.log('Current seller status:', seller.status);
+            
+            seller.status = 'approved';
+            seller.isActive = true;
+            seller.approvedAt = new Date();
+            
+            console.log('Saving seller with new status:', seller.status);
+            await seller.save();
+            console.log('Seller saved successfully');
+
+            // Ensure associated user has 'seller' role
+            if (seller.userID) {
+                console.log('Updating user role for userID:', seller.userID);
+                await User.findByIdAndUpdate(
+                    seller.userID,
+                    { $addToSet: { role: 'seller' } },
+                    { new: true }
+                );
+                console.log('User role updated successfully');
+            }
+
+            console.log('approveSeller completed successfully');
+            return seller;
+        } catch (error) {
+            console.error('Error in approveSeller:', error.message);
+            console.error('Full error:', error);
+            throw error;
         }
-
-        seller.status = 'approved';
-        seller.isActive = true;
-        seller.approvedAt = new Date();
-        await seller.save();
-
-        // Ensure associated user has 'seller' role
-        if (seller.userID) {
-            await User.findByIdAndUpdate(
-                seller.userID,
-                { $addToSet: { role: 'seller' } },
-                { new: true }
-            );
-        }
-
-        return seller;
     }
 
     // Product Management Services
