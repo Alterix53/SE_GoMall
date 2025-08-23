@@ -5,7 +5,8 @@ import {
     updateUser,
     deleteUser,
     getUsersByRole,
-    backupUsers
+    backupUsers,
+    getCurrentUser
 } from '../controllers/userController.js';
 import { authenticateToken, authenticateAdmin } from '../middleware/auth.js';
 
@@ -13,6 +14,9 @@ const router = express.Router();
 
 // Tất cả routes đều yêu cầu authentication
 router.use(authenticateToken);
+
+// Get current user info
+router.get('/me', getCurrentUser);
 
 // Admin routes (admin token required)
 router.get('/', authenticateAdmin, getAllUsers);

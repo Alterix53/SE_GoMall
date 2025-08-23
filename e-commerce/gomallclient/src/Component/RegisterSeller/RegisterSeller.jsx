@@ -25,7 +25,28 @@ const RegisterSeller = () => {
   // Xử lý chuyển hướng khi seller đã được approve
   useEffect(() => {
     if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved') {
-      const timer = setTimeout(() => {
+      const timer = setTimeout(async () => {
+        // Refresh thông tin user trước khi chuyển hướng
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:8080/api/users/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              // Cập nhật thông tin user trong localStorage
+              localStorage.setItem('user', JSON.stringify(data.data.user));
+            }
+          }
+        } catch (error) {
+          console.error('Error refreshing user info:', error);
+        }
+        
         navigate('/seller-dashboard');
       }, 2000);
       
@@ -125,7 +146,30 @@ const RegisterSeller = () => {
               <p>Bạn sẽ được chuyển hướng đến Seller Dashboard trong vài giây...</p>
               <button 
                 className="btn btn-primary"
-                onClick={() => navigate('/seller-dashboard')}
+                onClick={async () => {
+                  // Refresh thông tin user trước khi chuyển hướng
+                  try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch('http://localhost:8080/api/users/me', {
+                      headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                      }
+                    });
+
+                    if (response.ok) {
+                      const data = await response.json();
+                      if (data.success) {
+                        // Cập nhật thông tin user trong localStorage
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Error refreshing user info:', error);
+                  }
+                  
+                  navigate('/seller-dashboard');
+                }}
               >
                 Vào Seller Dashboard ngay
               </button>

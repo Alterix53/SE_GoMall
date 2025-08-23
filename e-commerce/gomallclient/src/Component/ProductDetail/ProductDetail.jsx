@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useState, useEffect, useMemo, useContext } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import "./ProductDetail.css"
-import { useCart } from "../../contexts/CartContext"
+import React, { useState, useEffect, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import "./ProductDetail.css";
+import { useCart } from "../../contexts/CartContext";
 import {
   Star,
   StarHalf,
@@ -25,141 +25,134 @@ import {
   Clock,
   Package,
   Award,
-} from "lucide-react"
-
-import { Badge } from "../../components/ui/badge"
-import { Button } from "../../components/ui/button"
-import { Card, CardContent } from "../../components/ui/card"
-import { Input } from "../../components/ui/input"
-import { Label } from "../../components/ui/label"
-import { Progress } from "../../components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
-import { Separator } from "../../components/ui/separator"
-import { Avatar, AvatarFallback } from "../../components/ui/avatar"
-import { useToast } from "../../hooks/use-toast"
-import { cn } from "../../lib/utils"
-import { apiService } from "../../utils/api"
-import OptimizedImage from "../../utils/OptimizedImage"
-import { createPlaceholderUrl } from "../../utils/imageUtils"
-import Footer from "../Footer/Footer"
+} from "lucide-react";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Progress } from "../../components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "../../components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Separator } from "../../components/ui/separator";
+import { Avatar, AvatarFallback } from "../../components/ui/avatar";
+import { useToast } from "../../hooks/use-toast";
+import { cn } from "../../lib/utils";
+import { apiService } from "../../utils/api";
+import OptimizedImage from "../../utils/OptimizedImage";
+import { createPlaceholderUrl } from "../../utils/imageUtils";
 
 // Star Rating Component
-function StarRating({
-  rating = 0,
-  size = 18,
-  showValue = false,
-}) {
-  const full = Math.floor(rating)
-  const half = rating - full >= 0.5
-  const empty = 5 - full - (half ? 1 : 0)
+function StarRating({ rating = 0, size = 18, showValue = false }) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  const empty = 5 - full - (half ? 1 : 0);
   
   return (
-    <div className="flex items-center gap-1">
-      {[...Array(full)].map((_, i) => (
-        <Star key={"full-" + i} size={size} className="text-yellow-500 fill-yellow-500" />
+    <span className="flex items-center gap-1" style={{ lineHeight: 1 }}>
+      {[...Array(Math.max(0, full))].map((_, i) => (
+        <Star key={"f-" + i} size={size} className="text-yellow-500 fill-yellow-500" />
       ))}
       {half && <StarHalf size={size} className="text-yellow-500 fill-yellow-500" />}
-      {[...Array(empty)].map((_, i) => (
-        <Star key={"empty-" + i} size={size} className="text-muted-foreground" />
+      {[...Array(Math.max(0, empty))].map((_, i) => (
+        <Star key={"e-" + i} size={size} className="text-muted-foreground" />
       ))}
-      {showValue && <span className="ml-2 text-sm">{rating.toFixed(1)}</span>}
-    </div>
-  )
+    </span>
+  );
 }
 
-// Format currency VND
-function formatCurrencyVND(value) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0 
-  }).format(value)
-}
+// Format currency helper
+const formatCurrencyVND = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+  }).format(amount);
+};
 
 export default function ProductDetail() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { toast } = useToast()
-  const { addToCart } = useCart()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { addToCart } = useCart();
 
   // State
-  const [product, setProduct] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [activeImage, setActiveImage] = useState(0)
-  const [liked, setLiked] = useState(false)
-  const [selectedVariations, setSelectedVariations] = useState({})
-  const [quantity, setQuantity] = useState(1)
-  const [shippingTo, setShippingTo] = useState("Hanoi")
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeImage, setActiveImage] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [selectedVariations, setSelectedVariations] = useState({});
+  const [quantity, setQuantity] = useState(1);
+  const [shippingTo, setShippingTo] = useState("Hanoi");
 
   // Resolve image URL to absolute path (prefix server origin for relative paths)
   const resolveImageUrl = (image) => {
     try {
-      if (!image) return "/images/placeholder-product.svg"
-      const raw = typeof image === "string" ? image : image.url || ""
-      if (!raw) return "/images/placeholder-product.svg"
-      if (raw.startsWith("http://") || raw.startsWith("https://")) return raw
-      const base = "http://localhost:8080"
-      return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`
+      if (!image) return "/images/placeholder-product.svg";
+      const raw = typeof image === "string" ? image : image.url || "";
+      if (!raw) return "/images/placeholder-product.svg";
+      if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+      const base = "http://localhost:8080";
+      return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`;
     } catch {
-      return "/images/placeholder-product.svg"
+      return "/images/placeholder-product.svg";
     }
-  }
+  };
 
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        setLoading(true)
-        const response = await apiService.getProductById(id)
-        console.log("Product response:", response)
+        setLoading(true);
+        const response = await apiService.getProductById(id);
+        console.log("Product response:", response);
         
         if (response.success && response.data && response.data.product) {
-          setProduct(response.data.product)
+          setProduct(response.data.product);
           // Set default variations if available
           if (response.data.product.specifications) {
-            const defaults = {}
+            const defaults = {};
             response.data.product.specifications.forEach(spec => {
               if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
-                const values = spec.value.split(',').map(v => v.trim())
-                defaults[spec.name] = values[0]
+                const values = spec.value.split(',').map(v => v.trim());
+                defaults[spec.name] = values[0];
               }
-            })
-            setSelectedVariations(defaults)
+            });
+            setSelectedVariations(defaults);
           }
-      } else {
-          setError("Cannot load product information")
+        } else {
+          setError("Cannot load product information");
+        }
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setError("An error occurred while loading product information");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-        console.error("Error fetching product:", err)
-        setError("An error occurred while loading product information")
-    } finally {
-        setLoading(false)
-      }
-    }
+    };
 
     if (id) {
-      fetchProduct()
+      fetchProduct();
     }
-  }, [id])
+  }, [id]);
 
   // Calculate final price and discount
   const finalPrice = useMemo(() => {
-    if (!product) return 0
-    return product.price?.sale || product.price?.original || 0
-  }, [product])
+    if (!product) return 0;
+    return product.price?.sale || product.price?.original || 0;
+  }, [product]);
 
   const discountPercent = useMemo(() => {
-    if (!product?.price?.sale || !product?.price?.original) return 0
-    return Math.round(((product.price.original - product.price.sale) / product.price.original) * 100)
-  }, [product])
+    if (!product?.price?.sale || !product?.price?.original) return 0;
+    return Math.round(((product.price.original - product.price.sale) / product.price.original) * 100);
+  }, [product]);
 
   // Rating distribution (fallback to design sample if not provided)
   const ratingDistribution = useMemo(() => {
-    const defaultDist = { 5: 82, 4: 12, 3: 3, 2: 2, 1: 1 }
-    const fromProduct = product?.rating?.distribution
-    if (!fromProduct) return defaultDist
+    const defaultDist = { 5: 82, 4: 12, 3: 3, 2: 2, 1: 1 };
+    const fromProduct = product?.rating?.distribution;
+    if (!fromProduct) return defaultDist;
     // normalize keys as numbers and ensure percentages
     return {
       5: Number(fromProduct[5]) || 0,
@@ -167,11 +160,11 @@ export default function ProductDetail() {
       3: Number(fromProduct[3]) || 0,
       2: Number(fromProduct[2]) || 0,
       1: Number(fromProduct[1]) || 0,
-    }
-  }, [product])
+    };
+  }, [product]);
 
   const onAddToCart = async () => {
-    if (!product) return
+    if (!product) return;
     
     try {
       const cartItem = {
@@ -181,26 +174,26 @@ export default function ProductDetail() {
         image: resolveImageUrl(product.images?.[0]),
         quantity: quantity,
         size: 'default'
-      }
+      };
       
-      await addToCart(cartItem)
+      await addToCart(cartItem);
       
       toast({
         title: "Success!",
         description: "Product has been added to cart",
-      })
+      });
     } catch (error) {
-      console.error("Error adding to cart:", error)
+      console.error("Error adding to cart:", error);
       toast({
         title: "Error!",
         description: "An error occurred while adding to cart",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const onBuyNow = async () => {
-    if (!product) return
+    if (!product) return;
     
     try {
       const cartItem = {
@@ -210,28 +203,28 @@ export default function ProductDetail() {
         image: resolveImageUrl(product.images?.[0]),
         quantity: quantity,
         size: 'default'
-      }
+      };
       
-      await addToCart(cartItem)
+      await addToCart(cartItem);
       
       // Navigate to checkout
-      navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+      navigate(`/checkout?product=${product._id}&quantity=${quantity}`);
     } catch (error) {
-      console.error("Error buying now:", error)
+      console.error("Error buying now:", error);
       toast({
         title: "Error!",
         description: "An error occurred while processing order",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleVariationChange = (type, value) => {
     setSelectedVariations(prev => ({
       ...prev,
       [type]: value
-    }))
-  }
+    }));
+  };
 
   if (loading) {
     return (
@@ -243,7 +236,7 @@ export default function ProductDetail() {
           </div>
         </main>
       </>
-    )
+    );
   }
 
   if (error || !product) {
@@ -252,22 +245,21 @@ export default function ProductDetail() {
         <main className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h2 className="text-xl font-semibold mb-2">Cannot load product</h2>
-        <p className="text-muted-foreground mb-4">{error || "Product does not exist"}</p>
-        <Button onClick={() => navigate("/")}>Back to home</Button>
+            <h2 className="text-xl font-semibold mb-2">Cannot load product</h2>
+            <p className="text-muted-foreground mb-4">{error || "Product does not exist"}</p>
+            <Button onClick={() => navigate("/")}>Back to home</Button>
           </div>
         </main>
       </>
-    )
+    );
   }
 
   return (
     <>
       <main className="bg-gray-50 min-h-screen">
-
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Left: Product Images */}
+            {/* Left: Product Images */}
             <section>
               {/* Main Image */}
               <div className="bg-white rounded-xl p-6 shadow-sm border">
@@ -299,13 +291,13 @@ export default function ProductDetail() {
                       )} 
                     />
                   </button>
-          </div>
+                </div>
 
                 {/* Thumbnail Images */}
                 {product.images && product.images.length > 1 && (
                   <div className="mt-4 flex gap-3 overflow-x-auto">
                     {product.images.map((image, index) => (
-                <button
+                      <button
                         key={index}
                         onClick={() => setActiveImage(index)}
                         className={cn(
@@ -314,43 +306,43 @@ export default function ProductDetail() {
                             ? "border-primary" 
                             : "border-gray-200 hover:border-gray-300"
                         )}
-                >
-                  <OptimizedImage
+                      >
+                        <OptimizedImage
                           src={resolveImageUrl(image)}
                           alt={`${product.name} - ${index + 1}`}
                           className="w-full h-full object-cover"
                           fallbackUrl={createPlaceholderUrl(80,80,'')}
                           onLoad={() => {}}
                           onError={() => {}}
-                  />
-                </button>
-            ))}
-          </div>
+                        />
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </section>
 
-            {/* Right: Product Info & Actions */}
+            {/* Right: Product Info */}
             <section>
               <div className="bg-white rounded-xl p-6 shadow-sm border">
-                {/* Product Title */}
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
-                  {product.name}
-                </h1>
-                
-                {/* Rating & Sales */}
-                <div className="flex items-center gap-6 mb-6">
-                  <div className="flex items-center gap-2">
-                    <StarRating rating={product.rating?.average || 0} size={20} />
-                    <span className="font-semibold text-lg">
-                      {product.rating?.average?.toFixed(1) || "0.0"}
-                    </span>
-                  </div>
-                  <div className="text-gray-600">
-                    {product.rating?.count?.toLocaleString() || 0} Reviews
-                  </div>
-                  <div className="text-gray-600">
-                    Sold {product.sold?.toLocaleString() || 0}+
+                {/* Product Title & Rating */}
+                <div className="mb-6">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">
+                    {product.name}
+                  </h1>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <StarRating rating={product.rating?.average || 4.8} size={16} />
+                      <span className="font-medium text-gray-900">
+                        {product.rating?.average?.toFixed(1) || "4.8"}
+                      </span>
+                    </div>
+                    <div className="text-gray-600">
+                      {product.rating?.count?.toLocaleString() || 0} Reviews
+                    </div>
+                    <div className="text-gray-600">
+                      Sold {product.sold?.toLocaleString() || 0}+
+                    </div>
                   </div>
                 </div>
 
@@ -368,9 +360,9 @@ export default function ProductDetail() {
                         <Badge className="bg-red-600 text-white px-3 py-1 text-sm font-bold rounded-full">
                           -{discountPercent}%
                         </Badge>
-                    </>
-                  )}
-                </div>
+                      </>
+                    )}
+                  </div>
 
                   {/* Promotions */}
                   <div className="flex flex-wrap gap-2">
@@ -405,16 +397,16 @@ export default function ProductDetail() {
                   <div className="space-y-4 mb-6">
                     {product.specifications.map((spec, index) => {
                       if (spec.name === 'color' || spec.name === 'storage' || spec.name === 'size') {
-                        const values = spec.value.split(',').map(v => v.trim())
-                        const currentValue = selectedVariations[spec.name] || values[0]
+                        const values = spec.value.split(',').map(v => v.trim());
+                        const currentValue = selectedVariations[spec.name] || values[0];
                         
                         return (
                           <div key={index}>
-                                                         <Label htmlFor={`${spec.name}-label`} className="text-base font-medium text-gray-900 mb-3 block">
-                                               {spec.name === 'color' ? 'Color' :
-                spec.name === 'storage' ? 'Storage' :
-                spec.name === 'size' ? 'Size' : spec.name}
-                             </Label>
+                            <Label htmlFor={`${spec.name}-label`} className="text-base font-medium text-gray-900 mb-3 block">
+                              {spec.name === 'color' ? 'Color' :
+                               spec.name === 'storage' ? 'Storage' :
+                               spec.name === 'size' ? 'Size' : spec.name}
+                            </Label>
                             <RadioGroup 
                               value={currentValue} 
                               onValueChange={(value) => handleVariationChange(spec.name, value)}
@@ -437,18 +429,18 @@ export default function ProductDetail() {
                               ))}
                             </RadioGroup>
                           </div>
-                        )
+                        );
                       }
-                      return null
+                      return null;
                     })}
                   </div>
                 )}
 
                 {/* Quantity */}
                 <div className="mb-6">
-                                     <Label htmlFor="quantity-input" className="text-base font-medium text-gray-900 mb-3 block">
-                     Quantity
-                   </Label>
+                  <Label htmlFor="quantity-input" className="text-base font-medium text-gray-900 mb-3 block">
+                    Quantity
+                  </Label>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border border-gray-300 rounded-lg">
                       <Button
@@ -461,18 +453,18 @@ export default function ProductDetail() {
                       >
                         <Minus className="w-4 h-4" />
                       </Button>
-                                             <Input
-                         id="quantity-input"
-                         inputMode="numeric"
-                         value={quantity}
-                         onChange={(e) => {
-                           const n = Number.parseInt(e.target.value || "1", 10)
-                           if (!Number.isNaN(n)) setQuantity(Math.max(1, n))
-                         }}
-                         className="w-20 text-center border-0 rounded-none focus:ring-0 font-medium"
-                         min="1"
-                         aria-live="polite"
-                       />
+                      <Input
+                        id="quantity-input"
+                        inputMode="numeric"
+                        value={quantity}
+                        onChange={(e) => {
+                          const n = Number.parseInt(e.target.value || "1", 10);
+                          if (!Number.isNaN(n)) setQuantity(Math.max(1, n));
+                        }}
+                        className="w-20 text-center border-0 rounded-none focus:ring-0 font-medium"
+                        min="1"
+                        aria-live="polite"
+                      />
                       <Button
                         type="button"
                         variant="ghost"
@@ -493,17 +485,17 @@ export default function ProductDetail() {
 
                 {/* Shipping */}
                 <div className="mb-6">
-                                     <Label htmlFor="shipping-select" className="text-base font-medium text-gray-900 mb-3 block">
-                     Shipping
-                   </Label>
+                  <Label htmlFor="shipping-select" className="text-base font-medium text-gray-900 mb-3 block">
+                    Shipping
+                  </Label>
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <Truck className="w-5 h-5 text-gray-600" />
-                                              <span className="text-sm text-gray-900 font-medium">Free shipping</span>
-        </div>
+                      <span className="text-sm text-gray-900 font-medium">Free shipping</span>
+                    </div>
                     <div className="flex items-center gap-3">
                       <MapPin className="w-5 h-5 text-gray-600" />
-                                              <span className="text-sm text-gray-900">Deliver to</span>
+                      <span className="text-sm text-gray-900">Deliver to</span>
                       <select 
                         value={shippingTo} 
                         onChange={(e) => setShippingTo(e.target.value)}
@@ -558,22 +550,22 @@ export default function ProductDetail() {
                 <div className="mt-6 space-y-3">
                   <div className="flex items-center gap-3 text-sm">
                     <ShieldCheck className="w-5 h-5 text-green-600" />
-                                            <span className="text-gray-900 font-medium">100% Authentic products</span>
+                    <span className="text-gray-900 font-medium">100% Authentic products</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Check className="w-5 h-5 text-green-600" />
-                                            <span className="text-gray-900 font-medium">12 months warranty</span>
+                    <span className="text-gray-900 font-medium">12 months warranty</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <RotateCcw className="w-5 h-5 text-orange-600" />
-                                            <span className="text-gray-900 font-medium">7 days free return</span>
+                    <span className="text-gray-900 font-medium">7 days free return</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Truck className="w-5 h-5 text-blue-600" />
-                                            <span className="text-gray-900 font-medium">Free shipping</span>
+                    <span className="text-gray-900 font-medium">Free shipping</span>
                   </div>
                 </div>
-          </div>
+              </div>
             </section>
           </div>
 
@@ -587,7 +579,7 @@ export default function ProductDetail() {
                       {product.sellerID?.name?.charAt(0) || "A"}
                     </AvatarFallback>
                   </Avatar>
-            <div>
+                  <div>
                     <h3 className="font-semibold text-gray-900 text-lg">
                       {product.sellerID?.name || "Apple Flagship Store"}
                     </h3>
@@ -604,7 +596,7 @@ export default function ProductDetail() {
               
               <div className="grid grid-cols-2 gap-6 mt-4">
                 <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Shop rating</div>
+                  <div className="text-xs text-gray-600 mb-1">Shop rating</div>
                   <div className="flex items-center justify-center gap-1">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                     <span className="font-semibold text-gray-900">
@@ -613,19 +605,19 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 <div className="text-center">
-                                          <div className="text-xs text-gray-600 mb-1">Followers</div>
+                  <div className="text-xs text-gray-600 mb-1">Followers</div>
                   <div className="font-semibold text-gray-900">
                     {product.sellerID?.followers || "1.2M"}
                   </div>
                 </div>
-                </div>
               </div>
             </div>
+          </div>
 
           {/* Rating Summary Section */}
           <div className="max-w-6xl mx-auto px-4 mt-8">
             <div className="bg-white rounded-xl p-6 shadow-sm border">
-                              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Product Reviews</h3>
+              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Product Reviews</h3>
               <div className="flex items-start gap-8">
                 <div className="text-center">
                   <div className="text-5xl font-bold text-blue-600 mb-2">
@@ -636,26 +628,33 @@ export default function ProductDetail() {
                     {product.rating?.count?.toLocaleString() || "12.500"} reviews
                   </div>
                 </div>
-                <div className="flex-1 space-y-2">
-                  {[5, 4, 3, 2, 1].map((star) => (
-                    <div key={star} className="flex items-center gap-3">
-                      <div className="w-8 text-sm text-gray-600">{star} sao</div>
-                      <Progress value={ratingDistribution[star]} className="flex-1 h-3" />
-                      <div className="w-12 text-right text-sm font-medium text-gray-900">
-                        {ratingDistribution[star]}%
+
+                <div className="flex-1">
+                  <div className="space-y-2">
+                    {[5, 4, 3, 2, 1].map((star) => (
+                      <div key={star} className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 w-16">
+                          <span className="text-sm font-medium">{star}</span>
+                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                        </div>
+                        <Progress 
+                          value={ratingDistribution[star] || 0} 
+                          className="flex-1 h-2"
+                        />
+                        <span className="text-sm text-gray-600 w-12 text-right">
+                          {ratingDistribution[star] || 0}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-                  ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-
 
           {/* Product Details Section */}
           <div className="max-w-6xl mx-auto px-4 mt-12">
-                        {/* Product Description */}
+            {/* Product Description */}
             <Card className="shadow-sm border">
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Product Description</h2>
@@ -668,9 +667,9 @@ export default function ProductDetail() {
                 </div>
               </CardContent>
             </Card>
-      </div>
-    </div>
+          </div>
+        </div>
       </main>
     </>
-  )
+  );
 }

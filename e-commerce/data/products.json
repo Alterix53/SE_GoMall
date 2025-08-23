@@ -107,7 +107,8 @@
     "isFeatured": true,
     "isFlashSale": false,
     "flashSalePrice": 2627127,
-    "flashSaleEndDate": null
+    "flashSaleEndDate": null,
+    "sizes": ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45"]
   },
   {
     "id": 6,
@@ -129,7 +130,8 @@
     "isFeatured": true,
     "isFlashSale": false,
     "flashSalePrice": null,
-    "flashSaleEndDate": null
+    "flashSaleEndDate": null,
+    "sizes": ["Small", "Medium", "Large"]
   },
   {
     "id": 7,
@@ -151,7 +153,8 @@
     "isFeatured": false,
     "isFlashSale": false,
     "flashSalePrice": null,
-    "flashSaleEndDate": null
+    "flashSaleEndDate": null,
+    "sizes": ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45"]
   },
   {
     "id": 8,
@@ -173,7 +176,8 @@
     "isFeatured": false,
     "isFlashSale": false,
     "flashSalePrice": 2064551,
-    "flashSaleEndDate": null
+    "flashSaleEndDate": null,
+    "sizes": ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45"]
   },
   {
     "id": 9,

@@ -55,12 +55,33 @@ const Navbar = () => {
     }
   };
 
-  const handleBecomeSellerClick = (e) => {
+  const handleBecomeSellerClick = async (e) => {
     e.preventDefault();
     
     if (sellerStatus && sellerStatus.hasApplication) {
       if (sellerStatus.status === 'approved') {
-        // Nếu đã được approve, chuyển đến SellerDashboard
+        // Nếu đã được approve, refresh thông tin user trước khi chuyển hướng
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:8080/api/users/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success) {
+              // Cập nhật thông tin user trong localStorage
+              localStorage.setItem('user', JSON.stringify(data.data.user));
+            }
+          }
+        } catch (error) {
+          console.error('Error refreshing user info:', error);
+        }
+        
+        // Chuyển đến SellerDashboard
         navigate('/seller-dashboard');
       } else if (sellerStatus.status === 'pending') {
         // Nếu đang pending, chuyển đến register-seller để xem trạng thái

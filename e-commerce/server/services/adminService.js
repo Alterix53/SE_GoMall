@@ -653,6 +653,9 @@ class AdminService {
                 seller.isActive = true;
                 seller.approvedAt = new Date();
                 
+                // Cập nhật role user thành seller
+                await User.findByIdAndUpdate(seller.userID, { $addToSet: { role: 'seller' } });
+                
                 // Gửi notification khi seller được chấp nhận
                 try {
                     await NotificationService.createSellerApprovalNotification(seller.userID, seller);

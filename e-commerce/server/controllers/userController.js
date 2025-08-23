@@ -2,6 +2,23 @@ import User from '../models/User.js';
 import Seller from '../models/Seller.js';
 import ResponseHandler from '../utils/responseHandler.js';
 
+// GET /api/users/me - Get current user info
+export const getCurrentUser = ResponseHandler.asyncHandler(async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId).select('-password');
+
+        if (!user) {
+            return ResponseHandler.notFound(res, "User không tồn tại");
+        }
+
+        ResponseHandler.success(res, { user }, "Lấy thông tin user hiện tại thành công");
+    } catch (error) {
+        console.error('Error getting current user:', error);
+        throw error;
+    }
+});
+
 // GET /api/users - Get all users (admin only)
 export const getAllUsers = ResponseHandler.asyncHandler(async (req, res) => {
     try {
