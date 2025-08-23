@@ -28,7 +28,6 @@ class ProductService {
             }
             andConditions.push({ categoryID: { $in: categoryIds.length > 0 ? categoryIds : [null] } });
         }
-        }
 
         // Brand filter (case-insensitive regex)
         if (query.brand) {
@@ -58,7 +57,6 @@ class ProductService {
                 { "price.sale": priceFilter },
                 { "price.original": priceFilter },
             ]});
-        }
         }
 
         if (query.rating) {
