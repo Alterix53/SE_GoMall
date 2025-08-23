@@ -6,6 +6,7 @@ import Seller from "../models/Seller.js";
 import Category from "../models/Category.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import NotificationService from "./notificationService.js";
 
 class AdminService {
     // Hash password
@@ -651,6 +652,20 @@ class AdminService {
             if (status === 'approved') {
                 seller.isActive = true;
                 seller.approvedAt = new Date();
+                
+                // Gửi notification khi seller được chấp nhận
+                try {
+                    await NotificationService.createSellerApprovalNotification(seller.userID, seller);
+                } catch (error) {
+                    console.error('Error sending seller approval notification:', error);
+                }
+            } else if (status === 'rejected') {
+                // Gửi notification khi seller bị từ chối
+                try {
+                    await NotificationService.createSellerRejectionNotification(seller.userID, seller);
+                } catch (error) {
+                    console.error('Error sending seller rejection notification:', error);
+                }
             }
         } else if (['active', 'inactive'].includes(status)) {
             seller.isActive = status === 'active';

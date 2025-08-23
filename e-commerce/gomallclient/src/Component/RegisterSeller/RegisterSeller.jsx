@@ -150,6 +150,14 @@ const RegisterSeller = () => {
 
   // Nếu đã có hồ sơ, hiển thị thông tin trạng thái
   if (sellerStatus && sellerStatus.hasApplication) {
+    // Tự động chuyển hướng nếu đã được duyệt
+    if (sellerStatus.status === 'approved') {
+      // Chuyển hướng sau 2 giây để user có thể đọc thông báo
+      setTimeout(() => {
+        navigate('/seller-dashboard');
+      }, 2000);
+    }
+
     return (
       <div className="register-seller-container">
         <div className="alert alert-info">
@@ -172,6 +180,21 @@ const RegisterSeller = () => {
           </p>
           <hr />
           <p className="mb-0">{sellerStatus.message}</p>
+          
+          {sellerStatus.status === 'approved' && (
+            <div className="mt-3">
+              <div className="alert alert-success">
+                <strong>🎉 Chúc mừng!</strong> Hồ sơ của bạn đã được duyệt thành công. 
+                Bạn sẽ được chuyển hướng đến Seller Dashboard trong vài giây...
+              </div>
+              <button 
+                className="btn btn-primary"
+                onClick={() => navigate('/seller-dashboard')}
+              >
+                🚀 Vào Seller Dashboard ngay
+              </button>
+            </div>
+          )}
           
           {sellerStatus.status === 'rejected' && (
             <div className="mt-3">

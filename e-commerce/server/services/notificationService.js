@@ -109,6 +109,51 @@ class NotificationService {
     }
   }
 
+  // Tạo thông báo seller được chấp nhận
+  static async createSellerApprovalNotification(userId, sellerInfo) {
+    try {
+      await Notification.create({
+        userId,
+        type: 'seller_approved',
+        title: '🎉 Chúc mừng! Hồ sơ seller của bạn đã được chấp nhận',
+        message: `Hồ sơ đăng ký seller "${sellerInfo.businessName}" đã được admin duyệt thành công. Bạn có thể bắt đầu bán hàng ngay bây giờ!`,
+        metadata: { 
+          sellerId: sellerInfo._id,
+          businessName: sellerInfo.businessName,
+          action: 'navigate_to_seller_dashboard'
+        },
+        priority: 'high',
+        icon: 'check'
+      });
+      console.log(`Created seller approval notification for user ${userId}, seller ${sellerInfo._id}`);
+    } catch (error) {
+      console.error('Error creating seller approval notification:', error);
+    }
+  }
+
+  // Tạo thông báo seller bị từ chối
+  static async createSellerRejectionNotification(userId, sellerInfo, reason = '') {
+    try {
+      await Notification.create({
+        userId,
+        type: 'seller_rejected',
+        title: '❌ Hồ sơ seller của bạn chưa được chấp nhận',
+        message: `Hồ sơ đăng ký seller "${sellerInfo.businessName}" chưa đáp ứng yêu cầu.${reason ? ` Lý do: ${reason}` : ''} Bạn có thể nộp lại hồ sơ mới.`,
+        metadata: { 
+          sellerId: sellerInfo._id,
+          businessName: sellerInfo.businessName,
+          reason,
+          action: 'navigate_to_register_seller'
+        },
+        priority: 'high',
+        icon: 'alert'
+      });
+      console.log(`Created seller rejection notification for user ${userId}, seller ${sellerInfo._id}`);
+    } catch (error) {
+      console.error('Error creating seller rejection notification:', error);
+    }
+  }
+
   // Tạo thông báo cho tất cả user (broadcast)
   static async createBroadcastNotification(userIds, type, title, message, metadata = {}) {
     try {

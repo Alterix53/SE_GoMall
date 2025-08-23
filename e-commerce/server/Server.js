@@ -36,7 +36,7 @@ const app = express();
 
 app.use(cors({
     origin: CLIENT_URL,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
     credentials: true,
     optionsSuccessStatus: 200,

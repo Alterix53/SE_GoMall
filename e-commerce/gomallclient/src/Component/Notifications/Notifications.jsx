@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Bell, Package, Truck, CheckCircle, AlertCircle, Info, X, Trash2 } from 'lucide-react';
 import './Notifications.css';
 
 const Notifications = ({ isVisible, onClose }) => {
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
@@ -143,15 +145,37 @@ const Notifications = ({ isVisible, onClose }) => {
         return 'warning';
       case 'order_cancelled':
         return 'error';
+      case 'seller_approved':
+        return 'success';
+      case 'seller_rejected':
+        return 'error';
       default:
         return 'default';
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    // Đánh dấu đã đọc
+    markAsRead(notification.id);
+    
+    // Xử lý chuyển hướng dựa trên loại notification
+    if (notification.type === 'seller_approved' && notification.metadata?.action === 'navigate_to_seller_dashboard') {
+      navigate('/seller-dashboard');
+      onClose(); // Đóng notification panel
+    } else if (notification.type === 'seller_rejected' && notification.metadata?.action === 'navigate_to_register_seller') {
+      navigate('/register-seller');
+      onClose(); // Đóng notification panel
+    } else if (notification.orderId) {
+      // Chuyển hướng đến trang đơn hàng nếu có orderId
+      navigate(`/orders/${notification.orderId}`);
+      onClose();
     }
   };
 
   const filteredNotifications = notifications.filter(notif => {
     if (activeTab === 'all') return true;
     if (activeTab === 'unread') return !notif.isRead;
-    if (activeTab === 'orders') return ['order_success', 'shipping_update', 'delivery_success', 'order_cancelled'].includes(notif.type);
+    if (activeTab === 'orders') return ['order_success', 'shipping_update', 'delivery_success', 'order_cancelled', 'seller_approved', 'seller_rejected'].includes(notif.type);
     if (activeTab === 'promotions') return notif.type === 'promotion';
     return true;
   });
@@ -233,10 +257,10 @@ const Notifications = ({ isVisible, onClose }) => {
                 <div 
                   key={notification.id} 
                   className={`notification-item ${!notification.isRead ? 'unread' : ''} ${getTypeColor(notification.type)}`}
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="notification-icon">
-                    {getIcon(notification.icon)}
+                    {getIcon(notification.icon || 'bell')}
                   </div>
                   <div className="notification-content">
                     <div className="notification-header">

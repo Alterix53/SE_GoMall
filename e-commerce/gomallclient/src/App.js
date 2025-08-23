@@ -160,7 +160,11 @@ function App() {
                 <Route path="/invoice" element={<InvoiceDownload />} />
                 
                 {/* SELLER ROUTES - có thể có layout riêng */}
-                <Route path="/seller" element={<RegisterSeller />} />
+                <Route path="/seller" element={
+                  <ProtectedRoute requiredRole="seller">
+                    <SellerDashboard />
+                  </ProtectedRoute>
+                } />
                 <Route path="/seller-dashboard" element={
                   <ProtectedRoute requiredRole="seller">
                     <SellerDashboard />

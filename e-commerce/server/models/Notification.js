@@ -9,7 +9,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['order_success', 'shipping_update', 'delivery_success', 'promotion', 'order_cancelled', 'payment_success', 'refund_processed'],
+    enum: ['order_success', 'shipping_update', 'delivery_success', 'promotion', 'order_cancelled', 'payment_success', 'refund_processed', 'seller_approved', 'seller_rejected'],
     required: true
   },
   title: {
@@ -43,6 +43,11 @@ const notificationSchema = new mongoose.Schema({
     type: String,
     enum: ['low', 'medium', 'high'],
     default: 'medium'
+  },
+  icon: {
+    type: String,
+    enum: ['package', 'truck', 'check', 'alert', 'info', 'bell'],
+    default: 'bell'
   }
 }, {
   timestamps: true
