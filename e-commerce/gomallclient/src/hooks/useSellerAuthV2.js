@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const useSellerAuthV2 = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading, token } = useAuth();
   const [sellerStatus, setSellerStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const isFetchingRef = useRef(false);
 
   const checkSellerStatus = async () => {
     if (!isAuthenticated()) {
@@ -13,6 +14,8 @@ export const useSellerAuthV2 = () => {
       return;
     }
 
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     setLoading(true);
     setError(null);
     
@@ -40,12 +43,14 @@ export const useSellerAuthV2 = () => {
       setError('Error checking seller status');
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
 
   useEffect(() => {
+    if (authLoading) return;
     checkSellerStatus();
-  }, [isAuthenticated]);
+  }, [authLoading, token]);
 
   // LOGIC MỚI: Chỉ dựa trên bảng Seller, không phụ thuộc vào user.role
   const hasSellerApplication = () => {

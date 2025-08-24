@@ -22,24 +22,24 @@ const RegisterSeller = () => {
     setDocument(e.target.files[0]);
   };
 
-  // Kiểm tra trạng thái seller khi component mount (chỉ gọi 1 lần)
+  // Check seller status on mount (once)
   useEffect(() => {
     console.log('RegisterSeller useEffect triggered, isAuthenticated:', isAuthenticated(), 'hasCheckedStatus:', hasCheckedStatus);
     if (isAuthenticated() && !hasCheckedStatus) {
       console.log('Calling checkSellerStatus...');
       checkSellerStatus();
     } else if (!isAuthenticated()) {
-      // Nếu chưa đăng nhập, set hasCheckedStatus = true để không hiển thị loading
+      // If not signed in, mark checked to avoid infinite loading
       setHasCheckedStatus(true);
     }
   }, [hasCheckedStatus]); // Chỉ chạy khi hasCheckedStatus thay đổi
 
-  // Xử lý chuyển hướng khi seller đã được approve
+  // Redirect when seller is approved
   useEffect(() => {
     console.log('Redirect useEffect triggered, sellerStatus:', sellerStatus, 'redirectRef.current:', redirectRef.current);
     if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved' && !redirectRef.current) {
       console.log('Seller approved, setting redirect timer...');
-      redirectRef.current = true; // Đánh dấu đã chuyển hướng
+      redirectRef.current = true; // Mark redirected
       const timer = setTimeout(() => {
         console.log('Redirecting to /seller...');
         navigate('/seller');
@@ -136,7 +136,7 @@ const RegisterSeller = () => {
     }
   };
 
-  // Hiển thị loading khi đang check trạng thái
+  // Show loading while checking status
   if (loading || !hasCheckedStatus) {
     return (
       <div className="register-seller-container">
@@ -144,71 +144,71 @@ const RegisterSeller = () => {
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <span className="ms-3">Đang kiểm tra trạng thái seller...</span>
+          <span className="ms-3">Checking seller status...</span>
         </div>
       </div>
     );
   }
 
-  // Nếu chưa đăng nhập, hiển thị thông báo
+  // If not signed in, show notice
   if (!isAuthenticated()) {
     return (
       <div className="register-seller-container">
         <div className="alert alert-warning">
-          <h4 className="alert-heading">⚠️ Vui lòng đăng nhập</h4>
-          <p>Bạn cần đăng nhập để đăng ký trở thành seller.</p>
+          <h4 className="alert-heading">⚠️ Please sign in</h4>
+          <p>You need to sign in to register as a seller.</p>
           <button 
             className="btn btn-primary"
             onClick={() => navigate('/login')}
           >
-            Đăng nhập
+            Sign in
           </button>
         </div>
       </div>
     );
   }
 
-  // Nếu đã có hồ sơ, hiển thị thông tin trạng thái
+  // If an application already exists, show status
   console.log('Rendering RegisterSeller, sellerStatus:', sellerStatus);
   if (sellerStatus && sellerStatus.hasApplication) {
     return (
       <div className="register-seller-container">
         <div className="alert alert-info">
-          <h4 className="alert-heading">📋 Thông tin hồ sơ đăng ký seller</h4>
+          <h4 className="alert-heading">📋 Seller application info</h4>
           <hr />
-          <p><strong>Tên doanh nghiệp:</strong> {sellerStatus.businessName}</p>
-          <p><strong>Ngày nộp hồ sơ:</strong> {new Date(sellerStatus.createdAt).toLocaleDateString('vi-VN')}</p>
-          <p><strong>Trạng thái:</strong> 
+          <p><strong>Business name:</strong> {sellerStatus.businessName}</p>
+          <p><strong>Submitted on:</strong> {new Date(sellerStatus.createdAt).toLocaleDateString('vi-VN')}</p>
+          <p><strong>Status:</strong> 
             <span className={`status-badge status-${sellerStatus.status}`}>
-              {sellerStatus.status === 'pending' && '⏳ Đang chờ duyệt'}
-              {sellerStatus.status === 'approved' && '✅ Đã được duyệt'}
-              {sellerStatus.status === 'rejected' && '❌ Bị từ chối'}
-              {sellerStatus.status === 'suspended' && '⏸️ Bị tạm ngưng'}
+              {sellerStatus.status === 'pending' && '⏳ Pending'}
+              {sellerStatus.status === 'approved' && '✅ Approved'}
+              {sellerStatus.status === 'rejected' && '❌ Rejected'}
+              {sellerStatus.status === 'suspended' && '⏸️ Suspended'}
             </span>
           </p>
-          <p><strong>Thông báo:</strong> {sellerStatus.message}</p>
+          <p><strong>Message:</strong> {sellerStatus.message}</p>
           
           {sellerStatus.status === 'approved' && (
             <div className="alert alert-success mt-3">
-              <p>🎉 Chúc mừng! Hồ sơ của bạn đã được duyệt thành công.</p>
-              <p>Bạn sẽ được chuyển hướng đến Seller Dashboard trong vài giây...</p>
+              <p>🎉 Congratulations! Your application has been approved.</p>
+              <p>You will be redirected to the Seller Dashboard in a few seconds...</p>
               <button 
                 className="btn btn-primary"
                 onClick={() => navigate('/seller')}
               >
-                Vào Seller Dashboard ngay
+                Go to Seller Dashboard now
               </button>
             </div>
           )}
           
           {sellerStatus.status === 'rejected' && (
             <div className="alert alert-warning mt-3">
-              <p>Hồ sơ của bạn chưa đáp ứng yêu cầu. Bạn có thể nộp lại hồ sơ mới.</p>
+              <p>Your application did not meet the requirements. You can submit a new one.</p>
               <button 
                 className="btn btn-warning"
                 onClick={() => window.location.reload()}
               >
-                Nộp lại hồ sơ
+                Resubmit application
               </button>
             </div>
           )}
@@ -217,38 +217,38 @@ const RegisterSeller = () => {
     );
   }
 
-  // Form đăng ký seller (chỉ hiển thị khi đã check xong và không có hồ sơ)
+  // Seller registration form (shown only when status checked and no application exists)
   return (
     <div className="register-seller-container">
       <div className="register-seller-form">
-        <h2>Đăng ký trở thành Seller</h2>
-        <p>Vui lòng điền đầy đủ thông tin để đăng ký trở thành seller trên GoMall</p>
+        <h2>Register to become a Seller</h2>
+        <p>Please fill out the information below to register as a seller on GoMall.</p>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="businessName">Tên doanh nghiệp *</label>
+            <label htmlFor="businessName">Business name *</label>
             <input
               type="text"
               id="businessName"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="Nhập tên doanh nghiệp hoặc cửa hàng"
+              placeholder="Enter business or shop name"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Địa chỉ doanh nghiệp *</label>
+            <label htmlFor="address">Business address *</label>
             <input
               type="text"
               id="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Nhập địa chỉ đầy đủ"
+              placeholder="Enter full address"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email doanh nghiệp</label>
+            <label htmlFor="email">Business email</label>
             <input
               type="email"
               id="email"
@@ -260,20 +260,20 @@ const RegisterSeller = () => {
 
           <div className="mb-3">
             <label className="form-label">
-              <strong>Số giấy phép kinh doanh</strong> <span className="text-danger">*</span>
+              <strong>Business license number</strong> <span className="text-danger">*</span>
             </label>
             <input
               type="text"
               className="form-control"
               value={businessLicense}
               onChange={(e) => setBusinessLicense(e.target.value)}
-              placeholder="Nhập số giấy phép kinh doanh"
+              placeholder="Enter business license number"
             />
           </div>
 
           <div className="mb-3">
             <label className="form-label">
-              <strong>Số điện thoại</strong> <span className="text-danger">*</span>
+              <strong>Phone number</strong> <span className="text-danger">*</span>
             </label>
             <input
               type="tel"
@@ -285,30 +285,30 @@ const RegisterSeller = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="businessLicense">Giấy phép kinh doanh *</label>
+            <label htmlFor="businessLicense">Business license number *</label>
             <input
               type="text"
               id="businessLicense"
               value={businessLicense}
               onChange={(e) => setBusinessLicense(e.target.value)}
               required
-              placeholder="Nhập số giấy phép kinh doanh"
+              placeholder="Enter business license number"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="document">Tài liệu xác minh</label>
+            <label htmlFor="document">Verification document</label>
             <input
               type="file"
               className="form-control"
               onChange={handleFileChange}
               accept=".pdf,.jpg,.png"
             />
-            <small>Chấp nhận file PDF, JPG, JPEG, PNG</small>
+            <small>Accepts PDF, JPG, JPEG, PNG</small>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Đang xử lý...' : 'Nộp hồ sơ đăng ký'}
+            {loading ? 'Processing...' : 'Submit application'}
           </button>
         </form>
       </div>

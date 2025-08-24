@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSellerAuthV2 } from '../../hooks/useSellerAuthV2';
@@ -15,6 +15,7 @@ function Header() {
   const { isApprovedSeller } = useSellerAuthV2();
   const [searchKeyword, setSearchKeyword] = useState("");
   const navigate = useNavigate();
+  const cartHoverTimeoutRef = useRef(null);
 
   const toggleAccountDropdown = () => {
     setShowAccountDropdown(!showAccountDropdown);
@@ -30,11 +31,21 @@ function Header() {
   };
 
   const handleCartMouseEnter = () => {
+    if (cartHoverTimeoutRef.current) {
+      clearTimeout(cartHoverTimeoutRef.current);
+      cartHoverTimeoutRef.current = null;
+    }
     setShowCartTooltip(true);
   };
 
   const handleCartMouseLeave = () => {
-    setShowCartTooltip(false);
+    if (cartHoverTimeoutRef.current) {
+      clearTimeout(cartHoverTimeoutRef.current);
+    }
+    cartHoverTimeoutRef.current = setTimeout(() => {
+      setShowCartTooltip(false);
+      cartHoverTimeoutRef.current = null;
+    }, 200);
   };
 
   const closeCartTooltip = () => {

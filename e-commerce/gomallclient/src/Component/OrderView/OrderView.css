@@ -301,6 +301,7 @@
   background: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
+  align-items: flex-start;
 }
 
 .item-image {
@@ -312,21 +313,27 @@
 }
 
 .item-details {
-  flex: 1;
+  flex: 2 1 0;
+  max-width: none;
+  min-width: 0;
 }
 
 .item-name {
   font-weight: 600;
   color: #333;
-  font-size: 16px;
-  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  white-space: normal;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .item-info {
   display: flex;
-  gap: 20px;
-  margin-bottom: 8px;
-  font-size: 14px;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
   color: #666;
   flex-wrap: wrap;
 }

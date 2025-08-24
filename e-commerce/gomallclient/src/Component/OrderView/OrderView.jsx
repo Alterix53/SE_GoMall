@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../Header/Header';
 import { useAuth } from '../../contexts/AuthContext';
 import { checkoutAPI } from '../../utils/api';
+import { createPlaceholderUrl } from '../../utils/imageUtils';
 import './OrderView.css';
 
 // Resolve image URL to absolute path (prefix server origin for relative paths)
@@ -21,23 +21,31 @@ const resolveImageUrl = (image) => {
 
 const OrderView = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, getCurrentUser } = useAuth();
+  const { isAuthenticated, loading: authLoading, token } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetail, setShowOrderDetail] = useState(false);
+  const hasLoadedRef = useRef(false);
+  const isFetchingRef = useRef(false);
+  const [failedItemImages, setFailedItemImages] = useState({});
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated()) {
       navigate('/login');
       return;
     }
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     loadOrders();
-  }, [isAuthenticated, navigate]);
+  }, [authLoading, token, navigate]);
 
   const loadOrders = async () => {
     try {
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
       setLoading(true);
       const response = await checkoutAPI.getUserOrders();
       if (response.success) {
@@ -50,6 +58,7 @@ const OrderView = () => {
       setError('An error occurred while loading orders');
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
 
@@ -140,7 +149,6 @@ const OrderView = () => {
   if (showOrderDetail && selectedOrder) {
     return (
       <div className="order-view-page">
-        <Header />
         <div className="order-detail-container">
           <div className="order-detail-header">
             <button className="back-btn" onClick={handleBackToList}>
@@ -191,20 +199,22 @@ const OrderView = () => {
             <div className="order-items-section">
               <h2>🛍️ Ordered Items</h2>
               <div className="order-items-list">
-                {selectedOrder.items && selectedOrder.items.map((item, index) => (
+                {selectedOrder.items && selectedOrder.items.map((item, index) => {
+                  const productName = item.productID?.name || item.name || 'Product';
+                  const productImage = item.productID?.images?.[0]?.url || item.image;
+                  return (
                   <div key={index} className="order-item">
                     <img 
-                      src={resolveImageUrl(item.image)} 
-                      alt={item.name}
+                      src={failedItemImages[index] ? createPlaceholderUrl(80,80,'') : resolveImageUrl(productImage)} 
+                      alt={productName}
+                      title={productName}
                       className="item-image"
-                      onError={(e) => {
-                        if (e.target && e.target['src']) {
-                          e.target['src'] = '/images/placeholder-product.svg';
-                        }
+                      onError={failedItemImages[index] ? undefined : () => {
+                        setFailedItemImages(prev => ({ ...prev, [index]: true }));
                       }}
                     />
                     <div className="item-details">
-                      <div className="item-name">{item.name}</div>
+                      <div className="item-name">{productName}</div>
                       <div className="item-info">
                         <span>Type: {item.variant || item.size || 'Standard'}</span>
                         <span>Quantity: {item.quantity}</span>
@@ -218,7 +228,7 @@ const OrderView = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                )})}
               </div>
             </div>
 
@@ -246,7 +256,6 @@ const OrderView = () => {
 
   return (
     <div className="order-view-page">
-      <Header />
       
       <div className="order-view-container">
         <div className="order-view-header">

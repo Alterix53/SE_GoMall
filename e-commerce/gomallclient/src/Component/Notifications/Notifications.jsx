@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Bell, Package, Truck, CheckCircle, AlertCircle, Info, X, Trash2 } from 'lucide-react';
 import './Notifications.css';
 
 const Notifications = ({ isVisible, onClose }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, token } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const isFetchingRef = useRef(false);
 
   // Load notifications từ API thật
   useEffect(() => {
-    if (isVisible && isAuthenticated()) {
-      loadNotifications();
-    }
-  }, [isVisible, isAuthenticated]);
+    if (!isVisible) return;
+    if (authLoading) return;
+    if (!isAuthenticated()) return;
+    loadNotifications();
+  }, [isVisible, authLoading, token]);
 
   const loadNotifications = async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -48,6 +52,7 @@ const Notifications = ({ isVisible, onClose }) => {
       setNotifications([]);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
 

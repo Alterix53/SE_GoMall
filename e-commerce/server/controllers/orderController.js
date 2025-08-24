@@ -43,7 +43,8 @@ export const getUserOrders = async (req, res) => {
   try {
     const userID = req.user._id; // Get from user object in req.user
     if (!userID) return res.status(400).json({ message: 'Missing userID' });
-    const orders = await Order.find({ userID });
+    const orders = await Order.find({ userID })
+      .populate('items.productID', 'name images price');
     res.status(200).json({ success: true, orders });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -54,7 +55,8 @@ export const getUserOrders = async (req, res) => {
 export const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
-    const order = await Order.findById(id);
+    const order = await Order.findById(id)
+      .populate('items.productID', 'name images price');
     if (!order) return res.status(404).json({ message: 'Order not found' });
     res.status(200).json({ success: true, order });
   } catch (error) {
