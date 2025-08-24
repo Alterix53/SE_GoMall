@@ -171,6 +171,32 @@ const RegisterSeller = () => {
   // If an application already exists, show status
   console.log('Rendering RegisterSeller, sellerStatus:', sellerStatus);
   if (sellerStatus && sellerStatus.hasApplication) {
+    const formatDate = (d) => {
+      try {
+        return new Date(d).toLocaleDateString('en-GB');
+      } catch {
+        return '';
+      }
+    };
+
+    const getEnglishStatusMessage = (statusObj) => {
+      const status = statusObj?.status;
+      if (status === 'approved') {
+        const approvedDate = statusObj?.approvedAt || statusObj?.updatedAt || statusObj?.createdAt;
+        return `Your application was approved on ${formatDate(approvedDate)}.`;
+      }
+      if (status === 'pending') {
+        return 'Your application is under review.';
+      }
+      if (status === 'rejected') {
+        return 'Your application was rejected.';
+      }
+      if (status === 'suspended') {
+        return 'Your seller account is suspended.';
+      }
+      return statusObj?.message || 'No message available.';
+    };
+
     return (
       <div className="register-seller-container">
         <div className="alert alert-info">
@@ -186,7 +212,7 @@ const RegisterSeller = () => {
               {sellerStatus.status === 'suspended' && '⏸️ Suspended'}
             </span>
           </p>
-          <p><strong>Message:</strong> {sellerStatus.message}</p>
+          <p><strong>Message:</strong> {getEnglishStatusMessage(sellerStatus)}</p>
           
           {sellerStatus.status === 'approved' && (
             <div className="alert alert-success mt-3">
