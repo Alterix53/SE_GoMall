@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mockProducts from './product.json'; 
-import './Sellerdashboard'; 
+import './sellerdashboard.css'; 
 
 const SellerDashboard = () => {
   const [tab, setTab] = useState(1);
@@ -28,8 +28,9 @@ const SellerDashboard = () => {
 
   return (
     <>
-      <div className="container mt-4">
-        <h2>Seller Dashboard</h2>
+      <div className="seller-dashboard">
+        <div className="container">
+          <h2>Seller Dashboard</h2>
 
         <div className="btn-group mb-4">
           <button className={`btn btn-${tab === 1 ? 'primary' : 'outline-primary'}`} onClick={() => setTab(1)}>
@@ -78,7 +79,7 @@ const SellerDashboard = () => {
 
         {/* TAB 2: Thêm sản phẩm */}
         {tab === 2 && (
-          <div>
+          <div className="add-product-form">
             <h4>Thêm sản phẩm mới</h4>
             <input
               placeholder="Tên"
@@ -107,7 +108,7 @@ const SellerDashboard = () => {
 
         {/* TAB 3: Thống kê */}
         {tab === 3 && (
-          <div className="stat-box mt-4 p-4 bg-light rounded">
+          <div className="stat-box">
             <h4>Thống kê đơn giản</h4>
             <p>Tổng sản phẩm: {products.length}</p>
             <p>
@@ -119,6 +120,7 @@ const SellerDashboard = () => {
             </p>
           </div>
         )}
+        </div>
       </div>
     </>
   );
