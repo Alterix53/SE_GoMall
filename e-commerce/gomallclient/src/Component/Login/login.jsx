@@ -40,11 +40,11 @@ const LoginPage = () => {
         }
       } else {
         console.log('Login failed:', result.message);
-        setError(result.message || 'Login failed');
+        setError('invalid username/gmail or password');
       }
     } catch (error) {
       console.error('Login error:', error);
-              setError('An error occurred during login. Please try again.');
+              setError('invalid username/gmail or password');
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
 import './CategoryList.css';
@@ -23,6 +23,8 @@ const categoryIconMap = {
 };
 
 export default function CategoryList() {
+  const navigate = useNavigate();
+  const { name: routeCategoryName } = useParams();
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showProducts, setShowProducts] = useState(false);
@@ -45,6 +47,24 @@ export default function CategoryList() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // When categories are loaded and route has a category name, auto-select and fetch
+  useEffect(() => {
+    if (!routeCategoryName || categories.length === 0) return;
+    // Find server category by case-insensitive name match
+    const match = categories.find(c => String(c.categoryName).toLowerCase() === String(routeCategoryName).toLowerCase());
+    if (match && !match.__placeholder) {
+      setSelectedCategory(match);
+      setShowProducts(true);
+      setCurrentPage(1);
+      fetchCategoryProducts(match._id, match.categoryName);
+    } else {
+      // If no valid category, ensure list view
+      setShowProducts(false);
+      setSelectedCategory(null);
+      setCategoryProducts([]);
+    }
+  }, [routeCategoryName, categories]);
 
   const fetchCategories = async () => {
     try {
@@ -142,6 +162,8 @@ export default function CategoryList() {
       setLoadingProducts(false);
       return;
     }
+    // Update URL for deep-linking
+    navigate(`/category/${encodeURIComponent(category.categoryName)}`);
     fetchCategoryProducts(category._id, category.categoryName);
   };
 
@@ -150,6 +172,8 @@ export default function CategoryList() {
     setSelectedCategory(null);
     setCurrentPage(1);
     setCategoryProducts([]);
+    // Navigate back to /category
+    navigate('/category');
   };
 
   const handlePageChange = (pageNumber) => {

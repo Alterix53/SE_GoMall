@@ -181,6 +181,8 @@ const seedProducts = async (categories) => {
             flashSaleEndDate: product.flashSaleEndDate,
             isFeatured: product.isFeatured,
             isActive: product.isActive,
+            // Ensure category mapping stays in sync with current categories
+            categoryID: product.categoryID,
             updatedAt: new Date()
           }
         }

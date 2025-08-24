@@ -204,7 +204,8 @@ function App() {
                 <Route path="/register-seller" element={<RegisterSeller />} />
                 
                 {/* Category routes - sử dụng Navbar và Footer */}
-                <Route path="/category/*" element={<CategoryList />} />
+                <Route path="/category" element={<CategoryList />} />
+                <Route path="/category/:name" element={<CategoryList />} />
                 
                 {/* Fallback route */}
                 <Route path="*" element={<Home />} />

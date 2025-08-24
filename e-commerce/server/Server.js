@@ -66,11 +66,13 @@ app.get('/api/products/category/:categoryName', async (req, res) => {
     try {
         const categoryName = decodeURIComponent(req.params.categoryName);
         console.log("Requested category:", categoryName);
-        const category = await Category.findOne({ categoryName });
-        if (!category) {
+        // Support multiple matches by name (case-insensitive); take all matching IDs
+        const categories = await Category.find({ categoryName: new RegExp(`^${categoryName}$`, 'i') }, '_id').lean();
+        if (!categories || categories.length === 0) {
             return res.json({ success: false, message: "Category not found" });
         }
-        const products = await Product.find({ categoryID: category._id, isActive: true }).sort({ createdAt: 1 });
+        const categoryIds = categories.map(c => c._id);
+        const products = await Product.find({ categoryID: { $in: categoryIds }, isActive: true }).sort({ createdAt: 1 });
         console.log(`Products for category ${categoryName}:`, products.map(p => p.name));
         res.json({
             success: true,
@@ -111,6 +113,7 @@ app.use("/api/momo", momoPaymentRoutes);  // Thêm MoMo payment routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/sellers", sellerRoutes);
+app.use("/api/categories", categoryRoutes);
 
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);

@@ -26,7 +26,7 @@ const SignUpPage = () => {
     const { username, email, password, confirm } = form;
 
     if (password !== confirm) {
-      setError('Mật khẩu xác nhận không khớp');
+      setError('Passwords do not match');
       return;
     }
 
@@ -51,7 +51,7 @@ const SignUpPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        alert('Đăng ký thành công! Vui lòng đăng nhập.');
+        alert('Sign up successfully, please log in.');
         navigate('/login');
       } else {
         // Hiển thị lỗi chi tiết

@@ -232,7 +232,7 @@ export const login = async (req, res) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'invalid username/gmail or password'
             });
         }
 
@@ -249,7 +249,7 @@ export const login = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'invalid username/gmail or password'
             });
         }
 
