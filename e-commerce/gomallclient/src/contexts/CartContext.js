@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { apiService } from "../utils/api";
 
-const CartContext = createContext();
+const CartContext = createContext(null);
 
 export const useCart = () => {
   const context = useContext(CartContext);

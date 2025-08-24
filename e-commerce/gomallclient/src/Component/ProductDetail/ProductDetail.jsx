@@ -409,6 +409,12 @@ export default function ProductDetail() {
     }))
   }
 
+  const handleThumbnailClick = (index) => {
+    if (index !== activeImage) {
+      setActiveImage(index);
+    }
+  }
+
   if (loading) {
     return (
       <>
@@ -450,9 +456,10 @@ export default function ProductDetail() {
                 <div className="aspect-square relative overflow-hidden rounded-lg bg-gray-100">
                   {product.images && product.images.length > 0 ? (
                     <OptimizedImage
+                      key={`main-image-${activeImage}`}
                       src={resolveImageUrl(product.images[activeImage])}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-opacity duration-300"
                       fallbackUrl={createPlaceholderUrl(600,600,'')}
                       onLoad={() => {}}
                       onError={() => {}}
@@ -484,7 +491,7 @@ export default function ProductDetail() {
                       {product.images.map((image, index) => (
                         <button
                           key={index}
-                          onClick={() => setActiveImage(index)}
+                          onClick={() => handleThumbnailClick(index)}
                           className={cn(
                             "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all duration-200 relative",
                             activeImage === index 
