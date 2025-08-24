@@ -40,60 +40,30 @@ export const searchProducts = ResponseHandler.asyncHandler(async (req, res) => {
     try {
         const { keyword, sortBy, page = 1, limit = 12 } = req.query;
         
-        // Normalize category by names to IDs if needed (defensive against invalid casts)
-        if (req.query.category) {
-            const raw = Array.isArray(req.query.category)
-                ? req.query.category
-                : String(req.query.category).split(",");
-            const values = raw.map(v => String(v).trim()).filter(Boolean);
-            const objectIdRegex = /^[a-fA-F0-9]{24}$/;
-            const containsName = values.some(v => !objectIdRegex.test(v));
-            if (containsName) {
-                const nameRegexes = values
-                    .filter(v => !objectIdRegex.test(v))
-                    .map(v => new RegExp(v, 'i'));
-                const matched = await Category.find({ categoryName: { $in: nameRegexes } }, '_id').lean();
-                const idList = [
-                    ...values.filter(v => objectIdRegex.test(v)),
-                    ...matched.map(c => c._id.toString())
-                ];
-                req.query.category = idList.join(',');
-            }
-        }
-        
         // Start from generic filter to support price/category/rating, etc.
         let query = await productService.buildFilter(req.query);
         
-        // Keyword search
+        // Keyword search - integrate with existing filters using AND logic
         if (keyword) {
             console.log('Searching for keyword:', keyword);
             const words = keyword.trim().split(/\s+/).filter(word => word.length > 0);
             if (words.length > 0) {
-                query.$and = words.map(word => ({
+                const keywordConditions = words.map(word => ({
                     $or: [
                         { name: { $regex: word, $options: 'i' } },
                         { description: { $regex: word, $options: 'i' } },
                         { brand: { $regex: word, $options: 'i' } }
                     ]
                 }));
-            }
-            console.log('Search query:', JSON.stringify(query));
-        }
-        // Optional category/brand helpers (accept CSV and map to ObjectIds)
-        if (req.query.category) {
-            const values = String(req.query.category).split(',').map(s => s.trim()).filter(Boolean);
-            if (values.length) {
-                const categories = await Category.find({
-                    $or: [
-                        { _id: { $in: values } },
-                        { categoryName: { $in: values } },
-                        { slug: { $in: values } }
-                    ]
-                }).distinct('_id');
-                if (categories.length) {
-                    query.categoryID = { $in: categories };
+                
+                // Add keyword conditions to existing $and or create new $and
+                if (query.$and) {
+                    query.$and.push(...keywordConditions);
+                } else {
+                    query.$and = keywordConditions;
                 }
             }
+            console.log('Search query:', JSON.stringify(query));
         }
         // Execute search
         const products = await productService.searchProducts(query, {

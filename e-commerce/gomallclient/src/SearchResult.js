@@ -39,8 +39,8 @@ const SearchResult = () => {
           sortBy: sortBy === 'price-low' || sortBy === 'price-high' ? 'price.sale' : 'createdAt',
           sortOrder: sortBy === 'price-low' ? 'asc' : 'desc'
         });
-        // optional keyword: only apply when no category/brand filters are selected
-        if (searchQuery.trim() && selectedCategories.length === 0 && selectedBrands.length === 0) {
+        // Always apply keyword search when present, regardless of other filters
+        if (searchQuery.trim()) {
           params.set('keyword', searchQuery);
         }
         if (selectedCategories.length > 0) {

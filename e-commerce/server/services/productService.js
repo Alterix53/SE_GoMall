@@ -26,6 +26,8 @@ class ProductService {
                 ).lean();
                 categoryIds.push(...categories.map((c) => c._id));
             }
+            
+            // Use OR logic for categories since products typically belong to only one category
             andConditions.push({ categoryID: { $in: categoryIds.length > 0 ? categoryIds : [null] } });
         }
 
@@ -36,6 +38,7 @@ class ProductService {
                 : String(query.brand).split(",");
             const values = raw.map((v) => String(v).trim()).filter(Boolean);
             if (values.length > 0) {
+                // Use OR logic for brands since products typically have only one brand
                 const brandAlternatives = values.map((v) => {
                     const rx = new RegExp(v, "i");
                     return { $or: [
