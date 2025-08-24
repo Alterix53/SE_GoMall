@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { productService } from '../services/productService';
 import { sellerService } from '../services/sellerService';
+import { apiClient } from '../services/apiClient';
 import { generateLocalId } from '../utils/format';
 
 const STORAGE_KEY = 'sellerProducts';
@@ -11,8 +12,11 @@ const initialProducts = [
 ];
 
 export const useSellerProducts = () => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [serverError, setServerError] = useState(null);
+  const isInitialLoadRef = useRef(true);
 
   // Load products from localStorage
   const loadProductsFromStorage = () => {
@@ -20,49 +24,133 @@ export const useSellerProducts = () => {
       const savedProducts = localStorage.getItem(STORAGE_KEY);
       if (savedProducts) {
         const parsed = JSON.parse(savedProducts);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
+        if (Array.isArray(parsed) && parsed.length > 0) {
           console.log('Products loaded from localStorage:', parsed.length, 'products');
-        } else {
-          setProducts(initialProducts);
-          console.log('Invalid data, using initial products');
+          return parsed;
         }
-      } else {
-        setProducts(initialProducts);
-        console.log('No saved products, using initial products');
       }
+      console.log('No valid products in localStorage, using initial products');
+      return initialProducts;
     } catch (error) {
-      console.error('Error loading products:', error);
-      setProducts(initialProducts);
-      console.log('Error occurred, using initial products');
+      console.error('Error loading products from localStorage:', error);
+      return initialProducts;
     }
   };
 
   // Save products to localStorage
   const saveProductsToStorage = (productsToSave) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(productsToSave));
-    console.log('Products saved to localStorage:', productsToSave.length, 'products');
+    if (productsToSave && productsToSave.length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(productsToSave));
+      console.log('Products saved to localStorage:', productsToSave.length, 'products');
+    }
   };
 
-  // Load products on mount
+  // Fetch products from server
+  const fetchProductsFromServer = async () => {
+    try {
+      console.log('Fetching products from server...');
+      const response = await apiClient.get('/products/seller/my-products');
+      
+      if (response.success && response.data && response.data.products) {
+        const serverProducts = response.data.products.map(product => ({
+          id: Number(product._id.substring(product._id.length - 5)),
+          name: product.name,
+          price: product.price?.original || product.price,
+          category: product.categoryID?.categoryName || 'Unknown',
+          categoryID: product.categoryID?._id || product.categoryID,
+          description: product.description || '',
+          image: product.images?.[0]?.url || product.image || '',
+          images: product.images || [],
+          stock: product.inventory?.quantity || product.stock || 0,
+          sellerID: product.sellerID,
+          serverId: product._id,
+          status: product.isActive ? 'active' : 'paused',
+          isOffline: false,
+          createdAt: product.createdAt
+        }));
+        
+        console.log('Products fetched from server:', serverProducts.length, 'products');
+        return serverProducts;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching products from server:', error);
+      setServerError(error.message);
+      return [];
+    }
+  };
+
+  // Merge server products with local products
+  const mergeProducts = (serverProducts, localProducts) => {
+    const merged = [...serverProducts];
+    const serverIds = new Set(serverProducts.map(p => p.serverId));
+    
+    // Add local products that don't exist on server
+    localProducts.forEach(localProduct => {
+      if (!localProduct.serverId || !serverIds.has(localProduct.serverId)) {
+        // This is a local-only product or server product not in current fetch
+        merged.push(localProduct);
+      }
+    });
+    
+    console.log('Merged products:', {
+      server: serverProducts.length,
+      local: localProducts.length,
+      total: merged.length
+    });
+    
+    return merged;
+  };
+
+  // Load and merge products on mount
+  const loadAndMergeProducts = async () => {
+    setIsLoading(true);
+    setServerError(null);
+    
+    try {
+      // Load from localStorage first
+      const localProducts = loadProductsFromStorage();
+      
+      // Try to fetch from server
+      const serverProducts = await fetchProductsFromServer();
+      
+      // Merge products
+      const mergedProducts = mergeProducts(serverProducts, localProducts);
+      
+      setProducts(mergedProducts);
+      setIsInitialized(true);
+      
+      // Save merged products back to localStorage
+      if (mergedProducts.length > 0) {
+        saveProductsToStorage(mergedProducts);
+      }
+      
+    } catch (error) {
+      console.error('Error loading and merging products:', error);
+      // Fallback to localStorage only
+      const localProducts = loadProductsFromStorage();
+      setProducts(localProducts);
+      setIsInitialized(true);
+      setServerError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load products on mount (only once)
   useEffect(() => {
-    loadProductsFromStorage();
+    if (isInitialLoadRef.current) {
+      loadAndMergeProducts();
+      isInitialLoadRef.current = false;
+    }
   }, []);
 
-  // Save products whenever they change
+  // Save products whenever they change (but only after initialization)
   useEffect(() => {
-    saveProductsToStorage(products);
-  }, [products]);
-
-  // Save products on unmount
-  useEffect(() => {
-    return () => {
-      if (products.length > 0) {
-        console.log('Component unmounting, saving products to localStorage:', products.length, 'products');
-        saveProductsToStorage(products);
-      }
-    };
-  }, [products]);
+    if (isInitialized && products.length > 0) {
+      saveProductsToStorage(products);
+    }
+  }, [products, isInitialized]);
 
   const createProduct = async (productData, imageFiles = []) => {
     setIsLoading(true);
@@ -83,6 +171,24 @@ export const useSellerProducts = () => {
       // Get sellerID
       const sellerID = await sellerService.getSellerID();
       
+      // Handle images properly
+      let imageUrl = '';
+      let images = [];
+      
+      if (serverProduct?.images && serverProduct.images.length > 0) {
+        // Use server images
+        images = serverProduct.images;
+        imageUrl = serverProduct.images[0]?.url || '';
+      } else if (productData.images && productData.images.length > 0) {
+        // Use local images
+        images = productData.images;
+        imageUrl = productData.images[0]?.url || '';
+      } else if (productData.image) {
+        // Fallback to single image
+        imageUrl = productData.image;
+        images = [{ url: productData.image, isPrimary: true }];
+      }
+      
       // Create new product
       const newItem = {
         id: serverProduct?._id ? Number(serverProduct._id.substring(serverProduct._id.length - 5)) : generateLocalId(),
@@ -91,12 +197,14 @@ export const useSellerProducts = () => {
         category: productData.category,
         categoryID: productData.categoryID,
         description: productData.description,
-        image: serverProduct?.images?.[0]?.url || productData.image,
+        image: imageUrl,
+        images: images,
         stock: productData.stock,
         sellerID: sellerID,
         serverId: serverProduct?._id,
         status: 'active',
-        isOffline: isOfflineMode
+        isOffline: isOfflineMode,
+        createdAt: new Date().toISOString()
       };
 
       setProducts(prev => [...prev, newItem]);
@@ -114,7 +222,7 @@ export const useSellerProducts = () => {
     }
   };
 
-  const updateProduct = async (productId, productData, imageFile = null) => {
+  const updateProduct = async (productId, productData, imageFiles = []) => {
     setIsLoading(true);
     
     try {
@@ -128,11 +236,29 @@ export const useSellerProducts = () => {
 
       try {
         // Try to update product on server
-        serverProduct = await productService.updateProduct(productToUpdate.serverId, productData, imageFile);
+        serverProduct = await productService.updateProduct(productToUpdate.serverId, productData, imageFiles);
         console.log('Product updated on server:', serverProduct);
       } catch (serverError) {
         console.warn('Server error, falling back to local storage:', serverError);
         isOfflineMode = true;
+      }
+
+      // Handle images properly
+      let imageUrl = '';
+      let images = [];
+      
+      if (serverProduct?.images && serverProduct.images.length > 0) {
+        // Use server images
+        images = serverProduct.images;
+        imageUrl = serverProduct.images[0]?.url || '';
+      } else if (productData.images && productData.images.length > 0) {
+        // Use local images
+        images = productData.images;
+        imageUrl = productData.images[0]?.url || '';
+      } else if (productData.image) {
+        // Fallback to single image
+        imageUrl = productData.image;
+        images = [{ url: productData.image, isPrimary: true }];
       }
 
       // Update product in list
@@ -143,9 +269,10 @@ export const useSellerProducts = () => {
         category: productData.category,
         categoryID: productData.categoryID,
         description: productData.description,
-        image: serverProduct?.images?.[0]?.url || productData.image,
+        image: imageUrl,
+        images: images,
         stock: productData.stock,
-        serverId: serverProduct?._id,
+        serverId: serverProduct?._id || productToUpdate.serverId,
         isOffline: isOfflineMode
       };
 
@@ -197,8 +324,8 @@ export const useSellerProducts = () => {
         throw new Error('Product not found');
       }
 
-      if (productToSync.isOffline) {
-        throw new Error('Sản phẩm đã ở trạng thái offline, không thể đồng bộ lại.');
+      if (!productToSync.isOffline) {
+        throw new Error('Product is already synced with server.');
       }
 
       const updatedProduct = await productService.syncProduct(productToSync);
@@ -216,13 +343,20 @@ export const useSellerProducts = () => {
     }
   };
 
+  const refreshProducts = async () => {
+    console.log('Refreshing products from server...');
+    await loadAndMergeProducts();
+  };
+
   return {
     products,
     isLoading,
+    serverError,
     createProduct,
     updateProduct,
     deleteProduct,
     syncProduct,
-    reloadProducts: loadProductsFromStorage
+    refreshProducts,
+    reloadProducts: loadAndMergeProducts
   };
 };

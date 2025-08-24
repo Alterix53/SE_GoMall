@@ -101,7 +101,7 @@ const FlashSaleCard = ({ product }) => {
         </div>
         
         {/* Action Button */}
-        <button className="selling-fast-btn">SELLING FAST</button>
+        <button className="selling-fast-btn">Buy Now</button>
       </div>
     </div>
   );

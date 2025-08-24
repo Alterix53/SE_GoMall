@@ -1,7 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatCurrencyWithSymbol } from '../utils/format';
 
 const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
+  const [imageErrors, setImageErrors] = useState({});
+
+  // Helper function to get main image
+  const getMainImage = (product) => {
+    if (product.images && product.images.length > 0) {
+      // Find the primary image
+      const primaryImage = product.images.find(img => img.isPrimary);
+      if (primaryImage && primaryImage.url) {
+        return primaryImage.url;
+      }
+      // Fallback to first image if no primary is set
+      if (product.images[0] && product.images[0].url) {
+        return product.images[0].url;
+      }
+    }
+    // Fallback to single image field
+    if (product.image) {
+      return product.image;
+    }
+    // Final fallback to placeholder
+    return '/images/placeholder-product.svg';
+  };
+
+  // Handle image load error
+  const handleImageError = (productId) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [productId]: true
+    }));
+  };
+
+  // Get image source with error handling
+  const getImageSrc = (product) => {
+    if (imageErrors[product.id]) {
+      return '/images/placeholder-product.svg';
+    }
+    return getMainImage(product);
+  };
+
   return (
     <div className="table-responsive">
       <table className="table table-striped table-bordered align-middle">
@@ -33,14 +72,35 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
               <tr key={p.id}>
                 <td>{p.serverId || p.id}</td>
                 <td>
-                  <img 
-                    src={p.image} 
-                    alt={p.name}
-                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }}
-                    onError={() => {
-                      // Fallback to placeholder image
-                    }}
-                  />
+                  <div className="product-image-container">
+                    <img 
+                      src={getImageSrc(p)} 
+                      alt={p.name}
+                      style={{ 
+                        width: '50px', 
+                        height: '50px', 
+                        objectFit: 'cover', 
+                        borderRadius: '8px',
+                        border: '1px solid #dee2e6'
+                      }}
+                      onError={() => handleImageError(p.id)}
+                      onLoad={() => {
+                        // Clear error state if image loads successfully
+                        if (imageErrors[p.id]) {
+                          setImageErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors[p.id];
+                            return newErrors;
+                          });
+                        }
+                      }}
+                    />
+                    {imageErrors[p.id] && (
+                      <div className="image-error-indicator" title="Image failed to load">
+                        <i className="fas fa-exclamation-triangle text-warning"></i>
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td>
                   <div>
