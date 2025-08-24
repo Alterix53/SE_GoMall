@@ -56,13 +56,13 @@ const Suggestions = () => {
   };
 
   const searchSuggestions = [
-    'Tai Nghe Chụp Tai',
-    'Tai Nghe Sony WH Ch520', 
+    'Headphones',
+    'Sony WH Ch520', 
     'iPhone 15plus',
-    'IP 13 Thường 256gb',
-    'Tai Nghe Sony Wh-ch520',
-    'Tai Nghe Sony WH Ch720',
-    'Tai Nghe Bluetooth'
+    'iPhone 13 256gb',
+    'Sony Wh-ch520',
+    'Sony WH Ch720',
+    'Bluetooth Headphones'
   ];
 
   return (
@@ -82,13 +82,13 @@ const Suggestions = () => {
       {/* Main Content */}
       <div className="suggestions-content">
         <div className="suggestions-header">
-          <h1 className="suggestions-title">Có Thể Bạn Cũng Thích</h1>
+          <h1 className="suggestions-title">You Might Also Like</h1>
         </div>
 
         {loading ? (
           <div className="suggestions-loading">
             <div className="loading-spinner"></div>
-            <span>Đang tải sản phẩm...</span>
+            <span>Loading products...</span>
           </div>
         ) : (
           <div className="suggestions-grid">
@@ -128,10 +128,10 @@ const Suggestions = () => {
                       <span className="stars">★★★★★</span>
                       <span className="rating-value">{product.rating.toFixed(1)}</span>
                     </div>
-                    <span className="sold-count">Đã bán {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
+                    <span className="sold-count">Sold {product.sold > 1000 ? `${(product.sold/1000).toFixed(1)}k` : product.sold}</span>
                   </div>
                   {product.discount > 0 && (
-                    <div className="discount-amount">Giảm {product.discount}%</div>
+                    <div className="discount-amount">Save {product.discount}%</div>
                   )}
                 </div>
               </Link>

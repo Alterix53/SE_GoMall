@@ -5,10 +5,10 @@ import './Sellerdashboard';
 
 const Statistics = () => {
   const data = {
-    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4'],
+    labels: ['January', 'February', 'March', 'April'],
     datasets: [
       {
-        label: 'Doanh thu (VND)',
+        label: 'Revenue (VND)',
         data: [1200000, 800000, 1000000, 1400000],
         backgroundColor: 'rgba(75,192,192,0.6)'
       }
@@ -34,14 +34,14 @@ const Statistics = () => {
 
   return (
     <div className="container mt-4">
-      <h2>Thống kê doanh thu</h2>
+      <h2>Revenue Statistics</h2>
 
-      <h4 className="mt-5">Sản phẩm bán chạy</h4>
+      <h4 className="mt-5">Best Selling Products</h4>
       <ul className="list-group">
         {topProducts.map((p, i) => (
           <li className="list-group-item d-flex justify-content-between" key={i}>
             <span>{p.name}</span>
-            <span>Đã bán: {p.sold || 0}</span>
+            <span>Sold: {p.sold || 0}</span>
           </li>
         ))}
       </ul>

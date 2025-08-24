@@ -224,7 +224,7 @@ const Notifications = ({ isVisible, onClose }) => {
         <div className="notifications-header">
           <div className="notifications-title">
             <Bell size={20} />
-            <span>Thông báo</span>
+            <span>Notifications</span>
             {unreadCount > 0 && (
               <span className="unread-badge">{unreadCount}</span>
             )}
@@ -235,7 +235,7 @@ const Notifications = ({ isVisible, onClose }) => {
               onClick={markAllAsRead}
               disabled={unreadCount === 0}
             >
-              Đánh dấu đã đọc
+              Mark all as read
             </button>
             <button className="close-btn" onClick={onClose}>
               <X size={18} />
@@ -249,26 +249,26 @@ const Notifications = ({ isVisible, onClose }) => {
             className={`tab ${activeTab === 'all' ? 'active' : ''}`}
             onClick={() => setActiveTab('all')}
           >
-            Tất cả
+            All
           </button>
           <button 
             className={`tab ${activeTab === 'unread' ? 'active' : ''}`}
             onClick={() => setActiveTab('unread')}
           >
-            Chưa đọc
+            Unread
             {unreadCount > 0 && <span className="tab-badge">{unreadCount}</span>}
           </button>
           <button 
             className={`tab ${activeTab === 'orders' ? 'active' : ''}`}
             onClick={() => setActiveTab('orders')}
           >
-            Đơn hàng
+            Orders
           </button>
           <button 
             className={`tab ${activeTab === 'promotions' ? 'active' : ''}`}
             onClick={() => setActiveTab('promotions')}
           >
-            Khuyến mãi
+            Promotions
           </button>
         </div>
 
@@ -277,12 +277,12 @@ const Notifications = ({ isVisible, onClose }) => {
           {loading ? (
             <div className="loading-state">
               <div className="loading-spinner"></div>
-              <span>Đang tải thông báo...</span>
+              <span>Loading notifications...</span>
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="empty-state">
               <Bell size={48} className="empty-icon" />
-              <span>Không có thông báo nào</span>
+              <span>No notifications</span>
             </div>
           ) : (
             <div className="notifications-list">
@@ -325,7 +325,7 @@ const Notifications = ({ isVisible, onClose }) => {
               {/* Hiển thị thông báo còn lại nếu có */}
               {!showAllNotifications && hasMoreNotifications && (
                 <div className="more-notifications-indicator">
-                  <span>Còn {filteredNotifications.length - initialDisplayCount} thông báo nữa</span>
+                  <span>{filteredNotifications.length - initialDisplayCount} more notifications</span>
                 </div>
               )}
             </div>
@@ -341,12 +341,12 @@ const Notifications = ({ isVisible, onClose }) => {
             {showAllNotifications ? (
               <>
                 <ChevronUp size={16} />
-                Thu gọn thông báo
+                Collapse notifications
               </>
             ) : (
               <>
                 <ChevronDown size={16} />
-                Xem tất cả thông báo ({filteredNotifications.length})
+                View all notifications ({filteredNotifications.length})
               </>
             )}
           </button>
@@ -365,12 +365,12 @@ const formatTimeAgo = (timestamp) => {
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (minutes < 1) return 'Vừa xong';
-  if (minutes < 60) return `${minutes} phút trước`;
-  if (hours < 24) return `${hours} giờ trước`;
-  if (days < 7) return `${days} ngày trước`;
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes} minutes ago`;
+  if (hours < 24) return `${hours} hours ago`;
+  if (days < 7) return `${days} days ago`;
   
-  return timestampDate.toLocaleDateString('vi-VN');
+  return timestampDate.toLocaleDateString('en-US');
 };
 
 export default Notifications;

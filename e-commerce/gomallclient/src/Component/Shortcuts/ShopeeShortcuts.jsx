@@ -6,42 +6,42 @@ const ShopeeShortcuts = () => {
   const shortcuts = [
     {
       id: 1,
-      name: 'Mã Giảm Giá',
+      name: 'Vouchers',
       icon: '🎫',
       link: '/vouchers',
       color: '#ff6b35'
     },
     {
       id: 2,
-      name: 'Hàng Chọn Giá Hời',
+      name: 'Best Deals',
       icon: '✅',
       link: '/deals',
       color: '#00a651'
     },
     {
       id: 3,
-      name: 'Deal Hot Giờ Vàng',
+      name: 'Golden Hour Deals',
       icon: '⚡',
       link: '/flash-sale',
       color: '#ff4757'
     },
     {
       id: 4,
-      name: 'Shopee Style Voucher 30%',
+      name: 'Style Voucher 30%',
       icon: '👗',
       link: '/style',
       color: '#ff6b9d'
     },
     {
       id: 5,
-      name: 'Săn Ngay 100.000 Xu',
+      name: 'Get 100K Coins',
       icon: '🎁',
       link: '/coins',
       color: '#ffa502'
     },
     {
       id: 6,
-      name: 'Khách Hàng Thân Thiết',
+      name: 'VIP Customers',
       icon: '👑',
       link: '/vip',
       color: '#ff6b35'

@@ -205,7 +205,7 @@ function Home() {
                 <span className="timer-number">{timeLeft.seconds.toString().padStart(2, '0')}</span>
               </div>
             </div>
-            <Link to="/flash-sale" className="view-all-link">Xem thêm</Link>
+            <Link to="/flash-sale" className="view-all-link">See more...</Link>
           </div>
           <div className="flash-sale-products">
             <button className="scroll-arrow left" onClick={() => flashScrollRef.current?.scrollBy({left: -300, behavior: 'smooth'})}>←</button>
@@ -228,7 +228,7 @@ function Home() {
         <div className="top-products-container">
           <div className="home-top-header">
             <h2 className="top-products-title">🌟 Top Products</h2>
-            <Link to="/top-products" className="view-all-link">Xem thêm</Link>
+            <Link to="/top-products" className="view-all-link">See more...</Link>
           </div>
           <div className="top-products-products">
             <button className="scroll-arrow left" onClick={() => topScrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}>←</button>
@@ -250,8 +250,8 @@ function Home() {
       <section className="today-suggestions-section">
         <div className="today-suggestions-container">
           <div className="home-today-header">
-            <h2 className="today-suggestions-title">🎯 Gợi ý hôm nay</h2>
-            <Link to="/today-suggestions" className="view-all-link">Xem thêm</Link>
+            <h2 className="today-suggestions-title">🎯 Today's Suggestions</h2>
+            <Link to="/today-suggestions" className="view-all-link">See more...</Link>
           </div>
           <div className="today-suggestions-products">
             <button className="scroll-arrow left" onClick={() => todayScrollRef.current?.scrollBy({left: -300, behavior: 'smooth'})}>←</button>

@@ -327,16 +327,16 @@ const SearchResult = () => {
               </div>
             ) : searchQuery.trim() ? (
               <div className="empty-results">
-                <h3>Không tìm thấy sản phẩm nào</h3>
-                <p>Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc</p>
+                <h3>No products found</h3>
+                <p>Try changing your search keywords or filters</p>
                 <button onClick={clearFilters} className="clear-filters-btn">
-                  Xóa tất cả bộ lọc
+                  Clear all filters
                 </button>
               </div>
             ) : (
               <div className="empty-results">
-                <h3>Nhập từ khóa tìm kiếm</h3>
-                <p>Vui lòng nhập từ khóa để tìm kiếm sản phẩm</p>
+                <h3>Enter search keywords</h3>
+                <p>Please enter keywords to search for products</p>
               </div>
             )}
             {/* Pagination */}
@@ -347,7 +347,7 @@ const SearchResult = () => {
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 >
-                  Trước
+                  Previous
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
@@ -363,7 +363,7 @@ const SearchResult = () => {
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 >
-                  Sau
+                  Next
                 </button>
               </div>
             )}

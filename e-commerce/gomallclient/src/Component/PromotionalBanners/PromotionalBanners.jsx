@@ -8,8 +8,8 @@ const PromotionalBanners = () => {
     {
       id: 1,
       background: '#ff4444', // Màu đỏ riêng
-      title: 'FREE SHIP MỌI ĐƠN',
-      subtitle: 'Giảm giá lên đến 50%',
+      title: 'FREE SHIPPING ALL ORDERS',
+      subtitle: 'Up to 50% off',
       image: '🛍️',
       badge: '0Đ'
     },
@@ -17,15 +17,15 @@ const PromotionalBanners = () => {
       id: 2,
       background: '#2196F3', // Màu xanh riêng
       title: 'FLASH SALE',
-      subtitle: 'Ưu đãi trong 24h',
+      subtitle: 'Deals for 24h',
       image: '⚡',
       badge: '50%'
     },
     {
       id: 3,
       background: '#ff4444', // Màu đỏ riêng
-      title: 'MỚI VỀ',
-      subtitle: 'Sản phẩm hot nhất',
+      title: 'NEW ARRIVALS',
+      subtitle: 'Hottest products',
       image: '🔥',
       badge: 'NEW'
     },
@@ -33,7 +33,7 @@ const PromotionalBanners = () => {
       id: 4,
       background: '#2196F3', // Màu xanh riêng
       title: 'TECH SALE',
-      subtitle: 'Điện tử giảm sốc',
+      subtitle: 'Electronics shock sale',
       image: '💻',
       badge: '30%'
     },
@@ -41,7 +41,7 @@ const PromotionalBanners = () => {
       id: 5,
       background: '#ff4444', // Màu đỏ riêng
       title: 'FASHION WEEK',
-      subtitle: 'Thời trang mới nhất',
+      subtitle: 'Latest fashion',
       image: '👗',
       badge: '40%'
     }
@@ -100,10 +100,10 @@ const PromotionalBanners = () => {
               <div className="banner-left">
                 <div className="banner-title">8.8</div>
                 <div className="banner-subtitle">GOMALL FOOD</div>
-                <div className="banner-text">VẠN DEAL NGON RẺ</div>
+                <div className="banner-text">THOUSANDS OF DELICIOUS DEALS</div>
                 <div className="banner-offer">
-                  <span>GIẢM 50%</span>
-                  <span>MÓN NGON 15.000</span>
+                  <span>50% OFF</span>
+                  <span>DELICIOUS FOOD 15K</span>
                 </div>
               </div>
               <div className="banner-right">
@@ -120,7 +120,7 @@ const PromotionalBanners = () => {
                 <div className="banner-title">ASEAN</div>
                 <div className="banner-subtitle">8.8 ONLINE SALE DAY</div>
                 <div className="banner-text">A CLICK TO PROSPERITY</div>
-                <div className="banner-dates">8-10 THÁNG 8 2025</div>
+                <div className="banner-dates">8-10 AUGUST 2025</div>
               </div>
               <div className="banner-right">
                 <div className="banner-number">88</div>

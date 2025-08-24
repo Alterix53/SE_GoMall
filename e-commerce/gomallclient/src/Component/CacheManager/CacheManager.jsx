@@ -97,7 +97,7 @@ const CacheManager = () => {
       });
 
       getCacheInfo();
-      alert(`Đã xóa ${clearedCount} item cache hết hạn!`);
+      alert(`Cleared ${clearedCount} expired cache items!`);
     } catch (error) {
       console.error('Error clearing expired cache:', error);
     }
@@ -114,30 +114,30 @@ const CacheManager = () => {
   return (
     <div className="cache-manager">
       <div className="cache-header">
-        <h3>🔄 Quản lý Cache</h3>
+        <h3>🔄 Cache Management</h3>
         <p className="cache-description">
-          Cache giúp tăng tốc độ tải dữ liệu và giảm tải cho server
+          Cache helps speed up data loading and reduce server load
         </p>
       </div>
 
       <div className="cache-stats">
         <div className="stat-item">
-          <span className="stat-label">Tổng số items:</span>
+          <span className="stat-label">Total items:</span>
           <span className="stat-value">{cacheInfo.totalItems}</span>
         </div>
         <div className="stat-item">
-          <span className="stat-label">Tổng dung lượng:</span>
+          <span className="stat-label">Total size:</span>
           <span className="stat-value">{formatBytes(cacheInfo.totalSize)}</span>
         </div>
         {cacheInfo.oldestItem && (
           <div className="stat-item">
-            <span className="stat-label">Item cũ nhất:</span>
+            <span className="stat-label">Oldest item:</span>
             <span className="stat-value">{cacheInfo.oldestItem.timestamp}</span>
           </div>
         )}
         {cacheInfo.newestItem && (
           <div className="stat-item">
-            <span className="stat-label">Item mới nhất:</span>
+            <span className="stat-label">Newest item:</span>
             <span className="stat-value">{cacheInfo.newestItem.timestamp}</span>
           </div>
         )}
@@ -149,30 +149,30 @@ const CacheManager = () => {
           onClick={handleClearExpiredCache}
           disabled={cacheInfo.totalItems === 0}
         >
-          🗑️ Xóa Cache Hết Hạn
+          🗑️ Clear Expired Cache
         </button>
         <button 
           className="btn btn-danger"
           onClick={handleClearAllCache}
           disabled={cacheInfo.totalItems === 0}
         >
-          🗑️ Xóa Tất Cả Cache
+          🗑️ Clear All Cache
         </button>
         <button 
           className="btn btn-info"
           onClick={getCacheInfo}
         >
-          🔄 Làm Mới Thông Tin
+          🔄 Refresh Information
         </button>
       </div>
 
       <div className="cache-info">
-        <h4>ℹ️ Thông tin Cache:</h4>
+        <h4>ℹ️ Cache Information:</h4>
         <ul>
-          <li>Cache có thời gian sống (TTL) là 5 phút</li>
-          <li>Dữ liệu được lưu trong localStorage của trình duyệt</li>
-          <li>Cache tự động được làm mới khi hết hạn</li>
-          <li>Bạn có thể xóa cache thủ công nếu cần</li>
+          <li>Cache has a time-to-live (TTL) of 5 minutes</li>
+          <li>Data is stored in browser's localStorage</li>
+          <li>Cache is automatically refreshed when expired</li>
+          <li>You can manually clear cache if needed</li>
         </ul>
       </div>
     </div>
