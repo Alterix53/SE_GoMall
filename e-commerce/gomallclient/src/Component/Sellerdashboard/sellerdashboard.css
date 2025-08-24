@@ -214,6 +214,13 @@
   border-radius: 2px;
 }
 
+.form-label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+  display: block;
+}
+
 .form-control {
   border: 2px solid #ecf0f1;
   border-radius: 12px;
@@ -230,6 +237,20 @@
   box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
   background: white;
   transform: translateY(-1px);
+}
+
+.form-control.is-invalid {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.15);
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: -15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #e74c3c;
 }
 
 .btn-success {
@@ -250,6 +271,26 @@
   background: #229954;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+}
+
+.btn-secondary:hover {
+  background: #7f8c8d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
 }
 
 /* Statistics Section */
@@ -282,22 +323,117 @@
   position: relative;
 }
 
-.stat-box p {
-  font-size: 1.2rem;
-  color: #34495e;
-  margin-bottom: 15px;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 12px;
+.stat-box h5 {
+  color: #2c3e50;
+  font-size: 1.4rem;
   font-weight: 600;
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
+.stat-item {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
   transition: all 0.3s ease;
   border-left: 4px solid #3498db;
 }
 
-.stat-box p:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  background: #ecf0f1;
+.stat-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 20px;
+}
+
+.badge.bg-secondary {
+  background: #95a5a6 !important;
+  color: white;
+}
+
+.badge.bg-success {
+  background: #27ae60 !important;
+  color: white;
+}
+
+.badge.bg-danger {
+  background: #e74c3c !important;
+  color: white;
+}
+
+.badge.bg-warning {
+  background: #f39c12 !important;
+  color: white;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.empty-state h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: #888;
+}
+
+/* Text Utilities */
+.text-muted {
+  color: #6c757d !important;
+}
+
+.text-primary {
+  color: #3498db !important;
+}
+
+.small {
+  font-size: 0.875em;
+}
+
+.fw-bold {
+  font-weight: 700 !important;
 }
 
 /* Responsive Design */
@@ -339,6 +475,18 @@
   .btn-sm {
     padding: 6px 12px;
     font-size: 11px;
+  }
+  
+  .empty-state {
+    padding: 30px 20px;
+  }
+  
+  .empty-state-icon {
+    font-size: 3rem;
+  }
+  
+  .empty-state h4 {
+    font-size: 1.3rem;
   }
 }
 
@@ -391,6 +539,8 @@
   padding: 15px 20px;
   margin-bottom: 20px;
   font-weight: 600;
+  cursor: pointer;
+  position: relative;
 }
 
 .alert-success {
@@ -403,6 +553,23 @@
   background: #fadbd8;
   color: #e74c3c;
   border-left: 4px solid #e74c3c;
+}
+
+.btn-close {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.btn-close:hover {
+  opacity: 1;
 }
 
 /* Custom Scrollbar */
