@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { AdminCard, AdminDataTable } from '../index';
 import { adminAPI } from '../../../utils/api';
 
 function PendingRequestPage() {

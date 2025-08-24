@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { AdminCard } from './index';
 import SummaryCard from './SummaryCard';
 import StatsChart from './StatsChart';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import RevenueDistributionTable from './RevenueDistributionTable';
 import TrendingProductsTable from './TrendingProductsTable';
 import AdminAvatarModal from './AdminAvatarModal';
-import NotificationButton from './NotificationButton';
 import { adminAPI } from '../../utils/api';
 
 function DashboardOverview() {
@@ -138,7 +138,6 @@ function DashboardOverview() {
             <div className="col-12 d-flex justify-content-between align-item-center">
               <h3 className="mb-0">Dashboard</h3>
               <div className="d-flex align-items-center">
-                <NotificationButton />
                 <AdminAvatarModal avatarUrl="https://i.pravatar.cc/40?img=3" />
               </div>
             </div>

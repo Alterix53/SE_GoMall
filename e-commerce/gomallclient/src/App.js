@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import './utils/imageOptimization.css';
-import './Component/Admin/adminTheme.css';
+
 import { useImageOptimization } from './hooks/useImageOptimization';
 
 import Cart from './Component/Cart/Cart';
@@ -25,14 +25,15 @@ import TopProduct from './TopProduct';
 import TodaySuggestions from './TodaySuggestions';
 
 // Import các component Admin
-import SidebarNav from './Component/Admin/SidebarNav';
-import Breadcrumbs from './Component/Admin/Breadcrumbs';
-import DashboardPage from './Component/Admin/pages/DashboardPage';
-import ManageUserPage from './Component/Admin/pages/ManageUserPage';
-import ManageSellerPage from './Component/Admin/pages/ManageSellerPage';
-import ItemsPage from './Component/Admin/pages/ItemsPage';
-import PendingRequestPage from './Component/Admin/pages/PendingRequestPage';
-import AdminLogin from './Component/Admin/AdminLogin';
+import { 
+  AdminLayout,
+  DashboardPage,
+  ManageUserPage,
+  ManageSellerPage,
+  ItemsPage,
+  PendingRequestPage,
+  AdminLogin
+} from './Component/Admin';
 
 // Import các component Auth
 import LoginPage from './Component/Login/login';
@@ -94,22 +95,17 @@ const LayoutWrapper = ({ children }) => {
   );
 };
 
-function AdminLayout() {
+function AdminLayoutWrapper() {
   return (
-    <div className="admin-theme d-flex">
-      <SidebarNav />
-      <div className="flex-grow-1 p-3">
-        <Breadcrumbs />
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="ManageUser" element={<ManageUserPage />} />
-          <Route path="ManageUser/User" element={<ManageUserPage />} />
-          <Route path="ManageSeller" element={<ManageSellerPage />} />
-          <Route path="pendingrequest" element={<PendingRequestPage />} />
-          <Route path="Items" element={<ItemsPage />} />
-        </Routes>
-      </div>
-    </div>
+    <AdminLayout title="Admin Dashboard" breadcrumbs={['Admin']}>
+      <Routes>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="ManageUser" element={<ManageUserPage />} />
+        <Route path="ManageSeller" element={<ManageSellerPage />} />
+        <Route path="pendingrequest" element={<PendingRequestPage />} />
+        <Route path="Items" element={<ItemsPage />} />
+      </Routes>
+    </AdminLayout>
   );
 }
 
@@ -128,7 +124,7 @@ function App() {
                 {/* Admin routes - sử dụng layout riêng */}
                 <Route path="/Admin/*" element={
                   <ProtectedRoute requiredRole="admin">
-                    <AdminLayout />
+                    <AdminLayoutWrapper />
                   </ProtectedRoute>
                 } />
                 

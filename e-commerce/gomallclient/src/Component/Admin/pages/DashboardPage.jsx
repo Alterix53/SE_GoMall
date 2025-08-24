@@ -2,11 +2,7 @@ import React from "react";
 import DashboardOverview from "../DashboardOverview";
 
 function DashboardPage() {
-  return (
-    <div>
-      <DashboardOverview />
-    </div>
-  );
+  return <DashboardOverview />;
 }
 
 export default DashboardPage; 

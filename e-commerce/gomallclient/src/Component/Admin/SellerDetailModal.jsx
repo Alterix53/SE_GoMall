@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AdminModal } from './index';
 
 function SellerDetailModal({ seller, onClose }) {
   const [imageError, setImageError] = useState(false);
@@ -26,15 +27,12 @@ function SellerDetailModal({ seller, onClose }) {
   };
 
   return (
-    <div>
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Seller Information</h5>
-            <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
-          </div>
-
-          <div className="modal-body">
+    <AdminModal
+      isOpen={true}
+      onClose={onClose}
+      title="Seller Information"
+      size="lg"
+    >
             <div className="row align-items-center mb-3">
               {/* Seller avatar */}
               <div className="col-md-3 text-center">
@@ -159,10 +157,7 @@ function SellerDetailModal({ seller, onClose }) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </AdminModal>
   );
 }
 

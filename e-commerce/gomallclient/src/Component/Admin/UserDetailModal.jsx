@@ -1,15 +1,14 @@
 import React from "react";
+import { AdminModal } from './index';
 
 function UserDetailModal({ user, onClose }) {
   return (
-    <div>
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">User Information</h5>
-            <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
-          </div>
-          <div className="modal-body">
+    <AdminModal
+      isOpen={true}
+      onClose={onClose}
+      title="User Information"
+      size="lg"
+    >
             <div className="row align-items-center mb-3">
               {/* User avatar */}
               <div className="col-md-3 text-center">
@@ -36,10 +35,7 @@ function UserDetailModal({ user, onClose }) {
                 <p><strong>Joined:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </AdminModal>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { AdminModal } from './index';
 
 function ProductDetailModal({ product, onClose }) {
   const [imageError, setImageError] = useState(false);
@@ -23,33 +24,12 @@ function ProductDetailModal({ product, onClose }) {
   };
 
   return (
-    <div>
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Product Information</h5>
-            <button 
-              type="button" 
-              className="btn-close" 
-              aria-label="Close" 
-              onClick={onClose}
-              style={{ 
-                fontSize: '2rem', 
-                fontWeight: 'bold', 
-                cursor: 'pointer',
-                background: 'none',
-                border: 'none',
-                color: '#666',
-                padding: '0.5rem',
-                lineHeight: '1',
-                width: 'auto',
-                height: 'auto'
-              }}
-            >
-              ×
-            </button>
-          </div>
-          <div className="modal-body">
+    <AdminModal
+      isOpen={true}
+      onClose={onClose}
+      title="Product Information"
+      size="lg"
+    >
             <div className="row align-items-center mb-3">
               {/* Product image */}
               <div className="col-md-3 text-center">
@@ -211,10 +191,7 @@ function ProductDetailModal({ product, onClose }) {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </AdminModal>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { AdminCard, AdminDataTable } from '../index';
 import UserDetailModal from "../UserDetailModal";
 import UserSellerListItem from "../UserSellerListItem";
 import { adminAPI } from '../../../utils/api';
