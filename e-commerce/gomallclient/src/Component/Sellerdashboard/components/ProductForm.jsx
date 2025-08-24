@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { validateProduct } from '../utils/validation';
 import { useImageUploader } from '../hooks/useImageUploader';
 import ImageGrid from './ImageGrid';
+import SuccessModal from './SuccessModal';
 
 const ProductForm = ({ 
   mode = 'create', // 'create' | 'edit'
@@ -16,10 +17,13 @@ const ProductForm = ({
     price: '',
     categoryID: '',
     description: '',
-    image: '',
+    images: [],
     stock: ''
   });
   const [errors, setErrors] = useState({});
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [successProductName, setSuccessProductName] = useState('');
   
   const {
     productImages,
@@ -28,10 +32,13 @@ const ProductForm = ({
     fileInputRef,
     handleImageUpload,
     removeImage,
+    setMainImage,
     reorderImages,
     handleImageUrlChange,
     clearImages,
-    setSingleImage
+    setSingleImage,
+    getMainImage,
+    getMainImageIndex
   } = useImageUploader();
 
   // Load editing product data
@@ -42,7 +49,7 @@ const ProductForm = ({
         price: editingProduct.price,
         categoryID: editingProduct.categoryID,
         description: editingProduct.description,
-        image: editingProduct.image,
+        images: editingProduct.images || [],
         stock: editingProduct.stock
       });
       setSingleImage(editingProduct.image);
@@ -66,15 +73,21 @@ const ProductForm = ({
 
   const handleImageFileUpload = (event) => {
     handleImageUpload(event, (errorMessage) => {
-      setErrors(prev => ({ ...prev, image: errorMessage }));
+      setErrors(prev => ({ ...prev, images: errorMessage }));
     });
   };
 
   const handleSubmit = () => {
-    // Update form data with current image
+    // Prepare images data for validation
+    const imagesData = productImages.map(img => ({
+      url: img.url,
+      isMain: img.isMain
+    }));
+
+    // Update form data with current images
     const currentFormData = {
       ...formData,
-      image: imagePreview || formData.image
+      images: imagesData
     };
 
     const validation = validateProduct(currentFormData);
@@ -84,12 +97,21 @@ const ProductForm = ({
       const productData = {
         name: currentFormData.name.trim(),
         price: Number(currentFormData.price),
-        category: categories.find(cat => cat._id === currentFormData.categoryID)?.categoryName || 'Không xác định',
+        category: categories.find(cat => cat._id === currentFormData.categoryID)?.categoryName || 'Uncategorized',
         categoryID: currentFormData.categoryID,
-        description: currentFormData.description.trim() || 'Không có mô tả',
-        image: currentFormData.image,
+        description: currentFormData.description.trim() || 'No description available',
+        images: imagesData,
         stock: Number(currentFormData.stock)
       };
+
+      // Show success modal after submission
+      const message = mode === 'create' 
+        ? 'Product has been successfully created and saved to the system.'
+        : 'Product has been successfully updated.';
+      
+      setSuccessMessage(message);
+      setSuccessProductName(productData.name);
+      setShowSuccessModal(true);
 
       onSubmit(productData, imageFiles);
     }
@@ -101,7 +123,7 @@ const ProductForm = ({
       price: '',
       categoryID: '',
       description: '',
-      image: '',
+      images: [],
       stock: ''
     });
     setErrors({});
@@ -109,14 +131,14 @@ const ProductForm = ({
   };
 
   const getTitle = () => {
-    return mode === 'create' ? 'Thêm sản phẩm mới' : 'Sửa sản phẩm';
+    return mode === 'create' ? 'Add New Product' : 'Edit Product';
   };
 
   const getSubmitButtonText = () => {
     if (isLoading) {
-      return mode === 'create' ? 'Đang tạo...' : 'Đang cập nhật...';
+      return mode === 'create' ? 'Creating...' : 'Updating...';
     }
-    return mode === 'create' ? 'Thêm sản phẩm' : 'Lưu thay đổi';
+    return mode === 'create' ? 'Add Product' : 'Save Changes';
   };
 
   const getSubmitButtonIcon = () => {
@@ -127,218 +149,234 @@ const ProductForm = ({
     if (mode === 'create') {
       return (
         <ul className="mb-0">
-          <li>Sản phẩm sau khi thêm sẽ được lưu vào <strong>hệ thống chính</strong></li>
-          <li>Người dùng có thể <strong>tìm kiếm và mua</strong> sản phẩm của bạn</li>
-          <li>Hình ảnh sẽ được <strong>upload lên server</strong> để hiển thị công khai</li>
-          <li>Sản phẩm sẽ xuất hiện trong <strong>danh sách sản phẩm chung</strong></li>
+          <li>Product will be saved to the <strong>main system</strong></li>
+          <li>Users can <strong>search and purchase</strong> your product</li>
+          <li>Images will be <strong>uploaded to server</strong> for public display</li>
+          <li>Product will appear in the <strong>general product list</strong></li>
         </ul>
       );
     } else {
       return (
         <ul className="mb-0">
-          <li>Sản phẩm sẽ được <strong>cập nhật trên server</strong> nếu kết nối thành công</li>
-          <li>Nếu server lỗi, sản phẩm sẽ được <strong>cập nhật cục bộ</strong></li>
-          <li>Hình ảnh mới sẽ được <strong>upload lên server</strong> khi cập nhật</li>
-          <li>Thay đổi sẽ <strong>hiển thị ngay lập tức</strong> trong danh sách</li>
+          <li>Product will be <strong>updated on server</strong> if connection is successful</li>
+          <li>If server fails, product will be <strong>updated locally</strong></li>
+          <li>New images will be <strong>uploaded to server</strong> when updating</li>
+          <li>Changes will <strong>display immediately</strong> in the list</li>
         </ul>
       );
     }
   };
 
   return (
-    <div className={`${mode}-product-form`}>
-      <h4>{getTitle()}</h4>
-      
-      <div className="row">
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label className="form-label">Tên sản phẩm *</label>
-            <input
-              placeholder="Nhập tên sản phẩm"
-              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-            />
-            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Giá (VNĐ) *</label>
-            <input
-              placeholder="Nhập giá sản phẩm"
-              type="number"
-              className={`form-control ${errors.price ? 'is-invalid' : ''}`}
-              value={formData.price}
-              onChange={(e) => handleInputChange('price', e.target.value)}
-            />
-            {errors.price && <div className="invalid-feedback">{errors.price}</div>}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Danh mục *</label>
-            <select
-              className={`form-control ${errors.categoryID ? 'is-invalid' : ''}`}
-              value={formData.categoryID}
-              onChange={(e) => handleInputChange('categoryID', e.target.value)}
-            >
-              <option value="">Chọn danh mục</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>{cat.categoryName}</option>
-              ))}
-            </select>
-            {errors.categoryID && <div className="invalid-feedback">{errors.categoryID}</div>}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Số lượng tồn kho *</label>
-            <input
-              placeholder="Nhập số lượng"
-              type="number"
-              className={`form-control ${errors.stock ? 'is-invalid' : ''}`}
-              value={formData.stock}
-              onChange={(e) => handleInputChange('stock', e.target.value)}
-            />
-            {errors.stock && <div className="invalid-feedback">{errors.stock}</div>}
-          </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="mb-3">
-            <label className="form-label">Hình ảnh sản phẩm *</label>
-            
-            {/* Upload File - Support multiple images for create mode */}
-            {mode === 'create' && (
-              <div className="mb-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="form-control"
-                  onChange={handleImageFileUpload}
-                />
-                <small className="text-muted">Chọn nhiều file hình ảnh (JPG, PNG, GIF) - Tối đa 6 ảnh, mỗi ảnh tối đa 5MB</small>
-              </div>
-            )}
-
-            {/* Upload File - Single image for edit mode */}
-            {mode === 'edit' && (
-              <div className="mb-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="form-control"
-                  onChange={handleImageFileUpload}
-                />
-                <small className="text-muted">Chọn file hình ảnh mới (JPG, PNG, GIF) - Tối đa 5MB</small>
-              </div>
-            )}
-
-            {/* URL Input */}
-            <div className="mb-2">
+    <>
+      <div className={`${mode}-product-form`}>
+        <h4>{getTitle()}</h4>
+        
+        <div className="row">
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Product Name *</label>
               <input
-                placeholder={mode === 'create' ? "Hoặc nhập URL hình ảnh" : "Hoặc nhập URL hình ảnh mới"}
-                className="form-control"
-                value={formData.image}
-                onChange={handleImageUrlInputChange}
+                placeholder="Enter product name"
+                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
               />
-              <small className="text-muted">
-                {mode === 'create' ? "Nhập URL hình ảnh nếu không upload file" : "Nhập URL hình ảnh mới nếu không upload file"}
-              </small>
+              {errors.name && <div className="invalid-feedback">{errors.name}</div>}
             </div>
 
-            {errors.image && <div className="invalid-feedback">{errors.image}</div>}
-
-            {/* Multiple Image Preview for create mode */}
-            {mode === 'create' && (
-              <ImageGrid
-                productImages={productImages}
-                onRemoveImage={removeImage}
-                onReorderImages={reorderImages}
-                onClearImages={clearImages}
-                showMultiple={true}
+            <div className="mb-3">
+              <label className="form-label">Price (VND) *</label>
+              <input
+                placeholder="Enter product price"
+                type="number"
+                className={`form-control ${errors.price ? 'is-invalid' : ''}`}
+                value={formData.price}
+                onChange={(e) => handleInputChange('price', e.target.value)}
               />
-            )}
+              {errors.price && <div className="invalid-feedback">{errors.price}</div>}
+            </div>
 
-            {/* Single Image Preview for edit mode */}
-            {mode === 'edit' && imagePreview && productImages.length === 0 && (
-              <div className="image-preview-container mt-3">
-                <div className="image-preview">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="preview-image"
+            <div className="mb-3">
+              <label className="form-label">Category *</label>
+              <select
+                className={`form-control ${errors.categoryID ? 'is-invalid' : ''}`}
+                value={formData.categoryID}
+                onChange={(e) => handleInputChange('categoryID', e.target.value)}
+              >
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>{cat.categoryName}</option>
+                ))}
+              </select>
+              {errors.categoryID && <div className="invalid-feedback">{errors.categoryID}</div>}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Stock Quantity *</label>
+              <input
+                placeholder="Enter stock quantity"
+                type="number"
+                className={`form-control ${errors.stock ? 'is-invalid' : ''}`}
+                value={formData.stock}
+                onChange={(e) => handleInputChange('stock', e.target.value)}
+              />
+              {errors.stock && <div className="invalid-feedback">{errors.stock}</div>}
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Product Images *</label>
+              
+              {/* Upload File - Support multiple images for create mode */}
+              {mode === 'create' && (
+                <div className="mb-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="form-control"
+                    onChange={handleImageFileUpload}
                   />
-                  <button 
-                    type="button" 
-                    className="btn-remove-image"
-                    onClick={clearImages}
-                  >
-                    ×
-                  </button>
+                  <small className="text-muted">
+                    Select multiple image files (JPG, PNG, GIF) - Current: {productImages.length}/6 images
+                    {productImages.length > 0 && (
+                      <span className="text-success"> • First image will be the main image</span>
+                    )}
+                  </small>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
 
-          <div className="mb-3">
-            <label className="form-label">Mô tả</label>
-            <textarea
-              placeholder="Nhập mô tả sản phẩm (tùy chọn)"
-              className="form-control"
-              rows={3}
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-            ></textarea>
+              {/* Upload File - Single image for edit mode */}
+              {mode === 'edit' && (
+                <div className="mb-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="form-control"
+                    onChange={handleImageFileUpload}
+                  />
+                  <small className="text-muted">Select new image file (JPG, PNG, GIF) - Max 5MB</small>
+                </div>
+              )}
+
+              {/* URL Input */}
+              <div className="mb-2">
+                <input
+                  placeholder={mode === 'create' ? "Or enter image URL" : "Or enter new image URL"}
+                  className="form-control"
+                  value={formData.image}
+                  onChange={handleImageUrlInputChange}
+                />
+                <small className="text-muted">
+                  {mode === 'create' ? "Enter image URL if not uploading files" : "Enter new image URL if not uploading files"}
+                </small>
+              </div>
+
+              {errors.images && <div className="invalid-feedback">{errors.images}</div>}
+
+              {/* Multiple Image Preview for create mode */}
+              {mode === 'create' && (
+                <ImageGrid
+                  productImages={productImages}
+                  onRemoveImage={removeImage}
+                  onReorderImages={reorderImages}
+                  onSetMainImage={setMainImage}
+                  onClearImages={clearImages}
+                  showMultiple={true}
+                />
+              )}
+
+              {/* Single Image Preview for edit mode */}
+              {mode === 'edit' && imagePreview && productImages.length === 0 && (
+                <div className="image-preview-container mt-3">
+                  <div className="image-preview">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="preview-image"
+                    />
+                    <button 
+                      type="button" 
+                      className="btn-remove-image"
+                      onClick={clearImages}
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Description</label>
+              <textarea
+                placeholder="Enter product description (optional)"
+                className="form-control"
+                rows={3}
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+              ></textarea>
+            </div>
           </div>
+        </div>
+
+        <div className="text-center mt-4">
+          <button 
+            className={`btn ${mode === 'create' ? 'btn-success' : 'btn-primary'} me-3`}
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {getSubmitButtonText()}
+              </>
+            ) : (
+              <>
+                <i className={`${getSubmitButtonIcon()} me-2`}></i>
+                {getSubmitButtonText()}
+              </>
+            )}
+          </button>
+          
+          {mode === 'create' ? (
+            <button 
+              className="btn btn-secondary" 
+              onClick={handleReset}
+              disabled={isLoading}
+            >
+              Reset
+            </button>
+          ) : (
+            <button 
+              className="btn btn-secondary" 
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
+
+        {/* Info Box */}
+        <div className="alert alert-info mt-4">
+          <h6><i className="fas fa-info-circle me-2"></i>Important Information:</h6>
+          {getInfoText()}
         </div>
       </div>
 
-      <div className="text-center mt-4">
-        <button 
-          className={`btn ${mode === 'create' ? 'btn-success' : 'btn-primary'} me-3`}
-          onClick={handleSubmit}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              {getSubmitButtonText()}
-            </>
-          ) : (
-            <>
-              <i className={`${getSubmitButtonIcon()} me-2`}></i>
-              {getSubmitButtonText()}
-            </>
-          )}
-        </button>
-        
-        {mode === 'create' ? (
-          <button 
-            className="btn btn-secondary" 
-            onClick={handleReset}
-            disabled={isLoading}
-          >
-            Làm mới
-          </button>
-        ) : (
-          <button 
-            className="btn btn-secondary" 
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Hủy sửa
-          </button>
-        )}
-      </div>
-
-      {/* Info Box */}
-      <div className="alert alert-info mt-4">
-        <h6><i className="fas fa-info-circle me-2"></i>Thông tin quan trọng:</h6>
-        {getInfoText()}
-      </div>
-    </div>
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        message={successMessage}
+        productName={successProductName}
+      />
+    </>
   );
 };
 

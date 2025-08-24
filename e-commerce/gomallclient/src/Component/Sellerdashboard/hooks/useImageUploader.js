@@ -10,19 +10,20 @@ export const useImageUploader = () => {
     const files = Array.from(event.target.files || []);
     const maxImages = 6;
     
-    if (files.length > maxImages) {
-      onError(`Chỉ được upload tối đa ${maxImages} ảnh!`);
+    // Check if adding these files would exceed the limit
+    if (productImages.length + files.length > maxImages) {
+      onError(`Maximum ${maxImages} images allowed! Currently have ${productImages.length} images.`);
       return;
     }
 
     // Validate each file
     const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
-        onError('Vui lòng chọn file hình ảnh hợp lệ!');
+        onError('Please select valid image files!');
         return false;
       }
       if (file.size > 5 * 1024 * 1024) {
-        onError('Kích thước file không được vượt quá 5MB!');
+        onError('File size cannot exceed 5MB!');
         return false;
       }
       return true;
@@ -32,10 +33,7 @@ export const useImageUploader = () => {
       return;
     }
 
-    // Update state for multiple images
-    setImageFiles(validFiles);
-    
-    // Create preview for all images
+    // Create preview for new images
     const imagePromises = validFiles.map(file => {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -43,17 +41,26 @@ export const useImageUploader = () => {
           resolve({
             url: e.target.result,
             file: file,
-            name: file.name
+            name: file.name,
+            isMain: productImages.length === 0 // Only first image is main if no images exist
           });
         };
         reader.readAsDataURL(file);
       });
     });
 
-    Promise.all(imagePromises).then(images => {
-      setProductImages(images);
-      // Set first image as main image
-      setImagePreview(images[0]?.url || null);
+    Promise.all(imagePromises).then(newImages => {
+      // Append new images to existing ones
+      const updatedImages = [...productImages, ...newImages];
+      const updatedFiles = [...imageFiles, ...validFiles];
+      
+      setProductImages(updatedImages);
+      setImageFiles(updatedFiles);
+      
+      // Set first image as main image preview if no main image exists
+      if (productImages.length === 0 && newImages.length > 0) {
+        setImagePreview(newImages[0].url);
+      }
     });
   };
 
@@ -64,12 +71,27 @@ export const useImageUploader = () => {
     setProductImages(newImages);
     setImageFiles(newFiles);
     
-    // Update main image if deleted image was first
-    if (index === 0 && newImages.length > 0) {
-      setImagePreview(newImages[0].url);
+    // Update main image if deleted image was main
+    if (productImages[index].isMain && newImages.length > 0) {
+      // Set first remaining image as main
+      const updatedImages = newImages.map((img, i) => ({
+        ...img,
+        isMain: i === 0
+      }));
+      setProductImages(updatedImages);
+      setImagePreview(updatedImages[0].url);
     } else if (newImages.length === 0) {
       setImagePreview(null);
     }
+  };
+
+  const setMainImage = (index) => {
+    const newImages = productImages.map((img, i) => ({
+      ...img,
+      isMain: i === index
+    }));
+    setProductImages(newImages);
+    setImagePreview(newImages[index].url);
   };
 
   const reorderImages = (fromIndex, toIndex) => {
@@ -85,9 +107,10 @@ export const useImageUploader = () => {
     setProductImages(newImages);
     setImageFiles(newFiles);
     
-    // Update main image if first image changed
-    if (fromIndex === 0 || toIndex === 0) {
-      setImagePreview(newImages[0]?.url || null);
+    // Update main image preview if main image moved
+    const mainImage = newImages.find(img => img.isMain);
+    if (mainImage) {
+      setImagePreview(mainImage.url);
     }
   };
 
@@ -110,6 +133,14 @@ export const useImageUploader = () => {
     setImageFiles([]);
   };
 
+  const getMainImage = () => {
+    return productImages.find(img => img.isMain) || productImages[0];
+  };
+
+  const getMainImageIndex = () => {
+    return productImages.findIndex(img => img.isMain);
+  };
+
   return {
     productImages,
     imageFiles,
@@ -117,9 +148,12 @@ export const useImageUploader = () => {
     fileInputRef,
     handleImageUpload,
     removeImage,
+    setMainImage,
     reorderImages,
     handleImageUrlChange,
     clearImages,
-    setSingleImage
+    setSingleImage,
+    getMainImage,
+    getMainImageIndex
   };
 };

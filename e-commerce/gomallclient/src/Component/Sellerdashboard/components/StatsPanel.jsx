@@ -15,19 +15,19 @@ const StatsPanel = ({ products }) => {
 
   return (
     <div className="stat-box">
-      <h4>Thống kê tổng quan</h4>
+      <h4>Overview Statistics</h4>
       
       <div className="row">
         <div className="col-md-3">
           <div className="stat-item">
-            <div className="stat-label">Tổng sản phẩm</div>
+            <div className="stat-label">Total Products</div>
             <div className="stat-value">{totalProducts}</div>
           </div>
         </div>
         
         <div className="col-md-3">
           <div className="stat-item">
-            <div className="stat-label">Tổng giá trị</div>
+            <div className="stat-label">Total Value</div>
             <div className="stat-value">
               {formatCurrencyWithSymbol(totalValue)}
             </div>
@@ -36,7 +36,7 @@ const StatsPanel = ({ products }) => {
         
         <div className="col-md-3">
           <div className="stat-item">
-            <div className="stat-label">Giá trung bình</div>
+            <div className="stat-label">Average Price</div>
             <div className="stat-value">
               {formatCurrencyWithSymbol(Math.round(averagePrice))}
             </div>
@@ -45,7 +45,7 @@ const StatsPanel = ({ products }) => {
         
         <div className="col-md-3">
           <div className="stat-item">
-            <div className="stat-label">Tổng tồn kho</div>
+            <div className="stat-label">Total Stock</div>
             <div className="stat-value">
               {totalStock}
             </div>
@@ -55,7 +55,7 @@ const StatsPanel = ({ products }) => {
 
       {totalProducts > 0 && (
         <div className="mt-4">
-          <h5>Danh mục sản phẩm</h5>
+          <h5>Product Categories</h5>
           <div className="row">
             {Object.entries(categoryStats).map(([category, count]) => (
               <div key={category} className="col-md-4 mb-2">

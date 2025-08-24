@@ -25,6 +25,23 @@ export const RenderProduct = ({ product }) => {
     ? Math.round(((originalValue - priceValue) / originalValue) * 100)
     : (product.discount || 0)
 
+  // Get main image from images array or fallback to single image
+  const getMainImage = () => {
+    if (product.images && product.images.length > 0) {
+      // Find the primary image
+      const primaryImage = product.images.find(img => img.isPrimary);
+      if (primaryImage) {
+        return primaryImage.url;
+      }
+      // Fallback to first image if no primary is set
+      return product.images[0].url;
+    }
+    // Fallback to single image field
+    return product.image;
+  };
+
+  const mainImageUrl = getMainImage();
+
   return (
     <Link to={`/product/${productId}`} className="product-card" style={{ minHeight: "300px", display: "block", color: "inherit", textDecoration: "none" }}>
       {discountPercent > 0 && <span className="discount-badge">-{discountPercent}%</span>}
@@ -32,7 +49,7 @@ export const RenderProduct = ({ product }) => {
 
       <div className="product-image">
         <OptimizedImage
-          src={product.image}
+          src={mainImageUrl}
           alt={product.name}
           className="product-image"
           lazy={true}

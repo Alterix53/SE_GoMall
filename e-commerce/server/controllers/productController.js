@@ -136,12 +136,13 @@ export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
             // Giới hạn tối đa 6 ảnh
             const maxImages = 6;
             const filesToProcess = req.files.slice(0, maxImages);
+            const mainIndex = parseInt(req.body.mainIndex) || 0;
             
             filesToProcess.forEach((file, index) => {
                 uploadedImages.push({
                     url: `/uploads/products/${file.filename}`,
                     alt: req.body.imageAlts?.[index] || `Ảnh sản phẩm ${index + 1}`,
-                    isPrimary: index === 0 // Ảnh đầu tiên là ảnh chính
+                    isPrimary: index === mainIndex // Use mainIndex to determine primary image
                 });
             });
         }
@@ -176,11 +177,12 @@ export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
         if (req.files && req.files.length > 0) {
             const maxImages = 6;
             const filesToProcess = req.files.slice(0, maxImages);
+            const mainIndex = parseInt(req.body.mainIndex) || 0;
             
             const newImages = filesToProcess.map((file, index) => ({
                 url: `/uploads/products/${file.filename}`,
                 alt: req.body.imageAlts?.[index] || `Ảnh sản phẩm ${index + 1}`,
-                isPrimary: index === 0
+                isPrimary: index === mainIndex
             }));
             
             // Nếu có ảnh cũ, giữ lại và thêm ảnh mới (tối đa 6 ảnh)

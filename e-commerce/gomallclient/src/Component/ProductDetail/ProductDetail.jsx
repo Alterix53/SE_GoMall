@@ -125,6 +125,12 @@ export default function ProductDetail() {
           console.log("✅ Setting product data:", response.data.product)
           setProduct(response.data.product)
           
+          // Set initial active image to main image
+          if (response.data.product.images && response.data.product.images.length > 0) {
+            const mainImageIndex = response.data.product.images.findIndex(img => img.isPrimary);
+            setActiveImage(mainImageIndex >= 0 ? mainImageIndex : 0);
+          }
+          
           // Set default variations if available
           if (response.data.product.specifications) {
             const defaults = {}
@@ -333,7 +339,7 @@ export default function ProductDetail() {
                           key={index}
                           onClick={() => setActiveImage(index)}
                           className={cn(
-                            "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all duration-200",
+                            "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all duration-200 relative",
                             activeImage === index 
                               ? "border-primary ring-2 ring-primary/20" 
                               : "border-gray-200 hover:border-gray-300 hover:scale-105"
@@ -347,6 +353,12 @@ export default function ProductDetail() {
                             onLoad={() => {}}
                             onError={() => {}}
                           />
+                          {/* Main image badge */}
+                          {image.isPrimary && (
+                            <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 py-0.5 rounded">
+                              Main
+                            </div>
+                          )}
                         </button>
                       ))}
                     </div>

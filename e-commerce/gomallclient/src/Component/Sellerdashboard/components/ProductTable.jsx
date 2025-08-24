@@ -8,13 +8,13 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
         <thead className="table-light">
           <tr>
             <th>ID</th>
-            <th>Hình ảnh</th>
-            <th>Tên</th>
-            <th>Giá</th>
-            <th>Danh mục</th>
-            <th>Tồn kho</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -23,8 +23,8 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
               <td colSpan={8} className="text-center py-4">
                 <div className="empty-state">
                   <div className="empty-state-icon">📦</div>
-                  <h4>Chưa có sản phẩm nào</h4>
-                  <p>Hãy thêm sản phẩm đầu tiên của bạn!</p>
+                  <h4>No products yet</h4>
+                  <p>Add your first product!</p>
                 </div>
               </td>
             </tr>
@@ -45,7 +45,7 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
                 <td>
                   <div>
                     <strong>{p.name}</strong>
-                    {p.description && p.description !== 'Không có mô tả' && (
+                    {p.description && p.description !== 'No description available' && (
                       <div className="text-muted small mt-1">{p.description}</div>
                     )}
                   </div>
@@ -60,13 +60,13 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
                 </td>
                 <td>
                   <span className={`badge ${p.stock > 0 ? 'bg-success' : 'bg-danger'}`}>
-                    {p.stock} {p.stock > 0 ? 'cái' : 'hết hàng'}
+                    {p.stock} {p.stock > 0 ? 'items' : 'out of stock'}
                   </span>
                 </td>
                 <td>
                   <div>
                     <span className={`badge ${p.status === 'active' ? 'bg-success' : 'bg-warning'} me-2`}>
-                      {p.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
+                      {p.status === 'active' ? 'Active' : 'Paused'}
                     </span>
                     {p.isOffline && (
                       <span className="badge bg-warning">
@@ -80,13 +80,13 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
                     className="btn btn-sm btn-warning me-2" 
                     onClick={() => onEdit(p)}
                   >
-                    Sửa
+                    Edit
                   </button>
                   {p.isOffline && (
                     <button 
                       className="btn btn-sm btn-info me-2" 
                       onClick={() => onSync(p)}
-                      title="Đồng bộ lên server"
+                      title="Sync to server"
                     >
                       <i className="fas fa-sync-alt"></i>
                     </button>
@@ -95,7 +95,7 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
                     className="btn btn-sm btn-danger" 
                     onClick={() => onDelete(p.id)}
                   >
-                    Xoá
+                    Delete
                   </button>
                 </td>
               </tr>

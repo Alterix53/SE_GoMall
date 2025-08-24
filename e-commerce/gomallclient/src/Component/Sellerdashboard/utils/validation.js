@@ -4,34 +4,45 @@ export const validateProduct = (product) => {
     price: '',
     categoryID: '',
     description: '',
-    image: '',
+    images: '',
     stock: ''
   };
   
   if (!product.name.trim()) {
-    errors.name = 'Tên sản phẩm không được để trống';
+    errors.name = 'Product name is required';
   } else if (product.name.trim().length < 3) {
-    errors.name = 'Tên sản phẩm phải có ít nhất 3 ký tự';
+    errors.name = 'Product name must be at least 3 characters';
   }
   
   if (!product.price) {
-    errors.price = 'Giá sản phẩm không được để trống';
+    errors.price = 'Product price is required';
   } else if (isNaN(Number(product.price)) || Number(product.price) <= 0) {
-    errors.price = 'Giá sản phẩm phải là số dương';
+    errors.price = 'Product price must be a positive number';
   }
   
   if (!product.categoryID) {
-    errors.categoryID = 'Vui lòng chọn danh mục';
+    errors.categoryID = 'Please select a category';
   }
   
   if (!product.stock) {
-    errors.stock = 'Số lượng tồn kho không được để trống';
+    errors.stock = 'Stock quantity is required';
   } else if (isNaN(Number(product.stock)) || Number(product.stock) < 0) {
-    errors.stock = 'Số lượng tồn kho phải là số không âm';
+    errors.stock = 'Stock quantity must be a non-negative number';
   }
 
-  if (!product.image) {
-    errors.image = 'Hình ảnh sản phẩm là bắt buộc';
+  // Multi-image validation
+  if (!product.images || product.images.length === 0) {
+    errors.images = 'Product images are required';
+  } else if (product.images.length > 6) {
+    errors.images = 'Maximum 6 images allowed';
+  } else {
+    // Check if exactly one image is marked as main
+    const mainImages = product.images.filter(img => img.isMain);
+    if (mainImages.length === 0) {
+      errors.images = 'At least one main image is required';
+    } else if (mainImages.length > 1) {
+      errors.images = 'Only one main image is allowed';
+    }
   }
   
   // Fix: Check if any errors exist instead of counting keys

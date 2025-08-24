@@ -7,25 +7,25 @@ const Tabs = ({ activeTab, onTabChange, productsCount }) => {
         className={`btn btn-${activeTab === 1 ? 'primary' : 'outline-primary'}`} 
         onClick={() => onTabChange(1)}
       >
-        Danh sách sản phẩm ({productsCount})
+        Product List ({productsCount})
       </button>
       <button 
         className={`btn btn-${activeTab === 2 ? 'primary' : 'outline-primary'}`} 
         onClick={() => onTabChange(2)}
       >
-        Thêm sản phẩm
+        Add Product
       </button>
       <button 
         className={`btn btn-${activeTab === 3 ? 'primary' : 'outline-primary'}`} 
         onClick={() => onTabChange(3)}
       >
-        Sửa sản phẩm
+        Edit Product
       </button>
       <button 
         className={`btn btn-${activeTab === 4 ? 'primary' : 'outline-primary'}`} 
         onClick={() => onTabChange(4)}
       >
-        Thống kê
+        Statistics
       </button>
     </div>
   );

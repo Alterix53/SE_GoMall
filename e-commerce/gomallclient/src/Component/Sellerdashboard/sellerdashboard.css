@@ -789,6 +789,176 @@ input[type="file"]:focus {
   background: #95a5a6;
 }
 
+/* Multi-Image Grid Controls */
+.image-preview-container {
+  margin-top: 15px;
+}
+
+.image-preview-container h6 {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.image-preview {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: grab;
+}
+
+.image-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.image-preview:active {
+  cursor: grabbing;
+}
+
+.preview-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Remove button */
+.btn-remove-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.btn-remove-image:hover {
+  background: rgba(255, 0, 0, 1);
+  transform: scale(1.1);
+}
+
+/* Set main button */
+.btn-set-main {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 193, 7, 0.9);
+  color: #333;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.btn-set-main:hover {
+  background: rgba(255, 193, 7, 1);
+  transform: scale(1.1);
+}
+
+/* Drag handle */
+.drag-handle {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 10px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.drag-handle:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Primary badge */
+.primary-badge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: rgba(40, 167, 69, 0.9);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* Image controls info */
+.image-controls {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 8px 12px;
+  border-left: 3px solid #007bff;
+}
+
+.image-controls small {
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+/* Success text color */
+.text-success {
+  color: #28a745 !important;
+}
+
+/* Image count indicator */
+.image-count {
+  display: inline-block;
+  background: #007bff;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Drag and drop visual feedback */
+.image-preview.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+.image-preview.drag-over {
+  border: 2px dashed #007bff;
+  background: rgba(0, 123, 255, 0.1);
+}
+
 /* Floating Action Button */
 .fab {
   position: fixed;
@@ -854,4 +1024,102 @@ input[type="file"]:focus {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Success Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.success-modal {
+  padding: 32px;
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 64px;
+  color: #28a745;
+  margin-bottom: 16px;
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #28a745;
+  margin-bottom: 12px;
+}
+
+.success-message {
+  font-size: 16px;
+  color: #6c757d;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.product-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-left: 4px solid #007bff;
+}
+
+.product-info strong {
+  color: #495057;
+}
+
+.success-actions {
+  margin-top: 24px;
+}
+
+.success-actions .btn {
+  min-width: 120px;
+  padding: 10px 24px;
+  font-weight: 600;
 }
