@@ -124,7 +124,10 @@ class ProductService {
                 Product.aggregate([{ $match: query }, { $count: 'total' }])
             ]);
             const total = totalArr[0]?.total || 0;
-            const populated = await Product.populate(products, { path: 'categoryID', select: 'categoryName slug' });
+            const populated = await Product.populate(products, [
+                { path: 'categoryID', select: 'categoryName slug' },
+                { path: 'sellerID', select: 'name businessName rating followers' }
+            ]);
             return {
                 products: this.addDiscountToProducts(populated),
                 pagination: {
@@ -141,6 +144,7 @@ class ProductService {
         sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
         const products = await Product.find(query)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "name businessName rating followers")
             .sort(sort)
             .limit(numericLimit)
             .skip((numericPage - 1) * numericLimit)
@@ -167,6 +171,7 @@ class ProductService {
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "name businessName rating followers")
             .sort(sort)
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -196,6 +201,7 @@ class ProductService {
 
         const products = await Product.find(filter)
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "name businessName rating followers")
             .sort({ flashSaleEndDate: 1 })
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -235,6 +241,7 @@ class ProductService {
 
         const products = await Product.find({ isActive: true })
             .populate("categoryID", "categoryName slug")
+            .populate("sellerID", "name businessName rating followers")
             .sort(sort)
             .limit(Number(limit))
             .skip((Number(page) - 1) * Number(limit))
@@ -314,7 +321,7 @@ class ProductService {
     async getProductById(productId) {
         const product = await Product.findById(productId)
             .populate("categoryID", "categoryName slug")
-            .populate("sellerID", "name rating followers")
+            .populate("sellerID", "name businessName rating followers")
             .lean();
 
         if (!product) {

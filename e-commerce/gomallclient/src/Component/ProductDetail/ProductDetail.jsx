@@ -158,8 +158,12 @@ export default function ProductDetail() {
 
   // Debug: Log current state
   useEffect(() => {
-    console.log("🔄 Current state - loading:", loading, "error:", error, "product:", product)
-  }, [loading, error, product])
+    console.log("🔄 Current state - loading:", loading, "error:", error, "product:", product);
+    if (product) {
+      console.log("🏪 Seller data:", product.sellerID);
+      console.log("⭐ Rating data:", product.rating);
+    }
+  }, [loading, error, product]);
 
   // Calculate final price and discount
   const finalPrice = useMemo(() => {
@@ -176,7 +180,10 @@ export default function ProductDetail() {
   const ratingDistribution = useMemo(() => {
     const defaultDist = { 5: 82, 4: 12, 3: 3, 2: 2, 1: 1 }
     const fromProduct = product?.rating?.distribution
-    if (!fromProduct) return defaultDist
+    if (!fromProduct || !product?.rating?.count || product.rating.count === 0) {
+      // Nếu không có review, hiển thị tất cả 0%
+      return { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+    }
     // normalize keys as numbers and ensure percentages
     return {
       5: Number(fromProduct[5]) || 0,
@@ -600,12 +607,12 @@ export default function ProductDetail() {
                 <div className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
                     <AvatarFallback className="bg-orange-100 text-orange-600 text-lg font-semibold">
-                      {product.sellerID?.name?.charAt(0) || "A"}
+                      {product.sellerID?.businessName?.charAt(0) || product.sellerID?.name?.charAt(0) || "A"}
                     </AvatarFallback>
                   </Avatar>
             <div>
                     <h3 className="font-semibold text-gray-900 text-lg">
-                      {product.sellerID?.name || "Apple Flagship Store"}
+                      {product.sellerID?.businessName || product.sellerID?.name || "Cửa hàng"}
                     </h3>
                     <p className="text-sm text-gray-600">
                       Active 1 hour ago
@@ -645,15 +652,16 @@ export default function ProductDetail() {
               <div className="flex items-start gap-8">
                 <div className="text-center">
                   <div className="text-5xl font-bold text-blue-600 mb-2">
-                    {(product.rating?.average || 4.8).toFixed(1)}
+                    {(product.rating?.average || 0).toFixed(1)}
                   </div>
-                  <StarRating rating={product.rating?.average || 4.8} size={24} />
+                  <StarRating rating={product.rating?.average || 0} size={24} />
                   <div className="text-sm text-gray-600 mt-2">
-                    {product.rating?.count?.toLocaleString() || "12.500"} reviews
+                    {product.rating?.count ? `${product.rating.count.toLocaleString()} reviews` : "Chưa có đánh giá"}
                   </div>
                 </div>
                 <div className="flex-1 space-y-2">
-                  {[5, 4, 3, 2, 1].map((star) => (
+                  {product.rating?.count && product.rating.count > 0 ? (
+                    [5, 4, 3, 2, 1].map((star) => (
                     <div key={star} className="flex items-center gap-3">
                       <div className="w-8 text-sm text-gray-600">{star} sao</div>
                       <Progress value={ratingDistribution[star]} className="flex-1 h-3" />
@@ -661,13 +669,16 @@ export default function ProductDetail() {
                         {ratingDistribution[star]}%
             </div>
           </div>
-                  ))}
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500 py-4">
+                      Chưa có đánh giá nào cho sản phẩm này
+                    </div>
+                  )}
             </div>
           </div>
         </div>
       </div>
-
-
 
           {/* Product Details Section */}
           <div className="max-w-6xl mx-auto px-4 mt-12">
