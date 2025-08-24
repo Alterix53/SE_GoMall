@@ -39,6 +39,15 @@ const RegisterSeller = () => {
     console.log('Redirect useEffect triggered, sellerStatus:', sellerStatus, 'redirectRef.current:', redirectRef.current);
     if (sellerStatus && sellerStatus.hasApplication && sellerStatus.status === 'approved' && !redirectRef.current) {
       console.log('Seller approved, setting redirect timer...');
+      
+      // Lưu sellerID vào localStorage
+      if (sellerStatus.sellerID) {
+        localStorage.setItem('sellerID', sellerStatus.sellerID);
+        localStorage.setItem('sellerBusinessName', sellerStatus.businessName);
+        console.log('SellerID saved to localStorage:', sellerStatus.sellerID);
+        console.log('BusinessName saved to localStorage:', sellerStatus.businessName);
+      }
+      
       redirectRef.current = true; // Đánh dấu đã chuyển hướng
       const timer = setTimeout(() => {
         console.log('Redirecting to /seller...');

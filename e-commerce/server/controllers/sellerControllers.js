@@ -241,7 +241,7 @@ export const checkCurrentUserSellerStatus = async (req, res) => {
     try {
         const authUser = req.user; // from authenticateToken
         const seller = await Seller.findOne({ userID: authUser._id })
-            .select('status businessName createdAt updatedAt');
+            .select('_id status businessName createdAt updatedAt');
         if (!seller) {
             return res.json({ success: true, data: { hasApplication: false, message: 'Bạn chưa nộp hồ sơ đăng ký seller' } });
         }
@@ -262,7 +262,18 @@ export const checkCurrentUserSellerStatus = async (req, res) => {
             default:
                 message = 'Trạng thái hồ sơ không xác định.';
         }
-        res.json({ success: true, data: { hasApplication: true, status: seller.status, businessName: seller.businessName, createdAt: seller.createdAt, updatedAt: seller.updatedAt, message } });
+        res.json({ 
+            success: true, 
+            data: { 
+                hasApplication: true, 
+                sellerID: seller._id, // Thêm sellerID
+                status: seller.status, 
+                businessName: seller.businessName, 
+                createdAt: seller.createdAt, 
+                updatedAt: seller.updatedAt, 
+                message 
+            } 
+        });
     } catch (error) {
         console.error('Check current user seller status error:', error);
         res.status(500).json({ success: false, error: error.message });

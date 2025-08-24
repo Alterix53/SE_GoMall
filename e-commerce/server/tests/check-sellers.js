@@ -1,52 +1,35 @@
 import mongoose from 'mongoose';
 import Seller from '../models/Seller.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/gomall')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const MONGODB_URI = 'mongodb://localhost:27017/GoMall';
 
 async function checkSellers() {
   try {
-    // Get all sellers
-    const allSellers = await Seller.find({});
-    console.log('Total sellers in database:', allSellers.length);
+    await mongoose.connect(MONGODB_URI);
+    console.log('Connected to MongoDB GoMall');
+
+    // Kiểm tra tất cả sellers
+    const sellers = await Seller.find();
+    console.log(`\nTotal sellers: ${sellers.length}`);
     
-    if (allSellers.length === 0) {
-      console.log('No sellers found in database');
-      return;
+    if (sellers.length > 0) {
+      console.log('\n=== Sellers ===');
+      sellers.forEach(seller => {
+        console.log(`- ID: ${seller._id}`);
+        console.log(`  Business Name: ${seller.businessName}`);
+        console.log(`  Status: ${seller.status}`);
+        console.log(`  User ID: ${seller.userID}`);
+        console.log('---');
+      });
+    } else {
+      console.log('No sellers found');
     }
-    
-    // Group by status
-    const sellersByStatus = {};
-    allSellers.forEach(seller => {
-      const status = seller.status || 'unknown';
-      if (!sellersByStatus[status]) {
-        sellersByStatus[status] = [];
-      }
-      sellersByStatus[status].push({
-        id: seller._id,
-        businessName: seller.businessName,
-        status: seller.status,
-        isActive: seller.isActive
-      });
-    });
-    
-    console.log('Sellers by status:');
-    Object.keys(sellersByStatus).forEach(status => {
-      console.log(`  ${status}: ${sellersByStatus[status].length} sellers`);
-      sellersByStatus[status].forEach(seller => {
-        console.log(`    - ${seller.businessName} (${seller.id})`);
-      });
-    });
-    
+
   } catch (error) {
-    console.error('Error checking sellers:', error.message);
+    console.error('Error:', error);
   } finally {
-    mongoose.connection.close();
+    await mongoose.disconnect();
+    console.log('\nConnection closed');
   }
 }
 
