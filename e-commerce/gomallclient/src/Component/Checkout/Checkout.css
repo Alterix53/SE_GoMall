@@ -147,6 +147,15 @@
   font-size: 14px;
 }
 
+/* Căn chỉnh tiêu đề cột */
+.header-row > div:nth-child(2) {
+  text-align: left; /* Unit Price căn trái */
+}
+
+.header-row > div:nth-child(3) {
+  text-align: left; /* Quantity căn trái */
+}
+
 .store-header {
   padding: 15px 20px;
   border-bottom: 1px solid #f0f0f0;
@@ -196,38 +205,76 @@
   gap: 12px;
 }
 
-.product-image {
-  width: 280px;
-  height: 180px;
-  max-width: 100%;
-  object-fit: contain;
+.products-section .product-image {
+  width: 249px !important;
+  height: 180px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
   border-radius: 6px;
   border: 1px solid #eee;
   background: #f8f9fa;
 }
 
+/* Đảm bảo tất cả product-image trong Checkout đều có kích thước đúng */
+.checkout-section .product-image,
+.product-row .product-image,
+.insurance-row .product-image {
+  width: 249px !important;
+  height: 180px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+}
+
+/* CSS với độ ưu tiên cao nhất để override tất cả CSS khác */
+.checkout-container .product-image,
+.checkout-wrapper .product-image,
+.checkout-page .product-image {
+  width: 249px !important;
+  height: 180px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+}
+
 .product-details {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
 }
 
 .product-name {
   color: #333;
   font-size: 14px;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   line-height: 1.4;
 }
 
 .product-variant {
   color: #666;
   font-size: 12px;
+  text-align: left;
+  padding-left: 0;
 }
 
-.product-price,
-.product-quantity,
-.product-total {
+.product-price {
+  text-align: right;
+  color: #333;
+  font-size: 14px;
+  padding-right: 20px;
+}
+
+.product-quantity {
   text-align: center;
   color: #333;
   font-size: 14px;
+}
+
+.product-total {
+  text-align: right;
+  color: #333;
+  font-size: 14px;
+  padding-right: 20px;
 }
 
 /* Insurance Row */
@@ -256,12 +303,24 @@
   font-size: 14px;
 }
 
-.insurance-price,
-.insurance-quantity,
-.insurance-total {
+.insurance-price {
+  text-align: right;
+  color: #333;
+  font-size: 14px;
+  padding-right: 20px;
+}
+
+.insurance-quantity {
   text-align: center;
   color: #333;
   font-size: 14px;
+}
+
+.insurance-total {
+  text-align: right;
+  color: #333;
+  font-size: 14px;
+  padding-right: 20px;
 }
 
 .insurance-description {

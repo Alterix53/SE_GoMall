@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import Toast from '../../components/ui/toast';
 import '../Signup/signup.css';
 
 const SignUpPage = () => {
@@ -16,9 +17,18 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState({
+    isVisible: false,
+    message: '',
+    type: 'success'
+  });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleCloseToast = () => {
+    setToast({ ...toast, isVisible: false });
   };
 
   const handleSubmit = async (e) => {
@@ -51,8 +61,14 @@ const SignUpPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        alert('Đăng ký thành công! Vui lòng đăng nhập.');
-        navigate('/login');
+        setToast({
+          isVisible: true,
+          message: 'Đăng ký thành công! Vui lòng đăng nhập.',
+          type: 'success'
+        });
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
       } else {
         // Hiển thị lỗi chi tiết
         if (data.errors && Array.isArray(data.errors)) {
@@ -240,6 +256,15 @@ const SignUpPage = () => {
       </div>
       
       {/* Footer is injected by App.js for auth pages */}
+      
+      {/* Toast notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={handleCloseToast}
+        duration={4000}
+      />
     </div>
   );
 };

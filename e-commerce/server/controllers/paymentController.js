@@ -1,5 +1,6 @@
 import Payment from '../models/Payment.js';
 import Order from '../models/Order.js';
+import NotificationService from '../services/notificationService.js';
 
 // Process payment
 export const processPayment = async (req, res) => {
@@ -66,6 +67,17 @@ export const processPayment = async (req, res) => {
     order.status = 'Processing';
     await order.save();
     
+    // Tạo thông báo thanh toán thành công
+    try {
+      await NotificationService.createPaymentSuccessNotification(
+        userID, 
+        orderID, 
+        amount
+      );
+    } catch (notificationError) {
+      console.error('Error creating payment success notification:', notificationError);
+    }
+    
     res.status(201).json({ success: true, payment });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -130,11 +142,25 @@ export const getPaymentById = async (req, res) => {
 // Xử lý hoàn tiền
 export const refundPayment = async (req, res) => {
   try {
-    const { paymentID } = req.body;
+    const { paymentID, reason } = req.body;
     const payment = await Payment.findByIdAndUpdate(paymentID, { status: 'Failed' }, { new: true });
     if (!payment) return res.status(404).json({ message: 'Payment not found' });
+    
     // Cập nhật trạng thái order liên quan
     await Order.findByIdAndUpdate(payment.orderID, { status: 'Cancelled' });
+    
+    // Tạo thông báo hoàn tiền
+    try {
+      await NotificationService.createRefundNotification(
+        payment.userID, 
+        payment.orderID, 
+        payment.amount, 
+        reason || 'Không có lý do cụ thể'
+      );
+    } catch (notificationError) {
+      console.error('Error creating refund notification:', notificationError);
+    }
+    
     res.status(200).json({ success: true, payment });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

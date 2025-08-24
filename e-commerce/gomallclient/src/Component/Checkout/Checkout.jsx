@@ -4,9 +4,24 @@ import { checkoutAPI, selfAPI } from '../../utils/api';
 import { useAuth } from '../../contexts/AuthContext';
 import momoPaymentAPI from '../../utils/momoPaymentAPI';
 import MomoPayment from '../MomoPayment/MomoPayment';
+import Toast from '../../components/ui/toast';
 import './Checkout.css';
 import OptimizedImage from '../../utils/OptimizedImage';
 import { createPlaceholderUrl } from '../../utils/imageUtils';
+
+// Resolve image URL to absolute path (prefix server origin for relative paths)
+const resolveImageUrl = (image) => {
+  try {
+    if (!image) return "/images/placeholder-product.svg";
+    const raw = typeof image === "string" ? image : image.url || "";
+    if (!raw) return "/images/placeholder-product.svg";
+    if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+    const base = "http://localhost:8080";
+    return `${base}${raw.startsWith("/") ? raw : `/${raw}`}`;
+  } catch {
+    return "/images/placeholder-product.svg";
+  }
+};
 
 const Checkout = () => {
   const location = useLocation();
@@ -32,9 +47,17 @@ const Checkout = () => {
   const [error, setError] = useState('');
   const [showMomoPayment, setShowMomoPayment] = useState(false);
   const [currentOrder, setCurrentOrder] = useState(null);
+  const [toast, setToast] = useState({
+    isVisible: false,
+    message: '',
+    type: 'success'
+  });
 
   // Load user info and redirect if no items selected
   useEffect(() => {
+    console.log('Checkout - selectedItems:', selectedItems);
+    console.log('Checkout - selectedItems length:', selectedItems?.length);
+    
     if (!selectedItems || selectedItems.length === 0) {
       navigate('/cart');
       return;
@@ -74,6 +97,10 @@ const Checkout = () => {
       style: 'currency',
       currency: 'VND'
     }).format(amount);
+  };
+
+  const handleCloseToast = () => {
+    setToast({ ...toast, isVisible: false });
   };
 
   const shippingFee = 1000;
@@ -258,11 +285,19 @@ const Checkout = () => {
                             address: updated.address || ''
                           });
                         }
-                        alert('Address has been saved to account');
+                        setToast({
+                          isVisible: true,
+                          message: 'Địa chỉ đã được lưu vào tài khoản',
+                          type: 'success'
+                        });
                       } catch (e) {
                         console.error('Save address failed:', e);
                         const msg = e?.response?.data?.message || e?.message || 'Failed to save address';
-                        alert(msg);
+                        setToast({
+                          isVisible: true,
+                          message: msg,
+                          type: 'error'
+                        });
                       } finally {
                         setLoading(false);
                       }
@@ -289,33 +324,44 @@ const Checkout = () => {
 
 
             {/* Product Items */}
-            {selectedItems.map((item, index) => (
-              <div key={index} className="product-row">
-                <div className="product-info">
-                  <OptimizedImage
-                    src={item.image}
-                    alt={item.name}
-                    className="product-image"
-                    fallbackUrl={createPlaceholderUrl(80,80,'')}
-                    onLoad={() => {}}
-                    onError={() => {}}
-                  />
-                  <div className="product-details">
-                    <div className="product-name">{item.name}</div>
-                    <div className="product-variant">
-                      Type: {item.variant || item.size || 'Pink'}
+            {selectedItems.map((item, index) => {
+              console.log(`Item ${index}:`, item);
+              console.log(`Item ${index} image:`, item.image);
+              console.log(`Item ${index} resolved image:`, resolveImageUrl(item.image));
+              
+              return (
+                <div key={index} className="product-row">
+                  <div className="product-info">
+                    <OptimizedImage
+                      src={resolveImageUrl(item.image)}
+                      alt={item.name}
+                      className="product-image"
+                      style={{ width: '249px', height: '180px' }}
+                      fallbackUrl={createPlaceholderUrl(249,180,'')}
+                      onLoad={() => {
+                        console.log(`Image loaded for item ${index}:`, item.name);
+                      }}
+                      onError={(error) => {
+                        console.error(`Image error for item ${index}:`, error);
+                      }}
+                    />
+                    <div className="product-details">
+                      <div className="product-name">{item.name}</div>
+                      <div className="product-variant">
+                        Type: {item.variant || item.size || 'Pink'}
+                      </div>
                     </div>
                   </div>
+                  <div className="product-price">
+                    {currencyVND(item.price)}
+                  </div>
+                  <div className="product-quantity">{item.quantity}</div>
+                  <div className="product-total">
+                    {currencyVND(item.price * item.quantity)}
+                  </div>
                 </div>
-                <div className="product-price">
-                  {currencyVND(item.price)}
-                </div>
-                <div className="product-quantity">{item.quantity}</div>
-                <div className="product-total">
-                  {currencyVND(item.price * item.quantity)}
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Insurance Option */}
             <div className="insurance-row">
@@ -488,6 +534,15 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+      
+      {/* Toast notification */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={handleCloseToast}
+        duration={4000}
+      />
     </div>
   );
 };

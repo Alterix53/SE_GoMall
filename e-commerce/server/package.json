@@ -15,6 +15,10 @@
     "setup": "node scripts/runAllScripts.js",
     "force-reset": "node scripts/resetAndReloadData.js --force",
     "test-notifications": "node scripts/testNotifications.js",
+    "test-order-notifications": "node scripts/testOrderNotifications.js",
+    "test-all-notifications": "node scripts/testAllOrderNotifications.js",
+    "create-test-notifications": "node scripts/createTestNotifications.js",
+    "quick-seed": "node scripts/quickSeed.js",
     "check-sellers": "node scripts/checkSellerData.js",
     "test-seller": "node scripts/testSellerApplication.js"
   },

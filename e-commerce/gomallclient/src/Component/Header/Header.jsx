@@ -205,7 +205,7 @@ function Header() {
                         <span className="user-role">{user.role}</span>
                       </div>
                     </div>
-                    <Link to="/profile" className="dropdown-item">
+                    <Link to="/user" className="dropdown-item">
                       <i className="dropdown-icon">⚙️</i>
                       <span>My Account</span>
                     </Link>

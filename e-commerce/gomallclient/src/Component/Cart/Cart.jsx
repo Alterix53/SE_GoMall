@@ -356,6 +356,7 @@ export default function CartManager() {
                     src={resolveImageUrl(item.image)}
                     alt={item.name}
                     className="product-image"
+                    style={{ width: '249px', height: '180px' }}
                     fallbackUrl={createPlaceholderUrl(80,80,'')}
                     onLoad={() => {}}
                     onError={() => {}}
@@ -412,10 +413,19 @@ export default function CartManager() {
                 <span>Select All ({selectedKeys.size || 0})</span>
               </label>
             </div>
+            <div className="footer-unit-price">
+              {/* Cột Unit Price để trống */}
+            </div>
             <div className="footer-total">
               <div className="total-summary">
                 <div className="total-line">
                   <span className="total-label">Total ({totals.selectedCount} items):</span>
+                </div>
+              </div>
+            </div>
+            <div className="footer-total-amount">
+              <div className="total-summary">
+                <div className="total-line">
                   <span className="total-amount">{currencyVND(totals.selectedTotal)}</span>
                 </div>
               </div>
