@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import Category from '../models/Category.js';
+import Product from '../models/Product.js';
 
 // Simple connection without complex options
 const connectDB = async () => {
@@ -15,33 +17,19 @@ const connectDB = async () => {
   }
 };
 
-// Simple Category model
-const categorySchema = new mongoose.Schema({
-  categoryName: String,
-  slug: String,
-  description: String,
-  image: String,
-  icon: String,
-  parentID: mongoose.Schema.Types.ObjectId
-});
-
-const Category = mongoose.model('Category', categorySchema);
-
-// Simple Product model
-const productSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  price: Number,
-  originalPrice: Number,
-  categoryID: mongoose.Schema.Types.ObjectId,
-  images: [String],
-  isActive: Boolean,
-  isFlashSale: Boolean,
-  flashSalePrice: Number,
-  flashSaleEndTime: Date
-});
-
-const Product = mongoose.model('Product', productSchema);
+// Brand mapping for different categories
+const brandMapping = {
+  'Phones': ['Apple', 'Samsung', 'iPhone'],
+  'Laptops': ['Apple', 'Dell', 'MacBook'],
+  'Fashion': ['Nike', 'Adidas', 'Gucci'],
+  'Sports': ['Nike', 'Adidas'],
+  'Home & Garden': ['Philips', 'Sony'],
+  'Beauty & Cosmetics': ['Gucci'],
+  'Accessories': ['Gucci', 'Nike', 'Adidas'],
+  'Books': ['Apple', 'Samsung'], // For tech books
+  'Vehicles': ['Sony', 'Philips'], // For car electronics
+  'Electronics': ['Apple', 'Samsung', 'Sony', 'Philips']
+};
 
 // Quick seed function
 const quickSeed = async () => {
@@ -50,14 +38,14 @@ const quickSeed = async () => {
     
     await connectDB();
     
-    // Clear existing data
-    console.log('🗑️ Clearing existing data...');
-    await Category.deleteMany({});
-    await Product.deleteMany({});
+    // Clear existing data - COMMENTED OUT TO PRESERVE EXISTING DATA
+    // console.log('🗑️ Clearing existing data...');
+    // await Category.deleteMany({});
+    // await Product.deleteMany({});
     
-    // Create categories
+    // Create categories - only if they don't exist
     console.log('🌱 Creating categories...');
-    const categories = await Category.insertMany([
+    const categoryData = [
       {
         categoryName: 'Phones',
         slug: 'phones',
@@ -138,41 +126,110 @@ const quickSeed = async () => {
         icon: 'fas fa-tv',
         parentID: null
       }
-    ]);
+    ];
+
+    const existingCategories = await Category.find({ categoryName: { $in: categoryData.map(c => c.categoryName) } });
+    const newCategories = categoryData.filter(category => !existingCategories.some(c => c.categoryName === category.categoryName));
+
+    if (newCategories.length > 0) {
+      const createdCategories = await Category.insertMany(newCategories);
+      console.log(`✅ Created ${createdCategories.length} new categories`);
+    } else {
+      console.log('🔄 No new categories to create.');
+    }
     
-    console.log(`✅ Created ${categories.length} categories`);
-    
-    // Create products
-    console.log('🌱 Creating products...');
+    // Create products with brands
+    console.log('🌱 Creating products with brands...');
     const products = [];
     
-    categories.forEach((category, index) => {
+    // Re-fetch categories to get their IDs for products
+    const allCategories = await Category.find({});
+
+    allCategories.forEach((category, index) => {
+      const availableBrands = brandMapping[category.categoryName] || ['Generic'];
+      
       for (let i = 1; i <= 5; i++) {
         const price = Math.floor(Math.random() * 5000000) + 500000;
         const originalPrice = price + Math.floor(Math.random() * 1000000);
+        const randomBrand = availableBrands[Math.floor(Math.random() * availableBrands.length)];
         
         products.push({
-          name: `${category.categoryName} Product ${i}`,
-          description: `High-quality ${category.categoryName.toLowerCase()} product ${i}`,
-          price: price,
-          originalPrice: originalPrice,
+          name: `${randomBrand} ${category.categoryName} Product ${i}`,
+          slug: `${randomBrand.toLowerCase()}-${category.categoryName.toLowerCase()}-product-${i}`,
+          description: `High-quality ${category.categoryName.toLowerCase()} product ${i} from ${randomBrand}`,
+          shortDescription: `${randomBrand} ${category.categoryName} - Premium quality`,
+          sku: `SKU-${randomBrand.toUpperCase()}-${category.categoryName.toUpperCase()}-${i}`,
+          brand: randomBrand,
           categoryID: category._id,
-          images: ['https://source.unsplash.com/random/400x300'],
+          sellerID: new mongoose.Types.ObjectId(), // Temporary seller ID
+          images: [{
+            url: 'https://source.unsplash.com/random/400x300',
+            alt: `${randomBrand} ${category.categoryName} Product ${i}`,
+            isPrimary: true
+          }],
+          price: {
+            original: originalPrice,
+            sale: price
+          },
+          inventory: {
+            quantity: Math.floor(Math.random() * 100) + 10,
+            lowStockThreshold: 10
+          },
+          specifications: [
+            { name: 'Brand', value: randomBrand },
+            { name: 'Category', value: category.categoryName },
+            { name: 'Model', value: `Model-${i}` }
+          ],
+          tags: [randomBrand.toLowerCase(), category.categoryName.toLowerCase(), 'premium'],
+          rating: {
+            average: (Math.random() * 2 + 3).toFixed(1), // 3.0 to 5.0
+            count: Math.floor(Math.random() * 1000) + 50
+          },
+          sold: Math.floor(Math.random() * 500) + 10,
+          views: Math.floor(Math.random() * 2000) + 100,
           isActive: true,
+          isFeatured: Math.random() > 0.8,
           isFlashSale: Math.random() > 0.7,
           flashSalePrice: Math.random() > 0.7 ? price * 0.8 : null,
-          flashSaleEndTime: Math.random() > 0.7 ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null
+          flashSaleEndDate: Math.random() > 0.7 ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null
         });
       }
     });
     
-    const createdProducts = await Product.insertMany(products);
-    console.log(`✅ Created ${createdProducts.length} products`);
+    // Check for existing products and only add new ones
+    const existingProducts = await Product.find({ 
+      name: { $in: products.map(p => p.name) },
+      categoryID: { $in: products.map(p => p.categoryID) }
+    });
+    
+    const newProducts = products.filter(product => 
+      !existingProducts.some(existing => 
+        existing.name === product.name && 
+        existing.categoryID.toString() === product.categoryID.toString()
+      )
+    );
+    
+    if (newProducts.length > 0) {
+      const createdProducts = await Product.insertMany(newProducts);
+      console.log(`✅ Created ${createdProducts.length} new products with brands`);
+    } else {
+      console.log('🔄 No new products to create.');
+    }
     
     console.log('\n🎉 Quick Seed completed successfully!');
     console.log('📊 Summary:');
-    console.log(`- Categories: ${categories.length}`);
-    console.log(`- Products: ${createdProducts.length}`);
+    console.log(`- Categories: ${allCategories.length}`);
+    console.log(`- Total Products: ${await Product.countDocuments()}`);
+    
+    // Show brand distribution
+    const brandStats = await Product.aggregate([
+      { $group: { _id: '$brand', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    console.log('\n📈 Brand Distribution:');
+    brandStats.forEach(stat => {
+      console.log(`  ${stat._id}: ${stat.count} products`);
+    });
     
     await mongoose.disconnect();
     console.log('✅ Disconnected from MongoDB');

@@ -9,29 +9,38 @@ class ProductService {
 
         // Category filtering: accept either category id (ObjectId string) or category name
         if (query.category) {
+            console.log('Category filter input:', query.category);
             const raw = Array.isArray(query.category)
                 ? query.category
                 : String(query.category).split(",");
             const values = raw.map((v) => String(v).trim()).filter(Boolean);
+            console.log('Category values:', values);
             const objectIdRegex = /^[a-fA-F0-9]{24}$/;
             const idValues = values.filter((v) => objectIdRegex.test(v));
             const nameValues = values.filter((v) => !objectIdRegex.test(v));
+            console.log('Category ID values:', idValues);
+            console.log('Category name values:', nameValues);
 
             let categoryIds = [...idValues];
             if (nameValues.length > 0) {
                 const regexes = nameValues.map((n) => new RegExp(n, "i"));
+                console.log('Category name regexes:', regexes);
                 const categories = await Category.find(
                     { categoryName: { $in: regexes } },
                     "_id"
                 ).lean();
+                console.log('Found categories by name:', categories);
                 categoryIds.push(...categories.map((c) => c._id));
             }
+            console.log('Final category IDs:', categoryIds);
             
             // Use OR logic for categories since products typically belong to only one category
-            andConditions.push({ categoryID: { $in: categoryIds.length > 0 ? categoryIds : [null] } });
+            if (categoryIds.length > 0) {
+                andConditions.push({ categoryID: { $in: categoryIds } });
+            }
         }
 
-        // Brand filter (case-insensitive regex)
+        // Brand filter - only filter on brand field with OR logic
         if (query.brand) {
             const raw = Array.isArray(query.brand)
                 ? query.brand
@@ -39,15 +48,12 @@ class ProductService {
             const values = raw.map((v) => String(v).trim()).filter(Boolean);
             if (values.length > 0) {
                 // Use OR logic for brands since products typically have only one brand
-                const brandAlternatives = values.map((v) => {
-                    const rx = new RegExp(v, "i");
-                    return { $or: [
-                        { brand: rx },
-                        { tags: rx },
-                        { name: rx },
-                    ]};
-                });
-                andConditions.push({ $or: brandAlternatives });
+                // Only filter on the brand field, not tags or name
+                const brandConditions = values.map((v) => ({
+                    brand: { $regex: v, $options: 'i' }
+                }));
+                
+                andConditions.push({ $or: brandConditions });
             }
         }
 

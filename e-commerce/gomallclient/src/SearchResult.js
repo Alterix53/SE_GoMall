@@ -10,7 +10,7 @@ const categories = [
   "Phones", "Laptops", "Fashion", "Beauty & Cosmetics", "Home & Garden", "Books", "Sports", "Vehicles", "Accessories", "Electronics"
 ];
 const brands = [
-  "Apple", "Samsung", "Nike", "Adidas", "Gucci", "Sony", "Dell", "Philips", "iPhone", "MacBook"
+  "Apple", "Samsung", "Nike", "Gucci"
 ];
 
 const SearchResult = () => {

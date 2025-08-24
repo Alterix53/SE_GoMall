@@ -213,6 +213,9 @@ const seedProducts = async (createdCategories, createdUsers) => {
             Array.isArray(user.role) ? user.role.includes('seller') : user.role === 'seller'
         );
         
+        // Available brands for random selection
+        const availableBrands = ['Apple', 'Samsung', 'Nike', 'Gucci'];
+        
         // Prepare products data
         const products = productsData.map((product, index) => {
             // Get category ID (single category)
@@ -223,6 +226,9 @@ const seedProducts = async (createdCategories, createdUsers) => {
             
             // Get seller ID
             const sellerID = sellers.length > 0 ? sellers[Math.floor(Math.random() * sellers.length)]._id : null;
+            
+            // Get random brand
+            const randomBrand = availableBrands[Math.floor(Math.random() * availableBrands.length)];
             
             // Process images
             const images = product.images_url ? product.images_url.split(',').map((url, imgIndex) => ({
@@ -241,7 +247,7 @@ const seedProducts = async (createdCategories, createdUsers) => {
                 description: product.description || 'Product description',
                 shortDescription: product.shortDescription || 'Short product description',
                 sku: product.sku || `SKU-${index + 1}`,
-                brand: product.brand || 'Default Brand',
+                brand: randomBrand,
                 categoryID: categoryID,
                 sellerID: sellerID,
                 images: images,
@@ -287,9 +293,11 @@ const seedData = async () => {
     try {
         await connectForSeeding();
         
+        console.log('🌱 Starting data seeding (categories and products only)...');
+        
         const createdCategories = await seedCategories();
-        const createdUsers = await seedUsers();
-        await seedProducts(createdCategories, createdUsers);
+        console.log('⏭️ Skipping users seeding...');
+        await seedProducts(createdCategories, []); // Pass empty array for users
         
         console.log('🎉 Data seeded successfully!');
         
