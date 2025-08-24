@@ -92,6 +92,46 @@ class NotificationService {
     }
   }
 
+  // Tạo thông báo đơn hàng bị trả lại
+  static async createOrderReturnedNotification(userId, orderId, reason) {
+    try {
+      await Notification.createOrderReturnedNotification(userId, orderId, reason);
+      console.log(`Created order returned notification for user ${userId}, order ${orderId}`);
+    } catch (error) {
+      console.error('Error creating order returned notification:', error);
+    }
+  }
+
+  // Tạo thông báo đơn hàng bị hoãn
+  static async createOrderDelayedNotification(userId, orderId, reason, newEstimatedDate) {
+    try {
+      await Notification.createOrderDelayedNotification(userId, orderId, reason, newEstimatedDate);
+      console.log(`Created order delayed notification for user ${userId}, order ${orderId}`);
+    } catch (error) {
+      console.error('Error creating order delayed notification:', error);
+    }
+  }
+
+  // Tạo thông báo đơn hàng sẵn sàng nhận
+  static async createOrderReadyForPickupNotification(userId, orderId, pickupLocation, pickupCode) {
+    try {
+      await Notification.createOrderReadyForPickupNotification(userId, orderId, pickupLocation, pickupCode);
+      console.log(`Created order ready for pickup notification for user ${userId}, order ${orderId}`);
+    } catch (error) {
+      console.error('Error creating order ready for pickup notification:', error);
+    }
+  }
+
+  // Tạo thông báo hoàn tiền một phần
+  static async createPartialRefundNotification(userId, orderId, refundAmount, reason) {
+    try {
+      await Notification.createPartialRefundNotification(userId, orderId, refundAmount, reason);
+      console.log(`Created partial refund notification for user ${userId}, order ${orderId}`);
+    } catch (error) {
+      console.error('Error creating partial refund notification:', error);
+    }
+  }
+
   // Tạo thông báo hệ thống
   static async createSystemNotification(userId, title, message, metadata = {}) {
     try {

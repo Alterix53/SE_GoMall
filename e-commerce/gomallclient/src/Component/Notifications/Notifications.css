@@ -23,6 +23,13 @@
     max-height: 80vh;
     overflow: hidden;
     animation: slideDown 0.3s ease-out;
+    transition: all 0.3s ease;
+  }
+
+  .notifications-panel.expanded {
+    max-height: 90vh;
+    width: 95%;
+    max-width: 600px;
   }
   
   @keyframes slideDown {
@@ -152,10 +159,35 @@
     text-align: center;
   }
   
-  /* Content */
+  /* Notifications Content */
   .notifications-content {
-    max-height: 400px;
+    flex: 1;
     overflow-y: auto;
+    max-height: 400px;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+  }
+
+  .notifications-panel.expanded .notifications-content {
+    max-height: 600px;
+  }
+
+  .notifications-content::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .notifications-content::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 3px;
+  }
+
+  .notifications-content::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+  }
+
+  .notifications-content::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
   }
   
   .loading-state {
@@ -364,10 +396,47 @@
     cursor: pointer;
     transition: all 0.2s;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-  
+
   .view-all-btn:hover {
     background: #2563eb;
+  }
+
+  .view-all-btn.expanded {
+    background: #6b7280;
+  }
+
+  .view-all-btn.expanded:hover {
+    background: #4b5563;
+  }
+
+  /* More Notifications Indicator */
+  .more-notifications-indicator {
+    padding: 16px 24px;
+    text-align: center;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .more-notifications-indicator span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .more-notifications-indicator::before {
+    content: "⋯";
+    font-size: 20px;
+    color: #9ca3af;
+    margin-right: 8px;
   }
   
   /* Responsive */
@@ -376,6 +445,11 @@
       width: 95%;
       margin: 0 10px;
       max-height: 90vh;
+    }
+
+    .notifications-panel.expanded {
+      width: 98%;
+      max-height: 95vh;
     }
     
     .notifications-header {
@@ -406,6 +480,14 @@
     
     .notification-message {
       font-size: 13px;
+    }
+
+    .notifications-content {
+      max-height: 350px;
+    }
+
+    .notifications-panel.expanded .notifications-content {
+      max-height: 500px;
     }
   }
   

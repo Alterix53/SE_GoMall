@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Bell, Package, Truck, CheckCircle, AlertCircle, Info, X, Trash2 } from 'lucide-react';
+import { Bell, Package, Truck, CheckCircle, AlertCircle, Info, X, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 import './Notifications.css';
 
 const Notifications = ({ isVisible, onClose }) => {
@@ -11,6 +11,8 @@ const Notifications = ({ isVisible, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
   const isFetchingRef = useRef(false);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
+  const [initialDisplayCount] = useState(5); // Số notifications hiển thị ban đầu
 
   // Load notifications từ API thật
   useEffect(() => {
@@ -197,11 +199,27 @@ const Notifications = ({ isVisible, onClose }) => {
 
   const unreadCount = notifications.filter(notif => !notif.isRead).length;
 
+  // Xử lý nút "Xem tất cả thông báo"
+  const handleViewAllNotifications = () => {
+    setShowAllNotifications(!showAllNotifications);
+  };
+
+  // Lấy notifications để hiển thị
+  const getDisplayNotifications = () => {
+    if (showAllNotifications) {
+      return filteredNotifications;
+    }
+    return filteredNotifications.slice(0, initialDisplayCount);
+  };
+
+  const displayNotifications = getDisplayNotifications();
+  const hasMoreNotifications = filteredNotifications.length > initialDisplayCount;
+
   if (!isVisible) return null;
 
   return (
     <div className="notifications-overlay" onClick={onClose}>
-      <div className="notifications-panel" onClick={e => e.stopPropagation()}>
+      <div className={`notifications-panel ${showAllNotifications ? 'expanded' : ''}`} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="notifications-header">
           <div className="notifications-title">
@@ -268,7 +286,7 @@ const Notifications = ({ isVisible, onClose }) => {
             </div>
           ) : (
             <div className="notifications-list">
-              {filteredNotifications.map(notification => (
+              {displayNotifications.map(notification => (
                 <div 
                   key={notification.id} 
                   className={`notification-item ${!notification.isRead ? 'unread' : ''} ${getTypeColor(notification.type)}`}
@@ -303,13 +321,35 @@ const Notifications = ({ isVisible, onClose }) => {
                   {!notification.isRead && <div className="unread-indicator"></div>}
                 </div>
               ))}
+              
+              {/* Hiển thị thông báo còn lại nếu có */}
+              {!showAllNotifications && hasMoreNotifications && (
+                <div className="more-notifications-indicator">
+                  <span>Còn {filteredNotifications.length - initialDisplayCount} thông báo nữa</span>
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {/* Footer */}
         <div className="notifications-footer">
-          <button className="view-all-btn">Xem tất cả thông báo</button>
+          <button 
+            className={`view-all-btn ${showAllNotifications ? 'expanded' : ''}`}
+            onClick={handleViewAllNotifications}
+          >
+            {showAllNotifications ? (
+              <>
+                <ChevronUp size={16} />
+                Thu gọn thông báo
+              </>
+            ) : (
+              <>
+                <ChevronDown size={16} />
+                Xem tất cả thông báo ({filteredNotifications.length})
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
