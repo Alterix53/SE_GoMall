@@ -354,6 +354,14 @@ export const adminAPI = {
     });
     return response.json();
   },
+  
+  getSellerById: async (token, sellerId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    });
+    return response.json();
+  },
   // Product Management APIs
   getAllProducts: async (token, params = {}) => {
     const queryParams = new URLSearchParams(params);

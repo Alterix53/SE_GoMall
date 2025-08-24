@@ -531,7 +531,7 @@ class AdminService {
     }
 
     async getSellerById(sellerId) {
-        const seller = await Seller.findById(sellerId);
+        const seller = await Seller.findById(sellerId).populate('userID');
         
         if (!seller) {
             throw new Error("Người bán không tồn tại");
@@ -716,6 +716,21 @@ class AdminService {
         } catch (error) {
             console.error('Error in approveSeller:', error.message);
             console.error('Full error:', error);
+            throw error;
+        }
+    }
+
+    async getSellerById(sellerId) {
+        try {
+            const seller = await Seller.findById(sellerId).populate('userID');
+            
+            if (!seller) {
+                throw new Error("Người bán không tồn tại");
+            }
+            
+            return seller;
+        } catch (error) {
+            console.error('Error in getSellerById:', error.message);
             throw error;
         }
     }

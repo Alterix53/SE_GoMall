@@ -66,6 +66,16 @@ function ItemsPage() {
           setProducts(res.data.products || res.data || []);
           setTotalPages(res.data.totalPages || 1);
           console.log(`[Product API] Fetched products successfully. Count: ${res.data.products?.length ?? (res.data?.length ?? 0)}`);
+          // Debug: Log first product structure to understand image data
+          if (res.data.products?.length > 0 || res.data?.length > 0) {
+            const firstProduct = res.data.products?.[0] || res.data?.[0];
+            console.log('[Product API] First product structure:', {
+              id: firstProduct._id || firstProduct.id,
+              name: firstProduct.name,
+              images: firstProduct.images,
+              imageUrl: firstProduct.images?.[0]?.url
+            });
+          }
         } else {
           setProducts([]);
           setTotalPages(1);
@@ -91,6 +101,7 @@ function ItemsPage() {
 
   // Handle image loading errors
   const handleImageError = (productId) => {
+    console.log(`[Image] Error loading image for product ${productId}`);
     setImageErrors(prev => new Set(prev).add(productId));
   };
 
@@ -98,9 +109,16 @@ function ItemsPage() {
   const getImageSrc = (product) => {
     const productId = product._id || product.id;
     if (imageErrors.has(productId)) {
-      return "/default-product.png";
+      console.log(`[Image] Using fallback for product ${productId}`);
+      return "/images/default-product.jpg";
     }
-    return product.images?.[0]?.url || "/default-product.png";
+    const imageUrl = product.images?.[0]?.url || "/images/default-product.jpg";
+    // If the image URL is a relative path, prepend the server URL
+    const fullImageUrl = imageUrl.startsWith('/') 
+      ? `http://localhost:8080${imageUrl}` 
+      : imageUrl;
+    console.log(`[Image] Product ${productId} image URL:`, fullImageUrl);
+    return fullImageUrl;
   };
 
   const handlePageChange = (page) => {
@@ -202,6 +220,7 @@ function ItemsPage() {
       {/* Product detail modal */}
       {selectedProduct && (
         <div className="modal show d-block" tabIndex={-1}>
+          <div className="modal-backdrop show" onClick={() => setSelectedProduct(null)}></div>
           <ProductDetailModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
         </div>
       )}

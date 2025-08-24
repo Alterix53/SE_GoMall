@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
@@ -110,35 +111,77 @@ const seedUsers = async () => {
         // Sử dụng native MongoDB driver thông qua mongoose connection
         const db = mongoose.connection.db;
         
-        // Clear existing users
-        const deleteResult = await db.collection('users').deleteMany({});
-        console.log(`Cleared ${deleteResult.deletedCount} existing users`);
+        // Don't clear existing users - we'll use upsert instead
+        console.log('Keeping existing users - will upsert new ones');
         
-        // Prepare users data
-        const users = usersData.map(user => ({
-            username: user.username,
-            password: user.password,
-            email: user.email,
-            role: user.role,
-            fullName: user.fullName || '',
-            phoneNumber: user.phoneNumber || '',
-            address: user.address || '',
-            shop: user.role?.includes('seller') ? {
-                name: user.shop?.name || 'Default Shop',
-                address: user.shop?.address || '',
-                isActive: user.shop?.isActive !== false
-            } : null,
-            isActive: user.isActive !== false,
-            profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300',
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }));
+        // Prepare users data with hashed passwords
+        const users = [];
+        for (const user of usersData) {
+            // Hash password if it's not already hashed
+            let hashedPassword;
+            if (user.password && user.password.startsWith('$2')) {
+                // Password is already hashed
+                hashedPassword = user.password;
+            } else {
+                // Hash the password
+                const saltRounds = 10;
+                hashedPassword = await bcrypt.hash(user.password || 'DefaultPass123', saltRounds);
+            }
+            
+            users.push({
+                username: user.username,
+                password: hashedPassword,
+                email: user.email,
+                role: user.role,
+                fullName: user.fullName || '',
+                phoneNumber: user.phoneNumber || '',
+                address: user.address || '',
+                shop: user.role?.includes('seller') ? {
+                    name: user.shop?.name || 'Default Shop',
+                    address: user.shop?.address || '',
+                    isActive: user.shop?.isActive !== false
+                } : null,
+                isActive: user.isActive !== false,
+                profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300',
+                createdAt: new Date(),
+                updatedAt: new Date()
+            });
+        }
         
-        // Insert users using native driver
-        const insertResult = await db.collection('users').insertMany(users);
-        console.log(`✅ Inserted ${insertResult.insertedCount} users`);
+        // Use upsert to avoid duplicates - update if exists, insert if not
+        let insertedCount = 0;
+        let updatedCount = 0;
         
-        return users;
+        for (const user of users) {
+            const result = await db.collection('users').updateOne(
+                { 
+                    $or: [
+                        { email: user.email },
+                        { username: user.username }
+                    ]
+                },
+                { 
+                    $setOnInsert: user,
+                    $set: {
+                        ...user,
+                        updatedAt: new Date()
+                    }
+                },
+                { upsert: true }
+            );
+            
+            if (result.upsertedCount > 0) {
+                insertedCount++;
+            } else if (result.modifiedCount > 0) {
+                updatedCount++;
+            }
+        }
+        
+        console.log(`✅ Upserted users: ${insertedCount} inserted, ${updatedCount} updated`);
+        
+        // Get all users (including existing ones) for product seeding
+        const allUsers = await db.collection('users').find({}).toArray();
+        return allUsers;
         
     } catch (error) {
         console.error('❌ Error seeding users:', error);

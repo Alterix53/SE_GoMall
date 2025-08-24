@@ -15,6 +15,11 @@ function PendingRequestPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [approvedSellerName, setApprovedSellerName] = useState("");
+  
+  // Seller detail modal states
+  const [showSellerDetailModal, setShowSellerDetailModal] = useState(false);
+  const [selectedSeller, setSelectedSeller] = useState(null);
+  const [sellerDetailLoading, setSellerDetailLoading] = useState(false);
 
   useEffect(() => {
     const fetchPending = async () => {
@@ -48,6 +53,27 @@ function PendingRequestPage() {
     };
     fetchPending();
   }, [search, page, limit]);
+
+  const handleViewSellerDetail = async (sellerId) => {
+    try {
+      setSellerDetailLoading(true);
+      const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+      
+      // Fetch detailed seller information
+      const res = await adminAPI.getSellerById(token, sellerId);
+      
+      if (res.success) {
+        setSelectedSeller(res.data);
+        setShowSellerDetailModal(true);
+      } else {
+        alert("Failed to fetch seller details: " + res.message);
+      }
+    } catch (err) {
+      alert("Error fetching seller details: " + err.message);
+    } finally {
+      setSellerDetailLoading(false);
+    }
+  };
 
   const handleApprove = async (sellerId) => {
     try {
@@ -121,60 +147,51 @@ function PendingRequestPage() {
 
   return (
     <div className="container-fluid">
-      <h2 className="row text-center mb-4" style={{ minWidth: 180 }}>Pending Seller Requests</h2>
-      
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <div className="d-flex gap-2">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="form-control"
-                style={{ maxWidth: 260 }}
-                placeholder="Search by business name or email"
-              />
-              <select 
-                className="form-select" 
-                style={{ width: 120 }} 
-                value={limit} 
-                onChange={(e) => setLimit(Number(e.target.value))}
-              >
-                <option value={5}>5 / page</option>
-                <option value={10}>10 / page</option>
-                <option value={20}>20 / page</option>
-              </select>
-            </div>
-            <div className="text-muted">
-              Total: {totalRequests} pending requests
-            </div>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>Pending Seller Requests</h2>
+        <div className="d-flex gap-2">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search sellers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: '300px' }}
+          />
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
           </div>
-
-          {loading && <div className="text-center py-3">Loading...</div>}
-          {error && <div className="text-danger py-2">{error}</div>}
-
-          {!loading && (
+        </div>
+      ) : (
+        <div className="card">
+          <div className="card-body">
             <div className="table-responsive">
-              <table className="table table-bordered align-middle">
-                <thead className="table-light">
+              <table className="table table-hover">
+                <thead>
                   <tr>
-                    <th style={{ width: 60 }}>#</th>
-                    <th>Business Name</th>
-                    <th>Business Email</th>
-                    <th>Business Phone</th>
+                    <th>#</th>
+                    <th>Business Info</th>
+                    <th>Contact</th>
                     <th>Username</th>
-                    <th>Applied At</th>
-                    <th style={{ width: 160 }}>Actions</th>
+                    <th>Applied Date</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {requests.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-muted text-center">No pending requests</td>
+                      <td colSpan={6} className="text-center text-muted">
+                        No pending requests found
+                      </td>
                     </tr>
                   ) : (
                     requests.map((seller, idx) => (
-                      <tr key={seller._id}>
+                      <tr key={seller._id} style={{ cursor: 'pointer' }} onClick={() => handleViewSellerDetail(seller._id)}>
                         <td>{(page - 1) * limit + idx + 1}</td>
                         <td>
                           <div className="fw-bold">{seller.businessName || 'N/A'}</div>
@@ -182,12 +199,14 @@ function PendingRequestPage() {
                             <div className="text-muted small">{seller.businessAddress}</div>
                           )}
                         </td>
-                        <td>{seller.businessEmail || 'N/A'}</td>
-                        <td>{seller.businessPhone || 'N/A'}</td>
+                        <td>
+                          <div>{seller.businessEmail || 'N/A'}</div>
+                          <div className="text-muted small">{seller.businessPhone || 'N/A'}</div>
+                        </td>
                         <td>{seller.userID?.username || seller.username || 'N/A'}</td>
                         <td>{seller.createdAt ? new Date(seller.createdAt).toLocaleString() : '-'}</td>
                         <td>
-                          <div className="d-flex gap-2">
+                          <div className="d-flex gap-2" onClick={(e) => e.stopPropagation()}>
                             <button 
                               className="btn btn-sm btn-success" 
                               onClick={() => handleApprove(seller._id)}
@@ -210,90 +229,194 @@ function PendingRequestPage() {
                 </tbody>
               </table>
             </div>
-          )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="d-flex justify-content-between align-items-center mt-3">
-              <small className="text-muted">
-                Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, totalRequests)} of {totalRequests} requests
-              </small>
-              <nav>
-                <ul className="pagination pagination-sm mb-0">
-                  <li className={`page-item${page === 1 ? " disabled" : ""}`}>
-                    <button 
-                      className="page-link" 
-                      onClick={() => handlePageChange(page - 1)}
-                      disabled={page === 1}
-                    >
-                      Previous
-                    </button>
-                  </li>
-                  {Array.from({ length: totalPages }, (_, i) => (
-                    <li key={i + 1} className={`page-item${page === i + 1 ? " active" : ""}`}>
-                      <button 
-                        className="page-link" 
-                        onClick={() => handlePageChange(i + 1)}
-                      >
-                        {i + 1}
-                      </button>
-                    </li>
-                  ))}
-                  <li className={`page-item${page === totalPages ? " disabled" : ""}`}>
-                    <button 
-                      className="page-link" 
-                      onClick={() => handlePageChange(page + 1)}
-                      disabled={page === totalPages}
-                    >
-                      Next
-                    </button>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav className="mt-4">
+          <ul className="pagination justify-content-center">
+            <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => handlePageChange(page - 1)}>
+                Previous
+              </button>
+            </li>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <li key={pageNum} className={`page-item ${pageNum === page ? 'active' : ''}`}>
+                <button className="page-link" onClick={() => handlePageChange(pageNum)}>
+                  {pageNum}
+                </button>
+              </li>
+            ))}
+            <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => handlePageChange(page + 1)}>
+                Next
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
 
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
-          <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-dialog">
             <div className="modal-content">
-              <div className="modal-header bg-success text-white">
-                <h5 className="modal-title">
-                  <i className="fas fa-check-circle me-2"></i>
-                  Thành công!
-                </h5>
-                <button 
-                  type="button" 
-                  className="btn-close btn-close-white" 
-                  onClick={() => setShowSuccessModal(false)}
-                ></button>
+              <div className="modal-header">
+                <h5 className="modal-title">Success</h5>
+                <button type="button" className="btn-close" onClick={() => setShowSuccessModal(false)}></button>
               </div>
-              <div className="modal-body text-center">
-                <div className="mb-3">
-                  <i className="fas fa-check-circle text-success" style={{ fontSize: '3rem' }}></i>
-                </div>
-                <h6 className="mb-2">{successMessage}</h6>
-                <p className="text-muted mb-0">
-                  <strong>{approvedSellerName}</strong> đã được xử lý thành công.
-                </p>
+              <div className="modal-body">
+                <p>{successMessage}</p>
+                <p><strong>Seller:</strong> {approvedSellerName}</p>
               </div>
               <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-success" 
-                  onClick={() => setShowSuccessModal(false)}
-                >
-                  <i className="fas fa-check me-2"></i>
-                  Đóng
+                <button type="button" className="btn btn-secondary" onClick={() => setShowSuccessModal(false)}>
+                  Close
                 </button>
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show"></div>
         </div>
+      )}
+
+      {/* Seller Detail Modal */}
+      {showSellerDetailModal && selectedSeller && (
+        <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Seller Application Details</h5>
+                <button type="button" className="btn-close" onClick={() => setShowSellerDetailModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                {sellerDetailLoading ? (
+                  <div className="text-center py-3">
+                    <div className="spinner-border" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="row">
+                    <div className="col-md-6">
+                      <h6 className="fw-bold mb-3">Business Information</h6>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Business Name:</label>
+                        <p className="mb-1">{selectedSeller.businessName || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Business Address:</label>
+                        <p className="mb-1">{selectedSeller.businessAddress || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Business Phone:</label>
+                        <p className="mb-1">{selectedSeller.businessPhone || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Business Email:</label>
+                        <p className="mb-1">{selectedSeller.businessEmail || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Business License:</label>
+                        <p className="mb-1">{selectedSeller.businessLicense || 'N/A'}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="col-md-6">
+                      <h6 className="fw-bold mb-3">User Information</h6>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Username:</label>
+                        <p className="mb-1">{selectedSeller.userID?.username || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Full Name:</label>
+                        <p className="mb-1">{selectedSeller.userID?.fullName || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Email:</label>
+                        <p className="mb-1">{selectedSeller.userID?.email || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Phone:</label>
+                        <p className="mb-1">{selectedSeller.userID?.phoneNumber || 'N/A'}</p>
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label fw-bold">Applied Date:</label>
+                        <p className="mb-1">
+                          {selectedSeller.createdAt ? new Date(selectedSeller.createdAt).toLocaleString() : 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="col-12 mt-4">
+                      <h6 className="fw-bold mb-3">Verification Documents</h6>
+                      {selectedSeller.verificationDocs && selectedSeller.verificationDocs.length > 0 ? (
+                        <div className="row">
+                          {selectedSeller.verificationDocs.map((doc, index) => (
+                            <div key={index} className="col-md-6 mb-3">
+                              <div className="card">
+                                <div className="card-body">
+                                  <h6 className="card-title">Document {index + 1}</h6>
+                                                                                                        <img 
+                                     src={doc.startsWith('http') ? doc : `http://localhost:8080${doc}`}
+                                     alt={`Verification document ${index + 1}`}
+                                     className="img-fluid rounded"
+                                     style={{ maxHeight: '200px', objectFit: 'cover' }}
+                                   />
+                                   <div style={{ display: 'none' }} className="text-center py-3">
+                                     <p className="text-muted">Image not available</p>
+                                     <a href={doc.startsWith('http') ? doc : `http://localhost:8080${doc}`} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
+                                       View Document
+                                     </a>
+                                   </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-muted">No verification documents uploaded</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <div className="d-flex gap-2">
+                  <button 
+                    type="button" 
+                    className="btn btn-success"
+                    onClick={() => {
+                      handleApprove(selectedSeller._id);
+                      setShowSellerDetailModal(false);
+                    }}
+                  >
+                    Approve
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-danger"
+                    onClick={() => {
+                      handleReject(selectedSeller._id);
+                      setShowSellerDetailModal(false);
+                    }}
+                  >
+                    Reject
+                  </button>
+                </div>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowSellerDetailModal(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal backdrop */}
+      {(showSuccessModal || showSellerDetailModal) && (
+        <div className="modal-backdrop fade show"></div>
       )}
     </div>
   );

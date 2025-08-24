@@ -4,14 +4,22 @@ function ProductDetailModal({ product, onClose }) {
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
+    console.log('[Modal Image] Error loading image, using fallback');
     setImageError(true);
   };
 
   const getImageSrc = () => {
     if (imageError) {
-      return "/default-product.png";
+      console.log('[Modal Image] Using fallback image');
+      return "/images/default-product.jpg";
     }
-    return product.images?.[0]?.url || "/default-product.png";
+    const imageUrl = product.images?.[0]?.url || "/images/default-product.jpg";
+    // If the image URL is a relative path, prepend the server URL
+    const fullImageUrl = imageUrl.startsWith('/') 
+      ? `http://localhost:8080${imageUrl}` 
+      : imageUrl;
+    console.log('[Modal Image] Image URL:', fullImageUrl);
+    return fullImageUrl;
   };
 
   return (
@@ -20,7 +28,26 @@ function ProductDetailModal({ product, onClose }) {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Product Information</h5>
-            <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
+            <button 
+              type="button" 
+              className="btn-close" 
+              aria-label="Close" 
+              onClick={onClose}
+              style={{ 
+                fontSize: '2rem', 
+                fontWeight: 'bold', 
+                cursor: 'pointer',
+                background: 'none',
+                border: 'none',
+                color: '#666',
+                padding: '0.5rem',
+                lineHeight: '1',
+                width: 'auto',
+                height: 'auto'
+              }}
+            >
+              ×
+            </button>
           </div>
           <div className="modal-body">
             <div className="row align-items-center mb-3">

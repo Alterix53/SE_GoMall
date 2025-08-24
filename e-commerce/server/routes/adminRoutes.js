@@ -37,6 +37,7 @@ router.put("/sellers/:id", authenticateAdmin, adminController.updateSeller);
 router.delete("/sellers/:id", authenticateAdmin, adminController.deleteSeller);
 router.patch("/sellers/:id/status", authenticateAdmin, adminController.updateSellerStatus);
 router.patch("/sellers/:id/approve", authenticateAdmin, adminController.approveSeller);
+router.get("/sellers/:id", authenticateAdmin, adminController.getSellerById);
 
 // Product Management APIs
 router.get("/products", authenticateAdmin, adminController.getAllProducts);

@@ -162,13 +162,6 @@ export const getAllSellers = ResponseHandler.asyncHandler(async (req, res) => {
     ResponseHandler.success(res, sellers, "Lấy danh sách người bán thành công");
 });
 
-export const getSellerById = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to get seller by id:", req.params.id);
-    
-    const seller = await adminService.getSellerById(req.params.id);
-    ResponseHandler.success(res, seller, "Lấy thông tin người bán thành công");
-});
-
 export const createSeller = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to create seller:", req.body);
     
@@ -224,6 +217,18 @@ export const approveSeller = ResponseHandler.asyncHandler(async (req, res) => {
         console.error("Error in approveSeller controller:", error.message);
         console.error("Full error:", error);
         throw error; // Let ResponseHandler.asyncHandler handle it
+    }
+});
+
+export const getSellerById = ResponseHandler.asyncHandler(async (req, res) => {
+    const sellerId = req.params.id;
+    
+    try {
+        const seller = await adminService.getSellerById(sellerId);
+        ResponseHandler.success(res, seller, "Lấy thông tin seller thành công");
+    } catch (error) {
+        console.error("Error in getSellerById controller:", error.message);
+        throw error;
     }
 });
 

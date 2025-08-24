@@ -13,7 +13,6 @@ const RegisterSeller = () => {
   const redirectRef = useRef(false);
   const [businessName, setBusinessName] = useState('');
   const [address, setAddress] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [document, setDocument] = useState(null);
   const [businessLicense, setBusinessLicense] = useState('');
@@ -120,26 +119,26 @@ const RegisterSeller = () => {
 
       const resp = await apiService.post('/sellers/apply', formData);
       
-      if (resp?.data?.success) {
-        alert('✅ Hồ sơ đăng ký seller đã được nộp thành công!\n\n📋 Thông tin hồ sơ:\n- Tên doanh nghiệp: ' + (businessName || 'Test Business') + '\n- Địa chỉ: ' + (address || 'Test Address') + '\n- Số điện thoại: ' + (phone || '0123456789') + '\n\n⏳ Trạng thái: Đang chờ admin duyệt\n\n📧 Bạn sẽ nhận được thông báo khi hồ sơ được xem xét.');
-        navigate('/home');
-      } else {
-        alert('❌ Lỗi: ' + (resp?.data?.message || 'Không thể nộp hồ sơ'));
-      }
+             if (resp?.data?.success) {
+         alert('✅ Seller registration application submitted successfully!\n\n📋 Application Information:\n- Business Name: ' + (businessName || 'Test Business') + '\n- Address: ' + (address || 'Test Address') + '\n- Phone Number: ' + (phone || '0123456789') + '\n\n⏳ Status: Waiting for admin approval\n\n📧 You will receive a notification when your application is reviewed.');
+         navigate('/home');
+       } else {
+         alert('❌ Error: ' + (resp?.data?.message || 'Unable to submit application'));
+       }
     } catch (err) {
       console.error('Submit error:', err);
       
-      if (err.response?.status === 400) {
-        const errorMessage = err.response.data.message;
-        if (errorMessage.includes('already have an active or pending seller application')) {
-          alert('⚠️ Bạn đã có hồ sơ đăng ký seller đang chờ duyệt hoặc đã được duyệt.\n\nVui lòng kiểm tra trạng thái hồ sơ của bạn.');
-          checkSellerStatus(); // Refresh status
-        } else {
-          alert('Có lỗi xảy ra: ' + errorMessage);
-        }
-      } else {
-        alert('Có lỗi xảy ra khi nộp hồ sơ');
-      }
+             if (err.response?.status === 400) {
+         const errorMessage = err.response.data.message;
+         if (errorMessage.includes('already have an active or pending seller application')) {
+           alert('⚠️ You already have a seller application that is pending approval or has been approved.\n\nPlease check your application status.');
+           checkSellerStatus(); // Refresh status
+         } else {
+           alert('An error occurred: ' + errorMessage);
+         }
+       } else {
+         alert('An error occurred while submitting the application');
+       }
     } finally {
       setLoading(false);
     }
@@ -221,32 +220,41 @@ const RegisterSeller = () => {
               {sellerStatus.status === 'suspended' && '⏸️ Suspended'}
             </span>
           </p>
-          <p><strong>Message:</strong> {getEnglishStatusMessage(sellerStatus)}</p>
-          
-          {sellerStatus.status === 'approved' && (
-            <div className="alert alert-success mt-3">
-              <p>🎉 Congratulations! Your application has been approved.</p>
-              <p>You will be redirected to the Seller Dashboard in a few seconds...</p>
-              <button 
-                className="btn btn-primary"
-                onClick={() => navigate('/seller')}
-              >
-                Go to Seller Dashboard now
-              </button>
-            </div>
-          )}
-          
-          {sellerStatus.status === 'rejected' && (
-            <div className="alert alert-warning mt-3">
-              <p>Your application did not meet the requirements. You can submit a new one.</p>
-              <button 
-                className="btn btn-warning"
-                onClick={() => window.location.reload()}
-              >
-                Resubmit application
-              </button>
-            </div>
-          )}
+                     <p><strong>Message:</strong> {getEnglishStatusMessage(sellerStatus)}</p>
+           
+           <div className="mt-3">
+             <button 
+               className="btn btn-secondary me-2"
+               onClick={() => navigate('/home')}
+             >
+               Proceed to Home
+             </button>
+           </div>
+           
+           {sellerStatus.status === 'approved' && (
+             <div className="alert alert-success mt-3">
+               <p>🎉 Congratulations! Your application has been approved.</p>
+               <p>You will be redirected to the Seller Dashboard in a few seconds...</p>
+               <button 
+                 className="btn btn-primary"
+                 onClick={() => navigate('/seller')}
+               >
+                 Go to Seller Dashboard now
+               </button>
+             </div>
+           )}
+           
+           {sellerStatus.status === 'rejected' && (
+             <div className="alert alert-warning mt-3">
+               <p>Your application did not meet the requirements. You can submit a new one.</p>
+               <button 
+                 className="btn btn-warning"
+                 onClick={() => window.location.reload()}
+               >
+                 Resubmit application
+               </button>
+             </div>
+           )}
         </div>
       </div>
     );
@@ -265,9 +273,11 @@ const RegisterSeller = () => {
             <input
               type="text"
               id="businessName"
+              className="form-control"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               placeholder="Enter business or shop name"
+              required
             />
           </div>
 
@@ -276,46 +286,11 @@ const RegisterSeller = () => {
             <input
               type="text"
               id="address"
+              className="form-control"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Enter full address"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Business email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@email.com"
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Business license number</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              value={businessLicense}
-              onChange={(e) => setBusinessLicense(e.target.value)}
-              placeholder="Enter business license number"
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">
-              <strong>Phone number</strong> <span className="text-danger">*</span>
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="0123456789"
+              required
             />
           </div>
 
@@ -324,10 +299,24 @@ const RegisterSeller = () => {
             <input
               type="text"
               id="businessLicense"
+              className="form-control"
               value={businessLicense}
               onChange={(e) => setBusinessLicense(e.target.value)}
-              required
               placeholder="Enter business license number"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="phone">Phone number *</label>
+            <input
+              type="tel"
+              id="phone"
+              className="form-control"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="0123456789"
+              required
             />
           </div>
 
@@ -335,11 +324,12 @@ const RegisterSeller = () => {
             <label htmlFor="document">Verification document</label>
             <input
               type="file"
+              id="document"
               className="form-control"
               onChange={handleFileChange}
-              accept=".pdf,.jpg,.png"
+              accept=".pdf,.jpg,.jpeg,.png"
             />
-            <small>Accepts PDF, JPG, JPEG, PNG</small>
+            <small className="file-hint">Accepts PDF, JPG, JPEG, PNG</small>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>

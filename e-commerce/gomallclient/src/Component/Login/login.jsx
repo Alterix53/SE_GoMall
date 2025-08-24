@@ -40,11 +40,11 @@ const LoginPage = () => {
         }
       } else {
         console.log('Login failed:', result.message);
-        setError('invalid username/gmail or password');
+        setError('Invalid username/gmail or password');
       }
     } catch (error) {
       console.error('Login error:', error);
-              setError('invalid username/gmail or password');
+              setError('Invalid username/gmail or password');
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ const LoginPage = () => {
                     <div className="input-group">
                       <input
                         type="text"
-                        placeholder="Email/Phone/Username"
+                        placeholder="Email/Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
