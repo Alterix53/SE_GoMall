@@ -185,9 +185,23 @@ export default function ProductDetail() {
             if (quantity > inventoryData.availableQuantity) {
               setQuantity(Math.max(1, inventoryData.availableQuantity));
             }
+          } else {
+            // If inventory check fails, use product's inventory data as fallback
+            console.log("⚠️ Using fallback inventory data from product");
+            const fallbackQuantity = product.inventory?.quantity || 0;
+            setMaxQuantity(fallbackQuantity);
+            if (quantity > fallbackQuantity) {
+              setQuantity(Math.max(1, fallbackQuantity));
+            }
           }
         } catch (error) {
           console.error("Error checking inventory:", error);
+          // Use product's inventory data as fallback
+          const fallbackQuantity = product.inventory?.quantity || 0;
+          setMaxQuantity(fallbackQuantity);
+          if (quantity > fallbackQuantity) {
+            setQuantity(Math.max(1, fallbackQuantity));
+          }
         }
       }
     };
@@ -232,7 +246,11 @@ export default function ProductDetail() {
     try {
       // Check inventory again before adding to cart
       const inventoryData = await checkProductInventory(product._id);
-      if (!inventoryData || inventoryData.availableQuantity <= 0) {
+      
+      // If inventory check fails, use product's inventory data as fallback
+      const availableQuantity = inventoryData?.availableQuantity ?? (product.inventory?.quantity || 0);
+      
+      if (availableQuantity <= 0) {
         toast({
           title: "Out of stock!",
           description: "This product is no longer available",
@@ -241,13 +259,16 @@ export default function ProductDetail() {
         return;
       }
 
-      if (quantity > inventoryData.availableQuantity) {
+      if (quantity > availableQuantity) {
+        const alertMessage = `Số lượng đã chọn (${quantity}) vượt quá số lượng tồn kho (${availableQuantity}).\n\nBạn có thể thêm tối đa ${availableQuantity} sản phẩm.`;
+        alert(alertMessage);
+        
         toast({
-          title: "Insufficient stock!",
-          description: `Only ${inventoryData.availableQuantity} items available`,
+          title: "Vượt quá tồn kho!",
+          description: `Chỉ có ${availableQuantity} sản phẩm trong kho`,
           variant: "destructive",
         });
-        setQuantity(inventoryData.availableQuantity);
+        setQuantity(availableQuantity);
         return;
       }
 
@@ -268,9 +289,7 @@ export default function ProductDetail() {
         setShowSuccessModal(true)
         
         // Update max quantity after successful add
-        if (inventoryData) {
-          setMaxQuantity(inventoryData.availableQuantity - quantity);
-        }
+        setMaxQuantity(availableQuantity - quantity);
       } else {
         // Handle specific inventory errors
         if (result.data?.availableQuantity !== undefined) {
@@ -311,7 +330,11 @@ export default function ProductDetail() {
     try {
       // Check inventory again before buying
       const inventoryData = await checkProductInventory(product._id);
-      if (!inventoryData || inventoryData.availableQuantity <= 0) {
+      
+      // If inventory check fails, use product's inventory data as fallback
+      const availableQuantity = inventoryData?.availableQuantity ?? (product.inventory?.quantity || 0);
+      
+      if (availableQuantity <= 0) {
         toast({
           title: "Out of stock!",
           description: "This product is no longer available",
@@ -320,13 +343,16 @@ export default function ProductDetail() {
         return;
       }
 
-      if (quantity > inventoryData.availableQuantity) {
+      if (quantity > availableQuantity) {
+        const alertMessage = `Số lượng đã chọn (${quantity}) vượt quá số lượng tồn kho (${availableQuantity}).\n\nBạn có thể mua tối đa ${availableQuantity} sản phẩm.`;
+        alert(alertMessage);
+        
         toast({
-          title: "Insufficient stock!",
-          description: `Only ${inventoryData.availableQuantity} items available`,
+          title: "Vượt quá tồn kho!",
+          description: `Chỉ có ${availableQuantity} sản phẩm trong kho`,
           variant: "destructive",
         });
-        setQuantity(inventoryData.availableQuantity);
+        setQuantity(availableQuantity);
         return;
       }
 

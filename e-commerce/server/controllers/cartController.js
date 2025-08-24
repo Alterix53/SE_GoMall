@@ -95,11 +95,12 @@ export const addToCart = async (req, res) => {
             res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
             return res.status(400).json({
                 success: false,
-                message: `Only ${availableQuantity} items available in stock`,
+                message: `Số lượng đã chọn (${newQuantity}) vượt quá số lượng tồn kho (${availableQuantity})`,
                 data: { 
                     availableQuantity,
                     requestedQuantity: newQuantity,
-                    currentCartQuantity: existingItemIndex !== -1 ? cart.items[existingItemIndex].quantity : 0
+                    currentCartQuantity: existingItemIndex !== -1 ? cart.items[existingItemIndex].quantity : 0,
+                    canAddQuantity: Math.max(0, availableQuantity - (existingItemIndex !== -1 ? cart.items[existingItemIndex].quantity : 0))
                 }
             });
         }
@@ -203,10 +204,11 @@ export const updateCartItem = async (req, res) => {
             res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
             return res.status(400).json({
                 success: false,
-                message: `Only ${availableQuantity} items available in stock`,
+                message: `Số lượng đã chọn (${quantity}) vượt quá số lượng tồn kho (${availableQuantity})`,
                 data: { 
                     availableQuantity,
-                    requestedQuantity: quantity
+                    requestedQuantity: quantity,
+                    canAddQuantity: availableQuantity
                 }
             });
         }

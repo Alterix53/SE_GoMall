@@ -119,10 +119,18 @@ export const CartProvider = ({ children }) => {
       // Handle specific inventory errors
       if (error.response?.status === 400) {
         const errorData = error.response.data;
-        setError(errorData.message || "Không thể thêm vào giỏ hàng");
+        const errorMessage = errorData.message || "Không thể thêm vào giỏ hàng";
+        setError(errorMessage);
+        
+        // Show alert for inventory errors
+        if (errorData.data?.availableQuantity !== undefined) {
+          const alertMessage = `${errorMessage}\n\nSố lượng có thể thêm: ${errorData.data.canAddQuantity || errorData.data.availableQuantity}`;
+          alert(alertMessage);
+        }
+        
         return { 
           success: false, 
-          error: errorData.message,
+          error: errorMessage,
           data: errorData.data 
         };
       }
@@ -217,10 +225,18 @@ export const CartProvider = ({ children }) => {
       // Handle specific inventory errors
       if (error.response?.status === 400) {
         const errorData = error.response.data;
-        setError(errorData.message || "Không thể cập nhật số lượng");
+        const errorMessage = errorData.message || "Không thể cập nhật số lượng";
+        setError(errorMessage);
+        
+        // Show alert for inventory errors
+        if (errorData.data?.availableQuantity !== undefined) {
+          const alertMessage = `${errorMessage}\n\nSố lượng tối đa có thể chọn: ${errorData.data.canAddQuantity || errorData.data.availableQuantity}`;
+          alert(alertMessage);
+        }
+        
         return { 
           success: false, 
-          error: errorData.message,
+          error: errorMessage,
           data: errorData.data 
         };
       }
@@ -278,12 +294,24 @@ export const CartProvider = ({ children }) => {
   // Check product inventory
   const checkProductInventory = async (productID) => {
     try {
+      console.log("🔍 Checking inventory for product:", productID);
       const response = await apiService.get(`/cart/inventory/${productID}`);
+      console.log("📦 Inventory response:", response.data);
+      
       if (response.data.success) {
+        console.log("✅ Inventory check successful:", response.data.data);
         return response.data.data;
+      } else {
+        console.log("❌ Inventory check failed:", response.data);
+        return null;
       }
     } catch (error) {
-      console.error("Error checking product inventory:", error);
+      console.error("💥 Error checking product inventory:", error);
+      console.error("Error details:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
       return null;
     }
   };

@@ -161,8 +161,9 @@ export default function CartManager() {
       const inventoryData = await fetch(`http://localhost:8080/api/cart/inventory/${id}`).then(res => res.json());
       
       if (inventoryData.success && inventoryData.data.availableQuantity < newQuantity) {
-        // Show error message
-        alert(`Only ${inventoryData.data.availableQuantity} items available in stock`);
+        // Show detailed alert message
+        const alertMessage = `Selected quantity (${newQuantity}) exceeds available stock (${inventoryData.data.availableQuantity}).\n\nYou can select up to ${inventoryData.data.availableQuantity} items.`;
+        alert(alertMessage);
         return;
       }
       
@@ -171,7 +172,8 @@ export default function CartManager() {
       if (!result.success) {
         // Handle inventory errors
         if (result.data?.availableQuantity !== undefined) {
-          alert(`Only ${result.data.availableQuantity} items available in stock`);
+          const alertMessage = `${result.error}\n\nMaximum quantity available: ${result.data.availableQuantity}`;
+          alert(alertMessage);
         } else {
           alert(result.error || "Error updating quantity");
         }
@@ -217,7 +219,7 @@ export default function CartManager() {
     [cartItems, selectedKeys]
   );
 
-  // Nếu giỏ hàng trống, hiển thị empty state như Shopee
+  // If cart is empty, show empty state like Shopee
   if (!cartItems || cartItems.length === 0) {
     return (
       <div className="cart-page cart--empty">
@@ -434,7 +436,7 @@ export default function CartManager() {
               </label>
             </div>
             <div className="footer-unit-price">
-              {/* Cột Unit Price để trống */}
+              {/* Unit Price column left empty */}
             </div>
             <div className="footer-total">
               <div className="total-summary">
