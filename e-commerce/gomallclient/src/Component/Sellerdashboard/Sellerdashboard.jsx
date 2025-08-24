@@ -19,7 +19,14 @@ const SellerDashboard = () => {
     image: '',
     stock: ''
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    name: '',
+    price: '',
+    categoryID: '',
+    description: '',
+    image: '',
+    stock: ''
+  });
   const [message, setMessage] = useState({ type: '', text: '' });
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
@@ -165,7 +172,7 @@ const SellerDashboard = () => {
   }, [editingProduct, isEditMode]);
 
   const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
+    const files = Array.from(event.target.files || []);
     const maxImages = 6;
     
     if (files.length > maxImages) {
@@ -272,7 +279,14 @@ const SellerDashboard = () => {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {
+      name: '',
+      price: '',
+      categoryID: '',
+      description: '',
+      image: '',
+      stock: ''
+    };
     
     if (!newProduct.name.trim()) {
       newErrors.name = 'Tên sản phẩm không được để trống';
@@ -316,10 +330,10 @@ const SellerDashboard = () => {
       
       // Thêm thông tin sản phẩm
       formData.append('name', productData.name);
-      formData.append('description', productData.description);
-      formData.append('price[original]', productData.price);
-      formData.append('inventory[quantity]', productData.stock);
-      formData.append('categoryID', productData.categoryID);
+      formData.append('description', productData.description || '');
+      formData.append('price[original]', productData.price.toString());
+      formData.append('inventory[quantity]', productData.stock?.toString() || '0');
+      formData.append('categoryID', productData.categoryID || '');
       formData.append('brand', 'Thương hiệu riêng');
       formData.append('sku', `SKU-${Date.now()}`);
       formData.append('slug', productData.name.toLowerCase().replace(/\s+/g, '-'));
@@ -371,6 +385,7 @@ const SellerDashboard = () => {
       const productData = {
         name: newProduct.name.trim(),
         price: Number(newProduct.price),
+        category: categories.find(cat => cat._id === newProduct.categoryID)?.categoryName || 'Không xác định',
         categoryID: newProduct.categoryID, // Sử dụng trực tiếp categoryID
         description: newProduct.description.trim() || 'Không có mô tả',
         image: newProduct.image,
@@ -394,24 +409,23 @@ const SellerDashboard = () => {
         }
       }
 
-      // Tìm tên category để hiển thị
-      const selectedCategory = categories.find(cat => cat._id === newProduct.categoryID);
-      const categoryName = selectedCategory ? selectedCategory.categoryName : 'Không xác định';
-
       // Lấy sellerID từ localStorage hoặc API
       const sellerID = await getSellerID();
       
       // Tạo sản phẩm mới - Đơn giản như product.json
       const newItem = {
-        id: serverProduct?._id || Date.now(),
+        id: serverProduct?._id ? Number(serverProduct._id.substring(serverProduct._id.length - 5)) : Date.now(), // Tạo ID dựa trên serverId
         name: productData.name,
         price: productData.price,
-        category: categoryName,
+        category: productData.category,
         categoryID: productData.categoryID,
         description: productData.description,
         image: serverProduct?.images?.[0]?.url || productData.image,
         stock: productData.stock,
-        sellerID: sellerID
+        sellerID: sellerID,
+        serverId: serverProduct?._id, // Lưu serverId
+        status: 'active', // Mặc định là hoạt động
+        isOffline: false // Mặc định là online
       };
 
     setProducts([...products, newItem]);
@@ -527,6 +541,7 @@ const SellerDashboard = () => {
       id: product.id,
       name: product.name,
       price: product.price,
+      category: product.category, // Sử dụng tên category để hiển thị
       categoryID: product.categoryID, // Sử dụng ID category để hiển thị
       description: product.description,
       image: product.image,
@@ -544,7 +559,14 @@ const SellerDashboard = () => {
     setIsEditMode(false);
     setImagePreview(null);
     setImageFile(null);
-    setErrors({});
+    setErrors({
+      name: '',
+      price: '',
+      categoryID: '',
+      description: '',
+      image: '',
+      stock: ''
+    });
     setNewProduct({ 
       name: '', 
       price: '', 
@@ -570,10 +592,10 @@ const SellerDashboard = () => {
       
       // Thêm thông tin sản phẩm
       formData.append('name', productData.name);
-      formData.append('description', productData.description);
-      formData.append('price[original]', productData.price);
-      formData.append('inventory[quantity]', productData.stock);
-      formData.append('categoryID', productData.categoryID);
+      formData.append('description', productData.description || '');
+      formData.append('price[original]', productData.price.toString());
+      formData.append('inventory[quantity]', productData.stock?.toString() || '0');
+      formData.append('categoryID', productData.categoryID || '');
       formData.append('brand', 'Thương hiệu riêng');
       formData.append('sku', `SKU-${Date.now()}`);
       formData.append('slug', productData.name.toLowerCase().replace(/\s+/g, '-'));
@@ -629,6 +651,7 @@ const SellerDashboard = () => {
       const productData = {
         name: newProduct.name.trim(),
         price: Number(newProduct.price),
+        category: categories.find(cat => cat._id === newProduct.categoryID)?.categoryName || 'Không xác định',
         categoryID: newProduct.categoryID, // Sử dụng ID category để hiển thị
         description: newProduct.description.trim() || 'Không có mô tả',
         image: newProduct.image,
@@ -640,7 +663,7 @@ const SellerDashboard = () => {
 
       try {
         // Thử cập nhật sản phẩm trên server
-        serverProduct = await updateProductOnServer(productData, editingProduct.serverId);
+        serverProduct = await updateProductOnServer(productData, editingProduct?.serverId || '');
         console.log('Product updated on server:', serverProduct);
       } catch (serverError) {
         console.warn('Server error, falling back to local storage:', serverError);
@@ -657,15 +680,17 @@ const SellerDashboard = () => {
         ...editingProduct,
         name: productData.name,
         price: productData.price,
-        category: categories.find(cat => cat._id === newProduct.categoryID)?.categoryName || 'Không xác định',
-        categoryID: newProduct.categoryID,
+        category: productData.category,
+        categoryID: productData.categoryID,
         description: productData.description,
         image: serverProduct?.images?.[0]?.url || productData.image,
-        stock: productData.stock
+        stock: productData.stock,
+        serverId: serverProduct?._id, // Cập nhật serverId
+        isOffline: false // Đảm bảo là online
       };
 
       const updatedProducts = products.map(p => 
-        p.id === editingProduct.id ? updatedItem : p
+        p.id === editingProduct?.id ? updatedItem : p
       );
       setProducts(updatedProducts);
       
@@ -720,10 +745,10 @@ const SellerDashboard = () => {
 
       const formData = new FormData();
       formData.append('name', product.name);
-      formData.append('description', product.description);
-      formData.append('price[original]', product.price);
-      formData.append('inventory[quantity]', product.stock);
-      formData.append('categoryID', product.serverId); // Sử dụng serverId để cập nhật
+      formData.append('description', product.description || '');
+      formData.append('price[original]', product.price.toString());
+      formData.append('inventory[quantity]', product.stock?.toString() || '0');
+      formData.append('categoryID', product.serverId || ''); // Sử dụng serverId để cập nhật
       formData.append('brand', 'Thương hiệu riêng');
       formData.append('sku', product.serverId ? product.serverId.substring(0, 8) + Date.now() : `SKU-${Date.now()}`);
       formData.append('slug', product.name.toLowerCase().replace(/\s+/g, '-'));
@@ -819,7 +844,7 @@ const SellerDashboard = () => {
               <tbody>
                   {products.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center py-4">
+                      <td colSpan={8} className="text-center py-4">
                         <div className="empty-state">
                           <div className="empty-state-icon">📦</div>
                           <h4>Chưa có sản phẩm nào</h4>
@@ -836,11 +861,8 @@ const SellerDashboard = () => {
                              src={p.image} 
                              alt={p.name}
                              style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '8px' }}
-                             onError={(e) => {
-                               const target = e.target;
-                               if (target && target.src) {
-                                 target.src = 'https://via.placeholder.com/50x50?text=No+Image';
-                               }
+                             onError={() => {
+                               // Fallback to placeholder image
                              }}
                            />
                          </td>
@@ -1059,7 +1081,7 @@ const SellerDashboard = () => {
                     <textarea
                       placeholder="Nhập mô tả sản phẩm (tùy chọn)"
                       className="form-control"
-                      rows="3"
+                                               rows={3}
                       value={newProduct.description}
                       onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                     ></textarea>
@@ -1250,7 +1272,7 @@ const SellerDashboard = () => {
                       <textarea
                         placeholder="Nhập mô tả sản phẩm (tùy chọn)"
                         className="form-control"
-                        rows="3"
+                        rows={3}
                         value={newProduct.description}
                         onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
                       ></textarea>
