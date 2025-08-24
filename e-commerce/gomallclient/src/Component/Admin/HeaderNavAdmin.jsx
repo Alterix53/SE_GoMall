@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import "./HeaderNavAdmin.css";
 
 function HeaderNavAdmin() {
   const [showModal, setShowModal] = useState(false);
@@ -24,16 +23,16 @@ function HeaderNavAdmin() {
 
   return (
     <>
-      <header className="admin-header-nav">
+      <header className="admin-header">
         <div className="admin-header-left">
           <span className="admin-title">Admin Dashboard</span>
         </div>
         <div className="admin-header-right">
-          <button className="admin-bell-btn" title="Notifications">
+          <button className="admin-btn admin-btn-secondary" title="Notifications">
             <i className="fas fa-bell"></i>
-            <span className="admin-badge">3</span>
+            <span className="admin-badge admin-badge-info">3</span>
           </button>
-          <div className="admin-account-btn" onClick={() => setShowModal(true)}>
+          <div className="admin-user-menu" onClick={() => setShowModal(true)}>
             <i className="fas fa-user-circle"></i>
             <span>Account</span>
           </div>
@@ -52,11 +51,11 @@ function HeaderNavAdmin() {
               <button className="admin-modal-close" onClick={() => setShowModal(false)}>&times;</button>
             </div>
             <div className="admin-modal-body">
-              <div className="admin-account-info mb-3">
-                <div className="admin-account-avatar">
-                  <i className="fas fa-user-circle"></i>
+              <div className="d-flex align-items-center mb-3">
+                <div className="admin-user-avatar me-3">
+                  <i className="fas fa-user"></i>
                 </div>
-                <div className="admin-account-details">
+                <div>
                   <h6 className="mb-1">Administrator</h6>
                   <small className="text-muted">System Administrator</small>
                 </div>

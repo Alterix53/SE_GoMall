@@ -130,17 +130,22 @@ export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to create product received:", req.body);
     console.log("Uploaded files:", req.files);
     try {
-        // Xử lý upload ảnh
+        // Xử lý upload ảnh - Hỗ trợ tối đa 6 ảnh
         const uploadedImages = [];
         if (req.files && req.files.length > 0) {
-            req.files.forEach((file, index) => {
+            // Giới hạn tối đa 6 ảnh
+            const maxImages = 6;
+            const filesToProcess = req.files.slice(0, maxImages);
+            
+            filesToProcess.forEach((file, index) => {
                 uploadedImages.push({
                     url: `/uploads/products/${file.filename}`,
                     alt: req.body.imageAlts?.[index] || `Ảnh sản phẩm ${index + 1}`,
-                    isPrimary: index === 0
+                    isPrimary: index === 0 // Ảnh đầu tiên là ảnh chính
                 });
             });
         }
+        
         // Tạo dữ liệu sản phẩm
         const productData = {
             ...req.body,
@@ -166,21 +171,28 @@ export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
     try {
         const productId = req.params.id;
         const updateData = { ...req.body };
-        // Xử lý upload ảnh mới
+        
+        // Xử lý upload ảnh mới - Hỗ trợ tối đa 6 ảnh
         if (req.files && req.files.length > 0) {
-            const newImages = req.files.map((file, index) => ({
+            const maxImages = 6;
+            const filesToProcess = req.files.slice(0, maxImages);
+            
+            const newImages = filesToProcess.map((file, index) => ({
                 url: `/uploads/products/${file.filename}`,
                 alt: req.body.imageAlts?.[index] || `Ảnh sản phẩm ${index + 1}`,
                 isPrimary: index === 0
             }));
-            // Nếu có ảnh cũ, giữ lại và thêm ảnh mới
+            
+            // Nếu có ảnh cũ, giữ lại và thêm ảnh mới (tối đa 6 ảnh)
             if (req.body.existingImages) {
                 const existingImages = JSON.parse(req.body.existingImages);
-                updateData.images = [...existingImages, ...newImages];
+                const totalImages = [...existingImages, ...newImages];
+                updateData.images = totalImages.slice(0, maxImages); // Giới hạn tối đa 6 ảnh
             } else {
                 updateData.images = newImages;
             }
         }
+        
         const product = await productService.updateProduct(productId, updateData, req.user._id);
         ResponseHandler.success(res, { product }, "Cập nhật sản phẩm thành công");
     } catch (error) {

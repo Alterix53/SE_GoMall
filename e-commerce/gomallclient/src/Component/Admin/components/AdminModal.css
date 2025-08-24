@@ -1,0 +1,121 @@
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.admin-modal {
+  background: var(--admin-surface);
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+.admin-modal-sm {
+  width: 400px;
+}
+
+.admin-modal-md {
+  width: 600px;
+}
+
+.admin-modal-lg {
+  width: 800px;
+}
+
+.admin-modal-xl {
+  width: 1000px;
+}
+
+.admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: #fafbfc;
+}
+
+.admin-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--admin-text);
+  margin: 0;
+}
+
+.admin-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--admin-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.admin-modal-close:hover {
+  background: #e2e8f0;
+  color: var(--admin-text);
+}
+
+.admin-modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .admin-modal {
+    width: 100% !important;
+    max-width: 100%;
+    max-height: 95vh;
+  }
+  
+  .admin-modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .admin-modal-body {
+    padding: 1.5rem;
+  }
+  
+  .admin-modal-title {
+    font-size: 1.125rem;
+  }
+}

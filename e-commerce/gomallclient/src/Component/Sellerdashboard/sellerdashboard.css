@@ -288,28 +288,61 @@
 
 .btn-remove-image {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 30px;
-  height: 30px;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: rgba(231, 76, 60, 0.9);
   color: white;
   border: none;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
 .btn-remove-image:hover {
   background: #e74c3c;
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Primary badge cho ảnh chính */
+.primary-badge {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background: rgba(52, 152, 219, 0.9);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+/* Multiple image grid */
+.image-preview-container .row {
+  margin: 0 -5px;
+}
+
+.image-preview-container .col-md-4 {
+  padding: 0 5px;
+}
+
+/* Drag and drop styling */
+.image-preview.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.image-preview.drag-over {
+  border: 2px dashed #3498db;
+  background: rgba(52, 152, 219, 0.1);
 }
 
 /* File Upload Styling */

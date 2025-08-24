@@ -1,6 +1,5 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import "./SidebarNav.css";
 
 // thanh tab bên trái điều hướng các danh mục cần quản lý
 function SidebarNav() {

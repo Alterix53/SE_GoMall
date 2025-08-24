@@ -326,29 +326,54 @@ export default function ProductDetail() {
 
                 {/* Thumbnail Images */}
                 {product.images && product.images.length > 1 && (
-                  <div className="mt-4 flex gap-3 overflow-x-auto">
-                    {product.images.map((image, index) => (
-                <button
-                        key={index}
-                        onClick={() => setActiveImage(index)}
-                        className={cn(
-                          "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden",
-                          activeImage === index 
-                            ? "border-primary" 
-                            : "border-gray-200 hover:border-gray-300"
-                        )}
-                >
-                  <OptimizedImage
-                          src={resolveImageUrl(image)}
-                          alt={`${product.name} - ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          fallbackUrl={createPlaceholderUrl(80,80,'')}
-                          onLoad={() => {}}
-                          onError={() => {}}
-                  />
-                </button>
-            ))}
-          </div>
+                  <div className="mt-4">
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {product.images.map((image, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setActiveImage(index)}
+                          className={cn(
+                            "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all duration-200",
+                            activeImage === index 
+                              ? "border-primary ring-2 ring-primary/20" 
+                              : "border-gray-200 hover:border-gray-300 hover:scale-105"
+                          )}
+                        >
+                          <OptimizedImage
+                            src={resolveImageUrl(image)}
+                            alt={`${product.name} - ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            fallbackUrl={createPlaceholderUrl(80,80,'')}
+                            onLoad={() => {}}
+                            onError={() => {}}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* Navigation arrows for mobile */}
+                    {product.images.length > 4 && (
+                      <div className="flex justify-between mt-2">
+                        <button
+                          onClick={() => setActiveImage(Math.max(0, activeImage - 1))}
+                          disabled={activeImage === 0}
+                          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          ←
+                        </button>
+                        <span className="text-sm text-gray-500 self-center">
+                          {activeImage + 1} / {product.images.length}
+                        </span>
+                        <button
+                          onClick={() => setActiveImage(Math.min(product.images.length - 1, activeImage + 1))}
+                          disabled={activeImage === product.images.length - 1}
+                          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          →
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </section>

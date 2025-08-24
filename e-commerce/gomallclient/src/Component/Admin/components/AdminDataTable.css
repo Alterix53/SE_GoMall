@@ -1,0 +1,146 @@
+.admin-data-table {
+  background: var(--admin-surface);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--admin-border);
+  overflow: hidden;
+}
+
+.admin-table-search {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: #fafbfc;
+}
+
+.admin-table-search .input-group {
+  max-width: 400px;
+}
+
+.admin-table {
+  margin: 0;
+  border: none;
+}
+
+.admin-table th {
+  background: #f8fafc;
+  border-bottom: 2px solid var(--admin-border);
+  font-weight: 600;
+  color: var(--admin-text);
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+}
+
+.admin-table th.sortable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin-table th.sortable:hover {
+  background: #e2e8f0;
+}
+
+.th-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-table th i.fa-sort {
+  opacity: 0.3;
+  transition: opacity 0.2s ease;
+}
+
+.admin-table th i.fa-sort.active {
+  opacity: 1;
+  color: var(--admin-primary);
+}
+
+.admin-table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+}
+
+.admin-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.admin-table tbody tr.clickable {
+  cursor: pointer;
+}
+
+.admin-table tbody tr.clickable:hover {
+  background: #e2e8f0;
+}
+
+.actions-column {
+  width: 120px;
+  text-align: center;
+}
+
+.actions-cell {
+  text-align: center;
+}
+
+.admin-table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--admin-border);
+  background: #fafbfc;
+}
+
+.pagination-info {
+  color: var(--admin-muted);
+  font-size: 0.875rem;
+}
+
+.admin-table-loading,
+.admin-table-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  padding: 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--admin-muted);
+}
+
+.empty-state i {
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-table-search {
+    padding: 1rem 1.5rem;
+  }
+  
+  .admin-table-search .input-group {
+    max-width: 100%;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .admin-table-pagination {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+  }
+  
+  .pagination {
+    margin: 0;
+  }
+}

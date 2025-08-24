@@ -29,6 +29,10 @@ const SellerDashboard = () => {
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const fileInputRef = useRef(null);
+  
+  // Thêm state cho nhiều ảnh
+  const [productImages, setProductImages] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
   const navigate = useNavigate();
 
   // API Base URL
@@ -161,33 +165,91 @@ const SellerDashboard = () => {
   }, [editingProduct, isEditMode]);
 
   const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // Validate file type
+    const files = Array.from(event.target.files);
+    const maxImages = 6;
+    
+    if (files.length > maxImages) {
+      setMessage({ type: 'danger', text: `Chỉ được upload tối đa ${maxImages} ảnh!` });
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      return;
+    }
+
+    // Validate từng file
+    const validFiles = files.filter(file => {
       if (!file.type.startsWith('image/')) {
         setMessage({ type: 'danger', text: 'Vui lòng chọn file hình ảnh hợp lệ!' });
-        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-        return;
+        return false;
       }
-
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setMessage({ type: 'danger', text: 'Kích thước file không được vượt quá 5MB!' });
-        setTimeout(() => setMessage({ type: '', text: '' }), 3000);
-        return;
+        return false;
       }
+      return true;
+    });
 
-      setImageFile(file);
-      
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target && e.target.result && typeof e.target.result === 'string') {
-          setImagePreview(e.target.result);
-          setNewProduct({ ...newProduct, image: e.target.result });
-        }
-      };
-      reader.readAsDataURL(file);
+    if (validFiles.length === 0) {
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
+      return;
+    }
+
+    // Cập nhật state cho nhiều ảnh
+    setImageFiles(validFiles);
+    
+    // Tạo preview cho tất cả ảnh
+    const imagePromises = validFiles.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          resolve({
+            url: e.target.result,
+            file: file,
+            name: file.name
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    Promise.all(imagePromises).then(images => {
+      setProductImages(images);
+      // Set ảnh đầu tiên làm ảnh chính
+      setImagePreview(images[0]?.url || null);
+    });
+  };
+
+  // Hàm xóa ảnh
+  const removeImage = (index) => {
+    const newImages = productImages.filter((_, i) => i !== index);
+    const newFiles = imageFiles.filter((_, i) => i !== index);
+    
+    setProductImages(newImages);
+    setImageFiles(newFiles);
+    
+    // Cập nhật ảnh chính nếu ảnh bị xóa là ảnh đầu tiên
+    if (index === 0 && newImages.length > 0) {
+      setImagePreview(newImages[0].url);
+    } else if (newImages.length === 0) {
+      setImagePreview(null);
+    }
+  };
+
+  // Hàm sắp xếp lại thứ tự ảnh (drag & drop)
+  const reorderImages = (fromIndex, toIndex) => {
+    const newImages = [...productImages];
+    const newFiles = [...imageFiles];
+    
+    const [movedImage] = newImages.splice(fromIndex, 1);
+    const [movedFile] = newFiles.splice(fromIndex, 1);
+    
+    newImages.splice(toIndex, 0, movedImage);
+    newFiles.splice(toIndex, 0, movedFile);
+    
+    setProductImages(newImages);
+    setImageFiles(newFiles);
+    
+    // Cập nhật ảnh chính nếu thay đổi ảnh đầu tiên
+    if (fromIndex === 0 || toIndex === 0) {
+      setImagePreview(newImages[0]?.url || null);
     }
   };
 
@@ -201,6 +263,8 @@ const SellerDashboard = () => {
   const clearImage = () => {
     setImagePreview(null);
     setImageFile(null);
+    setProductImages([]);
+    setImageFiles([]);
     setNewProduct({ ...newProduct, image: '' });
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -260,10 +324,12 @@ const SellerDashboard = () => {
       formData.append('sku', `SKU-${Date.now()}`);
       formData.append('slug', productData.name.toLowerCase().replace(/\s+/g, '-'));
       
-      // Thêm hình ảnh
-      if (imageFile) {
-        formData.append('images', imageFile);
-        formData.append('imageAlts', productData.name);
+      // Thêm nhiều hình ảnh
+      if (imageFiles.length > 0) {
+        imageFiles.forEach((file, index) => {
+          formData.append('images', file);
+          formData.append('imageAlts', productData.name);
+        });
       } else if (productData.image && productData.image.startsWith('http')) {
         // Nếu là URL, tạo ảnh mặc định
         formData.append('images', new File([''], 'default.jpg', { type: 'image/jpeg' }));
@@ -288,13 +354,7 @@ const SellerDashboard = () => {
       const result = await response.json();
       return result.data.product;
     } catch (error) {
-      console.error('Error creating product on server:', error);
-      
-      // Xử lý lỗi kết nối cụ thể
-      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-        throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng hoặc liên hệ admin.');
-      }
-      
+      console.error('Error creating product:', error);
       throw error;
     }
   };
@@ -910,16 +970,17 @@ const SellerDashboard = () => {
                   <div className="mb-3">
                     <label className="form-label">Hình ảnh sản phẩm *</label>
                     
-                    {/* Upload File */}
+                    {/* Upload File - Hỗ trợ nhiều ảnh */}
                     <div className="mb-2">
                       <input
                         ref={fileInputRef}
                         type="file"
                         accept="image/*"
+                        multiple
                         className="form-control"
                         onChange={handleImageUpload}
                       />
-                      <small className="text-muted">Chọn file hình ảnh (JPG, PNG, GIF) - Tối đa 5MB</small>
+                      <small className="text-muted">Chọn nhiều file hình ảnh (JPG, PNG, GIF) - Tối đa 6 ảnh, mỗi ảnh tối đa 5MB</small>
                     </div>
 
                     {/* URL Input */}
@@ -935,19 +996,56 @@ const SellerDashboard = () => {
 
                     {errors.image && <div className="invalid-feedback">{errors.image}</div>}
 
-                    {/* Image Preview */}
-                    {imagePreview && (
-                      <div className="image-preview-container mt-3">
+                    {/* Multiple Image Preview */}
+                    {productImages.length > 0 && (
+                      <div className="image-preview-container">
+                        <h6 className="mb-2">Ảnh đã chọn ({productImages.length}/6):</h6>
+                        <div className="row">
+                          {productImages.map((image, index) => (
+                            <div key={index} className="col-md-4 mb-2">
+                              <div className="image-preview position-relative">
+                                <img
+                                  src={image.url}
+                                  alt={`Preview ${index + 1}`}
+                                  className="preview-image"
+                                />
+                                <button
+                                  type="button"
+                                  className="btn-remove-image"
+                                  onClick={() => removeImage(index)}
+                                  title="Xóa ảnh"
+                                >
+                                  ×
+                                </button>
+                                {index === 0 && (
+                                  <div className="primary-badge">
+                                    <small>Ảnh chính</small>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <small className="text-muted">
+                          Ảnh đầu tiên sẽ là ảnh chính. Kéo thả để sắp xếp lại thứ tự.
+                        </small>
+                      </div>
+                    )}
+
+                    {/* Single Image Preview (fallback) */}
+                    {imagePreview && productImages.length === 0 && (
+                      <div className="image-preview-container">
                         <div className="image-preview">
-                          <img 
-                            src={imagePreview} 
-                            alt="Preview" 
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
                             className="preview-image"
                           />
-                          <button 
-                            type="button" 
+                          <button
+                            type="button"
                             className="btn-remove-image"
                             onClick={clearImage}
+                            title="Xóa ảnh"
                           >
                             ×
                           </button>
