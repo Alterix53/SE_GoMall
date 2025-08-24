@@ -20,7 +20,6 @@ export { default as SellerDetailModal } from './SellerDetailModal';
 export { default as AdminAvatarModal } from './AdminAvatarModal';
 
 export { default as UserSellerListItem } from './UserSellerListItem';
-export { default as PendingSellerRequests } from './PendingSellerRequests';
 export { default as AdminLogin } from './AdminLogin';
 
 // Page Components
