@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { formatCurrencyWithSymbol } from '../utils/format';
 
 const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
   const [imageErrors, setImageErrors] = useState({});
 
-  // Helper function to get main image
-  const getMainImage = (product) => {
+  // Helper function to get main image - memoized to prevent unnecessary recalculations
+  const getMainImage = useCallback((product) => {
+    // First check if product has images array with primary image
     if (product.images && product.images.length > 0) {
       // Find the primary image
       const primaryImage = product.images.find(img => img.isPrimary);
@@ -17,49 +18,56 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
         return product.images[0].url;
       }
     }
-    // Fallback to single image field
+    
+    // Check single image field (this is the main issue - seller products use 'image' field)
     if (product.image) {
       return product.image;
     }
+    
     // Final fallback to placeholder
     return '/images/placeholder-product.svg';
-  };
+  }, []);
 
-  // Handle image load error
-  const handleImageError = (productId) => {
-    setImageErrors(prev => ({
-      ...prev,
-      [productId]: true
-    }));
-  };
+  // Handle image load error - memoized to prevent unnecessary re-renders
+  const handleImageError = useCallback((productId) => {
+    setImageErrors(prev => {
+      // Only update if not already in error state
+      if (prev[productId]) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [productId]: true
+      };
+    });
+  }, []);
 
-  // Get image source with error handling
-  const getImageSrc = (product) => {
+  // Get image source with error handling - memoized
+  const getImageSrc = useCallback((product) => {
     if (imageErrors[product.id]) {
       return '/images/placeholder-product.svg';
     }
     return getMainImage(product);
-  };
+  }, [imageErrors, getMainImage]);
 
   return (
     <div className="table-responsive">
       <table className="table table-striped table-bordered align-middle">
         <thead className="table-light">
           <tr>
-            <th>ID</th>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Category</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th style={{ width: '80px' }}>Image</th>
+            <th style={{ width: '35%' }}>Name</th>
+            <th style={{ width: '120px' }}>Price</th>
+            <th style={{ width: '120px' }}>Category</th>
+            <th style={{ width: '100px' }}>Stock</th>
+            <th style={{ width: '120px' }}>Status</th>
+            <th style={{ width: '200px' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
           {products.length === 0 ? (
             <tr>
-              <td colSpan={8} className="text-center py-4">
+              <td colSpan={7} className="text-center py-4">
                 <div className="empty-state">
                   <div className="empty-state-icon">📦</div>
                   <h4>No products yet</h4>
@@ -70,7 +78,6 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
           ) : (
             products.map((p) => (
               <tr key={p.id}>
-                <td>{p.serverId || p.id}</td>
                 <td>
                   <div className="product-image-container">
                     <img 
@@ -84,16 +91,7 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
                         border: '1px solid #dee2e6'
                       }}
                       onError={() => handleImageError(p.id)}
-                      onLoad={() => {
-                        // Clear error state if image loads successfully
-                        if (imageErrors[p.id]) {
-                          setImageErrors(prev => {
-                            const newErrors = { ...prev };
-                            delete newErrors[p.id];
-                            return newErrors;
-                          });
-                        }
-                      }}
+                      // Removed onLoad handler to prevent infinite reloads
                     />
                     {imageErrors[p.id] && (
                       <div className="image-error-indicator" title="Image failed to load">
@@ -104,7 +102,7 @@ const ProductTable = ({ products, onEdit, onDelete, onSync }) => {
                 </td>
                 <td>
                   <div>
-                    <strong>{p.name}</strong>
+                    <strong className="text-dark">{p.name}</strong>
                     {p.description && p.description !== 'No description available' && (
                       <div className="text-muted small mt-1">{p.description}</div>
                     )}

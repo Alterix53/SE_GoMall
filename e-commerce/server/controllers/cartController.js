@@ -43,13 +43,33 @@ export const addToCart = async (req, res) => {
         const userID = req.user._id;
         const { productID, quantity = 1, size } = req.body;
 
-        // Validate product exists
+        // Validate product exists and check inventory
         const product = await Product.findById(productID);
         if (!product) {
             res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
             return res.status(404).json({
                 success: false,
                 message: "Product not found"
+            });
+        }
+
+        // Check if product is active
+        if (!product.isActive) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: "Product is not available"
+            });
+        }
+
+        // Check inventory quantity
+        const availableQuantity = product.inventory?.quantity || 0;
+        if (availableQuantity <= 0) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: "Product is out of stock",
+                data: { availableQuantity: 0 }
             });
         }
 
@@ -64,9 +84,29 @@ export const addToCart = async (req, res) => {
             item => item.productID.toString() === productID && item.size === size
         );
 
+        let newQuantity = quantity;
         if (existingItemIndex !== -1) {
             // Update quantity if product already exists
-            cart.items[existingItemIndex].quantity += quantity;
+            newQuantity = cart.items[existingItemIndex].quantity + quantity;
+        }
+
+        // Check if total quantity exceeds available inventory
+        if (newQuantity > availableQuantity) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: `Only ${availableQuantity} items available in stock`,
+                data: { 
+                    availableQuantity,
+                    requestedQuantity: newQuantity,
+                    currentCartQuantity: existingItemIndex !== -1 ? cart.items[existingItemIndex].quantity : 0
+                }
+            });
+        }
+
+        if (existingItemIndex !== -1) {
+            // Update quantity if product already exists
+            cart.items[existingItemIndex].quantity = newQuantity;
         } else {
             // Add new item
             cart.items.push({
@@ -89,7 +129,7 @@ export const addToCart = async (req, res) => {
         // Populate product details for response
         await cart.populate({
             path: 'items.productID',
-            select: 'name price images rating sold'
+            select: 'name price images rating sold inventory'
         });
 
         res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
@@ -99,7 +139,8 @@ export const addToCart = async (req, res) => {
             data: {
                 cart: cart,
                 totalItems: cart.items.length,
-                totalAmount: cart.totalAmount
+                totalAmount: cart.totalAmount,
+                availableQuantity: availableQuantity - newQuantity
             }
         });
     } catch (error) {
@@ -124,6 +165,49 @@ export const updateCartItem = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Số lượng phải lớn hơn 0"
+            });
+        }
+
+        // Check product inventory
+        const product = await Product.findById(productID);
+        if (!product) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        // Check if product is active
+        if (!product.isActive) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: "Product is not available"
+            });
+        }
+
+        // Check inventory quantity
+        const availableQuantity = product.inventory?.quantity || 0;
+        if (availableQuantity <= 0) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: "Product is out of stock",
+                data: { availableQuantity: 0 }
+            });
+        }
+
+        // Check if requested quantity exceeds available inventory
+        if (quantity > availableQuantity) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: `Only ${availableQuantity} items available in stock`,
+                data: { 
+                    availableQuantity,
+                    requestedQuantity: quantity
+                }
             });
         }
 
@@ -152,16 +236,17 @@ export const updateCartItem = async (req, res) => {
         cart.items[itemIndex].quantity = quantity;
 
         // Recalculate total amount
-        const product = await Product.findById(productID);
-        cart.totalAmount = cart.items.reduce((total, item) => {
-            const productPrice = product.price?.sale || product.price?.original || 0;
-            return total + (productPrice * item.quantity);
-        }, 0);
+        cart.totalAmount = 0;
+        for (const item of cart.items) {
+            const itemProduct = await Product.findById(item.productID);
+            const productPrice = itemProduct.price?.sale || itemProduct.price?.original || 0;
+            cart.totalAmount += productPrice * item.quantity;
+        }
 
         await cart.save();
         await cart.populate({
             path: 'items.productID',
-            select: 'name price images rating sold'
+            select: 'name price images rating sold inventory'
         });
 
         res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
@@ -171,7 +256,8 @@ export const updateCartItem = async (req, res) => {
             data: {
                 cart: cart,
                 totalItems: cart.items.length,
-                totalAmount: cart.totalAmount
+                totalAmount: cart.totalAmount,
+                availableQuantity: availableQuantity - quantity
             }
         });
     } catch (error) {
@@ -271,6 +357,53 @@ export const clearCart = async (req, res) => {
     } catch (error) {
         console.error("Error in clearCart:", error.message);
         res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+        res.status(500).json({ 
+            success: false, 
+            message: "Lỗi server", 
+            error: error.message 
+        });
+    }
+}; 
+
+// Check product inventory
+export const checkProductInventory = async (req, res) => {
+    try {
+        const { productID } = req.params;
+
+        // Validate product exists
+        const product = await Product.findById(productID);
+        if (!product) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        // Check if product is active
+        if (!product.isActive) {
+            res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+            return res.status(400).json({
+                success: false,
+                message: "Product is not available"
+            });
+        }
+
+        const availableQuantity = product.inventory?.quantity || 0;
+
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
+        res.json({
+            success: true,
+            data: {
+                productID,
+                availableQuantity,
+                isInStock: availableQuantity > 0,
+                productName: product.name
+            }
+        });
+    } catch (error) {
+        console.error("Error in checkProductInventory:", error.message);
+        res.header('Access-Control-Allow-Origin', process.env.CLIENT_URL || 'http://localhost:3000');
         res.status(500).json({ 
             success: false, 
             message: "Lỗi server", 

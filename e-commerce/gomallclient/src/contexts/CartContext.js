@@ -96,7 +96,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("cartItems", JSON.stringify(updated));
         return updated;
       });
-      return;
+      return { success: true };
     }
 
     try {
@@ -111,9 +111,22 @@ export const CartProvider = ({ children }) => {
       if (response.data.success) {
         // Reload cart from API to get updated data
         await loadCartFromAPI();
+        return { success: true, data: response.data.data };
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
+      
+      // Handle specific inventory errors
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        setError(errorData.message || "Không thể thêm vào giỏ hàng");
+        return { 
+          success: false, 
+          error: errorData.message,
+          data: errorData.data 
+        };
+      }
+      
       setError("Không thể thêm vào giỏ hàng");
       // Fallback to localStorage
       setCartItems((prev) => {
@@ -128,6 +141,7 @@ export const CartProvider = ({ children }) => {
           return [...prev, item];
         }
       });
+      return { success: false, error: "Không thể thêm vào giỏ hàng" };
     } finally {
       setLoading(false);
     }
@@ -180,7 +194,7 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("cartItems", JSON.stringify(updated));
         return updated;
       });
-      return;
+      return { success: true };
     }
 
     try {
@@ -195,9 +209,22 @@ export const CartProvider = ({ children }) => {
       if (response.data.success) {
         // Reload cart from API to get updated data
         await loadCartFromAPI();
+        return { success: true, data: response.data.data };
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
+      
+      // Handle specific inventory errors
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        setError(errorData.message || "Không thể cập nhật số lượng");
+        return { 
+          success: false, 
+          error: errorData.message,
+          data: errorData.data 
+        };
+      }
+      
       setError("Không thể cập nhật số lượng");
       // Fallback to localStorage
       setCartItems((prev) =>
@@ -205,6 +232,7 @@ export const CartProvider = ({ children }) => {
           item.id === id && item.size === size ? { ...item, quantity } : item
         )
       );
+      return { success: false, error: "Không thể cập nhật số lượng" };
     } finally {
       setLoading(false);
     }
@@ -247,6 +275,19 @@ export const CartProvider = ({ children }) => {
     saveCartToAPI(cartItems);
   }, [cartItems]);
 
+  // Check product inventory
+  const checkProductInventory = async (productID) => {
+    try {
+      const response = await apiService.get(`/cart/inventory/${productID}`);
+      if (response.data.success) {
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Error checking product inventory:", error);
+      return null;
+    }
+  };
+
   // Calculate total price
   const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -259,6 +300,7 @@ export const CartProvider = ({ children }) => {
       removeFromCart, 
       updateQuantity, 
       clearCart,
+      checkProductInventory,
       getTotalPrice,
       loading,
       error

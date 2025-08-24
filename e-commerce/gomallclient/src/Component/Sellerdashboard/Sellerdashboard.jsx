@@ -15,6 +15,13 @@ import ProductForm from './components/ProductForm';
 import StatsPanel from './components/StatsPanel';
 
 const SellerDashboard = () => {
+  console.log('🏠 SellerDashboard: Component rendering...');
+  
+  // Debug localStorage immediately
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  const token = localStorage.getItem('token');
+  console.log('🏠 SellerDashboard: localStorage check - isLoggedIn:', isLoggedIn, 'token:', token ? 'exists' : 'missing');
+  
   const navigate = useNavigate();
   const [tab, setTab] = useState(1);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -22,18 +29,28 @@ const SellerDashboard = () => {
   const [isEditMode, setIsEditMode] = useState(false);
 
   // Use custom hooks
+  console.log('🏠 SellerDashboard: Calling useAuthRedirect...');
   useAuthRedirect();
+  
+  console.log('🏠 SellerDashboard: Calling useCategories...');
   const { categories } = useCategories();
+  
+  console.log('🏠 SellerDashboard: Calling useSellerProducts...');
   const { 
     products, 
     isLoading, 
+    isInitialized,
     serverError,
+    setIsLoading,
+    setServerError,
     createProduct, 
     updateProduct, 
     deleteProduct, 
     syncProduct,
     refreshProducts
   } = useSellerProducts();
+  
+  console.log('🏠 SellerDashboard: All hooks initialized');
 
   const clearMessage = () => {
     setMessage({ type: '', text: '' });
@@ -57,6 +74,24 @@ const SellerDashboard = () => {
       console.error('Error refreshing products:', error);
       showMessage('danger', 'Failed to refresh products. Please try again.');
     }
+  };
+
+  const handleClearLoading = () => {
+    // Force clear loading state for debugging
+    console.log('Manually clearing loading state...');
+    setIsLoading(false);
+    setServerError(null);
+    showMessage('info', 'Loading state manually cleared');
+  };
+
+  const handleDebugState = () => {
+    // Call the debug function from the hook
+    // @ts-ignore
+    if (window.debugSellerProducts) {
+      // @ts-ignore
+      window.debugSellerProducts();
+    }
+    showMessage('info', 'Debug info logged to console');
   };
 
   const handleCreateProduct = async (productData, imageFiles) => {
@@ -175,6 +210,34 @@ const SellerDashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Debug Information (only in development) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="alert alert-info" style={{ fontSize: '12px', padding: '8px 12px' }}>
+              <strong>Debug Info:</strong> 
+              Loading: {isLoading ? 'YES' : 'NO'} | 
+              Initialized: {isInitialized ? 'YES' : 'NO'} | 
+              Products: {products.length} | 
+              Server Error: {serverError ? 'YES' : 'NO'}
+              {serverError && <span> - {serverError}</span>}
+              <div className="mt-2">
+                <button 
+                  className="btn btn-sm btn-warning me-2"
+                  onClick={handleClearLoading}
+                  style={{ fontSize: '10px', padding: '2px 6px' }}
+                >
+                  Force Clear Loading
+                </button>
+                <button 
+                  className="btn btn-sm btn-info"
+                  onClick={handleDebugState}
+                  style={{ fontSize: '10px', padding: '2px 6px' }}
+                >
+                  Debug State
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Server Error Alert */}
           {serverError && (

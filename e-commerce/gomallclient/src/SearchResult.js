@@ -140,16 +140,16 @@ const SearchResult = () => {
             <div className="filters-card">
               <h3 className="filters-title">
                 <span className="filter-icon">⚙</span>
-                Bộ lọc
+                Filters
               </h3>
               {/* Price Range */}
               <div className="filter-section">
-                <h4 className="filter-subtitle">Khoảng giá</h4>
+                <h4 className="filter-subtitle">Price range</h4>
                 <div className="price-range-container">
                   <div className="price-inputs">
                     <input
                       type="number"
-                      placeholder="Từ"
+                      placeholder="From"
                       value={priceRange[0]}
                       onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
                       className="price-input"
@@ -157,7 +157,7 @@ const SearchResult = () => {
                     <span className="price-separator">-</span>
                     <input
                       type="number"
-                      placeholder="Đến"
+                      placeholder="To"
                       value={priceRange[1]}
                       onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 50000000])}
                       className="price-input"
@@ -165,17 +165,17 @@ const SearchResult = () => {
                   </div>
                   <div className="price-labels">
                     <span className="price-label">
-                      {formatPrice(priceRange[0])}đ
+                      {formatPrice(priceRange[0])}₫
                     </span>
                     <span className="price-label">
-                      {formatPrice(priceRange[1])}đ
+                      {formatPrice(priceRange[1])}₫
                     </span>
                   </div>
                 </div>
               </div>
               {/* Categories */}
               <div className="filter-section">
-                <h4 className="filter-subtitle">Danh mục</h4>
+                <h4 className="filter-subtitle">Categories</h4>
                 <div className="checkbox-group">
                   {categories.map((category) => (
                     <label key={category} className="checkbox-label">
@@ -196,7 +196,7 @@ const SearchResult = () => {
               </div>
               {/* Brands */}
               <div className="filter-section">
-                <h4 className="filter-subtitle">Thương hiệu</h4>
+                <h4 className="filter-subtitle">Brands</h4>
                 <div className="checkbox-group">
                   {brands.map((brand) => (
                     <label key={brand} className="checkbox-label">
@@ -216,7 +216,7 @@ const SearchResult = () => {
                 </div>
               </div>
               <button onClick={clearFilters} className="clear-filters-btn">
-                Xóa bộ lọc ({selectedCategories.length + selectedBrands.length})
+                Clear filters ({selectedCategories.length + selectedBrands.length})
               </button>
             </div>
           </div>
@@ -226,25 +226,25 @@ const SearchResult = () => {
             <div className="results-header">
               <div className="results-info">
                 <span>
-                  Hiển thị <strong>{filteredResults.length}</strong> kết quả{searchQuery.trim() ? ` cho "${searchQuery}"` : ''}
+                  Showing <strong>{filteredResults.length}</strong> result{filteredResults.length !== 1 ? 's' : ''}{searchQuery.trim() ? ` for "${searchQuery}"` : ''}
                   {(selectedCategories.length > 0 || selectedBrands.length > 0) && (
-                    <span className="filter-applied"> (đã lọc)</span>
+                    <span className="filter-applied"> (filtered)</span>
                   )}
                 </span>
               </div>
               <div className="results-controls">
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
-                  <option value="relevant">Liên quan nhất</option>
-                  <option value="price-low">Giá thấp đến cao</option>
-                  <option value="price-high">Giá cao đến thấp</option>
-                  <option value="newest">Bán chạy nhất</option>
-                  <option value="rating">Đánh giá cao nhất</option>
+                  <option value="relevant">Most relevant</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="newest">Best selling</option>
+                  <option value="rating">Top rated</option>
                 </select>
                 <div className="view-toggle">
                   <button
                     className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
                     onClick={() => setViewMode("grid")}
-                    title="Xem dạng lưới"
+                    title="Grid view"
                   >
                     ⊞
                   </button>
@@ -255,7 +255,7 @@ const SearchResult = () => {
             {(selectedCategories.length > 0 || selectedBrands.length > 0 || 
               priceRange[0] > 0 || priceRange[1] < 50000000) && (
               <div className="active-filters">
-                <span className="active-filters-label">Bộ lọc đang áp dụng:</span>
+                <span className="active-filters-label">Active filters:</span>
                 {selectedCategories.map((category) => (
                   <span key={category} className="filter-tag">
                     {category}
@@ -280,7 +280,7 @@ const SearchResult = () => {
                 ))}
                 {(priceRange[0] > 0 || priceRange[1] < 50000000) && (
                   <span className="filter-tag">
-                    {formatPrice(priceRange[0])}đ - {formatPrice(priceRange[1])}đ
+                    {formatPrice(priceRange[0])}₫ - {formatPrice(priceRange[1])}₫
                     <button 
                       onClick={() => setPriceRange([0, 50000000])}
                       className="remove-filter"

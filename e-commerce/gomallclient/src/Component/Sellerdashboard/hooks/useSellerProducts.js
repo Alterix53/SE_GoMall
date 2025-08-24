@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { productService } from '../services/productService';
 import { sellerService } from '../services/sellerService';
 import { apiClient } from '../services/apiClient';
-import { generateLocalId } from '../utils/format';
+import { generateLocalId, generateSafeId } from '../utils/format';
 
 const STORAGE_KEY = 'sellerProducts';
 
@@ -12,6 +12,8 @@ const initialProducts = [
 ];
 
 export const useSellerProducts = () => {
+  console.log('🚀 useSellerProducts: Hook initialized');
+  
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -48,33 +50,61 @@ export const useSellerProducts = () => {
   // Fetch products from server
   const fetchProductsFromServer = async () => {
     try {
-      console.log('Fetching products from server...');
+      console.log('🌐 Fetching products from server...');
       const response = await apiClient.get('/products/seller/my-products');
+      console.log('🌐 API Response received:', response);
       
       if (response.success && response.data && response.data.products) {
-        const serverProducts = response.data.products.map(product => ({
-          id: Number(product._id.substring(product._id.length - 5)),
-          name: product.name,
-          price: product.price?.original || product.price,
-          category: product.categoryID?.categoryName || 'Unknown',
-          categoryID: product.categoryID?._id || product.categoryID,
-          description: product.description || '',
-          image: product.images?.[0]?.url || product.image || '',
-          images: product.images || [],
-          stock: product.inventory?.quantity || product.stock || 0,
-          sellerID: product.sellerID,
-          serverId: product._id,
-          status: product.isActive ? 'active' : 'paused',
-          isOffline: false,
-          createdAt: product.createdAt
-        }));
+        console.log('🌐 Processing server products...');
+        const serverProducts = response.data.products.map(product => {
+          // Debug log to see the actual product structure
+          console.log('🌐 Server product structure:', {
+            id: product._id,
+            name: product.name,
+            images: product.images,
+            image: product.image,
+            price: product.price
+          });
+
+          // Handle image field properly
+          let imageUrl = '';
+          let images = [];
+
+          if (product.images && product.images.length > 0) {
+            // Use images array if available
+            images = product.images;
+            imageUrl = product.images[0]?.url || product.images[0] || '';
+          } else if (product.image) {
+            // Fallback to single image field
+            imageUrl = product.image;
+            images = [{ url: product.image, isPrimary: true }];
+          }
+
+          return {
+            id: generateSafeId(product._id),
+            name: product.name,
+            price: product.price?.original || product.price,
+            category: product.categoryID?.categoryName || 'Unknown',
+            categoryID: product.categoryID?._id || product.categoryID,
+            description: product.description || '',
+            image: imageUrl,
+            images: images,
+            stock: product.inventory?.quantity || product.stock || 0,
+            sellerID: product.sellerID,
+            serverId: product._id,
+            status: product.isActive ? 'active' : 'paused',
+            isOffline: false,
+            createdAt: product.createdAt
+          };
+        });
         
-        console.log('Products fetched from server:', serverProducts.length, 'products');
+        console.log('🌐 Products fetched from server:', serverProducts.length, 'products');
         return serverProducts;
       }
+      console.log('🌐 No products found in response');
       return [];
     } catch (error) {
-      console.error('Error fetching products from server:', error);
+      console.error('❌ Error fetching products from server:', error);
       setServerError(error.message);
       return [];
     }
@@ -103,45 +133,84 @@ export const useSellerProducts = () => {
   };
 
   // Load and merge products on mount
-  const loadAndMergeProducts = async () => {
-    setIsLoading(true);
+  const loadAndMergeProducts = async (setLoadingState = true) => {
+    console.log('🔍 loadAndMergeProducts called with setLoadingState:', setLoadingState);
+    
+    if (setLoadingState) {
+      console.log('🔍 Setting isLoading to true');
+      setIsLoading(true);
+    }
     setServerError(null);
     
+    // Add timeout to force clear loading state after 15 seconds
+    const loadingTimeout = setTimeout(() => {
+      console.warn('⏰ LoadAndMerge timeout reached, forcing clear loading state');
+      if (setLoadingState) {
+        setIsLoading(false);
+      }
+      setServerError('Request timeout. Please try again.');
+    }, 15000);
+    
     try {
+      console.log('🔍 Loading from localStorage...');
       // Load from localStorage first
       const localProducts = loadProductsFromStorage();
+      console.log('🔍 Local products loaded:', localProducts.length);
       
+      console.log('🔍 Fetching from server...');
       // Try to fetch from server
       const serverProducts = await fetchProductsFromServer();
+      console.log('🔍 Server products fetched:', serverProducts.length);
       
+      console.log('🔍 Merging products...');
       // Merge products
       const mergedProducts = mergeProducts(serverProducts, localProducts);
+      console.log('🔍 Products merged:', mergedProducts.length);
       
+      console.log('🔍 Setting products state...');
       setProducts(mergedProducts);
+      console.log('🔍 Setting isInitialized to true');
       setIsInitialized(true);
       
       // Save merged products back to localStorage
       if (mergedProducts.length > 0) {
+        console.log('🔍 Saving to localStorage...');
         saveProductsToStorage(mergedProducts);
       }
       
+      console.log('🔍 Clearing timeout');
+      clearTimeout(loadingTimeout);
+      
     } catch (error) {
-      console.error('Error loading and merging products:', error);
+      console.error('❌ Error loading and merging products:', error);
       // Fallback to localStorage only
       const localProducts = loadProductsFromStorage();
+      console.log('🔍 Fallback: Loading from localStorage only');
       setProducts(localProducts);
       setIsInitialized(true);
       setServerError(error.message);
+      clearTimeout(loadingTimeout);
     } finally {
-      setIsLoading(false);
+      if (setLoadingState) {
+        console.log('🔍 FINALLY: Clearing loading state in loadAndMergeProducts...');
+        setIsLoading(false);
+      }
+      clearTimeout(loadingTimeout);
     }
   };
 
   // Load products on mount (only once)
   useEffect(() => {
+    console.log('🔄 useEffect: Checking if initial load...');
+    console.log('🔄 useEffect: isInitialLoadRef.current =', isInitialLoadRef.current);
+    
     if (isInitialLoadRef.current) {
+      console.log('🔄 useEffect: Starting initial load...');
       loadAndMergeProducts();
       isInitialLoadRef.current = false;
+      console.log('🔄 useEffect: Initial load started, isInitialLoadRef set to false');
+    } else {
+      console.log('🔄 useEffect: Not initial load, skipping...');
     }
   }, []);
 
@@ -191,7 +260,7 @@ export const useSellerProducts = () => {
       
       // Create new product
       const newItem = {
-        id: serverProduct?._id ? Number(serverProduct._id.substring(serverProduct._id.length - 5)) : generateLocalId(),
+        id: generateSafeId(serverProduct?._id),
         name: productData.name,
         price: productData.price,
         category: productData.category,
@@ -344,14 +413,59 @@ export const useSellerProducts = () => {
   };
 
   const refreshProducts = async () => {
-    console.log('Refreshing products from server...');
-    await loadAndMergeProducts();
+    console.log('🔄 Refreshing products from server...');
+    setIsLoading(true);
+    setServerError(null);
+    
+    // Add timeout to force clear loading state after 15 seconds
+    const loadingTimeout = setTimeout(() => {
+      console.warn('⏰ Loading timeout reached, forcing clear loading state');
+      setIsLoading(false);
+      setServerError('Request timeout. Please try again.');
+    }, 15000);
+    
+    try {
+      await loadAndMergeProducts(false); // Don't set loading state here since we already set it
+      console.log('🔄 Products refreshed successfully');
+      clearTimeout(loadingTimeout);
+    } catch (error) {
+      console.error('❌ Error refreshing products:', error);
+      setServerError(error.message);
+      // Fallback to localStorage only
+      const localProducts = loadProductsFromStorage();
+      setProducts(localProducts);
+      clearTimeout(loadingTimeout);
+    } finally {
+      console.log('🔄 FINALLY: Clearing loading state...');
+      setIsLoading(false);
+      clearTimeout(loadingTimeout);
+    }
   };
+
+  // Debug function to check current state
+  const debugState = () => {
+    console.log('🔍 DEBUG STATE:', {
+      isLoading,
+      isInitialized,
+      productsCount: products.length,
+      serverError,
+      isInitialLoadRef: isInitialLoadRef.current
+    });
+  };
+
+  // Export debug function for development
+  if (process.env.NODE_ENV === 'development') {
+    // @ts-ignore
+    window.debugSellerProducts = debugState;
+  }
 
   return {
     products,
     isLoading,
+    isInitialized,
     serverError,
+    setIsLoading,
+    setServerError,
     createProduct,
     updateProduct,
     deleteProduct,

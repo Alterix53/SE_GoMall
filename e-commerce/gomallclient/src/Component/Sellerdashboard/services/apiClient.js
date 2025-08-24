@@ -25,8 +25,17 @@ class ApiClient {
       delete config.headers['Content-Type'];
     }
 
+    // Add timeout controller
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     try {
-      const response = await fetch(url, config);
+      const response = await fetch(url, {
+        ...config,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -35,6 +44,12 @@ class ApiClient {
 
       return await response.json();
     } catch (error) {
+      clearTimeout(timeoutId);
+      
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout. Server is taking too long to respond.');
+      }
+      
       if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
         throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
       }

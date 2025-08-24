@@ -4,7 +4,10 @@ import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// Apply authentication middleware to all cart routes
+// Check product inventory (public route - no auth required)
+router.get("/inventory/:productID", cartController.checkProductInventory);
+
+// Apply authentication middleware to all other cart routes
 router.use(authenticateToken);
 
 // Get user's cart

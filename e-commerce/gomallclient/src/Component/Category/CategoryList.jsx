@@ -259,7 +259,7 @@ export default function CategoryList() {
                             <span className="cat-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
                           </div>
                         </div>
-                        <button className="cat-selling-fast-btn">SELLING FAST</button>
+                        <button className="cat-selling-fast-btn">Buy now</button>
                       </Link>
                     );
                   })}

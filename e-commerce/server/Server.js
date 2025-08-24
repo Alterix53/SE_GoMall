@@ -115,6 +115,25 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/sellers", sellerRoutes);
 app.use("/api/categories", categoryRoutes);
 
+// Simple redirect for development (middleware approach)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    if (!req.path.startsWith('/api/')) {
+      console.log(`Development: redirecting ${req.path} to React dev server`);
+      res.redirect(`${CLIENT_URL}${req.path}`);
+    } else {
+      next();
+    }
+  });
+}
+
+// 404 handler for API routes
+app.use('/api', (req, res, next) => {
+  // If we reach here, it means no API route matched
+  console.log("404 Not Found for API path:", req.path);
+  res.status(404).json({ success: false, message: "API endpoint not found" });
+});
+
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);
     res.status(500).json({
@@ -122,11 +141,6 @@ app.use((err, req, res, next) => {
         message: "An error occurred!",
         error: process.env.NODE_ENV === "development" ? err.message : {},
     });
-});
-
-app.use((req, res) => {
-    console.log("404 Not Found for path:", req.path);
-    res.status(404).json({ success: false, message: "API endpoint not found" });
 });
 
 const startServer = async () => {

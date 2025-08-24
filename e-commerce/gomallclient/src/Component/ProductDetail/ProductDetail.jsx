@@ -82,7 +82,7 @@ export default function ProductDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { addToCart } = useCart()
+  const { addToCart, checkProductInventory } = useCart()
 
   // State
   const [product, setProduct] = useState(null)
@@ -95,6 +95,8 @@ export default function ProductDetail() {
   const [shippingTo, setShippingTo] = useState("Hanoi")
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [addedProduct, setAddedProduct] = useState(null)
+  const [maxQuantity, setMaxQuantity] = useState(1)
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
 
   // Resolve image URL to absolute path (prefix server origin for relative paths)
   const resolveImageUrl = (image) => {
@@ -171,6 +173,28 @@ export default function ProductDetail() {
     }
   }, [loading, error, product]);
 
+  // Check inventory when product is loaded
+  useEffect(() => {
+    const checkInventory = async () => {
+      if (product && product._id) {
+        try {
+          const inventoryData = await checkProductInventory(product._id);
+          if (inventoryData) {
+            setMaxQuantity(inventoryData.availableQuantity);
+            // Reset quantity if it exceeds available inventory
+            if (quantity > inventoryData.availableQuantity) {
+              setQuantity(Math.max(1, inventoryData.availableQuantity));
+            }
+          }
+        } catch (error) {
+          console.error("Error checking inventory:", error);
+        }
+      }
+    };
+
+    checkInventory();
+  }, [product, checkProductInventory]);
+
   // Calculate final price and discount
   const finalPrice = useMemo(() => {
     if (!product) return 0
@@ -203,7 +227,30 @@ export default function ProductDetail() {
   const onAddToCart = async () => {
     if (!product) return
     
+    setIsAddingToCart(true);
+    
     try {
+      // Check inventory again before adding to cart
+      const inventoryData = await checkProductInventory(product._id);
+      if (!inventoryData || inventoryData.availableQuantity <= 0) {
+        toast({
+          title: "Out of stock!",
+          description: "This product is no longer available",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (quantity > inventoryData.availableQuantity) {
+        toast({
+          title: "Insufficient stock!",
+          description: `Only ${inventoryData.availableQuantity} items available`,
+          variant: "destructive",
+        });
+        setQuantity(inventoryData.availableQuantity);
+        return;
+      }
+
       const cartItem = {
         id: product._id,
         name: product.name,
@@ -213,11 +260,37 @@ export default function ProductDetail() {
         size: 'default'
       }
       
-      await addToCart(cartItem)
+      const result = await addToCart(cartItem);
       
-      // Show success modal instead of toast
-      setAddedProduct(cartItem)
-      setShowSuccessModal(true)
+      if (result.success) {
+        // Show success modal instead of toast
+        setAddedProduct(cartItem)
+        setShowSuccessModal(true)
+        
+        // Update max quantity after successful add
+        if (inventoryData) {
+          setMaxQuantity(inventoryData.availableQuantity - quantity);
+        }
+      } else {
+        // Handle specific inventory errors
+        if (result.data?.availableQuantity !== undefined) {
+          toast({
+            title: "Stock updated!",
+            description: `Only ${result.data.availableQuantity} items available now`,
+            variant: "destructive",
+          });
+          setMaxQuantity(result.data.availableQuantity);
+          if (quantity > result.data.availableQuantity) {
+            setQuantity(result.data.availableQuantity);
+          }
+        } else {
+          toast({
+            title: "Error!",
+            description: result.error || "An error occurred while adding to cart",
+            variant: "destructive",
+          });
+        }
+      }
     } catch (error) {
       console.error("Error adding to cart:", error)
       toast({
@@ -225,13 +298,38 @@ export default function ProductDetail() {
         description: "An error occurred while adding to cart",
         variant: "destructive",
       })
+    } finally {
+      setIsAddingToCart(false);
     }
   }
 
   const onBuyNow = async () => {
     if (!product) return
     
+    setIsAddingToCart(true);
+    
     try {
+      // Check inventory again before buying
+      const inventoryData = await checkProductInventory(product._id);
+      if (!inventoryData || inventoryData.availableQuantity <= 0) {
+        toast({
+          title: "Out of stock!",
+          description: "This product is no longer available",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (quantity > inventoryData.availableQuantity) {
+        toast({
+          title: "Insufficient stock!",
+          description: `Only ${inventoryData.availableQuantity} items available`,
+          variant: "destructive",
+        });
+        setQuantity(inventoryData.availableQuantity);
+        return;
+      }
+
       const cartItem = {
         id: product._id,
         name: product.name,
@@ -241,10 +339,31 @@ export default function ProductDetail() {
         size: 'default'
       }
       
-      await addToCart(cartItem)
+      const result = await addToCart(cartItem);
       
-      // Navigate to checkout
-      navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+      if (result.success) {
+        // Navigate to checkout
+        navigate(`/checkout?product=${product._id}&quantity=${quantity}`)
+      } else {
+        // Handle specific inventory errors
+        if (result.data?.availableQuantity !== undefined) {
+          toast({
+            title: "Stock updated!",
+            description: `Only ${result.data.availableQuantity} items available now`,
+            variant: "destructive",
+          });
+          setMaxQuantity(result.data.availableQuantity);
+          if (quantity > result.data.availableQuantity) {
+            setQuantity(result.data.availableQuantity);
+          }
+        } else {
+          toast({
+            title: "Error!",
+            description: result.error || "An error occurred while processing order",
+            variant: "destructive",
+          });
+        }
+      }
     } catch (error) {
       console.error("Error buying now:", error)
       toast({
@@ -252,6 +371,8 @@ export default function ProductDetail() {
         description: "An error occurred while processing order",
         variant: "destructive",
       })
+    } finally {
+      setIsAddingToCart(false);
     }
   }
 
@@ -527,10 +648,14 @@ export default function ProductDetail() {
                          value={quantity}
                          onChange={(e) => {
                            const n = Number.parseInt(e.target.value || "1", 10)
-                           if (!Number.isNaN(n)) setQuantity(Math.max(1, n))
+                           if (!Number.isNaN(n)) {
+                             const clampedValue = Math.max(1, Math.min(n, maxQuantity));
+                             setQuantity(clampedValue);
+                           }
                          }}
                          className="w-20 text-center border-0 rounded-none focus:ring-0 font-medium"
                          min="1"
+                         max={maxQuantity}
                          aria-live="polite"
                        />
                       <Button
@@ -538,16 +663,15 @@ export default function ProductDetail() {
                         variant="ghost"
                         size="sm"
                         className="rounded-l-none border-0 hover:bg-gray-100 px-3 py-2"
-                        onClick={() => setQuantity((q) => q + 1)}
+                        onClick={() => setQuantity((q) => Math.min(maxQuantity, q + 1))}
+                        disabled={quantity >= maxQuantity}
                       >
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
-                    {product.inventory && (
-                      <span className="text-sm text-gray-600">
-                        {product.inventory.quantity} items remaining
-                      </span>
-                    )}
+                    <span className="text-sm text-gray-600">
+                      {maxQuantity > 0 ? `${maxQuantity} items available` : "Out of stock"}
+                    </span>
                   </div>
                 </div>
 
@@ -589,19 +713,28 @@ export default function ProductDetail() {
                     size="lg" 
                     variant="outline"
                     onClick={onAddToCart}
-                    disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
+                    disabled={maxQuantity <= 0 || isAddingToCart}
                     className="w-full h-14 text-base font-medium border-gray-400 text-gray-900 hover:bg-gray-50"
                   >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    {product.inventory?.quantity === 0 ? "Out of stock" : "Add to cart"}
+                    {isAddingToCart ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Adding to cart...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        {maxQuantity <= 0 ? "Out of stock" : "Add to cart"}
+                      </>
+                    )}
                   </Button>
                   <Button 
                     size="lg" 
                     onClick={onBuyNow}
-                    disabled={!product.inventory?.quantity || product.inventory.quantity === 0}
+                    disabled={maxQuantity <= 0 || isAddingToCart}
                     className="w-full h-14 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    {product.inventory?.quantity === 0 ? "Out of stock" : "Buy now"}
+                    {maxQuantity <= 0 ? "Out of stock" : "Buy now"}
                   </Button>
                   <Button 
                     size="lg" 

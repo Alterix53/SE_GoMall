@@ -155,10 +155,30 @@ export default function CartManager() {
 
   const handleUpdateQuantity = async (id, size, newQuantity) => {
     if (newQuantity < 1) return;
+    
     try {
-      await updateQuantity(id, size, newQuantity);
+      // Check inventory before updating
+      const inventoryData = await fetch(`http://localhost:8080/api/cart/inventory/${id}`).then(res => res.json());
+      
+      if (inventoryData.success && inventoryData.data.availableQuantity < newQuantity) {
+        // Show error message
+        alert(`Only ${inventoryData.data.availableQuantity} items available in stock`);
+        return;
+      }
+      
+      const result = await updateQuantity(id, size, newQuantity);
+      
+      if (!result.success) {
+        // Handle inventory errors
+        if (result.data?.availableQuantity !== undefined) {
+          alert(`Only ${result.data.availableQuantity} items available in stock`);
+        } else {
+          alert(result.error || "Error updating quantity");
+        }
+      }
     } catch (err) {
       console.error("Error updating quantity:", err);
+      alert("Error updating quantity. Please try again.");
     }
   };
 
