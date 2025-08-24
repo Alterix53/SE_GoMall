@@ -119,9 +119,9 @@ const seedProducts = async (categories) => {
       views: p.views || 0,
       isActive: p.isActive !== false,
       isFeatured: p.isFeatured || false,
-      isFlashSale: !!p.isFlashSale,
-      flashSalePrice: p.flashSalePrice || (p.isFlashSale ? Math.round(p.price_sale * 0.9) : null),
-      flashSaleEndDate: p.isFlashSale ? (p.flashSaleEndDate ? new Date(p.flashSaleEndDate) : sevenDaysLater()) : null,
+      isFlashSale: p.isFlashSale === true,
+      flashSalePrice: p.flashSalePrice || (p.isFlashSale === true ? Math.round(p.price_sale * 0.9) : null),
+      flashSaleEndDate: p.isFlashSale === true ? (p.flashSaleEndDate ? new Date(p.flashSaleEndDate) : sevenDaysLater()) : null,
       createdAt: new Date()
     };
   }).filter(Boolean);

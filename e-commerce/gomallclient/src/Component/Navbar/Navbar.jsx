@@ -31,17 +31,17 @@ const Navbar = () => {
     
     if (hasSellerApplication) {
       if (isApprovedSeller) {
-        // Nếu đã được approve, chuyển đến Seller Dashboard
+        // If approved, navigate to Seller Dashboard
         navigate('/seller');
       } else if (isPendingSeller) {
-        // Nếu đang pending, chuyển đến register-seller để xem trạng thái
+        // If pending, navigate to register-seller to view status
         navigate('/register-seller');
       } else if (isRejectedSeller) {
-        // Nếu bị reject, chuyển đến register-seller để nộp lại
+        // If rejected, navigate to register-seller to resubmit
         navigate('/register-seller');
       }
     } else {
-      // Nếu chưa có hồ sơ, chuyển đến register-seller để đăng ký
+      // If no application, navigate to register-seller to register
       navigate('/register-seller');
     }
   };
@@ -120,14 +120,14 @@ const Navbar = () => {
                 <div className="nav-icon">
                   <OptimizedImage
                     src="/images/cart.png"
-                    alt="Cart"
+                    alt="Shopping Cart"
                     style={{ width: "20px", height: "20px" }}
                     lazy={false}
                     fallbackUrl={createPlaceholderUrl(20,20,'')}
                     onLoad={() => {}}
                     onError={() => {}}
                   />
-                  <span>Cart</span>
+                  <span>Shopping Cart</span>
                 </div>
               </Link>
               
@@ -172,50 +172,50 @@ const Navbar = () => {
               <div className="mobile-menu-item">
                 <OptimizedImage
                   src="/images/user.png"
-                  alt="Tài khoản"
+                  alt="Account"
                   style={{ width: "20px", height: "20px" }}
                   lazy={false}
                   fallbackUrl={createPlaceholderUrl(20,20,'')}
                   onLoad={() => {}}
                   onError={() => {}}
                 />
-                <span>Tài khoản</span>
+                <span>Account</span>
               </div>
               <div className="mobile-menu-item">
                 <OptimizedImage
                   src="/images/cart.png"
-                  alt="Giỏ hàng"
+                  alt="Shopping Cart"
                   style={{ width: "20px", height: "20px" }}
                   lazy={false}
                   fallbackUrl={createPlaceholderUrl(20,20,'')}
                   onLoad={() => {}}
                   onError={() => {}}
                 />
-                <span>Giỏ hàng</span>
+                <span>Shopping Cart</span>
               </div>
               <div className="mobile-menu-item">
                 <OptimizedImage
                   src="/images/help.png"
-                  alt="Hỗ trợ"
+                  alt="Support"
                   style={{ width: "20px", height: "20px" }}
                   lazy={false}
                   fallbackUrl={createPlaceholderUrl(20,20,'')}
                   onLoad={() => {}}
                   onError={() => {}}
                 />
-                <span>Hỗ trợ</span>
+                <span>Support</span>
               </div>
               <div className="mobile-menu-item">
                 <OptimizedImage
                   src="/images/bell.png"
-                  alt="Thông báo"
+                  alt="Notifications"
                   style={{ width: "20px", height: "20px" }}
                   lazy={false}
                   fallbackUrl={createPlaceholderUrl(20,20,'')}
                   onLoad={() => {}}
                   onError={() => {}}
                 />
-                <span>Thông báo</span>
+                <span>Notifications</span>
               </div>
             </div>
           </div>

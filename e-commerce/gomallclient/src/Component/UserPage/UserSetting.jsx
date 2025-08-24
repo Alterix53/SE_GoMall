@@ -44,7 +44,7 @@ function UserSetting() {
           }
         } catch (error) {
           console.error("Error loading user data:", error);
-          setMessage({ text: "Không thể tải thông tin người dùng", type: "error" });
+          setMessage({ text: "Cannot load user information", type: "error" });
         }
       }
     };
@@ -72,7 +72,7 @@ function UserSetting() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user || !user.id) {
-      setMessage({ text: "Không tìm thấy thông tin người dùng", type: "error" });
+      setMessage({ text: "Cannot find user information", type: "error" });
       return;
     }
 
@@ -90,12 +90,12 @@ function UserSetting() {
       const response = await apiService.updateUserProfile(user.id, updateData);
       
       if (response.data.success) {
-        setMessage({ text: "Cập nhật thông tin thành công!", type: "success" });
+        setMessage({ text: "Successfully updated information!", type: "success" });
         
         // Update password if provided
         if (showPasswordChange && form.oldPassword && form.newPassword) {
           if (form.newPassword !== form.confirmPassword) {
-            setMessage({ text: "Mật khẩu mới không khớp!", type: "error" });
+            setMessage({ text: "New password does not match!", type: "error" });
             setLoading(false);
             return;
           }
@@ -107,7 +107,7 @@ function UserSetting() {
             });
 
             if (passwordResponse.data.success) {
-              setMessage({ text: "Cập nhật thông tin và mật khẩu thành công!", type: "success" });
+              setMessage({ text: "Successfully updated information and password!", type: "success" });
               setForm(prev => ({
                 ...prev,
                 oldPassword: "",
@@ -118,8 +118,8 @@ function UserSetting() {
             }
           } catch (passwordError) {
             console.error("Password change error:", passwordError);
-            const errorMsg = passwordError.response?.data?.message || "Không thể đổi mật khẩu";
-            setMessage({ text: `Thông tin đã cập nhật nhưng ${errorMsg}`, type: "warning" });
+            const errorMsg = passwordError.response?.data?.message || "Cannot change password";
+            setMessage({ text: `Information updated, but ${errorMsg}`, type: "warning" });
           }
         }
 
@@ -130,7 +130,7 @@ function UserSetting() {
       }
     } catch (error) {
       console.error("Error updating user:", error);
-      const errorMsg = error.response?.data?.message || "Không thể cập nhật thông tin";
+      const errorMsg = error.response?.data?.message || "Cannot update information";
       setMessage({ text: errorMsg, type: "error" });
     } finally {
       setLoading(false);
@@ -147,7 +147,7 @@ function UserSetting() {
             onClick={() => setActiveTab("user")}
             type="button"
           >
-            Người dùng
+            User
           </button>
         </li>
         <li className="nav-item">
@@ -162,13 +162,13 @@ function UserSetting() {
               }
             }}
           >
-            Người bán
+            Seller
           </button>
         </li>
       </ul>
       {showSellerWarning && (
         <div className="alert alert-warning" role="alert">
-          Bạn phải đăng ký trở thành seller
+          You must register to become a seller
         </div>
       )}
 
@@ -182,7 +182,7 @@ function UserSetting() {
       {/* User Info Form */}
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label htmlFor="fullName" className="form-label">Họ tên</label>
+          <label htmlFor="fullName" className="form-label">Full Name</label>
           <input
             type="text"
             className="form-control"
@@ -190,7 +190,7 @@ function UserSetting() {
             name="fullName"
             value={form.fullName}
             onChange={handleChange}
-            placeholder="Nhập họ tên"
+            placeholder="Enter full name"
           />
         </div>
         <div className="mb-3">
@@ -202,13 +202,13 @@ function UserSetting() {
             name="email"
             value={form.email}
             onChange={handleChange}
-            placeholder="Nhập email"
+            placeholder="Enter email"
             disabled
-            title="Email không thể chỉnh sửa"
+            title="Email cannot be changed"
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="phoneNumber" className="form-label">Số điện thoại</label>
+          <label htmlFor="phoneNumber" className="form-label">Phone Number</label>
           <input
             type="tel"
             className="form-control"
@@ -216,11 +216,11 @@ function UserSetting() {
             name="phoneNumber"
             value={form.phoneNumber}
             onChange={handleChange}
-            placeholder="Nhập số điện thoại"
+            placeholder="Enter phone number"
           />
         </div>
         <div className="mb-3">
-          <label htmlFor="address" className="form-label">Địa chỉ</label>
+          <label htmlFor="address" className="form-label">Address</label>
           <input
             type="text"
             className="form-control"
@@ -228,7 +228,7 @@ function UserSetting() {
             name="address"
             value={form.address}
             onChange={handleChange}
-            placeholder="Nhập địa chỉ"
+            placeholder="Enter address"
           />
         </div>
 
@@ -239,13 +239,13 @@ function UserSetting() {
             type="button"
             onClick={() => setShowPasswordChange((v) => !v)}
           >
-            Thay đổi mật khẩu
+            Change Password
           </button>
           {showPasswordChange && (
             <div className="border border-danger rounded p-3 mt-3 bg-light">
-              <h6 className="text-danger mb-3">Đổi mật khẩu</h6>
+              <h6 className="text-danger mb-3">Change Password</h6>
               <div className="mb-2">
-                <label htmlFor="oldPassword" className="form-label">Mật khẩu cũ</label>
+                <label htmlFor="oldPassword" className="form-label">Old Password</label>
                 <input
                   type="password"
                   className="form-control"
@@ -253,11 +253,11 @@ function UserSetting() {
                   name="oldPassword"
                   value={form.oldPassword}
                   onChange={handleChange}
-                  placeholder="Nhập mật khẩu cũ"
+                  placeholder="Enter old password"
                 />
               </div>
               <div className="mb-2">
-                <label htmlFor="newPassword" className="form-label">Mật khẩu mới</label>
+                <label htmlFor="newPassword" className="form-label">New Password</label>
                 <input
                   type="password"
                   className="form-control"
@@ -265,11 +265,11 @@ function UserSetting() {
                   name="newPassword"
                   value={form.newPassword}
                   onChange={handleChange}
-                  placeholder="Nhập mật khẩu mới"
+                  placeholder="Enter new password"
                 />
               </div>
               <div className="mb-2">
-                <label htmlFor="confirmPassword" className="form-label">Xác nhận mật khẩu mới</label>
+                <label htmlFor="confirmPassword" className="form-label">Confirm New Password</label>
                 <input
                   type="password"
                   className="form-control"
@@ -277,7 +277,7 @@ function UserSetting() {
                   name="confirmPassword"
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Nhập lại mật khẩu mới"
+                  placeholder="Re-enter new password"
                 />
               </div>
             </div>
@@ -290,10 +290,10 @@ function UserSetting() {
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Đang cập nhật...
+                Updating...
               </>
             ) : (
-              'Xác nhận'
+              'Confirm'
             )}
           </button>
         </div>

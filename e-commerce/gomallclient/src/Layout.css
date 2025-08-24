@@ -1,8 +1,51 @@
-body {
-  background-color: #fff;
-  font-family: 'Inter', sans-serif;
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-html {
-  scroll-behavior: smooth;
+.layout-header {
+  background: #333;
+  color: white;
+  padding: 1rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.layout-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.layout-header nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+  display: flex;
+  gap: 2rem;
+}
+
+.layout-header nav a {
+  color: white;
+  text-decoration: none;
+}
+
+.layout-header nav a:hover {
+  color: #ddd;
+}
+
+.layout-main {
+  flex: 1;
+}
+
+.layout-footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: auto;
 }

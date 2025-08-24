@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
+import Review from '../models/Review.js';
+import Seller from '../models/Seller.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,9 +69,14 @@ const seedCategories = async () => {
         // Sử dụng native MongoDB driver thông qua mongoose connection
         const db = mongoose.connection.db;
         
-        // Clear existing categories
-        const deleteResult = await db.collection('categories').deleteMany({});
-        console.log(`Cleared ${deleteResult.deletedCount} existing categories`);
+        // Kiểm tra categories đã tồn tại
+        const existingCategories = await db.collection('categories').find({}).toArray();
+        console.log(`Found ${existingCategories.length} existing categories in database`);
+        
+        if (existingCategories.length > 0) {
+            console.log('Categories already exist. Skipping category seeding to preserve existing data.');
+            return existingCategories;
+        }
         
         // Prepare categories data
         const categories = categoriesData.map(cat => ({
@@ -110,33 +117,32 @@ const seedUsers = async () => {
         // Sử dụng native MongoDB driver thông qua mongoose connection
         const db = mongoose.connection.db;
         
-        // Clear existing users
-        const deleteResult = await db.collection('users').deleteMany({});
-        console.log(`Cleared ${deleteResult.deletedCount} existing users`);
+        // Check existing users to avoid duplicates
+        const existingUsers = await db.collection('users').find({}).toArray();
+        console.log(`Found ${existingUsers.length} existing users in database`);
         
-        // Prepare users data
+        if (existingUsers.length > 0) {
+            console.log('Users already exist. Skipping user seeding to preserve existing data.');
+            return existingUsers;
+        }
+        
+        // Prepare users data for new insertion
         const users = usersData.map(user => ({
             username: user.username,
             password: user.password,
             email: user.email,
-            role: user.role,
+            role: user.role ? [user.role] : ['user'],
             fullName: user.fullName || '',
             phoneNumber: user.phoneNumber || '',
             address: user.address || '',
-            shop: user.role?.includes('seller') ? {
-                name: user.shop?.name || 'Default Shop',
-                address: user.shop?.address || '',
-                isActive: user.shop?.isActive !== false
-            } : null,
             isActive: user.isActive !== false,
-            profile_image: user.profile_image || 'https://source.unsplash.com/random/400x300',
             createdAt: new Date(),
             updatedAt: new Date()
         }));
         
-        // Insert users using native driver
+        // Insert new users using native driver
         const insertResult = await db.collection('users').insertMany(users);
-        console.log(`✅ Inserted ${insertResult.insertedCount} users`);
+        console.log(`✅ Inserted ${insertResult.insertedCount} new users`);
         
         return users;
         
@@ -146,7 +152,55 @@ const seedUsers = async () => {
     }
 };
 
-const seedProducts = async (createdCategories, createdUsers) => {
+const seedSellers = async (users) => {
+    try {
+        console.log('Seeding sellers...');
+        
+        const db = mongoose.connection.db;
+        
+        // Check existing sellers
+        const existingSellers = await db.collection('sellers').find({}).toArray();
+        console.log(`Found ${existingSellers.length} existing sellers in database`);
+        
+        if (existingSellers.length > 0) {
+            console.log('Sellers already exist. Skipping seller seeding to preserve existing data.');
+            return existingSellers;
+        }
+        
+        // Create sellers for users with seller role
+        const sellers = users
+            .filter(user => Array.isArray(user.role) ? user.role.includes('seller') : user.role === 'seller')
+            .map(user => ({
+                userID: user._id,
+                shopName: user.fullName ? `${user.fullName}'s Shop` : 'Default Shop',
+                description: 'Welcome to our shop!',
+                address: user.address || '',
+                phone: user.phoneNumber || '',
+                email: user.email,
+                isActive: true,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }));
+        
+        if (sellers.length === 0) {
+            console.log('No users with seller role found');
+            return [];
+        }
+        
+        const insertResult = await db.collection('sellers').insertMany(sellers);
+        console.log(`✅ Inserted ${insertResult.insertedCount} sellers`);
+        
+        return sellers;
+        
+    } catch (error) {
+        console.error('❌ Error seeding sellers:', error);
+        throw error;
+    }
+};
+
+const sevenDaysLater = () => new Date(Date.now() + 7*24*60*60*1000);
+
+const seedProducts = async (createdCategories, createdUsers, createdSellers) => {
     try {
         console.log('Seeding products...');
         
@@ -161,16 +215,14 @@ const seedProducts = async (createdCategories, createdUsers) => {
         // Sử dụng native MongoDB driver thông qua mongoose connection
         const db = mongoose.connection.db;
         
-        // Clear existing products
-        const deleteResult = await db.collection('products').deleteMany({});
-        console.log(`Cleared ${deleteResult.deletedCount} existing products`);
+        // Check existing products to determine what needs to be updated or added
+        const existingProducts = await db.collection('products').find({}).toArray();
+        console.log(`Found ${existingProducts.length} existing products in database`);
         
-        // Get sellers from users
-        const sellers = createdUsers.filter(user => 
-            Array.isArray(user.role) ? user.role.includes('seller') : user.role === 'seller'
-        );
+        // Get sellers from created sellers
+        const sellers = createdSellers || [];
         
-        // Prepare products data
+        // Prepare products data for comparison and insertion
         const products = productsData.map((product, index) => {
             // Get category ID (single category)
             const categoryIndex = product.categoryID - 1;
@@ -219,23 +271,164 @@ const seedProducts = async (createdCategories, createdUsers) => {
                 sold: Number(product.sold || Math.floor(Math.random() * 100)),
                 views: Number(product.views || Math.floor(Math.random() * 500)),
                 isActive: true,
-                isFeatured: Math.random() > 0.7, // 30% chance to be featured
-                isFlashSale: Math.random() > 0.8, // 20% chance to be flash sale
-                flashSalePrice: Number(product.flashSalePrice || 60000),
-                flashSaleEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+                isFeatured: product.isFeatured || false,
+                isFlashSale: product.isFlashSale === true,
+                flashSalePrice: product.flashSalePrice || (product.isFlashSale === true ? Math.round(product.price_sale * 0.9) : null),
+                flashSaleEndDate: product.isFlashSale === true ? (product.isFlashSaleEndDate ? new Date(product.isFlashSaleEndDate) : sevenDaysLater()) : null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
         });
         
-        // Insert products using native driver
-        const insertResult = await db.collection('products').insertMany(products);
-        console.log(`✅ Inserted ${insertResult.insertedCount} products`);
+        // Separate products into new, existing, and unchanged
+        const existingProductNames = existingProducts.map(p => p.name);
+        const newProducts = products.filter(product => !existingProductNames.includes(product.name));
+        const existingProductsToUpdate = products.filter(product => existingProductNames.includes(product.name));
         
-        return products;
+        console.log(`Found ${newProducts.length} new products to insert`);
+        console.log(`Found ${existingProductsToUpdate.length} existing products to check for updates`);
+        
+        let insertedProducts = [];
+        let updatedProducts = [];
+        
+        // Insert new products
+        if (newProducts.length > 0) {
+            const insertResult = await db.collection('products').insertMany(newProducts);
+            console.log(`✅ Inserted ${insertResult.insertedCount} new products`);
+            insertedProducts = newProducts;
+        }
+        
+        // Check and update existing products if needed
+        if (existingProductsToUpdate.length > 0) {
+            for (const product of existingProductsToUpdate) {
+                const existingProduct = existingProducts.find(ep => ep.name === product.name);
+                
+                // Check if product needs update (compare key fields)
+                const needsUpdate = 
+                    existingProduct.price.original !== product.price.original ||
+                    existingProduct.price.sale !== product.price.sale ||
+                    existingProduct.inventory.quantity !== product.inventory.quantity ||
+                    existingProduct.isFlashSale !== product.isFlashSale ||
+                    existingProduct.flashSalePrice !== product.flashSalePrice;
+                
+                if (needsUpdate) {
+                    const updateResult = await db.collection('products').updateOne(
+                        { name: product.name },
+                        { 
+                            $set: {
+                                price: product.price,
+                                inventory: product.inventory,
+                                isFlashSale: product.isFlashSale,
+                                flashSalePrice: product.flashSalePrice,
+                                flashSaleEndDate: product.flashSaleEndDate,
+                                isFeatured: product.isFeatured,
+                                isActive: product.isActive,
+                                updatedAt: new Date()
+                            }
+                        }
+                    );
+                    
+                    if (updateResult.modifiedCount > 0) {
+                        updatedProducts.push(product);
+                        console.log(`🔄 Updated product: ${product.name}`);
+                    }
+                } else {
+                    console.log(`⏭️  Product unchanged, skipping: ${product.name}`);
+                }
+            }
+        }
+        
+        console.log(`📊 Summary: ${insertedProducts.length} new products inserted, ${updatedProducts.length} existing products updated`);
+        return [...insertedProducts, ...updatedProducts];
         
     } catch (error) {
         console.error('❌ Error seeding products:', error);
+        throw error;
+    }
+};
+
+const seedReviews = async (products, users) => {
+    try {
+        console.log('Seeding reviews...');
+        
+        const reviewsData = readJSON('reviews.json');
+        if (!reviewsData.length) {
+            console.warn('No reviews data found');
+            return [];
+        }
+        
+        console.log(`Found ${reviewsData.length} reviews to seed`);
+        
+        const db = mongoose.connection.db;
+        
+        // Kiểm tra reviews đã tồn tại
+        const existingReviews = await db.collection('reviews').find({}).toArray();
+        console.log(`Found ${existingReviews.length} existing reviews in database`);
+        
+        if (existingReviews.length > 0) {
+            console.log('Reviews already exist. Skipping review seeding to preserve existing data.');
+            return existingReviews;
+        }
+        
+        // Map reviews data to actual product and user IDs
+        const reviews = reviewsData.map(reviewData => {
+            // Tìm product thực tế
+            const product = products.find(p => p.name.includes(reviewData.productID.replace('product_', '')) || 
+                                              p._id.toString().includes(reviewData.productID.replace('product_', '')));
+            
+            // Tìm user thực tế
+            const user = users.find(u => u.username.includes(reviewData.userID.replace('user_', '')) || 
+                                        u._id.toString().includes(reviewData.userID.replace('user_', '')));
+            
+            if (!product || !user) {
+                console.warn(`Skipping review: product or user not found for ${reviewData.productID} - ${reviewData.userID}`);
+                return null;
+            }
+            
+            return {
+                productID: product._id,
+                userID: user._id,
+                rating: reviewData.rating,
+                comment: reviewData.comment,
+                createdAt: new Date(reviewData.createdAt),
+                updatedAt: new Date(reviewData.createdAt)
+            };
+        }).filter(review => review !== null);
+        
+        if (reviews.length === 0) {
+            console.warn('No valid reviews to insert');
+            return [];
+        }
+        
+        // Insert reviews
+        const insertResult = await db.collection('reviews').insertMany(reviews);
+        console.log(`✅ Inserted ${insertResult.insertedCount} reviews`);
+        
+        // Cập nhật rating trung bình cho các sản phẩm
+        console.log('Updating product ratings...');
+        for (const product of products) {
+            const productReviews = reviews.filter(r => r.productID.toString() === product._id.toString());
+            if (productReviews.length > 0) {
+                const avgRating = productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length;
+                const roundedRating = Math.round(avgRating * 10) / 10;
+                
+                await db.collection('products').updateOne(
+                    { _id: product._id },
+                    { 
+                        $set: { 
+                            averageRating: roundedRating,
+                            totalReviews: productReviews.length
+                        }
+                    }
+                );
+                console.log(`📊 Updated product ${product.name}: ${roundedRating}⭐ (${productReviews.length} reviews)`);
+            }
+        }
+        
+        return reviews;
+        
+    } catch (error) {
+        console.error('❌ Error seeding reviews:', error);
         throw error;
     }
 };
@@ -246,7 +439,9 @@ const seedData = async () => {
         
         const createdCategories = await seedCategories();
         const createdUsers = await seedUsers();
-        await seedProducts(createdCategories, createdUsers);
+        const createdSellers = await seedSellers(createdUsers);
+        const createdProducts = await seedProducts(createdCategories, createdUsers, createdSellers);
+        await seedReviews(createdProducts, createdUsers);
         
         console.log('🎉 Data seeded successfully!');
         

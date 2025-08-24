@@ -69,7 +69,7 @@ const TopProductCard = ({ product }) => {
       <div className="product-info">
         {/* Product Name */}
         <div className="product-name" title={product.name}>
-          {product.name || "Sản phẩm"}
+          {product.name || "Product"}
         </div>
         
         {/* Price Section */}
@@ -87,12 +87,12 @@ const TopProductCard = ({ product }) => {
             <span className="rating-value">{formatRating(product.rating)}</span>
           </div>
           <div className="sold-count">
-            Đã bán {formatSold(product.sold)}
+            Sold {formatSold(product.sold)}
           </div>
         </div>
         
         {/* Action Button */}
-        <button className="selling-fast-btn">ĐANG BÁN CHẠY</button>
+        <button className="selling-fast-btn">SELLING FAST</button>
       </div>
     </div>
   );

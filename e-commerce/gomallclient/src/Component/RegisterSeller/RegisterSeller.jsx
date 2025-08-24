@@ -112,10 +112,10 @@ const RegisterSeller = () => {
       const resp = await apiService.post('/sellers/apply', formData);
       
       if (resp?.data?.success) {
-        alert('✅ Hồ sơ đăng ký seller đã được nộp thành công!\n\n📋 Thông tin hồ sơ:\n- Tên doanh nghiệp: ' + (businessName || 'Test Business') + '\n- Địa chỉ: ' + (address || 'Test Address') + '\n- Số điện thoại: ' + (phone || '0123456789') + '\n\n⏳ Trạng thái: Đang chờ admin duyệt\n\n📧 Bạn sẽ nhận được thông báo khi hồ sơ được xem xét.');
+        alert('✅ Seller application submitted successfully!\n\n📋 Application Information:\n- Business Name: ' + (businessName || 'Test Business') + '\n- Address: ' + (address || 'Test Address') + '\n- Phone: ' + (phone || 'Test Phone') + '\n- Email: ' + (email || 'test@example.com') + '\n- Business License: ' + (businessLicense || 'Test License'));
         navigate('/home');
       } else {
-        alert('❌ Lỗi: ' + (resp?.data?.message || 'Không thể nộp hồ sơ'));
+        alert('❌ Error: ' + (resp?.data?.message || 'Could not submit application'));
       }
     } catch (err) {
       console.error('Submit error:', err);
@@ -123,13 +123,13 @@ const RegisterSeller = () => {
       if (err.response?.status === 400) {
         const errorMessage = err.response.data.message;
         if (errorMessage.includes('already have an active or pending seller application')) {
-          alert('⚠️ Bạn đã có hồ sơ đăng ký seller đang chờ duyệt hoặc đã được duyệt.\n\nVui lòng kiểm tra trạng thái hồ sơ của bạn.');
+          alert('⚠️ You already have a seller application pending or approved.\n\nPlease check your application status.');
           checkSellerStatus(); // Refresh status
         } else {
-          alert('Có lỗi xảy ra: ' + errorMessage);
+          alert('An error occurred: ' + errorMessage);
         }
       } else {
-        alert('Có lỗi xảy ra khi nộp hồ sơ');
+        alert('An error occurred when submitting the application');
       }
     } finally {
       setLoading(false);
@@ -144,7 +144,7 @@ const RegisterSeller = () => {
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <span className="ms-3">Đang kiểm tra trạng thái seller...</span>
+          <span className="ms-3">Checking seller status...</span>
         </div>
       </div>
     );
@@ -155,13 +155,13 @@ const RegisterSeller = () => {
     return (
       <div className="register-seller-container">
         <div className="alert alert-warning">
-          <h4 className="alert-heading">⚠️ Vui lòng đăng nhập</h4>
-          <p>Bạn cần đăng nhập để đăng ký trở thành seller.</p>
+          <h4 className="alert-heading">⚠️ Please log in</h4>
+          <p>You need to log in to register as a seller.</p>
           <button 
             className="btn btn-primary"
             onClick={() => navigate('/login')}
           >
-            Đăng nhập
+            Log In
           </button>
         </div>
       </div>
@@ -174,41 +174,41 @@ const RegisterSeller = () => {
     return (
       <div className="register-seller-container">
         <div className="alert alert-info">
-          <h4 className="alert-heading">📋 Thông tin hồ sơ đăng ký seller</h4>
+          <h4 className="alert-heading">📋 Seller Application Information</h4>
           <hr />
-          <p><strong>Tên doanh nghiệp:</strong> {sellerStatus.businessName}</p>
-          <p><strong>Ngày nộp hồ sơ:</strong> {new Date(sellerStatus.createdAt).toLocaleDateString('vi-VN')}</p>
-          <p><strong>Trạng thái:</strong> 
+          <p><strong>Business Name:</strong> {sellerStatus.businessName}</p>
+          <p><strong>Application Date:</strong> {new Date(sellerStatus.createdAt).toLocaleDateString('en-US')}</p>
+          <p><strong>Status:</strong> 
             <span className={`status-badge status-${sellerStatus.status}`}>
-              {sellerStatus.status === 'pending' && '⏳ Đang chờ duyệt'}
-              {sellerStatus.status === 'approved' && '✅ Đã được duyệt'}
-              {sellerStatus.status === 'rejected' && '❌ Bị từ chối'}
-              {sellerStatus.status === 'suspended' && '⏸️ Bị tạm ngưng'}
+              {sellerStatus.status === 'pending' && '⏳ Pending Approval'}
+              {sellerStatus.status === 'approved' && '✅ Approved'}
+              {sellerStatus.status === 'rejected' && '❌ Rejected'}
+              {sellerStatus.status === 'suspended' && '⏸️ Suspended'}
             </span>
           </p>
-          <p><strong>Thông báo:</strong> {sellerStatus.message}</p>
+          <p><strong>Message:</strong> {sellerStatus.message}</p>
           
           {sellerStatus.status === 'approved' && (
             <div className="alert alert-success mt-3">
-              <p>🎉 Chúc mừng! Hồ sơ của bạn đã được duyệt thành công.</p>
-              <p>Bạn sẽ được chuyển hướng đến Seller Dashboard trong vài giây...</p>
+              <p>🎉 Congratulations! Your application has been approved.</p>
+              <p>You will be redirected to the Seller Dashboard in a few seconds...</p>
               <button 
                 className="btn btn-primary"
                 onClick={() => navigate('/seller')}
               >
-                Vào Seller Dashboard ngay
+                Go to Seller Dashboard now
               </button>
             </div>
           )}
           
           {sellerStatus.status === 'rejected' && (
             <div className="alert alert-warning mt-3">
-              <p>Hồ sơ của bạn chưa đáp ứng yêu cầu. Bạn có thể nộp lại hồ sơ mới.</p>
+              <p>Your application did not meet the requirements. You can submit a new application.</p>
               <button 
                 className="btn btn-warning"
                 onClick={() => window.location.reload()}
               >
-                Nộp lại hồ sơ
+                Submit New Application
               </button>
             </div>
           )}
@@ -221,34 +221,34 @@ const RegisterSeller = () => {
   return (
     <div className="register-seller-container">
       <div className="register-seller-form">
-        <h2>Đăng ký trở thành Seller</h2>
-        <p>Vui lòng điền đầy đủ thông tin để đăng ký trở thành seller trên GoMall</p>
+        <h2>Register to Become a Seller</h2>
+        <p>Please fill in all the information to register as a seller on GoMall</p>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="businessName">Tên doanh nghiệp *</label>
+            <label htmlFor="businessName">Business Name *</label>
             <input
               type="text"
               id="businessName"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="Nhập tên doanh nghiệp hoặc cửa hàng"
+              placeholder="Enter business name or store"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Địa chỉ doanh nghiệp *</label>
+            <label htmlFor="address">Business Address *</label>
             <input
               type="text"
               id="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Nhập địa chỉ đầy đủ"
+              placeholder="Enter full address"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email doanh nghiệp</label>
+            <label htmlFor="email">Business Email</label>
             <input
               type="email"
               id="email"
@@ -260,20 +260,20 @@ const RegisterSeller = () => {
 
           <div className="mb-3">
             <label className="form-label">
-              <strong>Số giấy phép kinh doanh</strong> <span className="text-danger">*</span>
+              <strong>Business Tax ID</strong> <span className="text-danger">*</span>
             </label>
             <input
               type="text"
               className="form-control"
               value={businessLicense}
               onChange={(e) => setBusinessLicense(e.target.value)}
-              placeholder="Nhập số giấy phép kinh doanh"
+              placeholder="Enter business tax ID"
             />
           </div>
 
           <div className="mb-3">
             <label className="form-label">
-              <strong>Số điện thoại</strong> <span className="text-danger">*</span>
+              <strong>Business Phone</strong> <span className="text-danger">*</span>
             </label>
             <input
               type="tel"
@@ -285,30 +285,30 @@ const RegisterSeller = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="businessLicense">Giấy phép kinh doanh *</label>
+            <label htmlFor="businessLicense">Business License *</label>
             <input
               type="text"
               id="businessLicense"
               value={businessLicense}
               onChange={(e) => setBusinessLicense(e.target.value)}
               required
-              placeholder="Nhập số giấy phép kinh doanh"
+              placeholder="Enter business license number"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="document">Tài liệu xác minh</label>
+            <label htmlFor="document">Verification Documents</label>
             <input
               type="file"
               className="form-control"
               onChange={handleFileChange}
               accept=".pdf,.jpg,.png"
             />
-            <small>Chấp nhận file PDF, JPG, JPEG, PNG</small>
+            <small>Accepts PDF, JPG, JPEG, PNG files</small>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Đang xử lý...' : 'Nộp hồ sơ đăng ký'}
+            {loading ? 'Processing...' : 'Submit Application'}
           </button>
         </form>
       </div>

@@ -36,7 +36,7 @@ const Statistics = () => {
     <div className="container mt-4">
       <h2>Thống kê doanh thu</h2>
 
-      <h4 className="mt-5">Sản phẩm bán chạy</h4>
+      <h4 className="mt-5">Best Selling Products</h4>
       <ul className="list-group">
         {topProducts.map((p, i) => (
           <li className="list-group-item d-flex justify-content-between" key={i}>

@@ -1,28 +1,35 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import Navigation from "@/components/navigation"
+import React from 'react';
+import './Layout.css';
 
-const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "E-commerce App",
-  description: "Modern e-commerce application with cart, checkout, and user profile",
-    generator: 'v0.dev'
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+const Layout = ({ children }) => {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Navigation />
+    <div className="layout">
+      <header className="layout-header">
+        <div className="container">
+          <h1>GoMall</h1>
+          <nav>
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/products">Products</a></li>
+              <li><a href="/categories">Categories</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/contact">Contact</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+      
+      <main className="layout-main">
         {children}
-      </body>
-    </html>
-  )
-}
+      </main>
+      
+      <footer className="layout-footer">
+        <div className="container">
+          <p>&copy; 2024 GoMall. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Layout;

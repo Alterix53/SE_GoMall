@@ -4,8 +4,8 @@ import CategoryItem from './CategoryItem';
 import ProductCard from '../ProductCard/ProductCard';
 import './CategoryList.css';
 
-// Category icon mapping for display - only keeping 14 categories that have products
-const categoryIconMap = {
+// Default icon mapping for categories (fallback)
+const defaultIconMap = {
   'Phones': '📱',
   'Laptops': '💻',
   'Fashion': '👔',
@@ -20,6 +20,40 @@ const categoryIconMap = {
   'Watches': '⌚',
   'Shoes': '👞',
   'Health': '🏥'
+};
+
+// Font Awesome to emoji mapping
+const fontAwesomeToEmoji = {
+  'fas fa-mobile-alt': '📱',
+  'fas fa-laptop': '💻',
+  'fas fa-tshirt': '👔',
+  'fas fa-dumbbell': '⚽',
+  'fas fa-home': '🏠',
+  'fas fa-spa': '💄',
+  'fas fa-bag-shopping': '💍',
+  'fas fa-book': '📚',
+  'fas fa-car': '🚗',
+  'fas fa-tv': '📺',
+  'fas fa-camera': '📷',
+  'fas fa-clock': '⌚',
+  'fas fa-shoe-prints': '👞',
+  'fas fa-heartbeat': '🏥'
+};
+
+// Function to get appropriate icon
+const getCategoryIcon = (categoryName, serverIcon) => {
+  // If server has a Font Awesome icon, convert it to emoji
+  if (serverIcon && fontAwesomeToEmoji[serverIcon]) {
+    return fontAwesomeToEmoji[serverIcon];
+  }
+  
+  // If server has an emoji icon, use it directly
+  if (serverIcon && !serverIcon.startsWith('fas fa-')) {
+    return serverIcon;
+  }
+  
+  // Fallback to default icon map
+  return defaultIconMap[categoryName] || '🛒';
 };
 
 export default function CategoryList() {
@@ -50,48 +84,34 @@ export default function CategoryList() {
     try {
       setLoading(true);
       const response = await fetch('http://localhost:8080/api/categories');
-      let serverCategories = [];
+      
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data && data.data.categories) {
-          serverCategories = data.data.categories;
+          // Transform server categories to include icon and styling
+          const transformedCategories = data.data.categories.map(category => ({
+            _id: category._id,
+            categoryName: category.categoryName,
+            slug: category.slug || category.categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-'),
+            description: category.description || '',
+            image: category.image || '',
+            icon: getCategoryIcon(category.categoryName, category.icon),
+            color: '#2196F3',
+            __placeholder: false,
+          }));
+          
+          setCategories(transformedCategories);
+        } else {
+          console.log('No categories data available from server');
+          setCategories([]);
         }
+      } else {
+        console.log('Categories API not available');
+        setCategories([]);
       }
-
-      // Merge: ensure ALL categories defined in categoryIconMap are displayed
-      const nameToServerCategory = new Map(
-        (serverCategories || []).map((c) => [c.categoryName, c])
-      );
-
-      const mergedCategories = Object.keys(categoryIconMap).map((categoryName) => {
-        const fromServer = nameToServerCategory.get(categoryName) || null;
-        const base = fromServer || {
-          _id: `placeholder-${categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`,
-          categoryName,
-          slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-'),
-          description: '',
-        };
-        return {
-          ...base,
-          icon: categoryIconMap[categoryName] || '🛒',
-          color: '#2196F3',
-          __placeholder: !fromServer,
-        };
-      });
-
-      setCategories(mergedCategories);
     } catch (error) {
       console.log('Categories API error:', error.message);
-      // Still show full list from icon map as placeholders so UI is complete
-      const mergedCategories = Object.keys(categoryIconMap).map((categoryName) => ({
-        _id: `placeholder-${categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-')}`,
-        categoryName,
-        slug: categoryName.toLowerCase().replace(/[^a-z0-9]+/gi, '-'),
-        icon: categoryIconMap[categoryName] || '🛒',
-        color: '#2196F3',
-        __placeholder: true,
-      }));
-      setCategories(mergedCategories);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -205,7 +225,9 @@ export default function CategoryList() {
             <>
               {categoryProducts.length === 0 ? (
                 <div className="no-products" style={{ textAlign: 'center', padding: '24px', color: '#666' }}>
-                  No products in this category yet
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
+                  <h3 style={{ marginBottom: '8px', color: '#333' }}>No Products Available</h3>
+                  <p>Category "{selectedCategory.categoryName}" currently has no products.</p>
                 </div>
               ) : (
                 <div className="category-products-grid">
@@ -281,17 +303,25 @@ export default function CategoryList() {
     <div className="category-section">
       <div className="category-container">
         <h2 className="category-title">Product Categories</h2>
-        <div className="category-grid">
-          {categories.map((category) => (
-            <CategoryItem 
-              key={category._id}
-              icon={category.icon} 
-              name={category.categoryName} 
-              color={category.color}
-              onClick={() => handleCategoryClick(category)}
-            />
-          ))}
-        </div>
+        {categories.length === 0 ? (
+          <div className="no-categories" style={{ textAlign: 'center', padding: '24px', color: '#666' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📂</div>
+            <h3 style={{ marginBottom: '8px', color: '#333' }}>No Categories Available</h3>
+            <p>No product categories have been created yet.</p>
+          </div>
+        ) : (
+          <div className="category-grid">
+            {categories.map((category) => (
+              <CategoryItem 
+                key={category._id}
+                icon={category.icon} 
+                name={category.categoryName} 
+                color={category.color}
+                onClick={() => handleCategoryClick(category)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ const SellerDashboard = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Bạn có chắc muốn xoá sản phẩm này?')) {
+    if (window.confirm('Are you sure you want to delete this product?')) {
       setProducts(products.filter((p) => p.id !== id));
     }
   };
@@ -33,27 +33,27 @@ const SellerDashboard = () => {
 
         <div className="btn-group mb-4">
           <button className={`btn btn-${tab === 1 ? 'primary' : 'outline-primary'}`} onClick={() => setTab(1)}>
-            Danh sách sản phẩm
+            List products
           </button>
           <button className={`btn btn-${tab === 2 ? 'primary' : 'outline-primary'}`} onClick={() => setTab(2)}>
-            Thêm sản phẩm
+            Add product
           </button>
           <button className={`btn btn-${tab === 3 ? 'primary' : 'outline-primary'}`} onClick={() => setTab(3)}>
-            Thống kê
+            Statistics
           </button>
         </div>
 
-        {/* TAB 1: Danh sách sản phẩm */}
+        {/* TAB 1: List products */}
         {tab === 1 && (
           <div className="table-responsive">
             <table className="table table-striped table-bordered align-middle">
               <thead className="table-light">
                 <tr>
                   <th>ID</th>
-                  <th>Tên</th>
-                  <th>Giá</th>
-                  <th>Danh mục</th>
-                  <th>Hành động</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Category</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -64,9 +64,9 @@ const SellerDashboard = () => {
                     <td>{Number(p.price).toLocaleString()}₫</td>
                     <td>{p.category}</td>
                     <td>
-                      <button className="btn btn-sm btn-warning me-2">Sửa</button>
+                      <button className="btn btn-sm btn-warning me-2">Edit</button>
                       <button className="btn btn-sm btn-danger" onClick={() => handleDelete(p.id)}>
-                        Xoá
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -76,42 +76,42 @@ const SellerDashboard = () => {
           </div>
         )}
 
-        {/* TAB 2: Thêm sản phẩm */}
+        {/* TAB 2: Add product */}
         {tab === 2 && (
           <div>
-            <h4>Thêm sản phẩm mới</h4>
+            <h4>Add new product</h4>
             <input
-              placeholder="Tên"
+              placeholder="Name"
               className="form-control mb-2"
               value={newProduct.name}
               onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
             />
             <input
-              placeholder="Giá"
+              placeholder="Price"
               type="number"
               className="form-control mb-2"
               value={newProduct.price}
               onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
             />
             <input
-              placeholder="Danh mục"
+              placeholder="Category"
               className="form-control mb-2"
               value={newProduct.category}
               onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
             />
             <button className="btn btn-success" onClick={handleAdd}>
-              Thêm
+              Add
             </button>
           </div>
         )}
 
-        {/* TAB 3: Thống kê */}
+        {/* TAB 3: Statistics */}
         {tab === 3 && (
           <div className="stat-box mt-4 p-4 bg-light rounded">
-            <h4>Thống kê đơn giản</h4>
-            <p>Tổng sản phẩm: {products.length}</p>
+            <h4>Simple statistics</h4>
+            <p>Total products: {products.length}</p>
             <p>
-              Giá trung bình:{' '}
+              Average price:{' '}
               {products.length
                 ? (products.reduce((sum, p) => sum + Number(p.price), 0) / products.length).toFixed(0)
                 : 0}

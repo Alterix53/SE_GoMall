@@ -16,6 +16,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import productService from './services/productService.js';
@@ -111,6 +112,7 @@ app.use("/api/momo", momoPaymentRoutes);  // Thêm MoMo payment routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/sellers", sellerRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use((err, req, res, next) => {
     console.error("Error middleware:", err.stack);

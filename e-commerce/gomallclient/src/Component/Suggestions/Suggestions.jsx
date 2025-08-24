@@ -88,7 +88,7 @@ const Suggestions = () => {
         {loading ? (
           <div className="suggestions-loading">
             <div className="loading-spinner"></div>
-            <span>Đang tải sản phẩm...</span>
+            <span>Loading products...</span>
           </div>
         ) : (
           <div className="suggestions-grid">

@@ -28,7 +28,7 @@ const OrderDetail = () => {
       <table className="table table-bordered">
         <thead>
           <tr>
-            <th>Sản phẩm</th>
+            <th>Product</th>
             <th>Số lượng</th>
             <th>Đơn giá</th>
             <th>Thành tiền</th>
