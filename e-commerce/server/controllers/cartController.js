@@ -121,8 +121,10 @@ export const addToCart = async (req, res) => {
         cart.totalAmount = 0;
         for (const item of cart.items) {
             const itemProduct = await Product.findById(item.productID);
-            const productPrice = itemProduct.price?.sale || itemProduct.price?.original || 0;
-            cart.totalAmount += productPrice * item.quantity;
+            if (itemProduct) {
+                const productPrice = itemProduct.price?.sale || itemProduct.price?.original || 0;
+                cart.totalAmount += productPrice * item.quantity;
+            }
         }
 
         await cart.save();
@@ -241,8 +243,10 @@ export const updateCartItem = async (req, res) => {
         cart.totalAmount = 0;
         for (const item of cart.items) {
             const itemProduct = await Product.findById(item.productID);
-            const productPrice = itemProduct.price?.sale || itemProduct.price?.original || 0;
-            cart.totalAmount += productPrice * item.quantity;
+            if (itemProduct) {
+                const productPrice = itemProduct.price?.sale || itemProduct.price?.original || 0;
+                cart.totalAmount += productPrice * item.quantity;
+            }
         }
 
         await cart.save();
@@ -297,8 +301,10 @@ export const removeFromCart = async (req, res) => {
         cart.totalAmount = 0;
         for (const item of cart.items) {
             const product = await Product.findById(item.productID);
-            const productPrice = product.price?.sale || product.price?.original || 0;
-            cart.totalAmount += productPrice * item.quantity;
+            if (product) {
+                const productPrice = product.price?.sale || product.price?.original || 0;
+                cart.totalAmount += productPrice * item.quantity;
+            }
         }
 
         await cart.save();

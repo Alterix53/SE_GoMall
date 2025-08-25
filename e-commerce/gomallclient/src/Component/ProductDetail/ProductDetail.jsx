@@ -173,6 +173,11 @@ export default function ProductDetail() {
     }
   }, [loading, error, product]);
 
+  // Debug: Monitor modal state
+  useEffect(() => {
+    console.log("🎭 Modal state changed - showSuccessModal:", showSuccessModal);
+  }, [showSuccessModal]);
+
   // Check inventory when product is loaded
   useEffect(() => {
     const checkInventory = async () => {
@@ -260,12 +265,12 @@ export default function ProductDetail() {
       }
 
       if (quantity > availableQuantity) {
-        const alertMessage = `Số lượng đã chọn (${quantity}) vượt quá số lượng tồn kho (${availableQuantity}).\n\nBạn có thể thêm tối đa ${availableQuantity} sản phẩm.`;
+        const alertMessage = `Selected quantity (${quantity}) exceeds available stock (${availableQuantity}).\n\nYou can add up to ${availableQuantity} items.`;
         alert(alertMessage);
         
         toast({
-          title: "Vượt quá tồn kho!",
-          description: `Chỉ có ${availableQuantity} sản phẩm trong kho`,
+          title: "Exceeds stock!",
+          description: `Only ${availableQuantity} items in stock`,
           variant: "destructive",
         });
         setQuantity(availableQuantity);
@@ -283,10 +288,15 @@ export default function ProductDetail() {
       
       const result = await addToCart(cartItem);
       
+      console.log("🛒 Add to cart result:", result);
+      console.log("📦 Current showSuccessModal state:", showSuccessModal);
+      
       if (result.success) {
         // Show success modal instead of toast
+        console.log("✅ Setting modal to show");
         setAddedProduct(cartItem)
         setShowSuccessModal(true)
+        console.log("🎉 Modal should be visible now");
         
         // Update max quantity after successful add
         setMaxQuantity(availableQuantity - quantity);

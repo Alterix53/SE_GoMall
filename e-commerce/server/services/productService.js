@@ -337,7 +337,7 @@ class ProductService {
     }
 
     // Create product
-    async createProduct(productData) {
+    async createProduct(productData, sellerId) {
         
         if (!productData.name || !productData.categoryID || !productData.sellerID) {
             throw new Error("Thiếu thông tin bắt buộc: tên sản phẩm, danh mục, người bán");

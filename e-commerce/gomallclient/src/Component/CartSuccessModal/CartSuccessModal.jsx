@@ -2,11 +2,44 @@ import React from 'react';
 import './CartSuccessModal.css';
 
 const CartSuccessModal = ({ isOpen, onClose, product }) => {
-  if (!isOpen) return null;
+  console.log("🎭 CartSuccessModal render - isOpen:", isOpen, "product:", product);
+  
+  if (!isOpen) {
+    console.log("❌ Modal not open, returning null");
+    return null;
+  }
+  
+  console.log("✅ Modal is open, rendering content");
 
   return (
-    <div className="cart-success-modal-overlay" onClick={onClose}>
-      <div className="cart-success-modal" onClick={e => e.stopPropagation()}>
+    <div 
+      className="cart-success-modal-overlay" 
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 99999
+      }}
+    >
+      <div 
+        className="cart-success-modal" 
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: 'white',
+          borderRadius: '12px',
+          maxWidth: '480px',
+          width: '90%',
+          padding: '24px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)'
+        }}
+      >
         <div className="cart-success-modal-header">
           <div className="success-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -35,14 +35,16 @@ export const CartProvider = ({ children }) => {
       if (response.data.success) {
         const cartData = response.data.data.cart;
         // Transform cart items to match frontend format
-        const transformedItems = cartData.items.map(item => ({
-          id: item.productID._id,
-          name: item.productID.name,
-          price: item.productID.price?.sale || item.productID.price?.original || 0,
-          image: item.productID.images?.[0] || "/images/default-product.jpg",
-          quantity: item.quantity,
-          size: item.size || 'default'
-        }));
+        const transformedItems = cartData.items
+          .filter(item => item.productID) // Filter out items with null productID
+          .map(item => ({
+            id: item.productID._id,
+            name: item.productID.name,
+            price: item.productID.price?.sale || item.productID.price?.original || 0,
+            image: item.productID.images?.[0] || "/images/default-product.jpg",
+            quantity: item.quantity,
+            size: item.size || 'default'
+          }));
         setCartItems(transformedItems);
       }
     } catch (error) {

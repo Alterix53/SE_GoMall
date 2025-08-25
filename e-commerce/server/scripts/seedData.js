@@ -208,10 +208,13 @@ const seedProducts = async (createdCategories, createdUsers) => {
         const deleteResult = await db.collection('products').deleteMany({});
         console.log(`Cleared ${deleteResult.deletedCount} existing products`);
         
-        // Get sellers from users
-        const sellers = createdUsers.filter(user => 
-            Array.isArray(user.role) ? user.role.includes('seller') : user.role === 'seller'
-        );
+        // Get all sellers from sellers collection
+        const sellers = await db.collection('sellers').find({}).toArray();
+        console.log(`📊 Using ${sellers.length} sellers for product distribution`);
+        
+        if (sellers.length === 0) {
+            console.warn('⚠️ No sellers found! Products will have null sellerID');
+        }
         
         // Available brands for random selection
         const availableBrands = ['Apple', 'Samsung', 'Nike', 'Gucci'];
@@ -224,7 +227,7 @@ const seedProducts = async (createdCategories, createdUsers) => {
                 ? createdCategories[categoryIndex]._id 
                 : null;
             
-            // Get seller ID
+            // Get random seller ID from sellers collection
             const sellerID = sellers.length > 0 ? sellers[Math.floor(Math.random() * sellers.length)]._id : null;
             
             // Get random brand
@@ -281,6 +284,20 @@ const seedProducts = async (createdCategories, createdUsers) => {
         const insertResult = await db.collection('products').insertMany(products);
         console.log(`✅ Inserted ${insertResult.insertedCount} products`);
         
+        // Show distribution of products across sellers
+        const productDistribution = {};
+        products.forEach(product => {
+            const sellerId = product.sellerID?.toString() || 'No Seller';
+            productDistribution[sellerId] = (productDistribution[sellerId] || 0) + 1;
+        });
+        
+        console.log('📊 Product distribution across sellers:');
+        for (const [sellerId, count] of Object.entries(productDistribution)) {
+            const seller = sellers.find(s => s._id.toString() === sellerId);
+            const sellerName = seller ? seller.businessName : 'No Seller';
+            console.log(`   - ${sellerName}: ${count} products`);
+        }
+        
         return products;
         
     } catch (error) {
@@ -293,11 +310,38 @@ const seedData = async () => {
     try {
         await connectForSeeding();
         
-        console.log('🌱 Starting data seeding (categories and products only)...');
+        console.log('🌱 Starting data seeding...');
         
         const createdCategories = await seedCategories();
-        console.log('⏭️ Skipping users seeding...');
-        await seedProducts(createdCategories, []); // Pass empty array for users
+        
+        // Get all existing sellers from the database
+        console.log('🔍 Getting all existing sellers...');
+        const db = mongoose.connection.db;
+        
+        // Get all users with seller role
+        const sellerUsers = await db.collection('users').find({
+            $or: [
+                { role: 'seller' },
+                { role: { $in: ['seller'] } },
+                { role: { $elemMatch: { $eq: 'seller' } } }
+            ]
+        }).toArray();
+        
+        console.log(`📊 Found ${sellerUsers.length} seller users`);
+        sellerUsers.forEach(user => {
+            console.log(`   - ${user.username} (${user.email})`);
+        });
+        
+        // Get all sellers from sellers collection
+        const sellers = await db.collection('sellers').find({}).toArray();
+        console.log(`🏪 Found ${sellers.length} sellers in sellers collection`);
+        sellers.forEach(seller => {
+            const user = sellerUsers.find(u => u._id.toString() === seller.userID.toString());
+            console.log(`   - ${seller.businessName} (${user?.username || 'Unknown'}) - Status: ${seller.status}`);
+        });
+        
+        // Use all sellers for product seeding
+        await seedProducts(createdCategories, sellerUsers);
         
         console.log('🎉 Data seeded successfully!');
         

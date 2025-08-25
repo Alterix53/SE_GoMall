@@ -205,11 +205,13 @@ export const requireApprovedSeller = async (req, res, next) => {
             return res.status(403).json({ success: false, message: 'Seller access required' });
         }
 
-        const seller = await Seller.findOne({ userID: req.user._id }).select('status isActive');
+        const seller = await Seller.findOne({ userID: req.user._id }).select('_id status isActive');
         if (!seller || seller.status !== 'approved' || seller.isActive === false) {
             return res.status(403).json({ success: false, message: 'Seller account not approved or inactive' });
         }
 
+        // Store seller ID in request for use in controllers
+        req.sellerId = seller._id;
         next();
     } catch (error) {
         console.error('Require approved seller middleware error:', error);

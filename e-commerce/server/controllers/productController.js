@@ -148,7 +148,7 @@ export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
             delete productData['inventory[lowStockThreshold]'];
         }
         
-        const product = await productService.createProduct(productData);
+        const product = await productService.createProduct(productData, req.sellerId);
         
         // Enhanced response with creation details
         const responseData = {
@@ -236,7 +236,7 @@ export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
             };
         }
         
-        const product = await productService.updateProduct(productId, updateData, req.user._id);
+        const product = await productService.updateProduct(productId, updateData, req.sellerId);
         
         // Enhanced response with update details
         const responseData = {
@@ -270,7 +270,7 @@ export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
 export const deleteProduct = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to delete product:", req.params.id);
     try {
-        await productService.deleteProduct(req.params.id, req.user._id);
+        await productService.deleteProduct(req.params.id, req.sellerId);
         ResponseHandler.success(res, null, "Xóa sản phẩm thành công");
     } catch (error) {
         console.error("Error deleting product:", error);
@@ -280,12 +280,17 @@ export const deleteProduct = ResponseHandler.asyncHandler(async (req, res) => {
 
 // Get products by seller
 export const getProductsBySeller = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to get products by seller:", req.user._id);
+    console.log("🔍 Request to get products by seller:");
+    console.log("   - User ID:", req.user._id);
+    console.log("   - Seller ID:", req.sellerId);
+    console.log("   - User roles:", req.user.role);
+    
     try {
-        const products = await productService.getProductsBySeller(req.user._id, req.query);
+        const products = await productService.getProductsBySeller(req.sellerId, req.query);
+        console.log("✅ Products found:", products.products.length);
         ResponseHandler.success(res, products, "Lấy danh sách sản phẩm của người bán thành công");
     } catch (error) {
-        console.error("Error getting seller products:", error);
+        console.error("❌ Error getting seller products:", error);
         throw error;
     }
 });
