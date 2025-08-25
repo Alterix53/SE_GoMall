@@ -21,7 +21,6 @@ const PaymentSuccess = () => {
 
     return (
         <>
-            <Header />
             <div className="payment-result-container success">
                 <div className="payment-result-card">
                 <div className="result-icon">
