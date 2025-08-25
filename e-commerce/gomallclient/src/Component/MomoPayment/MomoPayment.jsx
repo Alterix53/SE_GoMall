@@ -300,7 +300,6 @@ const MomoPayment = ({ orderData, onBack }) => {
 	if (error) {
 		return (
 			<>
-				<Header />
 				<div className="momo-payment-container">
 					<div className="momo-payment-card error">
 						<div className="momo-logo">
