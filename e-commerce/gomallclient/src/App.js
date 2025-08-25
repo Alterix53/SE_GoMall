@@ -58,6 +58,7 @@ import OrderDetail from './Component/Sellerdashboard/OrderDetail';
 import RegisterSeller from './Component/RegisterSeller/RegisterSeller';
 import Header from './Component/Header/Header';
 import Suggestions from './Component/Suggestions/Suggestions';
+import ProductReviewDemo from './Component/ProductReview/ProductReviewDemo';
 
 // Import Payment Result components
 import PaymentSuccess from './Component/PaymentResult/PaymentSuccess';
@@ -198,6 +199,7 @@ function App() {
                 <Route path="/today-suggestions" element={<TodaySuggestions />} />
                 <Route path="/suggestions" element={<Suggestions />} />
                 <Route path="/register-seller" element={<RegisterSeller />} />
+                <Route path="/review-demo" element={<ProductReviewDemo />} />
                 
                 {/* Category routes - sử dụng Navbar và Footer */}
                 <Route path="/category" element={<CategoryList />} />

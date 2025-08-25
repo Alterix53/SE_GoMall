@@ -16,6 +16,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import Product from './models/Product.js';
 import Category from './models/Category.js';
 import productService from './services/productService.js';

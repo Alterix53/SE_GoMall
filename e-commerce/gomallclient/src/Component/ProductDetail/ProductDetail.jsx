@@ -43,7 +43,11 @@ import { apiService } from "../../utils/api"
 import OptimizedImage from "../../utils/OptimizedImage"
 import { createPlaceholderUrl } from "../../utils/imageUtils"
 import Footer from "../Footer/Footer"
+<<<<<<< HEAD
 import CartSuccessModal from "../CartSuccessModal/CartSuccessModal"
+=======
+import ProductReview from "../ProductReview/ProductReview"
+>>>>>>> Main_Copy
 
 // Star Rating Component
 function StarRating({
@@ -908,8 +912,16 @@ export default function ProductDetail() {
                 </div>
               </CardContent>
             </Card>
-      </div>
-    </div>
+          </div>
+
+          {/* Product Reviews Section */}
+          <div className="max-w-6xl mx-auto px-4 mt-8">
+            <ProductReview 
+              productId={product._id} 
+              productName={product.name} 
+            />
+          </div>
+        </div>
       </main>
 
       {/* Cart Success Modal */}

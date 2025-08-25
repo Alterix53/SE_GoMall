@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import "./viewItemDetail.css"
+import ProductReview from "./ProductReview/ProductReview"
 
 export default function ViewItemDetail() {
   const [selectedImage, setSelectedImage] = useState(0)
@@ -200,26 +201,10 @@ export default function ViewItemDetail() {
             )}
             {activeTab === "reviews" && (
               <div className="reviews-content">
-                <h3>Customer Reviews</h3>
-                <div className="reviews-summary">
-                  <div className="average-rating">
-                    <span className="rating-number">4.2</span>
-                    <div className="stars">{renderStars(4)}</div>
-                    <span>Based on 127 reviews</span>
-                  </div>
-                </div>
-                <div className="reviews-list">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="review-item">
-                      <div className="review-header">
-                        <span className="reviewer-name">{review.name}</span>
-                        <div className="review-rating">{renderStars(review.rating)}</div>
-                        <span className="review-date">{review.date}</span>
-                      </div>
-                      <p className="review-comment">{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
+                <ProductReview 
+                  productId="demo-product-id" 
+                  productName="Demo Product" 
+                />
               </div>
             )}
             {activeTab === "related" && (

@@ -7,6 +7,8 @@ import bcrypt from 'bcrypt';
 import Category from '../models/Category.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
+import Review from '../models/Review.js';
+import Seller from '../models/Seller.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,9 +70,14 @@ const seedCategories = async () => {
         // Sử dụng native MongoDB driver thông qua mongoose connection
         const db = mongoose.connection.db;
         
-        // Clear existing categories
-        const deleteResult = await db.collection('categories').deleteMany({});
-        console.log(`Cleared ${deleteResult.deletedCount} existing categories`);
+        // Kiểm tra categories đã tồn tại
+        const existingCategories = await db.collection('categories').find({}).toArray();
+        console.log(`Found ${existingCategories.length} existing categories in database`);
+        
+        if (existingCategories.length > 0) {
+            console.log('Categories already exist. Skipping category seeding to preserve existing data.');
+            return existingCategories;
+        }
         
         // Prepare categories data
         const categories = categoriesData.map(cat => ({
@@ -189,7 +196,55 @@ const seedUsers = async () => {
     }
 };
 
-const seedProducts = async (createdCategories, createdUsers) => {
+const seedSellers = async (users) => {
+    try {
+        console.log('Seeding sellers...');
+        
+        const db = mongoose.connection.db;
+        
+        // Check existing sellers
+        const existingSellers = await db.collection('sellers').find({}).toArray();
+        console.log(`Found ${existingSellers.length} existing sellers in database`);
+        
+        if (existingSellers.length > 0) {
+            console.log('Sellers already exist. Skipping seller seeding to preserve existing data.');
+            return existingSellers;
+        }
+        
+        // Create sellers for users with seller role
+        const sellers = users
+            .filter(user => Array.isArray(user.role) ? user.role.includes('seller') : user.role === 'seller')
+            .map(user => ({
+                userID: user._id,
+                shopName: user.fullName ? `${user.fullName}'s Shop` : 'Default Shop',
+                description: 'Welcome to our shop!',
+                address: user.address || '',
+                phone: user.phoneNumber || '',
+                email: user.email,
+                isActive: true,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }));
+        
+        if (sellers.length === 0) {
+            console.log('No users with seller role found');
+            return [];
+        }
+        
+        const insertResult = await db.collection('sellers').insertMany(sellers);
+        console.log(`✅ Inserted ${insertResult.insertedCount} sellers`);
+        
+        return sellers;
+        
+    } catch (error) {
+        console.error('❌ Error seeding sellers:', error);
+        throw error;
+    }
+};
+
+const sevenDaysLater = () => new Date(Date.now() + 7*24*60*60*1000);
+
+const seedProducts = async (createdCategories, createdUsers, createdSellers) => {
     try {
         console.log('Seeding products...');
         
@@ -204,9 +259,9 @@ const seedProducts = async (createdCategories, createdUsers) => {
         // Sử dụng native MongoDB driver thông qua mongoose connection
         const db = mongoose.connection.db;
         
-        // Clear existing products
-        const deleteResult = await db.collection('products').deleteMany({});
-        console.log(`Cleared ${deleteResult.deletedCount} existing products`);
+        // Check existing products to determine what needs to be updated or added
+        const existingProducts = await db.collection('products').find({}).toArray();
+        console.log(`Found ${existingProducts.length} existing products in database`);
         
         // Get all sellers from sellers collection
         const sellers = await db.collection('sellers').find({}).toArray();
@@ -219,7 +274,7 @@ const seedProducts = async (createdCategories, createdUsers) => {
         // Available brands for random selection
         const availableBrands = ['Apple', 'Samsung', 'Nike', 'Gucci'];
         
-        // Prepare products data
+        // Prepare products data for comparison and insertion
         const products = productsData.map((product, index) => {
             // Get category ID (single category)
             const categoryIndex = product.categoryID - 1;
@@ -271,18 +326,19 @@ const seedProducts = async (createdCategories, createdUsers) => {
                 sold: Number(product.sold || Math.floor(Math.random() * 100)),
                 views: Number(product.views || Math.floor(Math.random() * 500)),
                 isActive: true,
-                isFeatured: Math.random() > 0.7, // 30% chance to be featured
-                isFlashSale: Math.random() > 0.8, // 20% chance to be flash sale
-                flashSalePrice: Number(product.flashSalePrice || 60000),
-                flashSaleEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+                isFeatured: product.isFeatured || false,
+                isFlashSale: product.isFlashSale === true,
+                flashSalePrice: product.flashSalePrice || (product.isFlashSale === true ? Math.round(product.price_sale * 0.9) : null),
+                flashSaleEndDate: product.isFlashSale === true ? (product.isFlashSaleEndDate ? new Date(product.isFlashSaleEndDate) : sevenDaysLater()) : null,
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
         });
         
-        // Insert products using native driver
-        const insertResult = await db.collection('products').insertMany(products);
-        console.log(`✅ Inserted ${insertResult.insertedCount} products`);
+        // Separate products into new, existing, and unchanged
+        const existingProductNames = existingProducts.map(p => p.name);
+        const newProducts = products.filter(product => !existingProductNames.includes(product.name));
+        const existingProductsToUpdate = products.filter(product => existingProductNames.includes(product.name));
         
         // Show distribution of products across sellers
         const productDistribution = {};
@@ -302,6 +358,92 @@ const seedProducts = async (createdCategories, createdUsers) => {
         
     } catch (error) {
         console.error('❌ Error seeding products:', error);
+        throw error;
+    }
+};
+
+const seedReviews = async (products, users) => {
+    try {
+        console.log('Seeding reviews...');
+        
+        const reviewsData = readJSON('reviews.json');
+        if (!reviewsData.length) {
+            console.warn('No reviews data found');
+            return [];
+        }
+        
+        console.log(`Found ${reviewsData.length} reviews to seed`);
+        
+        const db = mongoose.connection.db;
+        
+        // Kiểm tra reviews đã tồn tại
+        const existingReviews = await db.collection('reviews').find({}).toArray();
+        console.log(`Found ${existingReviews.length} existing reviews in database`);
+        
+        if (existingReviews.length > 0) {
+            console.log('Reviews already exist. Skipping review seeding to preserve existing data.');
+            return existingReviews;
+        }
+        
+        // Map reviews data to actual product and user IDs
+        const reviews = reviewsData.map(reviewData => {
+            // Tìm product thực tế
+            const product = products.find(p => p.name.includes(reviewData.productID.replace('product_', '')) || 
+                                              p._id.toString().includes(reviewData.productID.replace('product_', '')));
+            
+            // Tìm user thực tế
+            const user = users.find(u => u.username.includes(reviewData.userID.replace('user_', '')) || 
+                                        u._id.toString().includes(reviewData.userID.replace('user_', '')));
+            
+            if (!product || !user) {
+                console.warn(`Skipping review: product or user not found for ${reviewData.productID} - ${reviewData.userID}`);
+                return null;
+            }
+            
+            return {
+                productID: product._id,
+                userID: user._id,
+                rating: reviewData.rating,
+                comment: reviewData.comment,
+                createdAt: new Date(reviewData.createdAt),
+                updatedAt: new Date(reviewData.createdAt)
+            };
+        }).filter(review => review !== null);
+        
+        if (reviews.length === 0) {
+            console.warn('No valid reviews to insert');
+            return [];
+        }
+        
+        // Insert reviews
+        const insertResult = await db.collection('reviews').insertMany(reviews);
+        console.log(`✅ Inserted ${insertResult.insertedCount} reviews`);
+        
+        // Cập nhật rating trung bình cho các sản phẩm
+        console.log('Updating product ratings...');
+        for (const product of products) {
+            const productReviews = reviews.filter(r => r.productID.toString() === product._id.toString());
+            if (productReviews.length > 0) {
+                const avgRating = productReviews.reduce((sum, r) => sum + r.rating, 0) / productReviews.length;
+                const roundedRating = Math.round(avgRating * 10) / 10;
+                
+                await db.collection('products').updateOne(
+                    { _id: product._id },
+                    { 
+                        $set: { 
+                            averageRating: roundedRating,
+                            totalReviews: productReviews.length
+                        }
+                    }
+                );
+                console.log(`📊 Updated product ${product.name}: ${roundedRating}⭐ (${productReviews.length} reviews)`);
+            }
+        }
+        
+        return reviews;
+        
+    } catch (error) {
+        console.error('❌ Error seeding reviews:', error);
         throw error;
     }
 };
