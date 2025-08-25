@@ -117,7 +117,8 @@ export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
         // Tạo dữ liệu sản phẩm
         const productData = {
             ...req.body,
-            sellerID: req.user._id, // Lấy từ middleware auth
+            // Use approved seller id from middleware, not user id
+            sellerID: req.sellerId,
             images: uploadedImages.length > 0 ? uploadedImages : [{
                 url: '/images/default-product.jpg',
                 alt: 'Ảnh mặc định',
