@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 export const useImageUploader = () => {
   const [productImages, setProductImages] = useState([]);
@@ -6,7 +6,7 @@ export const useImageUploader = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
 
-  const handleImageUpload = (event, onError) => {
+  const handleImageUpload = useCallback((event, onError) => {
     const files = Array.from(event.target.files || []);
     const maxImages = 6;
     
@@ -62,84 +62,91 @@ export const useImageUploader = () => {
         setImagePreview(newImages[0].url);
       }
     });
-  };
+  }, [productImages, imageFiles]);
 
-  const removeImage = (index) => {
-    const newImages = productImages.filter((_, i) => i !== index);
-    const newFiles = imageFiles.filter((_, i) => i !== index);
+  const removeImage = useCallback((index) => {
+    setProductImages(prevImages => {
+      const newImages = prevImages.filter((_, i) => i !== index);
+      
+      // Update main image if deleted image was main
+      if (prevImages[index].isMain && newImages.length > 0) {
+        // Set first remaining image as main
+        const updatedImages = newImages.map((img, i) => ({
+          ...img,
+          isMain: i === 0
+        }));
+        setImagePreview(updatedImages[0].url);
+        return updatedImages;
+      } else if (newImages.length === 0) {
+        setImagePreview(null);
+      }
+      
+      return newImages;
+    });
     
-    setProductImages(newImages);
-    setImageFiles(newFiles);
-    
-    // Update main image if deleted image was main
-    if (productImages[index].isMain && newImages.length > 0) {
-      // Set first remaining image as main
-      const updatedImages = newImages.map((img, i) => ({
+    setImageFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+  }, []);
+
+  const setMainImage = useCallback((index) => {
+    setProductImages(prevImages => {
+      const newImages = prevImages.map((img, i) => ({
         ...img,
-        isMain: i === 0
+        isMain: i === index
       }));
-      setProductImages(updatedImages);
-      setImagePreview(updatedImages[0].url);
-    } else if (newImages.length === 0) {
-      setImagePreview(null);
-    }
-  };
+      setImagePreview(newImages[index].url);
+      return newImages;
+    });
+  }, []);
 
-  const setMainImage = (index) => {
-    const newImages = productImages.map((img, i) => ({
-      ...img,
-      isMain: i === index
-    }));
-    setProductImages(newImages);
-    setImagePreview(newImages[index].url);
-  };
+  const reorderImages = useCallback((fromIndex, toIndex) => {
+    setProductImages(prevImages => {
+      const newImages = [...prevImages];
+      const [movedImage] = newImages.splice(fromIndex, 1);
+      newImages.splice(toIndex, 0, movedImage);
+      
+      // Update main image preview if main image moved
+      const mainImage = newImages.find(img => img.isMain);
+      if (mainImage) {
+        setImagePreview(mainImage.url);
+      }
+      
+      return newImages;
+    });
+    
+    setImageFiles(prevFiles => {
+      const newFiles = [...prevFiles];
+      const [movedFile] = newFiles.splice(fromIndex, 1);
+      newFiles.splice(toIndex, 0, movedFile);
+      return newFiles;
+    });
+  }, []);
 
-  const reorderImages = (fromIndex, toIndex) => {
-    const newImages = [...productImages];
-    const newFiles = [...imageFiles];
-    
-    const [movedImage] = newImages.splice(fromIndex, 1);
-    const [movedFile] = newFiles.splice(fromIndex, 1);
-    
-    newImages.splice(toIndex, 0, movedImage);
-    newFiles.splice(toIndex, 0, movedFile);
-    
-    setProductImages(newImages);
-    setImageFiles(newFiles);
-    
-    // Update main image preview if main image moved
-    const mainImage = newImages.find(img => img.isMain);
-    if (mainImage) {
-      setImagePreview(mainImage.url);
-    }
-  };
-
-  const handleImageUrlChange = (url) => {
+  const handleImageUrlChange = useCallback((url) => {
     setImagePreview(url);
-  };
+  }, []);
 
-  const clearImages = () => {
+  const clearImages = useCallback(() => {
     setImagePreview(null);
     setProductImages([]);
     setImageFiles([]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  };
+  }, []);
 
-  const setSingleImage = (imageUrl) => {
+  const setSingleImage = useCallback((imageUrl) => {
     setImagePreview(imageUrl);
     setProductImages([]);
     setImageFiles([]);
-  };
+  }, []);
 
-  const getMainImage = () => {
+  const getMainImage = useCallback(() => {
     return productImages.find(img => img.isMain) || productImages[0];
-  };
+  }, [productImages]);
 
-  const getMainImageIndex = () => {
+  const getMainImageIndex = useCallback(() => {
     return productImages.findIndex(img => img.isMain);
-  };
+  }, [productImages]);
 
   return {
     productImages,

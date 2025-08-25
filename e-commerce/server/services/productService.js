@@ -9,30 +9,23 @@ class ProductService {
 
         // Category filtering: accept either category id (ObjectId string) or category name
         if (query.category) {
-            console.log('Category filter input:', query.category);
             const raw = Array.isArray(query.category)
                 ? query.category
                 : String(query.category).split(",");
             const values = raw.map((v) => String(v).trim()).filter(Boolean);
-            console.log('Category values:', values);
             const objectIdRegex = /^[a-fA-F0-9]{24}$/;
             const idValues = values.filter((v) => objectIdRegex.test(v));
             const nameValues = values.filter((v) => !objectIdRegex.test(v));
-            console.log('Category ID values:', idValues);
-            console.log('Category name values:', nameValues);
 
             let categoryIds = [...idValues];
             if (nameValues.length > 0) {
                 const regexes = nameValues.map((n) => new RegExp(n, "i"));
-                console.log('Category name regexes:', regexes);
                 const categories = await Category.find(
                     { categoryName: { $in: regexes } },
                     "_id"
                 ).lean();
-                console.log('Found categories by name:', categories);
                 categoryIds.push(...categories.map((c) => c._id));
             }
-            console.log('Final category IDs:', categoryIds);
             
             // Use OR logic for categories since products typically belong to only one category
             if (categoryIds.length > 0) {
@@ -343,8 +336,9 @@ class ProductService {
         };
     }
 
-    // Create new product
+    // Create product
     async createProduct(productData) {
+        
         if (!productData.name || !productData.categoryID || !productData.sellerID) {
             throw new Error("Thiếu thông tin bắt buộc: tên sản phẩm, danh mục, người bán");
         }
@@ -359,18 +353,30 @@ class ProductService {
                 .replace(/-+/g, '-')
                 .trim('-');
         }
-        productData.price = {
-            original: Number(productData.price?.original || productData.price || 0),
-            sale: Number(productData.price?.sale || 0)
-        };
-        productData.inventory = {
-            quantity: Number(productData.inventory?.quantity || 0),
-            lowStockThreshold: Number(productData.inventory?.lowStockThreshold || 10)
-        };
+        
+        // Fix: Only process price and inventory if they haven't been processed yet
+        // (Controller should have already processed FormData bracket notation)
+        if (productData.price && typeof productData.price === 'object') {
+            // Price already processed by controller
+            productData.price = {
+                original: Number(productData.price.original || 0),
+                sale: Number(productData.price.sale || 0)
+            };
+        }
+        
+        if (productData.inventory && typeof productData.inventory === 'object') {
+            // Inventory already processed by controller
+            productData.inventory = {
+                quantity: Number(productData.inventory.quantity || 0),
+                lowStockThreshold: Number(productData.inventory.lowStockThreshold || 10)
+            };
+        }
+        
         productData.rating = {
             average: Number(productData.rating?.average || 0),
             count: Number(productData.rating?.count || 0)
         };
+        
         const product = new Product(productData);
         await product.save();
         return product.populate("categoryID", "categoryName slug");
@@ -385,23 +391,31 @@ class ProductService {
         if (product.sellerID.toString() !== sellerId.toString()) {
             throw new Error("Không có quyền cập nhật sản phẩm này");
         }
-        if (updateData.price) {
+        
+        // Fix: Only process price and inventory if they haven't been processed yet
+        // (Controller should have already processed FormData bracket notation)
+        if (updateData.price && typeof updateData.price === 'object') {
+            // Price already processed by controller
             updateData.price = {
-                original: Number(updateData.price.original || updateData.price || 0),
+                original: Number(updateData.price.original || 0),
                 sale: Number(updateData.price.sale || 0)
             };
         }
-        if (updateData.inventory) {
+        
+        if (updateData.inventory && typeof updateData.inventory === 'object') {
+            // Inventory already processed by controller
             updateData.inventory = {
                 quantity: Number(updateData.inventory.quantity || 0),
                 lowStockThreshold: Number(updateData.inventory.lowStockThreshold || 10)
             };
         }
+        
         const updatedProduct = await Product.findByIdAndUpdate(
             productId,
             updateData,
             { new: true, runValidators: true }
         ).populate("categoryID", "categoryName slug");
+        
         return updatedProduct;
     }
 

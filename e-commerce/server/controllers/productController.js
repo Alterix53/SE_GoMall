@@ -5,17 +5,13 @@ import { uploadProductImages, handleUploadError } from "../middleware/upload.js"
 
 // Get all products with filtering and pagination
 export const getAllProducts = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to /api/products received:", req.query);
     const result = await productService.getAllProducts(req.query);
-    console.log("Responding with products:", result.products);
     ResponseHandler.success(res, result, "Get product list successfully");
 });
 
 // Get flash sale products
 export const getFlashSaleProducts = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to /api/products/flash-sale received:", req.query);
     const result = await productService.getFlashSaleProducts(req.query);
-    console.log("Responding with flash sale products:", result.products);
     ResponseHandler.success(res, result, "Get flash sale list successfully");
 });
 
@@ -95,15 +91,16 @@ export const getProductById = ResponseHandler.asyncHandler(async (req, res) => {
     }
 });
 
-// Create new product with image upload
+// Create product with image upload
 export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
-    console.log("Request to create product received:", req.body);
+    console.log("Request to create product");
     console.log("Uploaded files:", req.files);
+    
     try {
+        let uploadedImages = [];
+        
         // Xử lý upload ảnh - Hỗ trợ tối đa 6 ảnh
-        const uploadedImages = [];
         if (req.files && req.files.length > 0) {
-            // Giới hạn tối đa 6 ảnh
             const maxImages = 6;
             const filesToProcess = req.files.slice(0, maxImages);
             const mainIndex = parseInt(req.body.mainIndex) || 0;
@@ -127,8 +124,51 @@ export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
                 isPrimary: true
             }]
         };
+        
+        // Fix: Process FormData fields with bracket notation
+        // Handle price fields
+        if (productData['price[original]']) {
+            productData.price = {
+                original: Number(productData['price[original]'] || 0),
+                sale: Number(productData['price[sale]'] || 0)
+            };
+            // Remove bracket notation fields
+            delete productData['price[original]'];
+            delete productData['price[sale]'];
+        }
+        
+        // Handle inventory fields
+        if (productData['inventory[quantity]']) {
+            productData.inventory = {
+                quantity: Number(productData['inventory[quantity]'] || 0),
+                lowStockThreshold: Number(productData['inventory[lowStockThreshold]'] || 10)
+            };
+            // Remove bracket notation fields
+            delete productData['inventory[quantity]'];
+            delete productData['inventory[lowStockThreshold]'];
+        }
+        
         const product = await productService.createProduct(productData);
-        ResponseHandler.success(res, { product }, "Tạo sản phẩm thành công");
+        
+        // Enhanced response with creation details
+        const responseData = {
+            product,
+            creationDetails: {
+                timestamp: new Date().toISOString(),
+                createdBy: req.user._id,
+                imagesCount: uploadedImages.length,
+                hasDefaultImage: uploadedImages.length === 0,
+                productFeatures: {
+                    hasImages: uploadedImages.length > 0,
+                    hasPrice: !!productData.price,
+                    hasCategory: !!productData.categoryID,
+                    hasStock: !!productData.inventory,
+                    hasDescription: !!productData.description
+                }
+            }
+        };
+        
+        ResponseHandler.success(res, responseData, "Tạo sản phẩm thành công");
     } catch (error) {
         console.error("Error creating product:", error);
         throw error;
@@ -139,11 +179,36 @@ export const createProduct = ResponseHandler.asyncHandler(async (req, res) => {
 export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
     console.log("Request to update product:", req.params.id);
     console.log("Uploaded files:", req.files);
+    
     try {
         const productId = req.params.id;
         const updateData = { ...req.body };
         
+        // Fix: Process FormData fields with bracket notation
+        // Handle price fields
+        if (updateData['price[original]']) {
+            updateData.price = {
+                original: Number(updateData['price[original]'] || 0),
+                sale: Number(updateData['price[sale]'] || 0)
+            };
+            // Remove bracket notation fields
+            delete updateData['price[original]'];
+            delete updateData['price[sale]'];
+        }
+        
+        // Handle inventory fields
+        if (updateData['inventory[quantity]']) {
+            updateData.inventory = {
+                quantity: Number(updateData['inventory[quantity]'] || 0),
+                lowStockThreshold: Number(updateData['inventory[lowStockThreshold]'] || 10)
+            };
+            // Remove bracket notation fields
+            delete updateData['inventory[quantity]'];
+            delete updateData['inventory[lowStockThreshold]'];
+        }
+        
         // Xử lý upload ảnh mới - Hỗ trợ tối đa 6 ảnh
+        let imageUpdateInfo = null;
         if (req.files && req.files.length > 0) {
             const maxImages = 6;
             const filesToProcess = req.files.slice(0, maxImages);
@@ -163,10 +228,38 @@ export const updateProduct = ResponseHandler.asyncHandler(async (req, res) => {
             } else {
                 updateData.images = newImages;
             }
+            
+            imageUpdateInfo = {
+                newImagesCount: filesToProcess.length,
+                totalImagesCount: updateData.images.length,
+                mainImageUpdated: true
+            };
         }
         
         const product = await productService.updateProduct(productId, updateData, req.user._id);
-        ResponseHandler.success(res, { product }, "Cập nhật sản phẩm thành công");
+        
+        // Enhanced response with update details
+        const responseData = {
+            product,
+            updateDetails: {
+                timestamp: new Date().toISOString(),
+                updatedBy: req.user._id,
+                updatedFields: Object.keys(updateData).filter(key => 
+                    !['images', 'existingImages', 'imageAlts', 'mainIndex'].includes(key)
+                ),
+                imageUpdateInfo,
+                changesSummary: {
+                    nameChanged: updateData.name ? true : false,
+                    priceChanged: updateData.price ? true : false,
+                    categoryChanged: updateData.categoryID ? true : false,
+                    stockChanged: updateData.inventory ? true : false,
+                    descriptionChanged: updateData.description ? true : false,
+                    imagesChanged: imageUpdateInfo ? true : false
+                }
+            }
+        };
+        
+        ResponseHandler.success(res, responseData, "Cập nhật sản phẩm thành công");
     } catch (error) {
         console.error("Error updating product:", error);
         throw error;

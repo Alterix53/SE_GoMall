@@ -54,7 +54,7 @@ const ProductForm = ({
       });
       setSingleImage(editingProduct.image);
     }
-  }, [mode, editingProduct, setSingleImage]);
+  }, [mode, editingProduct?.id]); // Only depend on editingProduct.id instead of the whole object
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -113,7 +113,41 @@ const ProductForm = ({
       setSuccessProductName(productData.name);
       setShowSuccessModal(true);
 
-      onSubmit(productData, imageFiles);
+      // Call onSubmit with enhanced callback
+      onSubmit(productData, imageFiles, (response) => {
+        // Enhanced success handling
+        if (response && response.data) {
+          const { product, updateDetails, creationDetails } = response.data;
+          
+          // Update success message based on response details
+          if (mode === 'edit' && updateDetails) {
+            const changes = updateDetails.changesSummary;
+            const changedFields = [];
+            
+            if (changes.nameChanged) changedFields.push('name');
+            if (changes.priceChanged) changedFields.push('price');
+            if (changes.categoryChanged) changedFields.push('category');
+            if (changes.stockChanged) changedFields.push('stock');
+            if (changes.descriptionChanged) changedFields.push('description');
+            if (changes.imagesChanged) changedFields.push('images');
+            
+            const updatedMessage = `Product updated successfully! Changed fields: ${changedFields.join(', ')}`;
+            setSuccessMessage(updatedMessage);
+          } else if (mode === 'create' && creationDetails) {
+            const features = creationDetails.productFeatures;
+            const featureList = [];
+            
+            if (features.hasImages) featureList.push('images');
+            if (features.hasPrice) featureList.push('price');
+            if (features.hasCategory) featureList.push('category');
+            if (features.hasStock) featureList.push('stock');
+            if (features.hasDescription) featureList.push('description');
+            
+            const createdMessage = `Product created successfully with: ${featureList.join(', ')}`;
+            setSuccessMessage(createdMessage);
+          }
+        }
+      });
     }
   };
 
@@ -375,6 +409,7 @@ const ProductForm = ({
         onClose={() => setShowSuccessModal(false)}
         message={successMessage}
         productName={successProductName}
+        mode={mode}
       />
     </>
   );
