@@ -377,6 +377,9 @@ class ProductService {
             count: Number(productData.rating?.count || 0)
         };
         
+        // Enforce sellerID from middleware, fallback to param
+        productData.sellerID = sellerId || productData.sellerID;
+
         const product = new Product(productData);
         await product.save();
         return product.populate("categoryID", "categoryName slug");
