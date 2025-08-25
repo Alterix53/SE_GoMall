@@ -43,11 +43,8 @@ import { apiService } from "../../utils/api"
 import OptimizedImage from "../../utils/OptimizedImage"
 import { createPlaceholderUrl } from "../../utils/imageUtils"
 import Footer from "../Footer/Footer"
-<<<<<<< HEAD
 import CartSuccessModal from "../CartSuccessModal/CartSuccessModal"
-=======
 import ProductReview from "../ProductReview/ProductReview"
->>>>>>> Main_Copy
 
 // Star Rating Component
 function StarRating({

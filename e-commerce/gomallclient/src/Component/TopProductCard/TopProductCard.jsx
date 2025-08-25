@@ -92,11 +92,7 @@ const TopProductCard = ({ product }) => {
         </div>
         
         {/* Action Button */}
-<<<<<<< HEAD
         <button className="selling-fast-btn">BUY NOW</button>
-=======
-        <button className="selling-fast-btn">SELLING FAST</button>
->>>>>>> Main_Copy
       </div>
     </div>
   );
