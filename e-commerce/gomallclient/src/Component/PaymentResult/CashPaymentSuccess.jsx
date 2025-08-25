@@ -64,7 +64,6 @@ const CashPaymentSuccess = () => {
 
   return (
     <div className="payment-result-page">
-      <Header />
       
       <div className="result-container">
         <div className="result-card success">

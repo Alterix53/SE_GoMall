@@ -9,7 +9,10 @@ class ApiClient {
     const token = localStorage.getItem('token');
     return {
       'Authorization': token ? `Bearer ${token}` : '',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
     };
   }
 
@@ -17,6 +20,7 @@ class ApiClient {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
       headers: this.getHeaders(),
+      cache: 'no-store',
       ...options
     };
 
@@ -58,7 +62,9 @@ class ApiClient {
   }
 
   async get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
+    const hasQuery = endpoint.includes('?');
+    const urlWithTs = `${endpoint}${hasQuery ? '&' : '?'}_ts=${Date.now()}`;
+    return this.request(urlWithTs, { method: 'GET' });
   }
 
   async post(endpoint, data) {
