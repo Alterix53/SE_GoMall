@@ -58,8 +58,10 @@ export const createOrder = async (req, res) => {
       await Product.findByIdAndUpdate(
         item.productID,
         { 
-          $inc: { 'inventory.quantity': -item.quantity },
-          $inc: { sold: item.quantity } // Increase sold count
+          $inc: { 
+            'inventory.quantity': -item.quantity,
+            sold: item.quantity 
+          }
         }
       );
       console.log(`Decreased inventory for product ${item.productID} by ${item.quantity}`);
@@ -181,8 +183,10 @@ export const cancelOrder = async (req, res) => {
       await Product.findByIdAndUpdate(
         item.productID,
         { 
-          $inc: { 'inventory.quantity': item.quantity },
-          $inc: { sold: -item.quantity } // Decrease sold count
+          $inc: { 
+            'inventory.quantity': item.quantity,
+            sold: -item.quantity 
+          }
         }
       );
       console.log(`Restored inventory for product ${item.productID} by ${item.quantity}`);
