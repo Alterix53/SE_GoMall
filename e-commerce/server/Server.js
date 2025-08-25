@@ -115,6 +115,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/reviews", reviewRoutes);  // Thêm review routes
 
 // Simple redirect for development (middleware approach)
 if (process.env.NODE_ENV !== 'production') {
