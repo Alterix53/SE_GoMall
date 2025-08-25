@@ -349,7 +349,7 @@ const MomoPayment = ({ orderData, onBack }) => {
 	if (loading && !paymentData) {
 		return (
 			<>
-				<Header />
+
 				<div className="momo-payment-container">
 					<div className="momo-payment-card loading">
 						<div className="momo-logo">
@@ -365,7 +365,7 @@ const MomoPayment = ({ orderData, onBack }) => {
 
 	return (
 		<>
-			<Header />
+
 			<div className="momo-payment-container">
 				<div className="momo-payment-card">
 					<div className="momo-header">
