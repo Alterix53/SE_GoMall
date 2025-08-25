@@ -41,6 +41,7 @@ import SignUpPage from './Component/Signup/signup';
 import ForgotPassword from './Component/Login/ForgotPassword';
 import ResetPassword from './Component/Login/ResetPassword';
 import SellerDashboard from './Component/Sellerdashboard/Sellerdashboard';
+import PurchaseNotifications from './Component/Sellerdashboard/PurchaseNotifications';
 
 // 
 import ProtectedRoute from './components/ProtectedRoute';
@@ -188,6 +189,11 @@ function App() {
                 <Route path="/seller/orders/:id" element={
                   <ProtectedSellerRouteV2>
                     <OrderDetail />
+                  </ProtectedSellerRouteV2>
+                } />
+                <Route path="/seller/notifications" element={
+                  <ProtectedSellerRouteV2>
+                    <PurchaseNotifications />
                   </ProtectedSellerRouteV2>
                 } />
                 

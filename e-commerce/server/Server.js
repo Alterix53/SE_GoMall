@@ -113,7 +113,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/momo", momoPaymentRoutes);  // Thêm MoMo payment routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/sellers", sellerRoutes);
+app.use("/api/seller", sellerRoutes);
 app.use("/api/categories", categoryRoutes);
 
 // Simple redirect for development (middleware approach)

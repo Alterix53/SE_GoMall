@@ -1298,3 +1298,18 @@ input[type="file"]:focus {
   color: #adb5bd;
   margin-bottom: 0;
 }
+
+/* Notification styles */
+.notification-row:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.bg-pink {
+  background-color: #e83e8c !important;
+}

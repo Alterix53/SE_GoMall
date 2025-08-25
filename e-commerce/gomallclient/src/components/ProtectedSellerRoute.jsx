@@ -17,7 +17,7 @@ const ProtectedSellerRoute = ({ children }) => {
       setCheckingSellerStatus(true);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/api/sellers/my-status', {
+        const response = await fetch('http://localhost:8080/api/seller/my-status', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

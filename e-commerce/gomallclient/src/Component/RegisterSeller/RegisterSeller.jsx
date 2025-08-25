@@ -62,10 +62,10 @@ const RegisterSeller = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      console.log('Making API call to /sellers/my-status');
+      console.log('Making API call to /seller/my-status');
       console.log('Token:', token ? 'exists' : 'missing');
       
-      const response = await fetch('http://localhost:8080/api/sellers/my-status', {
+      const response = await fetch('http://localhost:8080/api/seller/my-status', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -117,7 +117,7 @@ const RegisterSeller = () => {
         formData.append('verificationDocs', document);
       }
 
-      const resp = await apiService.post('/sellers/apply', formData);
+      const resp = await apiService.post('/seller/apply', formData);
       
              if (resp?.data?.success) {
          alert('✅ Seller registration application submitted successfully!\n\n📋 Application Information:\n- Business Name: ' + (businessName || 'Test Business') + '\n- Address: ' + (address || 'Test Address') + '\n- Phone Number: ' + (phone || '0123456789') + '\n\n⏳ Status: Waiting for admin approval\n\n📧 You will receive a notification when your application is reviewed.');

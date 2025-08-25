@@ -263,26 +263,33 @@ export default function CategoryList() {
                     const ratingAvg = typeof product?.rating === 'object' ? (product.rating?.average || 0) : (product?.rating || 0);
                     const sold = product?.sold || 0;
                     return (
-                      <Link key={product._id} to={`/product/${product._id}`} className="product-card" style={{ display: 'flex', flexDirection: 'column', minHeight: '360px', textDecoration: 'none', color: 'inherit' }}>
+                      <div key={product._id} className="product-card" style={{ display: 'flex', flexDirection: 'column', minHeight: '360px', textDecoration: 'none', color: 'inherit' }}>
                         {discount > 0 && <span className="cat-discount-badge">-{discount}%</span>}
-                        <div className="cat-product-image">
-                          <img src={imgSrc} alt={product?.name || 'Product'} style={{ objectFit: 'cover', width: '100%', height: '200px', backgroundColor: '#f8f9fa' }} />
-                        </div>
-                        <div className="cat-product-info">
-                          <h3 className="cat-product-name">{product?.name || 'Unnamed product'}</h3>
-                          <div className="cat-price-section">
-                            <span className="cat-current-price">{formatCurrency(sale)}</span>
-                            {original && original > sale && (
-                              <span className="cat-original-price">{formatCurrency(original)}</span>
-                            )}
+                        <Link to={`/product/${product._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <div className="cat-product-image">
+                            <img src={imgSrc} alt={product?.name || 'Product'} style={{ objectFit: 'cover', width: '100%', height: '200px', backgroundColor: '#f8f9fa' }} />
                           </div>
-                          <div className="cat-product-stats">
-                            <span className="cat-rating">★ {ratingAvg}</span>
-                            <span className="cat-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
+                          <div className="cat-product-info">
+                            <h3 className="cat-product-name">{product?.name || 'Unnamed product'}</h3>
+                            <div className="cat-price-section">
+                              <span className="cat-current-price">{formatCurrency(sale)}</span>
+                              {original && original > sale && (
+                                <span className="cat-original-price">{formatCurrency(original)}</span>
+                              )}
+                            </div>
+                            <div className="cat-product-stats">
+                              <span className="cat-rating">★ {ratingAvg}</span>
+                              <span className="cat-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
+                            </div>
                           </div>
-                        </div>
-                        <button className="cat-selling-fast-btn">Buy now</button>
-                      </Link>
+                        </Link>
+                        <button 
+                          className="cat-selling-fast-btn" 
+                          onClick={() => navigate(`/product/${product._id}`)}
+                        >
+                          Buy now
+                        </button>
+                      </div>
                     );
                   })}
                 </div>

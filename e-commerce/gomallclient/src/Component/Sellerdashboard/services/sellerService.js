@@ -3,7 +3,7 @@ import { apiClient } from './apiClient';
 export const sellerService = {
   async getSellerStatus() {
     try {
-      const response = await apiClient.get('/sellers/my-status');
+      const response = await apiClient.get('/seller/my-status');
       return response.data;
     } catch (error) {
       console.error('Error fetching seller status:', error);

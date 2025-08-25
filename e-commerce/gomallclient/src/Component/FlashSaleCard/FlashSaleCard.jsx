@@ -27,6 +27,12 @@ const FlashSaleCard = ({ product }) => {
     navigate(`/product/${productId}`);
   };
 
+  const handleBuyNow = (e) => {
+    e.stopPropagation(); // Prevent triggering goToDetail
+    if (!productId) return;
+    navigate(`/product/${productId}`);
+  };
+
   const formatSold = (sold) => {
     if (!sold) return "0";
     if (sold >= 1000000) {
@@ -101,7 +107,7 @@ const FlashSaleCard = ({ product }) => {
         </div>
         
         {/* Action Button */}
-        <button className="selling-fast-btn">Buy Now</button>
+        <button className="selling-fast-btn" onClick={handleBuyNow}>Buy Now</button>
       </div>
     </div>
   );

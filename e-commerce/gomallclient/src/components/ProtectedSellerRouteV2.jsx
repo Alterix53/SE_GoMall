@@ -21,8 +21,8 @@ const ProtectedSellerRouteV2 = ({ children }) => {
       setCheckingSellerStatus(true);
       try {
         const token = localStorage.getItem('token');
-        console.log('ProtectedSellerRouteV2 - Making API call to /sellers/my-status');
-        const response = await fetch('http://localhost:8080/api/sellers/my-status', {
+        console.log('ProtectedSellerRouteV2 - Making API call to /seller/my-status');
+        const response = await fetch('http://localhost:8080/api/seller/my-status', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

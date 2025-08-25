@@ -112,8 +112,8 @@ export const authAPI = {
 export const userAPI = {
   updateProfile: (userId, userData) => apiService.put(`/users/${userId}`, userData),
   getProfile: (userId) => apiService.get(`/users/${userId}`),
-  applyForSeller: (data) => apiService.post(`/sellers/apply`, data),
-  checkSellerStatus: () => apiService.get(`/sellers/my-status`),
+  applyForSeller: (data) => apiService.post(`/seller/apply`, data),
+  checkSellerStatus: () => apiService.get(`/seller/my-status`),
 };
 
 // Product API

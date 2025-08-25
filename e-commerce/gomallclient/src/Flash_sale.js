@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Flash_sale.css';
 
 const FlashSale = () => {
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -135,7 +137,12 @@ const FlashSale = () => {
                 </div>
               </div>
               
-              <button className="buy-now-btn">Buy Now</button>
+              <button 
+                className="buy-now-btn" 
+                onClick={() => navigate(`/product/${product.id}`)}
+              >
+                Buy Now
+              </button>
             </div>
           </div>
         ))}

@@ -1,5 +1,7 @@
 import Seller from '../models/Seller.js';
 import User from '../models/User.js';
+import Order from '../models/Order.js';
+import Product from '../models/Product.js';
 import cloudinary from '../config/cloudinary.js';
 import { uploadFileToCloudinary, saveBufferToLocal } from '../middleware/upload.js';
 import NotificationService from '../services/notificationService.js';
@@ -277,5 +279,66 @@ export const checkCurrentUserSellerStatus = async (req, res) => {
     } catch (error) {
         console.error('Check current user seller status error:', error);
         res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// GET /api/seller/notifications
+// Returns purchase notifications for the authenticated seller
+export const getSellerNotifications = async (req, res) => {
+    try {
+        const sellerId = req.sellerId; // from requireApprovedSeller middleware
+        if (!sellerId) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Seller authentication required' 
+            });
+        }
+
+        // Find all products belonging to this seller
+        const sellerProducts = await Product.find({ sellerID: sellerId }).select('_id name');
+        const productIds = sellerProducts.map(product => product._id);
+
+        // Find orders that contain products from this seller
+        const orders = await Order.find({
+            'items.productID': { $in: productIds }
+        })
+        .select('userID items paymentMethod createdAt')
+        .populate('userID', 'fullName username')
+        .populate('items.productID', 'name sellerID')
+        .sort({ createdAt: -1 }) // newest first
+        .lean();
+
+        const notifications = [];
+        
+        for (const order of orders) {
+            const buyerName = order.userID?.fullName || order.userID?.username || 'Unknown';
+            
+            for (const item of order.items) {
+                // Only include items that belong to this seller
+                if (String(item.productID?.sellerID) === String(sellerId)) {
+                    notifications.push({
+                        buyerName,
+                        quantity: item.quantity,
+                        paymentMethod: order.paymentMethod || 'N/A',
+                        createdAt: order.createdAt,
+                        productName: item.productID?.name || 'Unknown Product',
+                        orderId: order._id
+                    });
+                }
+            }
+        }
+
+        return res.json({
+            success: true,
+            data: notifications,
+            message: 'Purchase notifications retrieved successfully'
+        });
+    } catch (error) {
+        console.error('Error fetching seller notifications:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to fetch purchase notifications',
+            error: error.message
+        });
     }
 };

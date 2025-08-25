@@ -8,9 +8,10 @@ import {
     updateSeller,
     deleteSeller,
     getSellerByUserId,
-    checkCurrentUserSellerStatus
+    checkCurrentUserSellerStatus,
+    getSellerNotifications
 } from '../controllers/sellerControllers.js';
-import { authenticateToken, authenticateAdmin } from '../middleware/auth.js';
+import { authenticateToken, authenticateAdmin, requireApprovedSeller } from '../middleware/auth.js';
 import { uploadVerificationDocs } from '../middleware/upload.js';
 
 const router = express.Router();
@@ -23,6 +24,9 @@ router.post('/apply', authenticateToken, uploadVerificationDocs, applyForSeller)
 
 // Check current user's seller application status
 router.get('/my-status', authenticateToken, checkCurrentUserSellerStatus);
+
+// Seller notifications route (requires approved seller)
+router.get('/notifications', authenticateToken, requireApprovedSeller, getSellerNotifications);
 
 // Admin only routes (use admin token)
 router.get('/', authenticateAdmin, getAllSellers);

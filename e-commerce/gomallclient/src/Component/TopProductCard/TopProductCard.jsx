@@ -28,6 +28,12 @@ const TopProductCard = ({ product }) => {
     navigate(`/product/${productId}`);
   };
 
+  const handleBuyNow = (e) => {
+    e.stopPropagation(); // Prevent triggering goToDetail
+    if (!productId) return;
+    navigate(`/product/${productId}`);
+  };
+
   const formatSold = (sold) => {
     if (!sold) return "0";
     if (sold >= 1000000) {
@@ -92,7 +98,7 @@ const TopProductCard = ({ product }) => {
         </div>
         
         {/* Action Button */}
-        <button className="selling-fast-btn">BUY NOW</button>
+        <button className="selling-fast-btn" onClick={handleBuyNow}>BUY NOW</button>
       </div>
     </div>
   );

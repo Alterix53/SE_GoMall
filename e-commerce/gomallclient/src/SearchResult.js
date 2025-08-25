@@ -1,7 +1,7 @@
 // Minh
 
 import React, { useState, useEffect } from "react"
-import { useSearchParams, Link } from "react-router-dom"
+import { useSearchParams, Link, useNavigate } from "react-router-dom"
 import "./SearchResult.css"
 import "./Flash_sale.css"
 
@@ -15,6 +15,7 @@ const brands = [
 
 const SearchResult = () => {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [viewMode, setViewMode] = useState("grid")
   const [priceRange, setPriceRange] = useState([0, 50000000])
   const [selectedCategories, setSelectedCategories] = useState([])
@@ -301,28 +302,35 @@ const SearchResult = () => {
                   const image = product?.image || '/images/placeholder-product.svg';
                   const ratingAvg = typeof product?.rating === 'object' ? (product.rating?.average || 0) : (product?.rating || 0);
                   const sold = product?.sold || 0;
-                  return (
-                    <Link key={product.id} to={`/product/${product.id}`} className="fs-card" style={{ textDecoration: 'none', color: 'inherit' }}>
-                      {discount > 0 && <span className="fs-discount">-{discount}%</span>}
-                      <div className="fs-image">
-                        <img src={image} alt={product?.name || 'Product'} />
-                      </div>
-                      <div className="fs-info">
-                        <h3 className="fs-name">{product?.name || 'Product'}</h3>
-                        <div className="fs-prices">
-                          <span className="fs-price">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sale || 0)}</span>
-                          {original && original > sale && (
-                            <span className="fs-original">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(original)}</span>
-                          )}
-                        </div>
-                        <div className="fs-stats">
-                          <span className="fs-rating">★ {Number(ratingAvg).toFixed(1)}</span>
-                          <span className="fs-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
-                        </div>
-                        <button className="fs-btn">SELLING FAST</button>
-                      </div>
-                    </Link>
-                  );
+                                     return (
+                     <div key={product.id} className="fs-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+                       {discount > 0 && <span className="fs-discount">-{discount}%</span>}
+                       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                         <div className="fs-image">
+                           <img src={image} alt={product?.name || 'Product'} />
+                         </div>
+                         <div className="fs-info">
+                           <h3 className="fs-name">{product?.name || 'Product'}</h3>
+                           <div className="fs-prices">
+                             <span className="fs-price">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sale || 0)}</span>
+                             {original && original > sale && (
+                               <span className="fs-original">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(original)}</span>
+                             )}
+                           </div>
+                           <div className="fs-stats">
+                             <span className="fs-rating">★ {Number(ratingAvg).toFixed(1)}</span>
+                             <span className="fs-sold">Sold {sold >= 1000 ? `${(sold/1000).toFixed(1)}k` : sold}</span>
+                           </div>
+                         </div>
+                       </Link>
+                       <button 
+                         className="fs-btn" 
+                         onClick={() => navigate(`/product/${product.id}`)}
+                       >
+                         Buy Now
+                       </button>
+                     </div>
+                   );
                 })}
               </div>
             ) : searchQuery.trim() ? (

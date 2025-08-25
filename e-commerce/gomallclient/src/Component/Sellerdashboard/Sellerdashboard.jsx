@@ -13,6 +13,7 @@ import Tabs from './components/Tabs';
 import ProductTable from './components/ProductTable';
 import ProductForm from './components/ProductForm';
 import StatsPanel from './components/StatsPanel';
+import PurchaseNotifications from './PurchaseNotifications';
 
 const SellerDashboard = () => {
   
@@ -281,6 +282,11 @@ const SellerDashboard = () => {
           {/* TAB 4: Statistics */}
           {tab === 4 && (
             <StatsPanel products={products} />
+          )}
+
+          {/* TAB 5: Purchase Notifications */}
+          {tab === 5 && (
+            <PurchaseNotifications />
           )}
         </div>
       </div>

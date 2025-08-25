@@ -27,6 +27,13 @@ const Tabs = ({ activeTab, onTabChange, productsCount }) => {
       >
         Statistics
       </button>
+      <button 
+        className={`btn btn-${activeTab === 5 ? 'primary' : 'outline-primary'}`} 
+        onClick={() => onTabChange(5)}
+      >
+        <i className="fas fa-bell me-1"></i>
+        Notifications
+      </button>
     </div>
   );
 };

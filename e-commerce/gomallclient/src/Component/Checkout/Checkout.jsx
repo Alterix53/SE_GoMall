@@ -39,10 +39,6 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [shippingMethod, setShippingMethod] = useState('fast');
   const [note, setNote] = useState('');
-  const [vouchers, setVouchers] = useState({
-    shop: '',
-    platform: ''
-  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showMomoPayment, setShowMomoPayment] = useState(false);
@@ -380,29 +376,7 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Voucher Section */}
-          <div className="checkout-section voucher-section">
-            <div className="voucher-header">
-              <span className="voucher-icon">🎫</span>
-                              <span className="voucher-title">Electronic Invoice 💡</span>
-                <span className="voucher-request">Request Now</span>
-            </div>
-            
-            <div className="voucher-options">
-              <div className="voucher-row">
-                <span className="voucher-label">🎫 Shop Voucher</span>
-                <button className="voucher-select">Select Voucher</button>
-              </div>
-              
-              <div className="voucher-row">
-                <span className="voucher-label">🛒 Platform Voucher</span>
-                <button className="voucher-select">Select Voucher</button>
-              </div>
-              
-              <div className="voucher-row">
-              </div>
-            </div>
-          </div>
+
 
           {/* Payment Method Section */}
           <div className="checkout-section payment-section">
